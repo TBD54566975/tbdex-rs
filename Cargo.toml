@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "crates/*",
+]
+default-members = [
+    "crates/*",
+]
+resolver = "2"
+
+[workspace.package]
+homepage = "https://github.com/TBD54566975/tbdex-rs"
+repository = "https://github.com/TBD54566975/tbdex-rs.git"
+license-file = "LICENSE"
