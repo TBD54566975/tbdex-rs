@@ -4,14 +4,14 @@ use serde_json::to_string;
 use type_safe_id::{DynamicType, TypeSafeId};
 
 /// An enum representing all possible [`Resource`] kinds.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ResourceKind {
     Offering,
 }
 
 /// A struct representing the metadata present on every [`Resource`].
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ResourceMetadata {
     /// The resource's ID
@@ -27,7 +27,7 @@ pub struct ResourceMetadata {
 }
 
 /// A struct representing the structure and common functionality available to all Resources.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Resource<T> {
     /// An object containing fields about the Resource
