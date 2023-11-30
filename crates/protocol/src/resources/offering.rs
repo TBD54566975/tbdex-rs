@@ -123,7 +123,7 @@ mod tests {
     }
 
     #[test]
-    fn cat_parse_offering_from_json() {
+    fn can_parse_offering_from_json() {
         let offering = TestData::get_offering("did:example:1234".to_string());
         let json = serde_json::to_string(&offering).expect("failed to serialize offering");
         let parsed_offering: Resource<OfferingData> =
