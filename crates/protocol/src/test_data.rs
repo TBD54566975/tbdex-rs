@@ -1,5 +1,5 @@
+use crate::resource::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
 use crate::resource::Resource;
-use crate::resources::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
 use credentials::pex::v2::{Constraints, Field, InputDescriptor, PresentationDefinition};
 use serde_json::{json, Value as JsonValue};
 
