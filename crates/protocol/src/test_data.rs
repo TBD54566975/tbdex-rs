@@ -1,7 +1,10 @@
+use crate::message::close::{Close, CloseData};
+use crate::message::Message;
 use crate::resource::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
 use crate::resource::Resource;
 use credentials::pex::v2::{Constraints, Field, InputDescriptor, PresentationDefinition};
 use serde_json::{json, Value as JsonValue};
+use type_safe_id::{DynamicType, TypeSafeId};
 
 #[cfg(test)]
 pub struct TestData;
@@ -37,6 +40,16 @@ impl TestData {
             },
         )
         .expect("failed to create offering")
+    }
+
+    pub fn get_close(from: String, exchange_id: TypeSafeId<DynamicType>) -> Message<CloseData> {
+        Close::create(
+            from,
+            "did:example:to_1234".to_string(),
+            exchange_id,
+            Some("I don't want to do business with you anymore".to_string()),
+        )
+        .expect("failed to create Close")
     }
 
     fn get_presentation_definition() -> PresentationDefinition {
