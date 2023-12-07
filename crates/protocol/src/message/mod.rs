@@ -1,4 +1,5 @@
 pub mod close;
+pub mod quote;
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -36,7 +37,7 @@ pub struct MessageMetadata {
 }
 
 /// A struct representing the structure and common functionality available to all Messages.
-#[derive(Debug, Deserialize, PartialEq,  Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Message<T> {
     /// An object containing fields about the message
