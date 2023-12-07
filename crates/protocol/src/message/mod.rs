@@ -1,4 +1,5 @@
 pub mod close;
+pub mod order;
 pub mod quote;
 
 use chrono::{DateTime, Utc};
