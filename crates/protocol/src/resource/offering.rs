@@ -4,6 +4,7 @@ use credentials::pex::v2::PresentationDefinition;
 use jsonschema::{Draft, JSONSchema};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
+use serde_with::skip_serializing_none;
 
 /// Struct that interacts with an [`Offering`] [`Resource`]
 pub struct Offering;
@@ -55,6 +56,7 @@ pub struct OfferingData {
 }
 
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct CurrencyDetails {
     /// ISO 3166 currency code string
@@ -66,6 +68,7 @@ pub struct CurrencyDetails {
 }
 
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct PaymentMethod {
     /// Type of payment method (i.e. `DEBIT_CARD`, `BITCOIN_ADDRESS`, `SQUARE_PAY`)

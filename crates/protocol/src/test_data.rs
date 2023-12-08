@@ -1,7 +1,12 @@
+use crate::message::close::{Close, CloseData};
+use crate::message::quote::{Quote, QuoteData, QuoteDetails, PaymentInstructions, PaymentInstruction};
+use crate::message::Message;
 use crate::resource::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
 use crate::resource::Resource;
+use chrono::Utc;
 use credentials::pex::v2::{Constraints, Field, InputDescriptor, PresentationDefinition};
 use serde_json::{json, Value as JsonValue};
+use type_safe_id::{DynamicType, TypeSafeId};
 
 #[cfg(test)]
 pub struct TestData;
@@ -37,6 +42,52 @@ impl TestData {
             },
         )
         .expect("failed to create offering")
+    }
+
+    pub fn get_close(from: String, exchange_id: TypeSafeId<DynamicType>) -> Message<CloseData> {
+        Close::create(
+            from,
+            "did:example:to_1234".to_string(),
+            exchange_id,
+            Some("I don't want to do business with you anymore".to_string()),
+        )
+        .expect("failed to create Close")
+    }
+
+    pub fn get_quote(
+        from: String,
+        to: String,
+        exchange_id: TypeSafeId<DynamicType>,
+    ) -> Message<QuoteData> {
+        Quote::create(
+            from,
+            to,
+            exchange_id,
+            QuoteData {
+                expires_at: Utc::now(),
+                payin: QuoteDetails {
+                    currency_code: "USD".to_string(),
+                    amount_subunits: "100".to_string(),
+                    fee_subunits: Some("10".to_string()),
+                },
+                payout: QuoteDetails {
+                    currency_code: "BTC".to_string(),
+                    amount_subunits: "2500".to_string(),
+                    fee_subunits: None,
+                },
+                payment_instructions: Some(PaymentInstructions {
+                    payin: Some(PaymentInstruction {
+                        link: Some("example.com/payin".to_string()),
+                        instruction: Some("Hand me the cash".to_string()),
+                    }),
+                    payout: Some(PaymentInstruction {
+                        link: None,
+                        instruction: Some("BOLT 12".to_string()),
+                    }),
+                }),
+            },
+        )
+        .expect("failed to create Quote")
     }
 
     fn get_presentation_definition() -> PresentationDefinition {

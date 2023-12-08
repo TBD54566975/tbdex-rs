@@ -1,10 +1,15 @@
+pub mod close;
+pub mod order;
+pub mod order_status;
+pub mod quote;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 use type_safe_id::{DynamicType, TypeSafeId};
 
 /// An enum representing all possible [`Message`] kinds.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum MessageKind {
     Close,
@@ -15,7 +20,7 @@ pub enum MessageKind {
 }
 
 /// A struct representing the metadata present on every [`Message`].
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageMetadata {
     /// The message's ID
@@ -34,7 +39,7 @@ pub struct MessageMetadata {
 }
 
 /// A struct representing the structure and common functionality available to all Messages.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Message<T> {
     /// An object containing fields about the message
