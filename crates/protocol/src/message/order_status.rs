@@ -43,7 +43,6 @@ impl OrderStatus {
 #[serde(rename_all = "camelCase")]
 pub struct OrderStatusData {
   /// Current status of Order that's being executed
-
   order_status: String,
 }
 

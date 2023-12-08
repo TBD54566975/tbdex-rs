@@ -1,5 +1,6 @@
 use ::serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
+use serde_with::skip_serializing_none;
 use type_safe_id::{DynamicType, TypeSafeId};
 
 use super::{Message, MessageError, MessageKind, MessageMetadata};
@@ -35,6 +36,7 @@ impl Quote {
 /// See [Quote](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#quote) for more
 /// information.
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct QuoteData {
     /// When this quote expires. Expressed as ISO8601
@@ -48,6 +50,7 @@ pub struct QuoteData {
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct QuoteDetails {
     /// ISO 3166 currency code string
@@ -59,6 +62,7 @@ pub struct QuoteDetails {
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct PaymentInstructions {
     /// Link or Instruction describing how to pay the PFI.
@@ -68,6 +72,8 @@ pub struct PaymentInstructions {
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
+
 #[serde(rename_all = "camelCase")]
 pub struct PaymentInstruction {
     /// Link or Instruction describing how to pay the PFI.

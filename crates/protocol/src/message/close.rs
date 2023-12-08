@@ -1,5 +1,6 @@
 use ::serde::{Deserialize, Serialize};
 use chrono::Utc;
+use serde_with::skip_serializing_none;
 use type_safe_id::{DynamicType, TypeSafeId};
 
 use super::{Message, MessageError, MessageKind, MessageMetadata};
@@ -37,6 +38,7 @@ impl Close {
 /// See [Quote](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#close) for more
 /// information.
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[skip_serializing_none]
 #[serde(rename_all = "camelCase")]
 pub struct CloseData {
     /// an explanation of why the exchange is being closed/completed
