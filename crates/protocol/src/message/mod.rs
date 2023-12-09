@@ -6,6 +6,7 @@ pub mod quote;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
+use sha2::{Digest, Sha256};
 use type_safe_id::{DynamicType, TypeSafeId};
 
 /// An enum representing all possible [`Message`] kinds.
@@ -59,6 +60,38 @@ pub enum MessageError {
     TypeSafeIdError(#[from] type_safe_id::Error),
 }
 
+impl<T: Serialize> Message<T> {
+    /// Create a 44 byte digest of the message with these steps:
+    ///
+    /// 1. Initialize payload to be a json object that contains the `metadata` and `data`` properties whose values
+    ///    are the respective metadata and data values of the message or resource for which the digest is being computed
+    /// 2. JSON serialize payload using the JSON Canonicalization Scheme (JCS) as defined in RFC-8785
+    /// 3. Compute the sha256 hash of the serialized payload
+    /// 4. base64url encode the hash without padding as defined in RFC-7515
+    pub fn digest(&self) -> Result<String, MessageError> {
+        #[derive(Serialize)]
+        #[serde(rename_all = "camelCase")]
+        struct DigestMessage<'a, U: Serialize> {
+            pub metadata: &'a MessageMetadata,
+            pub data: &'a U,
+        }
+
+        let metadata_and_data_only = DigestMessage {
+            metadata: &self.metadata,
+            data: &self.data,
+        };
+        let jcs = serde_jcs::to_string(&metadata_and_data_only)?;
+        println!("jcs: {}", jcs);
+        let sha256 = Sha256::new()
+            .chain_update(jcs)
+            .finalize()
+            .to_vec();
+        let base64_url_encoded = base64_url::encode(&sha256);
+
+        Ok(base64_url_encoded)
+    }
+}
+
 impl MessageKind {
     /// Returns the [`TypeSafeId`] of the [`MessageKind`].
     pub fn typesafe_id(&self) -> Result<TypeSafeId<DynamicType>, MessageError> {
@@ -70,6 +103,8 @@ impl MessageKind {
 
 #[cfg(test)]
 mod tests {
+    use crate::test_data::TestData;
+
     use super::*;
 
     #[test]
@@ -85,5 +120,17 @@ mod tests {
         assert!(order_status_id.to_string().starts_with("orderstatus_"));
         assert!(quote_id.to_string().starts_with("quote_"));
         assert!(rfq_id.to_string().starts_with("rfq_"));
+    }
+
+    #[test]
+    fn can_digest_and_sign() {
+        let message = TestData::get_close(
+            "did:example:from_1234".to_string(),
+            MessageKind::Rfq
+                .typesafe_id()
+                .expect("failed to generate exchange_id"),
+        );
+        let digest = message.digest().expect("Could not produce message digest");
+        println!("digest: {}", digest);
     }
 }
