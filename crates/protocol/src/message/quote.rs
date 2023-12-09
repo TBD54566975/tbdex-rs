@@ -73,7 +73,6 @@ pub struct PaymentInstructions {
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
 #[skip_serializing_none]
-
 #[serde(rename_all = "camelCase")]
 pub struct PaymentInstruction {
     /// Link or Instruction describing how to pay the PFI.

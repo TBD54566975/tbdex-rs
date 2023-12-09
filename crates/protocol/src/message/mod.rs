@@ -4,6 +4,7 @@ pub mod order_status;
 pub mod quote;
 
 use chrono::{DateTime, Utc};
+use crypto::key_manager::KeyManager;
 use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 use sha2::{Digest, Sha256};
@@ -48,7 +49,7 @@ pub struct Message<T> {
     /// The actual message content
     pub data: T,
     /// The signature that verifies the authenticity and integrity of the message
-    pub signature: Option<String>,
+    pub signature: Option<Vec<u8>>,
 }
 
 /// Errors that can occur when working with [`Message`]s.
@@ -58,6 +59,8 @@ pub enum MessageError {
     SerdeJsonError(#[from] serde_json::Error),
     #[error(transparent)]
     TypeSafeIdError(#[from] type_safe_id::Error),
+    #[error(transparent)]
+    KeyManagerError(#[from] crypto::key_manager::KeyManagerError),
 }
 
 impl<T: Serialize> Message<T> {
@@ -68,7 +71,8 @@ impl<T: Serialize> Message<T> {
     /// 2. JSON serialize payload using the JSON Canonicalization Scheme (JCS) as defined in RFC-8785
     /// 3. Compute the sha256 hash of the serialized payload
     /// 4. base64url encode the hash without padding as defined in RFC-7515
-    pub fn digest(&self) -> Result<String, MessageError> {
+    pub fn digest(&self) -> Result<Vec<u8>, MessageError> {
+        // Temp struct used only in this function
         #[derive(Serialize)]
         #[serde(rename_all = "camelCase")]
         struct DigestMessage<'a, U: Serialize> {
@@ -76,19 +80,32 @@ impl<T: Serialize> Message<T> {
             pub data: &'a U,
         }
 
+        // 1. Make struct with only data and metadata
         let metadata_and_data_only = DigestMessage {
             metadata: &self.metadata,
             data: &self.data,
         };
+
+        // 2. JSON serialize using JCS
         let jcs = serde_jcs::to_string(&metadata_and_data_only)?;
-        println!("jcs: {}", jcs);
-        let sha256 = Sha256::new()
-            .chain_update(jcs)
-            .finalize()
-            .to_vec();
-        let base64_url_encoded = base64_url::encode(&sha256);
+
+        // 3. Compute SHA256 hash
+        let sha256 = Sha256::new().chain_update(jcs).finalize().to_vec();
+
+        // 4. Encode the hash to base64url
+        let base64_url_encoded = base64_url::encode(&sha256).as_bytes().to_vec();
 
         Ok(base64_url_encoded)
+    }
+
+    pub fn sign(
+        &mut self,
+        key_manager: &impl KeyManager,
+        key_alias: &str,
+    ) -> Result<(), MessageError> {
+        let payload = self.digest()?;
+        self.signature = Some(key_manager.sign(key_alias, &payload)?);
+        Ok(())
     }
 }
 
@@ -103,6 +120,8 @@ impl MessageKind {
 
 #[cfg(test)]
 mod tests {
+    use crypto::{key::KeyType, key_manager::LocalKeyManager};
+
     use crate::test_data::TestData;
 
     use super::*;
@@ -124,13 +143,39 @@ mod tests {
 
     #[test]
     fn can_digest_and_sign() {
-        let message = TestData::get_close(
+        // Create message without signature
+        let mut message = TestData::get_close(
             "did:example:from_1234".to_string(),
             MessageKind::Rfq
                 .typesafe_id()
                 .expect("failed to generate exchange_id"),
         );
+        assert!(message.signature.is_none());
+
+        // Verify that we can create digest
         let digest = message.digest().expect("Could not produce message digest");
-        println!("digest: {}", digest);
+
+        // Set up key manager for signing
+        let key_manager = LocalKeyManager::new_in_memory();
+        let key_alias = key_manager
+            .generate_private_key(KeyType::Ed25519)
+            .expect("Could not generate private key with built-in in-memory key manager");
+
+        // Add signature to message
+        message
+            .sign(&key_manager, &key_alias)
+            .expect("Could not produce signature for message");
+
+        assert!(message.signature.is_some());
+
+        // Verify signature against public key and digest
+        let public_key = key_manager
+            .get_public_key(&key_alias)
+            .unwrap()
+            .expect("Could not get public key for signature verification");
+        let verification_warnings = public_key
+            .verify(&digest, &message.signature.unwrap())
+            .expect("Error verifying signature of TBDex message against public key");
+        assert_eq!(verification_warnings.len(), 0);
     }
 }
