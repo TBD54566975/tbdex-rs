@@ -62,9 +62,9 @@ pub struct CurrencyDetails {
     /// ISO 3166 currency code string
     pub currency_code: String,
     /// Minimum amount of currency that the offer is valid for
-    pub min_subunits: Option<String>,
+    pub min_amount: Option<String>,
     /// Maximum amount of currency that the offer is valid for
-    pub max_subunits: Option<String>,
+    pub max_amount: Option<String>,
 }
 
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
@@ -77,7 +77,7 @@ pub struct PaymentMethod {
     /// payment method
     pub required_payment_details: Option<JsonValue>,
     /// The fee expressed in the currency's sub units to make use of this payment method
-    pub fee_subunits: Option<String>,
+    pub fee: Option<String>,
 }
 
 impl PaymentMethod {
