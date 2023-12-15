@@ -21,8 +21,8 @@ impl TestData {
                 payout_units_per_payin_unit: "1".to_string(),
                 payin_currency: CurrencyDetails {
                     currency_code: "AUD".to_string(),
-                    min_subunits: Some("1".to_string()),
-                    max_subunits: Some("10000".to_string()),
+                    min_amount: Some("1".to_string()),
+                    max_amount: Some("10000".to_string()),
                 },
                 payout_currency: CurrencyDetails {
                     currency_code: "USDC".to_string(),
@@ -67,13 +67,13 @@ impl TestData {
                 expires_at: Utc::now(),
                 payin: QuoteDetails {
                     currency_code: "USD".to_string(),
-                    amount_subunits: "100".to_string(),
-                    fee_subunits: Some("10".to_string()),
+                    amount: "1.00".to_string(),
+                    fee: Some("10".to_string()),
                 },
                 payout: QuoteDetails {
                     currency_code: "BTC".to_string(),
-                    amount_subunits: "2500".to_string(),
-                    fee_subunits: None,
+                    amount: "2500".to_string(),
+                    fee: None,
                 },
                 payment_instructions: Some(PaymentInstructions {
                     payin: Some(PaymentInstruction {

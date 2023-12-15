@@ -56,9 +56,9 @@ pub struct QuoteDetails {
     /// ISO 3166 currency code string
     pub currency_code: String,
     /// The amount of currency expressed in the smallest respective unit
-    pub amount_subunits: String,
+    pub amount: String,
     /// The amount paid in fees expressed in the smallest respectice unit
-    pub fee_subunits: Option<String>,
+    pub fee: Option<String>,
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
@@ -98,13 +98,13 @@ mod tests {
                 expires_at: Utc::now(),
                 payin: QuoteDetails {
                     currency_code: "USD".to_string(),
-                    amount_subunits: "100".to_string(),
-                    fee_subunits: Some("10".to_string()),
+                    amount: "1.00".to_string(),
+                    fee: Some("0.10".to_string()),
                 },
                 payout: QuoteDetails {
                     currency_code: "BTC".to_string(),
-                    amount_subunits: "2500".to_string(),
-                    fee_subunits: None,
+                    amount: "25.00".to_string(),
+                    fee: None,
                 },
                 payment_instructions: Some(PaymentInstructions {
                     payin: Some(PaymentInstruction {
