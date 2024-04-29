@@ -17,7 +17,7 @@ impl Order {
             to,
             kind: MessageKind::Order,
             id: MessageKind::Order.typesafe_id()?,
-            exchange_id: exchange_id,
+            exchange_id,
             created_at: Utc::now(),
         };
 
