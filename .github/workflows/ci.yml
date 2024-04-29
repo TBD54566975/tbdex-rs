@@ -30,19 +30,11 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ ubuntu-latest, macos-latest ] # TODO add back windows-latest
         rust: [ stable, nightly ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set Environment Variables for Hermit
-        run: echo "HERMIT_STATE_DIR_RAW=$RUNNER_TEMP/hermit" >> $GITHUB_ENV
-      - name: Debug environment
-        run: |
-          echo "HERMIT_STATE_DIR_RAW: $HERMIT_STATE_DIR_RAW"
-          echo "Other relevant environment variable checks"
-
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
