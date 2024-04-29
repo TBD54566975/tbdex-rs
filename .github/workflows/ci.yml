@@ -22,7 +22,7 @@ jobs:
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
-          cache: "true"
+          cache: true
       - name: Setup
         run: just setup
       - name: Build
@@ -38,7 +38,7 @@ jobs:
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
-          cache: "true"
+          cache: true
       - name: Setup
         run: just setup
       - name: Test
