@@ -27,8 +27,22 @@ jobs:
         run: just setup
       - name: Build
         run: just build
+  test:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        rust: [ stable, nightly ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Setup
+        run: just setup
+      - name: Test
+        run: just test
 
-  # test:
-  #   # ...
   # lint:
   #   # ...
