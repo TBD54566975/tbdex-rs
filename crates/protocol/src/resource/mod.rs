@@ -67,5 +67,7 @@ mod tests {
         let offering_id = ResourceKind::Offering.typesafe_id().unwrap();
 
         assert!(offering_id.to_string().starts_with("offering_"));
+
+        assert_eq!(0, 1)
     }
 }

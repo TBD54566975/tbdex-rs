@@ -53,5 +53,5 @@ jobs:
           cache: true
       - name: Setup
         run: just setup
-      - name: Build
+      - name: Lint
         run: just lint
