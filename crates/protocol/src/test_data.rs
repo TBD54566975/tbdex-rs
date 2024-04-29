@@ -1,5 +1,7 @@
 use crate::message::close::{Close, CloseData};
-use crate::message::quote::{Quote, QuoteData, QuoteDetails, PaymentInstructions, PaymentInstruction};
+use crate::message::quote::{
+    PaymentInstruction, PaymentInstructions, Quote, QuoteData, QuoteDetails,
+};
 use crate::message::Message;
 use crate::resource::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
 use crate::resource::Resource;

@@ -17,11 +17,11 @@ impl Order {
             to,
             kind: MessageKind::Order,
             id: MessageKind::Order.typesafe_id()?,
-            exchange_id: exchange_id,
+            exchange_id,
             created_at: Utc::now(),
         };
 
-        let data = OrderData ;
+        let data = OrderData;
 
         Ok(Message {
             metadata,
@@ -59,9 +59,9 @@ mod tests {
     #[test]
     fn can_parse_order_from_json() {
         let order = Order::create(
-          "did:example:from_1234".to_string(), 
-          "did:example:to_1234".to_string(),
-          MessageKind::Rfq.typesafe_id().unwrap(),
+            "did:example:from_1234".to_string(),
+            "did:example:to_1234".to_string(),
+            MessageKind::Rfq.typesafe_id().unwrap(),
         )
         .expect("Could not create Order");
         let json: String = serde_json::to_string(&order).expect("failed to serialize Order");

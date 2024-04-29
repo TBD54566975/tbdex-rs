@@ -19,7 +19,7 @@ impl Close {
             to,
             kind: MessageKind::Close,
             id: MessageKind::Close.typesafe_id()?,
-            exchange_id: exchange_id,
+            exchange_id,
             created_at: Utc::now(),
         };
 

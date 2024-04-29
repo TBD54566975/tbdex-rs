@@ -82,15 +82,12 @@ pub struct PaymentMethod {
 
 impl PaymentMethod {
     pub fn required_payment_details_schema(&self) -> Option<JSONSchema> {
-        self.required_payment_details
-            .as_ref()
-            .map(|json| {
-                JSONSchema::options()
-                    .with_draft(Draft::Draft7)
-                    .compile(json)
-                    .ok()
-            })
-            .flatten()
+        self.required_payment_details.as_ref().and_then(|json| {
+            JSONSchema::options()
+                .with_draft(Draft::Draft7)
+                .compile(json)
+                .ok()
+        })
     }
 }
 

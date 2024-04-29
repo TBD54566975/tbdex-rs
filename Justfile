@@ -14,7 +14,11 @@ build:
 test:
   cargo test
 
-# Run linting, look for warnings in the output to correct
+# Run linting, look for warnings and/or diffs in the output to correct
 lint:
   cargo clippy --workspace
+  cargo fmt -- --check
+
+# Run formatting
+fmt:
   cargo fmt
