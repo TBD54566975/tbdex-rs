@@ -22,7 +22,7 @@ jobs:
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
-          cache: true
+          cache: "true"
       - name: Setup
         run: just setup
       - name: Build
@@ -35,10 +35,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set Environment Variables for Hermit
+        run: echo "HERMIT_STATE_DIR_RAW=$RUNNER_TEMP/hermit" >> $GITHUB_ENV
+      - name: Debug environment
+        run: |
+          echo "HERMIT_STATE_DIR_RAW: $HERMIT_STATE_DIR_RAW"
+          echo "Other relevant environment variable checks"
+
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
-          cache: true
+          cache: "true"
       - name: Setup
         run: just setup
       - name: Test
