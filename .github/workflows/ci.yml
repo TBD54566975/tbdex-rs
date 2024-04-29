@@ -30,7 +30,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ] # TODO add back windows-latest
+        os: [ ubuntu-latest, macos-latest ] # TODO add back windows-latest https://github.com/TBD54566975/tbdex-rs/issues/44
         rust: [ stable, nightly ]
     runs-on: ${{ matrix.os }}
     steps:
