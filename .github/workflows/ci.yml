@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - kendall/github-ci # TODO remove!
   pull_request:
     branches:
       - '*'
