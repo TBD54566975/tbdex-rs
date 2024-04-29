@@ -43,6 +43,15 @@ jobs:
         run: just setup
       - name: Test
         run: just test
-
-  # lint:
-  #   # ...
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Setup
+        run: just setup
+      - name: Build
+        run: just lint
