@@ -25,7 +25,9 @@ pub struct ResourceMetadata {
     /// ISO 8601 timestamp
     pub created_at: DateTime<Utc>,
     /// ISO 8601 timestamp
-    pub updated_at: DateTime<Utc>,
+    pub updated_at: Option<DateTime<Utc>>,
+    /// Version of the protocol in use (x.x format). The protocol version must remain consistent across messages in a given exchange. Messages sharing the same exchangeId MUST also have the same protocol version.
+    pub protocol: String,
 }
 
 /// A struct representing the structure and common functionality available to all Resources.
@@ -37,7 +39,7 @@ pub struct Resource<T> {
     /// The actual Resource content
     pub data: T,
     /// The signature that verifies the authenticity and integrity of the Resource
-    pub signature: Option<String>,
+    pub signature: String,
 }
 
 /// Errors that can occur when working with [`Resource`]s.

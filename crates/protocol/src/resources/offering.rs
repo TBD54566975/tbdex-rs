@@ -1,94 +1,136 @@
 use crate::resources::{Resource, ResourceError, ResourceKind, ResourceMetadata};
 use chrono::Utc;
 use credentials::pex::v2::PresentationDefinition;
-use jsonschema::{Draft, JSONSchema};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use serde_with::skip_serializing_none;
 
 /// Struct that interacts with an [`Offering`] [`Resource`]
 pub struct Offering;
 
+/// Struct for passing parameters to [`Offering::create`]
+#[derive(Debug, Default)]
+pub struct CreateOptions {
+    pub from: String,
+    pub protocol: Option<String>,
+    pub data: OfferingData,
+}
+
 impl Offering {
-    pub fn create(
-        from: String,
-        data: OfferingData,
-    ) -> Result<Resource<OfferingData>, ResourceError> {
+    pub fn create(options: CreateOptions) -> Result<Resource<OfferingData>, ResourceError> {
         let metadata = ResourceMetadata {
             id: ResourceKind::Offering.typesafe_id()?,
             kind: ResourceKind::Offering,
-            from,
+            from: options.from,
             created_at: Utc::now(),
-            updated_at: Utc::now(),
+            updated_at: Some(Utc::now()),
+            protocol: match options.protocol {
+                Some(p) => p,
+                None => "1.0".to_string(),
+            },
         };
+
+        // todo implement signing https://github.com/TBD54566975/tbdex-rs/issues/27
+        let signature = "todo a valid signature".to_string();
 
         Ok(Resource {
             metadata,
-            data,
-            signature: None,
+            data: options.data,
+            signature,
         })
     }
 }
 
-/// A struct representing the data contained within the [`Resource`] for an [`Offering`].
+/// Struct the data contained within the [`Resource`] for an [`Offering`].
 ///
 /// See [Offering](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#offering) for more
 /// information.
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OfferingData {
     /// Brief description of what is being offered.
     pub description: String,
     /// Number of payout units Alice would get for 1 payin unit
     pub payout_units_per_payin_unit: String,
-    /// Details about the currency that the PFI is accepting as payment.
-    pub payin_currency: CurrencyDetails,
-    /// Details about the currency that the PFI is selling.
-    pub payout_currency: CurrencyDetails,
-    /// A list of payment methods the counterparty (Alice) can choose to send payment to the PFI
-    /// from in order to qualify for this offering.
-    pub payin_methods: Vec<PaymentMethod>,
-    /// A list of payment methods the counterparty (Alice) can choose to receive payment from the
-    /// PFI in order to qualify for this offering.
-    pub payout_methods: Vec<PaymentMethod>,
-    /// Articulates the claim(s) required when submitting an RFQ for this offering.
+    /// Details and options associated to the payin currency
+    pub payin: PayinDetails,
+    /// Details and options associated to the payout currency
+    pub payout: PayoutDetails,
+    /// Claim(s) required when submitting an RFQ for this offering.
     pub required_claims: PresentationDefinition,
 }
 
-#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
-#[skip_serializing_none]
+/// Struct for [Offering's PayinDetails](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#payindetails)
+#[derive(Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct CurrencyDetails {
-    /// ISO 3166 currency code string
+pub struct PayinDetails {
+    /// ISO 4217 currency code string
     pub currency_code: String,
     /// Minimum amount of currency that the offer is valid for
-    pub min_subunits: Option<String>,
+    pub min: Option<String>,
     /// Maximum amount of currency that the offer is valid for
-    pub max_subunits: Option<String>,
+    pub max: Option<String>,
+    /// A list of payment methods to select from
+    pub methods: Vec<PayinMethod>,
 }
 
-#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
-#[skip_serializing_none]
+/// Struct for [Offering's PayinMethod](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#payinmethod)
+#[derive(Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct PaymentMethod {
-    /// Type of payment method (i.e. `DEBIT_CARD`, `BITCOIN_ADDRESS`, `SQUARE_PAY`)
+pub struct PayinMethod {
+    /// Unique string identifying a single kind of payment method i.e. (i.e. DEBIT_CARD, BITCOIN_ADDRESS, SQUARE_PAY)
     pub kind: String,
-    /// A JSON Schema containing the fields that need to be collected in order to use this
-    /// payment method
+    /// Payment Method name. Expected to be rendered on screen.
+    pub name: Option<String>,
+    /// Blurb containing helpful information about the payment method. Expected to be rendered on screen. e.g. "segwit addresses only"
+    pub description: Option<String>,
+    /// The category for which the given method belongs to
+    pub group: Option<String>,
+    /// A JSON Schema containing the fields that need to be collected in the RFQ's selected payment methods in order to use this payment method.
     pub required_payment_details: Option<JsonValue>,
-    /// The fee expressed in the currency's sub units to make use of this payment method
-    pub fee_subunits: Option<String>,
+    /// Fee charged to use this payment method. absence of this field implies that there is no additional fee associated to the respective payment method
+    pub fee: Option<String>,
+    /// Minimum amount required to use this payment method.
+    pub min: Option<String>,
+    /// Maximum amount allowed when using this payment method.
+    pub max: Option<String>,
 }
 
-impl PaymentMethod {
-    pub fn required_payment_details_schema(&self) -> Option<JSONSchema> {
-        self.required_payment_details.as_ref().and_then(|json| {
-            JSONSchema::options()
-                .with_draft(Draft::Draft7)
-                .compile(json)
-                .ok()
-        })
-    }
+/// Struct for [Offering's PayoutDetails](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#payoutdetails)
+#[derive(Debug, Deserialize, PartialEq, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct PayoutDetails {
+    /// ISO 4217 currency code string
+    pub currency_code: String,
+    /// Minimum amount of currency that the offer is valid for
+    pub min: Option<String>,
+    /// Maximum amount of currency that the offer is valid for
+    pub max: Option<String>,
+    /// A list of payment methods to select from
+    pub methods: Vec<PayoutMethod>,
+}
+
+/// Struct for [Offering's PayinMethod](https://github.com/TBD54566975/tbdex/tree/main/specs/protocol#payinmethod)
+#[derive(Debug, Deserialize, PartialEq, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct PayoutMethod {
+    /// Unique string identifying a single kind of payment method i.e. (i.e. DEBIT_CARD, BITCOIN_ADDRESS, SQUARE_PAY)
+    pub kind: String,
+    /// Estimated time taken to settle an order, expressed in seconds
+    pub estimated_settlement_time: u64,
+    /// Payment Method name. Expected to be rendered on screen.
+    pub name: Option<String>,
+    /// Blurb containing helpful information about the payment method. Expected to be rendered on screen. e.g. "segwit addresses only"
+    pub description: Option<String>,
+    /// The category for which the given method belongs to
+    pub group: Option<String>,
+    /// A JSON Schema containing the fields that need to be collected in the RFQ's selected payment methods in order to use this payment method.
+    pub required_payment_details: Option<JsonValue>,
+    /// Fee charged to use this payment method. absence of this field implies that there is no additional fee associated to the respective payment method
+    pub fee: Option<String>,
+    /// Minimum amount required to use this payment method.
+    pub min: Option<String>,
+    /// Maximum amount allowed when using this payment method.
+    pub max: Option<String>,
 }
 
 #[cfg(test)]
@@ -98,28 +140,29 @@ mod tests {
 
     #[test]
     fn can_create() {
-        let offering = Offering::create(
-            "did:example:1234".to_string(),
-            OfferingData {
+        let offering = Offering::create(CreateOptions {
+            from: "did:example:1234".to_string(),
+            data: OfferingData {
                 description: "my fake offering".to_string(),
-                payout_units_per_payin_unit: "1".to_string(),
-                payin_currency: CurrencyDetails {
+                payout_units_per_payin_unit: "2".to_string(),
+                payin: PayinDetails {
                     currency_code: "USD".to_string(),
                     ..Default::default()
                 },
-                payout_currency: CurrencyDetails {
-                    currency_code: "USD".to_string(),
+                payout: PayoutDetails {
+                    currency_code: "BTC".to_string(),
                     ..Default::default()
                 },
-                payin_methods: vec![],
-                payout_methods: vec![],
                 required_claims: PresentationDefinition::default(),
             },
-        )
+            ..Default::default()
+        })
         .expect("failed to create offering");
 
-        assert_eq!(offering.data.description, "my fake offering");
         assert_eq!(offering.metadata.id.type_prefix(), "offering");
+        assert_eq!(offering.metadata.from, "did:example:1234".to_string());
+        assert_eq!(offering.metadata.protocol, "1.0".to_string());
+        assert_eq!(offering.data.description, "my fake offering");
     }
 
     #[test]

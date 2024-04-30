@@ -3,7 +3,9 @@ use crate::messages::quote::{
     PaymentInstruction, PaymentInstructions, Quote, QuoteData, QuoteDetails,
 };
 use crate::messages::Message;
-use crate::resources::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
+use crate::resources::offering::{
+    CreateOptions, Offering, OfferingData, PayinDetails, PayoutDetails,
+};
 use crate::resources::Resource;
 use chrono::Utc;
 use credentials::pex::v2::{Constraints, Field, InputDescriptor, PresentationDefinition};
@@ -16,33 +18,23 @@ pub struct TestData;
 #[cfg(test)]
 impl TestData {
     pub fn get_offering(from: String) -> Resource<OfferingData> {
-        Offering::create(
+        Offering::create(CreateOptions {
             from,
-            OfferingData {
-                description: "A sample offering".to_string(),
-                payout_units_per_payin_unit: "1".to_string(),
-                payin_currency: CurrencyDetails {
-                    currency_code: "AUD".to_string(),
-                    min_subunits: Some("1".to_string()),
-                    max_subunits: Some("10000".to_string()),
-                },
-                payout_currency: CurrencyDetails {
-                    currency_code: "USDC".to_string(),
+            data: OfferingData {
+                description: "my fake offering".to_string(),
+                payout_units_per_payin_unit: "2".to_string(),
+                payin: PayinDetails {
+                    currency_code: "USD".to_string(),
                     ..Default::default()
                 },
-                payin_methods: vec![PaymentMethod {
-                    kind: "BTC_ADDRESS".to_string(),
-                    required_payment_details: Some(TestData::required_payment_details_schema()),
+                payout: PayoutDetails {
+                    currency_code: "BTC".to_string(),
                     ..Default::default()
-                }],
-                payout_methods: vec![PaymentMethod {
-                    kind: "MOMO".to_string(),
-                    required_payment_details: Some(TestData::required_payment_details_schema()),
-                    ..Default::default()
-                }],
+                },
                 required_claims: TestData::get_presentation_definition(),
             },
-        )
+            ..Default::default()
+        })
         .expect("failed to create offering")
     }
 
