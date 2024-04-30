@@ -4,21 +4,24 @@ default: setup
 
 # Setup local development environment
 setup:
-  rustup default stable
+  #!/bin/bash
+  if [[ "$(cargo 2>&1)" == *"rustup could not choose a version of cargo to run"* ]]; then
+    rustup default stable
+  fi
 
 # Build a release variant
-build:
+build: setup
   cargo build --release
 
 # Run all tests
-test:
+test: setup
   cargo test
 
 # Run linting, look for warnings and/or diffs in the output to correct
-lint:
+lint: setup
   cargo clippy --workspace
   cargo fmt -- --check
 
 # Run formatting
-fmt:
+fmt: setup
   cargo fmt
