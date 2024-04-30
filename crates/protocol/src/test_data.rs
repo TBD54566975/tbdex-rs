@@ -1,10 +1,10 @@
-use crate::message::close::{Close, CloseData};
-use crate::message::quote::{
+use crate::messages::close::{Close, CloseData};
+use crate::messages::quote::{
     PaymentInstruction, PaymentInstructions, Quote, QuoteData, QuoteDetails,
 };
-use crate::message::Message;
-use crate::resource::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
-use crate::resource::Resource;
+use crate::messages::Message;
+use crate::resources::offering::{CurrencyDetails, Offering, OfferingData, PaymentMethod};
+use crate::resources::Resource;
 use chrono::Utc;
 use credentials::pex::v2::{Constraints, Field, InputDescriptor, PresentationDefinition};
 use serde_json::{json, Value as JsonValue};
