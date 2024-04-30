@@ -1,4 +1,4 @@
-use crate::resource::{Resource, ResourceError, ResourceKind, ResourceMetadata};
+use crate::resources::{Resource, ResourceError, ResourceKind, ResourceMetadata};
 use chrono::Utc;
 use credentials::pex::v2::PresentationDefinition;
 use jsonschema::{Draft, JSONSchema};
