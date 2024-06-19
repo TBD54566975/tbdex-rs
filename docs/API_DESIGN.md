@@ -4,16 +4,17 @@
 
 **Custom DSL Version:** 0.1.0
 
+- [Web5 Dependencies](#web5-dependencies)
 - [Resources](#resources)
   - [`ResourceKind`](#resourcekind)
   - [`Resource`](#resource)
   - [`ResourceMetadata`](#resourcemetadata)
   - [`Offering`](#offering)
     - [`OfferingData`](#offeringdata)
-      - [`PayinDetails`](#payindetails)
-        - [`PayinMethod`](#payinmethod)
-      - [`PayoutDetails`](#payoutdetails)
-        - [`PayoutMethod`](#payoutmethod)
+    - [`PayinDetails`](#payindetails)
+    - [`PayinMethod`](#payinmethod)
+    - [`PayoutDetails`](#payoutdetails)
+    - [`PayoutMethod`](#payoutmethod)
   - [`Balance`](#balance)
     - [`BalanceData`](#balancedata)
 - [Messages](#messages)
@@ -22,26 +23,33 @@
   - [`MessageMetadata`](#messagemetadata)
   - [`Rfq`](#rfq)
     - [`CreateRfqData`](#createrfqdata)
-      - [`CreateSelectedPayinMethod`](#createselectedpayinmethod)
-      - [`CreateSelectedPayoutMethod`](#createselectedpayoutmethod)
+    - [`CreateSelectedPayinMethod`](#createselectedpayinmethod)
+    - [`CreateSelectedPayoutMethod`](#createselectedpayoutmethod)
     - [`RfqData`](#rfqdata)
-      - [`SelectedPayinMethod`](#selectedpayinmethod)
-      - [`SelectedPayoutMethod`](#selectedpayoutmethod)
+    - [`SelectedPayinMethod`](#selectedpayinmethod)
+    - [`SelectedPayoutMethod`](#selectedpayoutmethod)
     - [`RfqPrivateData`](#rfqprivatedata)
-      - [`PrivatePaymentDetails`](#privatepaymentdetails)
+    - [`PrivatePaymentDetails`](#privatepaymentdetails)
   - [`Quote`](#quote)
     - [`QuoteData`](#quotedata)
-      - [`QuoteDetails`](#quotedetails)
-        - [`PaymentInstructions`](#paymentinstructions)
+    - [`QuoteDetails`](#quotedetails)
+    - [`PaymentInstructions`](#paymentinstructions)
   - [`Order`](#order)
   - [`OrderStatus`](#orderstatus)
     - [`OrderStatusData`](#orderstatusdata)
   - [`Close`](#close)
     - [`CloseData`](#closedata)
+- [HTTP Client](#http-client)
+  - [`TbdexHttpClient`](#tbdexhttpclient)
 
-🚧 Codify the Web5 APID dependencies 🚧
+# Web5 Dependencies
 
-🚧 "valid next" 🚧
+- `PresentationDefinition`
+- `BearerDid`
+
+> [!WARNING]
+>
+> 🚧 Add links to Web5 APID
 
 # Resources
 
@@ -102,7 +110,7 @@ CLASS OfferingData
   PUBLIC DATA requiredClaims PresentationDefinition
 ```
 
-#### `PayinDetails`
+### `PayinDetails`
 
 ```pseudocode!
 CLASS PayinDetails
@@ -112,7 +120,7 @@ CLASS PayinDetails
   PUBLIC DATA methods: []PayinMethod
 ```
 
-##### `PayinMethod`
+### `PayinMethod`
 
 ```pseudocode!
 CLASS PayinMethod
@@ -126,7 +134,7 @@ CLASS PayinMethod
   PUBLIC DATA max: string?
 ```
 
-#### `PayoutDetails`
+### `PayoutDetails`
 
 ```pseudocode!
 CLASS PayoutDetails
@@ -136,7 +144,7 @@ CLASS PayoutDetails
   PUBLIC DATA methods: []PayoutMethod
 ```
 
-##### `PayoutMethod`
+### `PayoutMethod`
 
 ```pseudocode!
 CLASS PayinMethod
@@ -231,10 +239,10 @@ CLASS CreateRfqData
   PUBLIC DATA offeringId: string
   PUBLIC DATA payin: CreateSelectedPayinMethod
   PUBLIC DATA payout: CreateSelectedPayoutMethod
-  PUBLIC DATA claims: string[]
+  PUBLIC DATA claims: []string
 ```
 
-#### `CreateSelectedPayinMethod`
+### `CreateSelectedPayinMethod`
 
 ```pseudocode!
 CLASS CreateSelectedPayinMethod
@@ -243,7 +251,7 @@ CLASS CreateSelectedPayinMethod
   PUBLIC DATA amount: string
 ```
 
-#### `CreateSelectedPayoutMethod`
+### `CreateSelectedPayoutMethod`
 
 ```pseudocode!
 CLASS CreateSelectedPayoutMethod
@@ -261,7 +269,7 @@ CLASS RfqData
   PUBLIC DATA claimsHash: string?
 ```
 
-#### `SelectedPayinMethod`
+### `SelectedPayinMethod`
 
 ```pseudocode!
 CLASS SelectedPayinMethod
@@ -270,7 +278,7 @@ CLASS SelectedPayinMethod
   PUBLIC DATA amount: string
 ```
 
-#### `SelectedPayoutMethod`
+### `SelectedPayoutMethod`
 
 ```pseudocode!
 CLASS SelectedPayoutMethod
@@ -285,10 +293,10 @@ CLASS RfqPrivateData
   PUBLIC DATA salt: string
   PUBLIC DATA payin: PrivatePaymentDetails?
   PUBLIC DATA payout: PrivatePaymentDetails?
-  PUBLIC DATA claims: string[]?
+  PUBLIC DATA claims: []string?
 ```
 
-#### `PrivatePaymentDetails`
+### `PrivatePaymentDetails`
 
 ```pseudocode!
 CLASS PrivatePaymentDetails
@@ -317,7 +325,7 @@ CLASS QuoteData
   PUBLIC DATA payout: QuoteDetails
 ```
 
-#### `QuoteDetails`
+### `QuoteDetails`
 
 ```pseudocode!
 CLASS QuoteDetails
@@ -327,7 +335,7 @@ CLASS QuoteDetails
   PUBLIC DATA paymentInstructions: PaymentInstructions?
 ```
 
-##### `PaymentInstructions`
+### `PaymentInstructions`
 
 ```pseudocode!
 CLASS PaymentInstructions
@@ -386,4 +394,19 @@ CLASS Close IMPLEMENTS Message
 CLASS CloseData
   PUBLIC DATA reason: string?
   PUBLIC DATA success: bool?
+```
+
+# HTTP Client
+
+## `TbdexHttpClient`
+
+```pseudocode!
+CLASS TbdexHttpClient
+  STATIC METHOD getOfferings(pfiDid: string): []Offering
+  STATIC METHOD getBalances(pfiDid: string, requesterDid: BearerDid): []Balance
+  STATIC METHOD createExchange(rfq: Rfq, replyTo: string?)
+  STATIC METHOD submitOrder(order: Order)
+  STATIC METHOD submitClose(close: Close)
+  STATIC METHOD getExchange(pfiDid: string, requesterDid: BearerDid, exchangeId: string): []Message
+  STATIC METHOD getExchanges(pfiDid: string, requesterDid: BearerDid): []Message
 ```
