@@ -274,7 +274,25 @@ dictionary OrderStatusDataData {
   string order_status;
 };
 
+interface Close {
+  constructor(string to, string from, string exchange_id, CloseDataData data, string protocol, string? external_id);
+  CloseData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
 
+dictionary CloseData {
+  MessageMetadataData metadata;
+  CloseDataData data;
+  string signature;
+};
+
+dictionary CloseDataData {
+  string? reason;
+  boolean? success;
+};
 
 
 
