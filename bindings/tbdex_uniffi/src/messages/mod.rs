@@ -1,3 +1,4 @@
+pub mod order_status;
 pub mod order;
 pub mod rfq;
 pub mod quote;

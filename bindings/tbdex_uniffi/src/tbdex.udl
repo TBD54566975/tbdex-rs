@@ -255,7 +255,24 @@ dictionary OrderData {
   string signature;
 };
 
+interface OrderStatus {
+  constructor(string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
+  OrderStatusData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
 
+dictionary OrderStatusData {
+  MessageMetadataData metadata;
+  OrderStatusDataData data;
+  string signature;
+};
+
+dictionary OrderStatusDataData {
+  string order_status;
+};
 
 
 
