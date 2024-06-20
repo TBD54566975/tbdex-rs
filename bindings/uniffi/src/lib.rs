@@ -1,4 +1,4 @@
-use tbdex::resources::ResourceKind;
+use tbdex::resources::{resource_metadata::ResourceMetadata as ResourceMetadataData, ResourceKind};
 use web5::apid::{
     crypto::jwk::Jwk as JwkData,
     dids::{
@@ -10,7 +10,10 @@ use web5::apid::{
     },
 };
 use web5_uniffi_wrapper::{
-    crypto::key_manager::KeyManager, dsa::Signer, errors::RustCoreError as Web5RustCoreError,
+    crypto::key_manager::KeyManager,
+    dids::bearer_did::{BearerDid, BearerDidData},
+    dsa::Signer,
+    errors::RustCoreError as Web5RustCoreError,
 };
 
 pub fn hello_world() {

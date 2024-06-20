@@ -7,6 +7,15 @@ enum ResourceKind {
   "Balance"
 };
 
+dictionary ResourceMetadataData {
+  ResourceKind kind;
+  string from;
+  string to;
+  string id;
+  string protocol;
+  string created_at;
+  string? updated_at;
+};
 
 
 
@@ -89,4 +98,18 @@ interface Signer {
 interface KeyManager {
   [Throws=Web5RustCoreError]
   Signer get_signer(JwkData public_jwk);
+};
+
+dictionary BearerDidData {
+  DidData did;
+  DocumentData document;
+  KeyManager key_manager;
+};
+
+interface BearerDid {
+  [Throws=Web5RustCoreError]
+  constructor([ByRef] string uri, KeyManager key_manager);
+  BearerDidData get_data();
+  [Throws=Web5RustCoreError]
+  Signer get_signer(string key_id);
 };
