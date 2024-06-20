@@ -1,4 +1,4 @@
-use super::{resource_metadata::ResourceMetadata, Resource, ResourceKind, Result};
+use super::{Resource, ResourceKind, ResourceMetadata, Result};
 use web5::apid::dids::bearer_did::BearerDid;
 
 #[derive(Clone)]

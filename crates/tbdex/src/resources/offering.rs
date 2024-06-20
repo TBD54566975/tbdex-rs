@@ -1,4 +1,4 @@
-use super::{resource_metadata::ResourceMetadata, Resource, ResourceKind, Result};
+use super::{Resource, ResourceKind, ResourceMetadata, Result};
 use web5::apid::{
     credentials::presentation_definition::PresentationDefinition, dids::bearer_did::BearerDid,
 };

@@ -1,5 +1,4 @@
 pub mod balance;
-pub mod resource_metadata;
 pub mod offering;
 
 use serde::{Deserialize, Serialize};
@@ -9,6 +8,18 @@ use web5::apid::dids::bearer_did::BearerDid;
 pub enum ResourceKind {
     Offering,
     Balance,
+}
+
+#[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ResourceMetadata {
+    pub kind: ResourceKind,
+    pub from: String,
+    pub to: String,
+    pub id: String,
+    pub protocol: String,
+    pub created_at: String,
+    pub updated_at: Option<String>,
 }
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]

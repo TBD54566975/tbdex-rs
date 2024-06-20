@@ -111,6 +111,103 @@ interface Balance {
   void verify();
 };
 
+enum MessageKind {
+  "Rfq",
+  "Quote",
+  "Order",
+  "OrderStatus",
+  "Close"
+};
+
+[Trait]
+interface Message {
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
+
+dictionary MessageMetadataData {
+  string from;
+  string to;
+  MessageKind kind;
+  string id;
+  string exchange_id;
+  string? external_id;
+  string protocol;
+  string created_at;
+};
+
+interface Rfq {
+  constructor(string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
+  RfqData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+
+  [Throws=RustCoreError]
+  boolean verify_offering_requirements(Offering offering);
+  [Throws=RustCoreError]
+  boolean verify_all_private_data();
+  [Throws=RustCoreError]
+  boolean verify_present_private_data();
+};
+
+dictionary RfqData {
+  MessageMetadataData metadata;
+  RfqDataData data;
+  RfqPrivateDataData private_data;
+  string signature;
+};
+
+dictionary CreateRfqDataData {
+  string offering_id;
+  CreateSelectedPayinMethodData payin;
+  CreateSelectedPayoutMethodData payout;
+  sequence<string> claims; 
+};
+
+dictionary CreateSelectedPayinMethodData {
+  string kind;
+  string payment_details;
+  string amount;
+};
+
+dictionary CreateSelectedPayoutMethodData {
+  string kind;
+  string payment_details;
+};
+
+dictionary RfqDataData {
+  string offering_id;
+  SelectedPayinMethodData payin;
+  SelectedPayoutMethodData payout;
+  string? claims_hash;
+};
+
+dictionary SelectedPayinMethodData {
+  string kind;
+  string? payment_details_hash;
+  string amount;
+};
+
+dictionary SelectedPayoutMethodData {
+  string kind;
+  string? payment_details_hash;
+};
+
+dictionary RfqPrivateDataData {
+  string salt;
+  PrivatePaymentDetailsData? payin;
+  PrivatePaymentDetailsData? payout;
+  sequence<string>? claims;
+};
+
+dictionary PrivatePaymentDetailsData {
+  string payment_details;
+};
+
 
 
 

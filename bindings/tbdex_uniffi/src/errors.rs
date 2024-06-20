@@ -1,8 +1,8 @@
 use std::sync::Arc;
 use std::{any::type_name, fmt::Debug};
+use tbdex::messages::MessageError;
 use tbdex::resources::ResourceError;
 use thiserror::Error;
-
 
 #[derive(Debug, Error)]
 pub enum RustCoreError {
@@ -65,6 +65,12 @@ where
 
 impl From<ResourceError> for RustCoreError {
     fn from(error: ResourceError) -> Self {
+        RustCoreError::new(error)
+    }
+}
+
+impl From<MessageError> for RustCoreError {
+    fn from(error: MessageError) -> Self {
         RustCoreError::new(error)
     }
 }
