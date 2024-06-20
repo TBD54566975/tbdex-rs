@@ -1,0 +1,92 @@
+namespace tbdex {
+  void hello_world();
+};
+
+enum ResourceKind {
+  "Offering",
+  "Balance"
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dictionary JwkData {
+  string alg;
+  string kty;
+  string crv;
+  string? d;
+  string x;
+  string? y;
+};
+
+dictionary DidData {
+  string uri;
+  string url;
+  string method;
+  string id;
+  record<string, string>? params;
+  string? path;
+  string? query;
+  string? fragment;
+};
+
+dictionary DocumentData {
+  string id;
+  sequence<string>? context;
+  sequence<string>? controller;
+  sequence<string>? also_known_as;
+  sequence<VerificationMethodData> verification_method;
+  sequence<string>? authentication;
+  sequence<string>? assertion_method;
+  sequence<string>? key_agreement;
+  sequence<string>? capability_invocation;
+  sequence<string>? capability_delegation;
+  sequence<ServiceData>? service;
+};
+
+dictionary VerificationMethodData {
+  string id;
+  string type;
+  string controller;
+  JwkData public_key_jwk;
+};
+
+dictionary ServiceData {
+  string id;
+  string type;
+  sequence<string> service_endpoint;
+};
+
+interface Web5RustCoreError {
+  string error_type();
+  string variant();
+  string message();
+};
+
+[Trait]
+interface Signer {
+  [Throws=Web5RustCoreError]
+  bytes sign([ByRef] sequence<u8> payload);
+};
+
+[Trait]
+interface KeyManager {
+  [Throws=Web5RustCoreError]
+  Signer get_signer(JwkData public_jwk);
+};
