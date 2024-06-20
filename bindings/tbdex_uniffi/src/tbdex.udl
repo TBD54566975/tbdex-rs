@@ -208,6 +208,41 @@ dictionary PrivatePaymentDetailsData {
   string payment_details;
 };
 
+interface Quote {
+  constructor(string to, string from, string exchange_id, QuoteDataData data, string protocol, string? external_id);
+  QuoteData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
+
+dictionary QuoteData {
+  MessageMetadataData metadata;
+  QuoteDataData data;
+  string signature;
+};
+
+dictionary QuoteDataData {
+  string expires_at;
+  QuoteDetailsData payin;
+  QuoteDetailsData payout;
+};
+
+dictionary QuoteDetailsData {
+  string currency_code;
+  string amount;
+  string? fee;
+  PaymentInstructionsData? payment_instructions;
+};
+
+dictionary PaymentInstructionsData {
+  string? link;
+  string? instruction;
+};
+
+
+
 
 
 

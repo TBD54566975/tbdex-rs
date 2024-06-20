@@ -1,3 +1,4 @@
+pub mod quote;
 pub mod rfq;
 
 use serde::{Deserialize, Serialize};

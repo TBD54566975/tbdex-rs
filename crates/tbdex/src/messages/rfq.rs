@@ -1,6 +1,5 @@
-use crate::resources::offering::Offering;
-
 use super::{Message, MessageKind, MessageMetadata, Result};
+use crate::resources::offering::Offering;
 use web5::apid::dids::bearer_did::BearerDid;
 
 #[derive(Clone)]
