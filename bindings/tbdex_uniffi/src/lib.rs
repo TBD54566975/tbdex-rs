@@ -5,11 +5,12 @@ mod errors;
 
 use crate::{
     errors::RustCoreError,
-    messages::{quote::Quote, rfq::Rfq, Message},
+    messages::{order::Order, quote::Quote, rfq::Rfq, Message},
     resources::{balance::Balance, offering::Offering, Resource},
 };
 use tbdex::{
     messages::{
+        order::Order as OrderData,
         quote::{
             PaymentInstructions as PaymentInstructionsData, Quote as QuoteData,
             QuoteData as QuoteDataData, QuoteDetails as QuoteDetailsData,

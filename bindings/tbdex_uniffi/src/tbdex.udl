@@ -241,7 +241,19 @@ dictionary PaymentInstructionsData {
   string? instruction;
 };
 
+interface Order {
+  constructor(string to, string from, string exchange_id, string protocol, string? external_id);
+  OrderData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
 
+dictionary OrderData {
+  MessageMetadataData metadata;
+  string signature;
+};
 
 
 
