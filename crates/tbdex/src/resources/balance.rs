@@ -1,7 +1,11 @@
+use crate::signer::sign;
+
 use super::{Resource, ResourceKind, ResourceMetadata, Result};
+use chrono::Utc;
+use serde::Serialize;
 use web5::apid::dids::bearer_did::BearerDid;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct Balance {
     pub metadata: ResourceMetadata,
     pub data: BalanceData,
@@ -9,27 +13,31 @@ pub struct Balance {
 }
 
 impl Balance {
-    pub fn new(from: String, data: BalanceData, protocol: String) -> Self {
-        // 🚧 not functional
-        Self {
+    pub fn new(from: String, data: BalanceData, protocol: String) -> Result<Self> {
+        let now = Utc::now().to_rfc3339();
+
+        Ok(Self {
             metadata: ResourceMetadata {
-                kind: ResourceKind::Offering,
+                kind: ResourceKind::Balance,
                 from,
-                to: String::default(),
-                id: String::default(),
+                id: ResourceKind::Balance.typesafe_id()?,
                 protocol,
-                created_at: String::default(),
-                updated_at: None,
+                created_at: now.clone(),
+                updated_at: Some(now),
             },
             data,
-            signature: String::default(),
-        }
+            signature: String::default(), // not set until call to sign()
+        })
     }
 }
 
 impl Resource for Balance {
-    fn sign(&self, _bearer_did: BearerDid) -> Result<()> {
-        println!("Offering.sign() invoked");
+    fn sign(&mut self, bearer_did: BearerDid) -> Result<()> {
+        let metadata = serde_json::to_value(&self.metadata)?;
+        let data = serde_json::to_value(&self.data)?;
+
+        self.signature = sign(bearer_did, metadata, data);
+
         Ok(())
     }
 
@@ -39,7 +47,7 @@ impl Resource for Balance {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct BalanceData {
     pub currency_code: String,
     pub available: String,

@@ -11,7 +11,7 @@ tbdex = { path = "../../crates/tbdex" }
 thiserror = { workspace = true }
 uniffi = { version = "0.27.1", features = ["cli"] }
 web5 = { workspace = true }
-web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "c6db872c0f7c3ab20970ca610e57481a0649f726" }
+web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "48be73e53e1c8db58a27feff3dec9206178d9808" }
 
 [build-dependencies]
 uniffi = { version = "0.27.1", features = ["build"] }
