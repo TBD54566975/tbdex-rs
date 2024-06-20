@@ -27,4 +27,3 @@ impl Message for OuterMessage {
         self.0.verify().map_err(|e| Arc::new(e.into()))
     }
 }
-
