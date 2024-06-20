@@ -7,5 +7,6 @@ repository.workspace = true
 license-file.workspace = true
 
 [dependencies]
+thiserror = { workspace = true }
 serde = { workspace = true }
 web5 = { workspace = true }

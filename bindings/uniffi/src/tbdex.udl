@@ -2,9 +2,23 @@ namespace tbdex {
   void hello_world();
 };
 
+interface RustCoreError {
+  string error_type();
+  string variant();
+  string message();
+};
+
 enum ResourceKind {
   "Offering",
   "Balance"
+};
+
+[Trait]
+interface Resource {
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary ResourceMetadataData {
@@ -16,6 +30,61 @@ dictionary ResourceMetadataData {
   string created_at;
   string? updated_at;
 };
+
+interface Offering {
+  constructor(string from, OfferingData data, string protocol);
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
+
+dictionary OfferingData {
+  string description;
+  string payout_units_per_payin_unit;
+  PayinDetailsData payin;
+  PayoutDetailsData payout;
+  PresentationDefinitionData required_claims;
+};
+
+dictionary PayinDetailsData {
+  string currency_code;
+  string? min;
+  string? max;
+  sequence<PayinMethodData> methods;
+};
+
+dictionary PayinMethodData {
+  string kind;
+  string? name;
+  string? description;
+  string? group;
+  string? required_payment_details;
+  string? fee;
+  string? min;
+  string? max;
+};
+
+dictionary PayoutDetailsData {
+  string currency_code;
+  string? min;
+  string? max;
+  sequence<PayoutMethodData> methods;
+};
+
+dictionary PayoutMethodData {
+  string kind;
+  string? name;
+  string? description;
+  string? group;
+  string? required_payment_details;
+  string? fee;
+  string? min;
+  string? max;
+  i64 estimated_settlement_time;
+};
+
+
 
 
 
@@ -112,4 +181,54 @@ interface BearerDid {
   BearerDidData get_data();
   [Throws=Web5RustCoreError]
   Signer get_signer(string key_id);
+};
+
+
+
+
+
+
+dictionary PresentationDefinitionData {
+  string id;
+  string? name;
+  string? purpose;
+  sequence<InputDescriptorData> input_descriptors;
+};
+
+dictionary InputDescriptorData {
+  string id;
+  string? name;
+  string? purpose;
+  ConstraintsData constraints;
+};
+
+dictionary ConstraintsData {
+  sequence<FieldData> fields;
+};
+
+enum Optionality {
+  "Required",
+  "Preferred",
+};
+
+dictionary FieldData {
+  string? id;
+  string? name;
+  sequence<string> path;
+  string? purpose;
+  FilterData? filter;
+  boolean? optional;
+  Optionality? predicate;
+};
+
+dictionary FilterData {
+  string? type;
+  string? pattern;
+  string? const_value;
+};
+
+interface PresentationDefinition {
+  constructor(PresentationDefinitionData data);
+  [Throws=Web5RustCoreError]
+  sequence<string> select_credentials([ByRef] sequence<string> vc_jwts);
 };

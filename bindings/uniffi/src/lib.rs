@@ -1,5 +1,25 @@
-use tbdex::resources::{resource_metadata::ResourceMetadata as ResourceMetadataData, ResourceKind};
+mod resources;
+
+mod errors;
+
+use crate::{
+    errors::RustCoreError,
+    resources::{offering::Offering, Resource},
+};
+use tbdex::resources::{
+    offering::{
+        OfferingData, PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
+        PayoutDetails as PayoutDetailsData, PayoutMethod as PayoutMethodData,
+    },
+    resource_metadata::ResourceMetadata as ResourceMetadataData,
+    ResourceKind,
+};
 use web5::apid::{
+    credentials::presentation_definition::{
+        Constraints as ConstraintsData, Field as FieldData, Filter as FilterData,
+        InputDescriptor as InputDescriptorData, Optionality,
+        PresentationDefinition as PresentationDefinitionData,
+    },
     crypto::jwk::Jwk as JwkData,
     dids::{
         data_model::{
@@ -10,6 +30,7 @@ use web5::apid::{
     },
 };
 use web5_uniffi_wrapper::{
+    credentials::presentation_definition::PresentationDefinition,
     crypto::key_manager::KeyManager,
     dids::bearer_did::{BearerDid, BearerDidData},
     dsa::Signer,

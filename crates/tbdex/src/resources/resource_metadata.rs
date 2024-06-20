@@ -1,7 +1,7 @@
 use super::ResourceKind;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ResourceMetadata {
     pub kind: ResourceKind,
