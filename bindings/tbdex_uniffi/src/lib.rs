@@ -1,3 +1,4 @@
+mod http_client;
 mod messages;
 mod resources;
 
@@ -5,6 +6,10 @@ mod errors;
 
 use crate::{
     errors::RustCoreError,
+    http_client::{
+        create_exchange, get_balances, get_exchange, get_exchanges, get_offerings, submit_close,
+        submit_order,
+    },
     messages::{
         close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, Message,
     },

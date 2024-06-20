@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::{any::type_name, fmt::Debug};
+use tbdex::http_client::TbdexHttpClientError;
 use tbdex::messages::MessageError;
 use tbdex::resources::ResourceError;
 use thiserror::Error;
@@ -71,6 +72,12 @@ impl From<ResourceError> for RustCoreError {
 
 impl From<MessageError> for RustCoreError {
     fn from(error: MessageError) -> Self {
+        RustCoreError::new(error)
+    }
+}
+
+impl From<TbdexHttpClientError> for RustCoreError {
+    fn from(error: TbdexHttpClientError) -> Self {
         RustCoreError::new(error)
     }
 }

@@ -1,5 +1,20 @@
 namespace tbdex {
   void hello_world();
+
+  [Throws=RustCoreError]
+  sequence<Offering> get_offerings(string pfi_did);
+  [Throws=RustCoreError]
+  sequence<Balance> get_balances(string pfi_did, BearerDid requestor_did);
+  [Throws=RustCoreError]
+  void create_exchange(Rfq rfq, string? reply_to);
+  [Throws=RustCoreError]
+  void submit_order(Order order);
+  [Throws=RustCoreError]
+  void submit_close(Close close);
+  [Throws=RustCoreError]
+  sequence<Message> get_exchange(string pfi_did, BearerDid requestor_did, string exchange_id);
+  [Throws=RustCoreError]
+  sequence<string> get_exchanges(string pfi_did, BearerDid requestor_did);
 };
 
 interface RustCoreError {
