@@ -32,7 +32,8 @@ dictionary ResourceMetadataData {
 };
 
 interface Offering {
-  constructor(string from, OfferingData data, string protocol);
+  constructor(string from, OfferingDataData data, string protocol);
+  OfferingData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
   [Throws=RustCoreError]
@@ -40,6 +41,12 @@ interface Offering {
 };
 
 dictionary OfferingData {
+  ResourceMetadataData metadata;
+  OfferingDataData data;
+  string signature;
+};
+
+dictionary OfferingDataData {
   string description;
   string payout_units_per_payin_unit;
   PayinDetailsData payin;
@@ -84,6 +91,25 @@ dictionary PayoutMethodData {
   i64 estimated_settlement_time;
 };
 
+dictionary BalanceData {
+  ResourceMetadataData metadata;
+  BalanceDataData data;
+  string signature;
+};
+
+dictionary BalanceDataData {
+  string currency_code;
+  string available;
+};
+
+interface Balance {
+  constructor(string from, BalanceDataData data, string protocol);
+  BalanceData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
+  [Throws=RustCoreError]
+  void verify();
+};
 
 
 

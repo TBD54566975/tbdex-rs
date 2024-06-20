@@ -1,3 +1,4 @@
+pub mod balance;
 pub mod resource_metadata;
 pub mod offering;
 

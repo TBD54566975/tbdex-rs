@@ -1,3 +1,4 @@
+pub mod balance;
 pub mod offering;
 
 use crate::errors::Result;

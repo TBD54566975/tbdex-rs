@@ -4,11 +4,13 @@ mod errors;
 
 use crate::{
     errors::RustCoreError,
-    resources::{offering::Offering, Resource},
+    resources::{balance::Balance, offering::Offering, Resource},
 };
 use tbdex::resources::{
+    balance::{Balance as BalanceData, BalanceData as BalanceDataData},
     offering::{
-        OfferingData, PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
+        Offering as OfferingData, OfferingData as OfferingDataData,
+        PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
         PayoutDetails as PayoutDetailsData, PayoutMethod as PayoutMethodData,
     },
     resource_metadata::ResourceMetadata as ResourceMetadataData,
