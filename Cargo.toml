@@ -2,7 +2,6 @@
 members = [ 
     "bindings/tbdex_uniffi",
     "crates/tbdex",
-    "crates/protocol",
 ]
 default-members = [
     "crates/tbdex",

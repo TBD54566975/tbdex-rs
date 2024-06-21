@@ -229,7 +229,8 @@ mod tests {
             },
             "1.0".to_string(),
             None,
-        ).unwrap();
+        )
+        .unwrap();
 
         rfq.sign(bearer_did).unwrap();
 
