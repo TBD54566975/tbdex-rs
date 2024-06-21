@@ -18,4 +18,4 @@ license-file = "LICENSE"
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.108"
 thiserror = "1.0.50"
-web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "48be73e53e1c8db58a27feff3dec9206178d9808" }
+web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "1bfef8182cbc56091b193f6edc6eb58526b536ad" }

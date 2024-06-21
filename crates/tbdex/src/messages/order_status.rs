@@ -3,7 +3,6 @@ use crate::signer::sign;
 use super::{Message, MessageKind, MessageMetadata, Result};
 use chrono::Utc;
 use serde::Serialize;
-use sha2::digest::Reset;
 use web5::apid::dids::bearer_did::BearerDid;
 
 #[derive(Clone)]
@@ -52,6 +51,10 @@ impl Message for OrderStatus {
     fn verify(&self) -> Result<()> {
         println!("Order.verify() invoked");
         Ok(())
+    }
+
+    fn clone_box(&self) -> Box<dyn Message> {
+        Box::new(self.clone())
     }
 }
 

@@ -49,6 +49,10 @@ impl Message for Order {
         println!("Order.verify() invoked");
         Ok(())
     }
+
+    fn clone_box(&self) -> Box<dyn Message> {
+        Box::new(self.clone())
+    }
 }
 
 #[derive(Clone, Serialize)]

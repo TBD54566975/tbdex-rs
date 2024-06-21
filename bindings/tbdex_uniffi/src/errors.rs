@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::sync::{Arc, PoisonError};
 use std::{any::type_name, fmt::Debug};
 use tbdex::http_client::TbdexHttpClientError;
 use tbdex::messages::MessageError;
@@ -16,6 +16,13 @@ pub enum RustCoreError {
 }
 
 impl RustCoreError {
+    pub fn from_poison_error<T>(error: PoisonError<T>, error_type: &str) -> Arc<Self> {
+        Arc::new(RustCoreError::Error {
+            r#type: error_type.to_string(),
+            variant: "PoisonError".to_string(),
+            message: error.to_string(),
+        })
+    }
     fn new<T>(error: T) -> Self
     where
         T: std::error::Error + 'static,

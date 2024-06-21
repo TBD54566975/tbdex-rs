@@ -39,7 +39,6 @@ interface Resource {
 dictionary ResourceMetadataData {
   ResourceKind kind;
   string from;
-  string to;
   string id;
   string protocol;
   string created_at;
@@ -47,7 +46,9 @@ dictionary ResourceMetadataData {
 };
 
 interface Offering {
+  [Throws=RustCoreError]
   constructor(string from, OfferingDataData data, string protocol);
+  [Throws=RustCoreError]
   OfferingData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
@@ -118,7 +119,9 @@ dictionary BalanceDataData {
 };
 
 interface Balance {
+  [Throws=RustCoreError]
   constructor(string from, BalanceDataData data, string protocol);
+  [Throws=RustCoreError]
   BalanceData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
@@ -154,7 +157,9 @@ dictionary MessageMetadataData {
 };
 
 interface Rfq {
+  [Throws=RustCoreError]
   constructor(string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
+  [Throws=RustCoreError]
   RfqData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
@@ -224,7 +229,9 @@ dictionary PrivatePaymentDetailsData {
 };
 
 interface Quote {
+  [Throws=RustCoreError]
   constructor(string to, string from, string exchange_id, QuoteDataData data, string protocol, string? external_id);
+  [Throws=RustCoreError]
   QuoteData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
@@ -257,7 +264,9 @@ dictionary PaymentInstructionsData {
 };
 
 interface Order {
+  [Throws=RustCoreError]
   constructor(string to, string from, string exchange_id, string protocol, string? external_id);
+  [Throws=RustCoreError]
   OrderData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
@@ -271,7 +280,9 @@ dictionary OrderData {
 };
 
 interface OrderStatus {
+  [Throws=RustCoreError]
   constructor(string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
+  [Throws=RustCoreError]
   OrderStatusData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);
@@ -290,7 +301,9 @@ dictionary OrderStatusDataData {
 };
 
 interface Close {
+  [Throws=RustCoreError]
   constructor(string to, string from, string exchange_id, CloseDataData data, string protocol, string? external_id);
+  [Throws=RustCoreError]
   CloseData get_data();
   [Throws=RustCoreError]
   void sign(BearerDid bearer_did);

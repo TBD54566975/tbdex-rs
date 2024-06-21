@@ -67,4 +67,6 @@ pub struct MessageMetadata {
 pub trait Message: Send + Sync {
     fn sign(&mut self, bearer_did: BearerDid) -> Result<()>;
     fn verify(&self) -> Result<()>;
+
+    fn clone_box(&self) -> Box<dyn Message>;
 }
