@@ -5,15 +5,50 @@ pub mod quote;
 pub mod rfq;
 
 use serde::{Deserialize, Serialize};
-use web5::apid::dids::bearer_did::BearerDid;
+use serde_json::Error as SerdeJsonError;
+use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
+use web5::apid::dids::bearer_did::{BearerDid, BearerDidError};
+
+#[derive(thiserror::Error, Debug, Clone, PartialEq)]
+pub enum MessageError {
+    #[error("serde json error {0}")]
+    SerdeJsonError(String),
+    #[error("typeid error {0}")]
+    TypeIdError(String),
+    #[error(transparent)]
+    BearerDidError(#[from] BearerDidError),
+}
+
+impl From<SerdeJsonError> for MessageError {
+    fn from(err: SerdeJsonError) -> Self {
+        MessageError::SerdeJsonError(err.to_string())
+    }
+}
+
+impl From<TypeIdError> for MessageError {
+    fn from(err: TypeIdError) -> Self {
+        MessageError::TypeIdError(err.to_string())
+    }
+}
+
+type Result<T> = std::result::Result<T, MessageError>;
 
 #[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
 pub enum MessageKind {
     Rfq,
     Quote,
     Order,
     OrderStatus,
     Close,
+}
+
+impl MessageKind {
+    pub fn typesafe_id(&self) -> Result<String> {
+        let serialized_kind = serde_json::to_string(&self)?;
+        let dynamic_type = DynamicType::new(serialized_kind.trim_matches('"'))?;
+        Ok(TypeSafeId::new_with_type(dynamic_type).to_string())
+    }
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
@@ -29,15 +64,7 @@ pub struct MessageMetadata {
     pub created_at: String,
 }
 
-#[derive(thiserror::Error, Debug, Clone, PartialEq)]
-pub enum MessageError {
-    #[error("unknown -- temporarily stubbed in")]
-    UnknownError,
-}
-
-type Result<T> = std::result::Result<T, MessageError>;
-
 pub trait Message: Send + Sync {
-    fn sign(&self, bearer_did: BearerDid) -> Result<()>;
+    fn sign(&mut self, bearer_did: BearerDid) -> Result<()>;
     fn verify(&self) -> Result<()>;
 }
