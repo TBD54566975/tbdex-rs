@@ -1,12 +1,12 @@
 use super::{Resource, ResourceKind, ResourceMetadata, Result};
 use crate::signer::sign;
 use chrono::Utc;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use web5::apid::{
     credentials::presentation_definition::PresentationDefinition, dids::bearer_did::BearerDid,
 };
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Offering {
     pub metadata: ResourceMetadata,
     pub data: OfferingData,
@@ -48,7 +48,7 @@ impl Resource for Offering {
     }
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct OfferingData {
     pub description: String,
     pub payout_units_per_payin_unit: String,
@@ -57,7 +57,7 @@ pub struct OfferingData {
     pub required_claims: PresentationDefinition,
 }
 
-#[derive(Clone, Serialize, Default)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct PayinDetails {
     pub currency_code: String,
     pub min: Option<String>,
@@ -65,19 +65,19 @@ pub struct PayinDetails {
     pub methods: Vec<PayinMethod>,
 }
 
-#[derive(Clone, Serialize, Default)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct PayinMethod {
     pub kind: String,
     pub name: Option<String>,
     pub description: Option<String>,
     pub group: Option<String>,
-    pub required_payment_details: Option<String>, // 🚧 JsonNode
+    pub required_payment_details: Option<serde_json::Value>,
     pub fee: Option<String>,
     pub min: Option<String>,
     pub max: Option<String>,
 }
 
-#[derive(Clone, Serialize, Default)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct PayoutDetails {
     pub currency_code: String,
     pub min: Option<String>,
@@ -85,13 +85,13 @@ pub struct PayoutDetails {
     pub methods: Vec<PayoutMethod>,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PayoutMethod {
     pub kind: String,
     pub name: Option<String>,
     pub description: Option<String>,
     pub group: Option<String>,
-    pub required_payment_details: Option<String>, // 🚧 JsonNode
+    pub required_payment_details: Option<serde_json::Value>,
     pub fee: Option<String>,
     pub min: Option<String>,
     pub max: Option<String>,

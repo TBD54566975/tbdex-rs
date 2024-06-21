@@ -13,7 +13,18 @@ use crate::{
     messages::{
         close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, Message,
     },
-    resources::{balance::Balance, offering::Offering, Resource},
+    resources::{
+        balance::Balance,
+        offering::{
+            data::{
+                Offering as OfferingData, OfferingData as OfferingDataData,
+                PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
+                PayoutDetails as PayoutDetailsData, PayoutMethod as PayoutMethodData,
+            },
+            Offering,
+        },
+        Resource,
+    },
 };
 use tbdex::{
     messages::{
@@ -37,11 +48,6 @@ use tbdex::{
     },
     resources::{
         balance::{Balance as BalanceData, BalanceData as BalanceDataData},
-        offering::{
-            Offering as OfferingData, OfferingData as OfferingDataData,
-            PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
-            PayoutDetails as PayoutDetailsData, PayoutMethod as PayoutMethodData,
-        },
         ResourceKind, ResourceMetadata as ResourceMetadataData,
     },
 };
