@@ -1,5 +1,4 @@
 use super::{Resource, ResourceKind, ResourceMetadata, Result};
-use crate::signer::sign;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::apid::{
@@ -37,13 +36,17 @@ impl Resource for Offering {
         let metadata = serde_json::to_value(&self.metadata)?;
         let data = serde_json::to_value(&self.data)?;
 
-        self.signature = sign(bearer_did, metadata, data);
+        self.signature = crate::signature::sign(bearer_did, metadata, data)?;
 
         Ok(())
     }
 
     fn verify(&self) -> Result<()> {
-        println!("Offering.verify() invoked");
+        let metadata = serde_json::to_value(&self.metadata)?;
+        let data = serde_json::to_value(&self.data)?;
+
+        crate::signature::verify(&self.metadata.from, metadata, data, self.signature.clone())?;
+
         Ok(())
     }
 }
@@ -108,7 +111,7 @@ mod tests {
     };
 
     #[test]
-    fn can_create_and_sign() {
+    fn can_create_and_sign_and_verify() {
         let key_manager = InMemoryKeyManager::new();
         let public_jwk = key_manager
             .import_private_jwk(Ed25519Generator::generate())
@@ -143,6 +146,8 @@ mod tests {
 
         offering.sign(bearer_did).unwrap();
 
-        assert_ne!(String::default(), offering.signature)
+        assert_ne!(String::default(), offering.signature);
+
+        offering.verify().unwrap();
     }
 }

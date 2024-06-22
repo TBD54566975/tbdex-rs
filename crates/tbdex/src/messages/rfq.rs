@@ -1,5 +1,5 @@
 use super::{Message, MessageKind, MessageMetadata, Result};
-use crate::{resources::offering::Offering, signer::sign};
+use crate::resources::offering::Offering;
 use base64::{engine::general_purpose, Engine as _};
 use rand::{rngs::OsRng, RngCore};
 use serde::Serialize;
@@ -63,13 +63,17 @@ impl Message for Rfq {
         let metadata = serde_json::to_value(&self.metadata)?;
         let data = serde_json::to_value(&self.data)?;
 
-        self.signature = sign(bearer_did, metadata, data);
+        self.signature = crate::signature::sign(bearer_did, metadata, data)?;
 
         Ok(())
     }
 
     fn verify(&self) -> Result<()> {
-        println!("Rfq.verify() invoked");
+        let metadata = serde_json::to_value(&self.metadata)?;
+        let data = serde_json::to_value(&self.data)?;
+
+        crate::signature::verify(&self.metadata.from, metadata, data, self.signature.clone())?;
+
         Ok(())
     }
 

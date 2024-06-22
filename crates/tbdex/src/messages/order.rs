@@ -1,5 +1,3 @@
-use crate::signer::sign;
-
 use super::{Message, MessageKind, MessageMetadata, Result};
 use chrono::Utc;
 use serde::Serialize;
@@ -40,13 +38,17 @@ impl Message for Order {
         let metadata = serde_json::to_value(&self.metadata)?;
         let data = serde_json::to_value(&OrderData {})?;
 
-        self.signature = sign(bearer_did, metadata, data);
+        self.signature = crate::signature::sign(bearer_did, metadata, data)?;
 
         Ok(())
     }
 
     fn verify(&self) -> Result<()> {
-        println!("Order.verify() invoked");
+        let metadata = serde_json::to_value(&self.metadata)?;
+        let data = serde_json::to_value(&OrderData {})?;
+
+        crate::signature::verify(&self.metadata.from, metadata, data, self.signature.clone())?;
+
         Ok(())
     }
 

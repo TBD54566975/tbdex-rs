@@ -4,6 +4,7 @@ pub mod order_status;
 pub mod quote;
 pub mod rfq;
 
+use crate::signature::SignatureError;
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeJsonError;
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
@@ -17,6 +18,8 @@ pub enum MessageError {
     TypeIdError(String),
     #[error(transparent)]
     BearerDidError(#[from] BearerDidError),
+    #[error(transparent)]
+    SignatureError(#[from] SignatureError),
 }
 
 impl From<SerdeJsonError> for MessageError {

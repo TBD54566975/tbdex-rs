@@ -1,5 +1,3 @@
-use crate::signer::sign;
-
 use super::{Resource, ResourceKind, ResourceMetadata, Result};
 use chrono::Utc;
 use serde::Serialize;
@@ -36,13 +34,17 @@ impl Resource for Balance {
         let metadata = serde_json::to_value(&self.metadata)?;
         let data = serde_json::to_value(&self.data)?;
 
-        self.signature = sign(bearer_did, metadata, data);
+        self.signature = crate::signature::sign(bearer_did, metadata, data)?;
 
         Ok(())
     }
 
     fn verify(&self) -> Result<()> {
-        println!("Offering.verify() invoked");
+        let metadata = serde_json::to_value(&self.metadata)?;
+        let data = serde_json::to_value(&self.data)?;
+
+        crate::signature::verify(&self.metadata.from, metadata, data, self.signature.clone())?;
+
         Ok(())
     }
 }
