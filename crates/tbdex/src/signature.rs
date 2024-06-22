@@ -5,6 +5,7 @@ use josekit::{
     },
     JoseError,
 };
+use serde_json::Error as SerdeJsonError;
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 use std::{
@@ -15,7 +16,7 @@ use std::{
 use web5::apid::{
     crypto::jwk::Jwk,
     dids::{
-        bearer_did::BearerDid,
+        bearer_did::{BearerDid, BearerDidError},
         resolution::{
             resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
         },
@@ -26,14 +27,24 @@ use web5::apid::{
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum SignatureError {
     #[error("jose error {0}")]
-    JoseError(String),
+    Jose(String),
     #[error(transparent)]
-    ResolutionMetadataError(#[from] ResolutionMetadataError),
+    ResolutionMetadata(#[from] ResolutionMetadataError),
+    #[error(transparent)]
+    BearerDid(#[from] BearerDidError),
+    #[error("serde json error {0}")]
+    SerdeJson(String),
+}
+
+impl From<SerdeJsonError> for SignatureError {
+    fn from(err: SerdeJsonError) -> Self {
+        SignatureError::SerdeJson(err.to_string())
+    }
 }
 
 impl From<JoseError> for SignatureError {
     fn from(err: JoseError) -> Self {
-        SignatureError::JoseError(err.to_string())
+        SignatureError::Jose(err.to_string())
     }
 }
 
@@ -91,17 +102,17 @@ fn canonicalize_json(value: &Value) -> Value {
     }
 }
 
-fn compute_digest(value: &Value) -> Vec<u8> {
+fn compute_digest(value: &Value) -> Result<Vec<u8>> {
     let canonical_json = canonicalize_json(value);
-    let canonical_string = serde_json::to_string(&canonical_json).unwrap();
+    let canonical_string = serde_json::to_string(&canonical_json)?;
     let mut hasher = Sha256::new();
     hasher.update(canonical_string.as_bytes());
-    hasher.finalize().to_vec()
+    Ok(hasher.finalize().to_vec())
 }
 
 pub fn sign(bearer_did: BearerDid, metadata: Value, data: Value) -> Result<String> {
     let key_id = bearer_did.document.verification_method[0].id.clone();
-    let web5_signer = bearer_did.get_signer(key_id.clone()).unwrap(); // 🚧
+    let web5_signer = bearer_did.get_signer(key_id.clone())?;
     let jose_signer = JosekitSigner {
         kid: key_id,
         web5_signer,
@@ -111,9 +122,9 @@ pub fn sign(bearer_did: BearerDid, metadata: Value, data: Value) -> Result<Strin
     combined.insert("metadata".to_string(), metadata);
     combined.insert("data".to_string(), data);
 
-    let digest = compute_digest(&Value::Object(combined));
+    let digest = compute_digest(&Value::Object(combined))?;
 
-    let compact_jws = serialize_compact(&digest, &JwsHeader::new(), &jose_signer).unwrap(); // 🚧
+    let compact_jws = serialize_compact(&digest, &JwsHeader::new(), &jose_signer)?;
     let parts: Vec<&str> = compact_jws.split('.').collect();
     let detached_compact_jws = format!("{}..{}", parts[0], parts[2]);
 
@@ -160,12 +171,12 @@ fn create_selector<'a>(
 ) -> impl Fn(&JwsHeader) -> core::result::Result<Option<&'a dyn JwsVerifier>, JoseError> + 'a {
     move |header: &JwsHeader| -> core::result::Result<Option<&'a dyn JwsVerifier>, JoseError> {
         let kid = header.key_id().ok_or_else(|| {
-            JoseError::InvalidJwsFormat(SignatureError::JoseError("missing kid".to_string()).into())
+            JoseError::InvalidJwsFormat(SignatureError::Jose("missing kid".to_string()).into())
         })?;
 
         let verifier = verifiers.get(kid).ok_or_else(|| {
             JoseError::InvalidJwsFormat(
-                SignatureError::JoseError("verification method not found".to_string()).into(),
+                SignatureError::Jose("verification method not found".to_string()).into(),
             )
         })?;
 
@@ -185,12 +196,12 @@ pub fn verify(
     let mut combined = Map::new();
     combined.insert("metadata".to_string(), metadata);
     combined.insert("data".to_string(), data);
-    let digest = compute_digest(&Value::Object(combined));
+    let digest = compute_digest(&Value::Object(combined))?;
     let payload = general_purpose::URL_SAFE_NO_PAD.encode(digest);
 
     let parts: Vec<&str> = detached_compact_jws.split('.').collect();
     if parts.len() != 3 {
-        return Err(SignatureError::JoseError(
+        return Err(SignatureError::Jose(
             "detached compact jws wrong number of parts".to_string(),
         ));
     }
@@ -198,14 +209,13 @@ pub fn verify(
 
     let resolution_result = ResolutionResult::new(did_uri);
     match resolution_result.resolution_metadata.error {
-        Some(e) => Err(SignatureError::ResolutionMetadataError(e)),
+        Some(e) => Err(SignatureError::ResolutionMetadata(e)),
         None => {
-            let document =
-                resolution_result
-                    .document
-                    .ok_or(SignatureError::ResolutionMetadataError(
-                        ResolutionMetadataError::InternalError,
-                    ))?;
+            let document = resolution_result
+                .document
+                .ok_or(SignatureError::ResolutionMetadata(
+                    ResolutionMetadataError::InternalError,
+                ))?;
 
             let verifiers: HashMap<String, Arc<JosekitVerifier>> = document
                 .verification_method

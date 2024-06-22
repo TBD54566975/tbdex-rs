@@ -13,24 +13,24 @@ use web5::apid::dids::bearer_did::{BearerDid, BearerDidError};
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum MessageError {
     #[error("serde json error {0}")]
-    SerdeJsonError(String),
+    SerdeJson(String),
     #[error("typeid error {0}")]
-    TypeIdError(String),
+    TypeId(String),
     #[error(transparent)]
-    BearerDidError(#[from] BearerDidError),
+    BearerDid(#[from] BearerDidError),
     #[error(transparent)]
-    SignatureError(#[from] SignatureError),
+    Signature(#[from] SignatureError),
 }
 
 impl From<SerdeJsonError> for MessageError {
     fn from(err: SerdeJsonError) -> Self {
-        MessageError::SerdeJsonError(err.to_string())
+        MessageError::SerdeJson(err.to_string())
     }
 }
 
 impl From<TypeIdError> for MessageError {
     fn from(err: TypeIdError) -> Self {
-        MessageError::TypeIdError(err.to_string())
+        MessageError::TypeId(err.to_string())
     }
 }
 
