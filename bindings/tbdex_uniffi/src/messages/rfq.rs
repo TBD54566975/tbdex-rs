@@ -121,15 +121,6 @@ pub mod data {
                 claims: self.claims.clone(),
             })
         }
-
-        pub fn from_inner(inner: InnerCreateRfqData) -> Result<Self> {
-            Ok(Self {
-                offering_id: inner.offering_id,
-                payin: CreateSelectedPayinMethod::from_inner(inner.payin)?,
-                payout: CreateSelectedPayoutMethod::from_inner(inner.payout)?,
-                claims: inner.claims,
-            })
-        }
     }
 
     #[derive(Clone)]
@@ -149,16 +140,6 @@ pub mod data {
                 amount: self.amount.clone(),
             })
         }
-
-        pub fn from_inner(inner: InnerCreateSelectedPayinMethod) -> Result<Self> {
-            let payment_details =
-                serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
-            Ok(Self {
-                kind: inner.kind,
-                payment_details,
-                amount: inner.amount,
-            })
-        }
     }
 
     #[derive(Clone)]
@@ -173,15 +154,6 @@ pub mod data {
                 serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
             Ok(InnerCreateSelectedPayoutMethod {
                 kind: self.kind.clone(),
-                payment_details,
-            })
-        }
-
-        pub fn from_inner(inner: InnerCreateSelectedPayoutMethod) -> Result<Self> {
-            let payment_details =
-                serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
-            Ok(Self {
-                kind: inner.kind,
                 payment_details,
             })
         }
@@ -203,15 +175,6 @@ pub mod data {
     }
 
     impl RfqData {
-        pub fn to_inner(&self) -> Result<InnerRfqData> {
-            Ok(InnerRfqData {
-                offering_id: self.offering_id.clone(),
-                payin: self.payin.to_inner()?,
-                payout: self.payout.to_inner()?,
-                claims_hash: self.claims_hash.clone(),
-            })
-        }
-
         pub fn from_inner(inner: InnerRfqData) -> Result<Self> {
             Ok(Self {
                 offering_id: inner.offering_id,
@@ -230,14 +193,6 @@ pub mod data {
     }
 
     impl SelectedPayinMethod {
-        pub fn to_inner(&self) -> Result<InnerSelectedPayinMethod> {
-            Ok(InnerSelectedPayinMethod {
-                kind: self.kind.clone(),
-                payment_details_hash: self.payment_details_hash.clone(),
-                amount: self.amount.clone(),
-            })
-        }
-
         pub fn from_inner(inner: InnerSelectedPayinMethod) -> Result<Self> {
             Ok(Self {
                 kind: inner.kind,
@@ -254,13 +209,6 @@ pub mod data {
     }
 
     impl SelectedPayoutMethod {
-        pub fn to_inner(&self) -> Result<InnerSelectedPayoutMethod> {
-            Ok(InnerSelectedPayoutMethod {
-                kind: self.kind.clone(),
-                payment_details_hash: self.payment_details_hash.clone(),
-            })
-        }
-
         pub fn from_inner(inner: InnerSelectedPayoutMethod) -> Result<Self> {
             Ok(Self {
                 kind: inner.kind,
@@ -278,15 +226,6 @@ pub mod data {
     }
 
     impl RfqPrivateData {
-        pub fn to_inner(&self) -> Result<InnerRfqPrivateData> {
-            Ok(InnerRfqPrivateData {
-                salt: self.salt.clone(),
-                payin: self.payin.as_ref().map(|p| p.to_inner()).transpose()?,
-                payout: self.payout.as_ref().map(|p| p.to_inner()).transpose()?,
-                claims: self.claims.clone(),
-            })
-        }
-
         pub fn from_inner(inner: InnerRfqPrivateData) -> Result<Self> {
             Ok(Self {
                 salt: inner.salt,
@@ -309,12 +248,6 @@ pub mod data {
     }
 
     impl PrivatePaymentDetails {
-        pub fn to_inner(&self) -> Result<InnerPrivatePaymentDetails> {
-            let payment_details: serde_json::Value =
-                serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
-            Ok(InnerPrivatePaymentDetails { payment_details })
-        }
-
         pub fn from_inner(inner: InnerPrivatePaymentDetails) -> Result<Self> {
             let payment_details =
                 serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
