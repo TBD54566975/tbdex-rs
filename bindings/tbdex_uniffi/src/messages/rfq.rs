@@ -4,10 +4,7 @@ use crate::{
     resources::offering::Offering,
 };
 use std::sync::{Arc, RwLock};
-use tbdex::messages::{
-    rfq::{CreateRfqData, Rfq as InnerRfq},
-    Message as InnerMessage,
-};
+use tbdex::messages::{rfq::Rfq as InnerRfq, Message as InnerMessage};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Rfq(pub Arc<RwLock<InnerRfq>>);
@@ -16,21 +13,34 @@ impl Rfq {
     pub fn new(
         to: String,
         from: String,
-        create_rfq_data: CreateRfqData,
+        create_rfq_data: data::CreateRfqData,
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let rfq = InnerRfq::new(to, from, create_rfq_data, protocol, external_id)
+        let rfq = InnerRfq::new(to, from, create_rfq_data.to_inner()?, protocol, external_id)
             .map_err(|e| Arc::new(e.into()))?;
         Ok(Self(Arc::new(RwLock::new(rfq))))
     }
 
-    pub fn get_data(&self) -> Result<InnerRfq> {
+    pub fn get_data(&self) -> Result<data::Rfq> {
         let rfq = self
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        Ok(rfq.clone())
+        Ok(data::Rfq {
+            metadata: rfq.metadata.clone(),
+            data: data::RfqData::from_inner(rfq.data.clone())?,
+            private_data: data::RfqPrivateData::from_inner(rfq.private_data.clone())?,
+            signature: rfq.signature.clone(),
+        })
+    }
+
+    pub fn to_inner(&self) -> Result<InnerRfq> {
+        let inner_rfq = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+        Ok(inner_rfq.clone())
     }
 
     pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<bool> {
@@ -77,5 +87,238 @@ impl Message for Rfq {
             .write()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
         rfq.verify().map_err(|e| Arc::new(e.into()))
+    }
+}
+
+pub mod data {
+    use super::*;
+    use tbdex::messages::{
+        rfq::{
+            CreateRfqData as InnerCreateRfqData,
+            CreateSelectedPayinMethod as InnerCreateSelectedPayinMethod,
+            CreateSelectedPayoutMethod as InnerCreateSelectedPayoutMethod,
+            PrivatePaymentDetails as InnerPrivatePaymentDetails, RfqData as InnerRfqData,
+            RfqPrivateData as InnerRfqPrivateData, SelectedPayinMethod as InnerSelectedPayinMethod,
+            SelectedPayoutMethod as InnerSelectedPayoutMethod,
+        },
+        MessageMetadata,
+    };
+
+    #[derive(Clone)]
+    pub struct CreateRfqData {
+        pub offering_id: String,
+        pub payin: CreateSelectedPayinMethod,
+        pub payout: CreateSelectedPayoutMethod,
+        pub claims: Vec<String>,
+    }
+
+    impl CreateRfqData {
+        pub fn to_inner(&self) -> Result<InnerCreateRfqData> {
+            Ok(InnerCreateRfqData {
+                offering_id: self.offering_id.clone(),
+                payin: self.payin.to_inner()?,
+                payout: self.payout.to_inner()?,
+                claims: self.claims.clone(),
+            })
+        }
+
+        pub fn from_inner(inner: InnerCreateRfqData) -> Result<Self> {
+            Ok(Self {
+                offering_id: inner.offering_id,
+                payin: CreateSelectedPayinMethod::from_inner(inner.payin)?,
+                payout: CreateSelectedPayoutMethod::from_inner(inner.payout)?,
+                claims: inner.claims,
+            })
+        }
+    }
+
+    #[derive(Clone)]
+    pub struct CreateSelectedPayinMethod {
+        pub kind: String,
+        pub payment_details: String,
+        pub amount: String,
+    }
+
+    impl CreateSelectedPayinMethod {
+        pub fn to_inner(&self) -> Result<InnerCreateSelectedPayinMethod> {
+            let payment_details: serde_json::Value =
+                serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
+            Ok(InnerCreateSelectedPayinMethod {
+                kind: self.kind.clone(),
+                payment_details,
+                amount: self.amount.clone(),
+            })
+        }
+
+        pub fn from_inner(inner: InnerCreateSelectedPayinMethod) -> Result<Self> {
+            let payment_details =
+                serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
+            Ok(Self {
+                kind: inner.kind,
+                payment_details,
+                amount: inner.amount,
+            })
+        }
+    }
+
+    #[derive(Clone)]
+    pub struct CreateSelectedPayoutMethod {
+        pub kind: String,
+        pub payment_details: String,
+    }
+
+    impl CreateSelectedPayoutMethod {
+        pub fn to_inner(&self) -> Result<InnerCreateSelectedPayoutMethod> {
+            let payment_details: serde_json::Value =
+                serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
+            Ok(InnerCreateSelectedPayoutMethod {
+                kind: self.kind.clone(),
+                payment_details,
+            })
+        }
+
+        pub fn from_inner(inner: InnerCreateSelectedPayoutMethod) -> Result<Self> {
+            let payment_details =
+                serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
+            Ok(Self {
+                kind: inner.kind,
+                payment_details,
+            })
+        }
+    }
+
+    pub struct Rfq {
+        pub metadata: MessageMetadata,
+        pub data: RfqData,
+        pub private_data: RfqPrivateData,
+        pub signature: String,
+    }
+
+    #[derive(Clone)]
+    pub struct RfqData {
+        pub offering_id: String,
+        pub payin: SelectedPayinMethod,
+        pub payout: SelectedPayoutMethod,
+        pub claims_hash: Option<String>,
+    }
+
+    impl RfqData {
+        pub fn to_inner(&self) -> Result<InnerRfqData> {
+            Ok(InnerRfqData {
+                offering_id: self.offering_id.clone(),
+                payin: self.payin.to_inner()?,
+                payout: self.payout.to_inner()?,
+                claims_hash: self.claims_hash.clone(),
+            })
+        }
+
+        pub fn from_inner(inner: InnerRfqData) -> Result<Self> {
+            Ok(Self {
+                offering_id: inner.offering_id,
+                payin: SelectedPayinMethod::from_inner(inner.payin)?,
+                payout: SelectedPayoutMethod::from_inner(inner.payout)?,
+                claims_hash: inner.claims_hash,
+            })
+        }
+    }
+
+    #[derive(Clone)]
+    pub struct SelectedPayinMethod {
+        pub kind: String,
+        pub payment_details_hash: Option<String>,
+        pub amount: String,
+    }
+
+    impl SelectedPayinMethod {
+        pub fn to_inner(&self) -> Result<InnerSelectedPayinMethod> {
+            Ok(InnerSelectedPayinMethod {
+                kind: self.kind.clone(),
+                payment_details_hash: self.payment_details_hash.clone(),
+                amount: self.amount.clone(),
+            })
+        }
+
+        pub fn from_inner(inner: InnerSelectedPayinMethod) -> Result<Self> {
+            Ok(Self {
+                kind: inner.kind,
+                payment_details_hash: inner.payment_details_hash,
+                amount: inner.amount,
+            })
+        }
+    }
+
+    #[derive(Clone)]
+    pub struct SelectedPayoutMethod {
+        pub kind: String,
+        pub payment_details_hash: Option<String>,
+    }
+
+    impl SelectedPayoutMethod {
+        pub fn to_inner(&self) -> Result<InnerSelectedPayoutMethod> {
+            Ok(InnerSelectedPayoutMethod {
+                kind: self.kind.clone(),
+                payment_details_hash: self.payment_details_hash.clone(),
+            })
+        }
+
+        pub fn from_inner(inner: InnerSelectedPayoutMethod) -> Result<Self> {
+            Ok(Self {
+                kind: inner.kind,
+                payment_details_hash: inner.payment_details_hash,
+            })
+        }
+    }
+
+    #[derive(Clone)]
+    pub struct RfqPrivateData {
+        pub salt: String,
+        pub payin: Option<PrivatePaymentDetails>,
+        pub payout: Option<PrivatePaymentDetails>,
+        pub claims: Option<Vec<String>>,
+    }
+
+    impl RfqPrivateData {
+        pub fn to_inner(&self) -> Result<InnerRfqPrivateData> {
+            Ok(InnerRfqPrivateData {
+                salt: self.salt.clone(),
+                payin: self.payin.as_ref().map(|p| p.to_inner()).transpose()?,
+                payout: self.payout.as_ref().map(|p| p.to_inner()).transpose()?,
+                claims: self.claims.clone(),
+            })
+        }
+
+        pub fn from_inner(inner: InnerRfqPrivateData) -> Result<Self> {
+            Ok(Self {
+                salt: inner.salt,
+                payin: inner
+                    .payin
+                    .map(PrivatePaymentDetails::from_inner)
+                    .transpose()?,
+                payout: inner
+                    .payout
+                    .map(PrivatePaymentDetails::from_inner)
+                    .transpose()?,
+                claims: inner.claims,
+            })
+        }
+    }
+
+    #[derive(Clone)]
+    pub struct PrivatePaymentDetails {
+        pub payment_details: String,
+    }
+
+    impl PrivatePaymentDetails {
+        pub fn to_inner(&self) -> Result<InnerPrivatePaymentDetails> {
+            let payment_details: serde_json::Value =
+                serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
+            Ok(InnerPrivatePaymentDetails { payment_details })
+        }
+
+        pub fn from_inner(inner: InnerPrivatePaymentDetails) -> Result<Self> {
+            let payment_details =
+                serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
+            Ok(Self { payment_details })
+        }
     }
 }

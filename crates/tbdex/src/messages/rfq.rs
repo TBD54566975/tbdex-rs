@@ -89,14 +89,14 @@ pub struct CreateRfqData {
 #[derive(Clone)]
 pub struct CreateSelectedPayinMethod {
     pub kind: String,
-    pub payment_details: String, // 🚧 Map<string, JsonNode>
+    pub payment_details: serde_json::Value,
     pub amount: String,
 }
 
 #[derive(Clone)]
 pub struct CreateSelectedPayoutMethod {
     pub kind: String,
-    pub payment_details: String, // 🚧 Map<string, JsonNode>
+    pub payment_details: serde_json::Value,
 }
 
 #[derive(Clone, Serialize)]
@@ -130,7 +130,7 @@ pub struct RfqPrivateData {
 
 #[derive(Clone, Serialize)]
 pub struct PrivatePaymentDetails {
-    pub payment_details: String, // 🚧 Map<string, JsonNode>
+    pub payment_details: serde_json::Value,
 }
 
 fn hash_private_data(create_rfq_data: &CreateRfqData) -> (RfqData, RfqPrivateData) {
@@ -218,12 +218,12 @@ mod tests {
                 offering_id: "offering_123".to_string(),
                 payin: CreateSelectedPayinMethod {
                     kind: "BTC".to_string(),
-                    payment_details: "tmp-payment-details".to_string(),
+                    payment_details: serde_json::json!({"tmp": "payment-details"}),
                     amount: "101".to_string(),
                 },
                 payout: CreateSelectedPayoutMethod {
                     kind: "BTC".to_string(),
-                    payment_details: "tmp-payment-details".to_string(),
+                    payment_details: serde_json::json!({"tmp": "payment-details"}),
                 },
                 claims: vec!["some-claim".to_string()],
             },

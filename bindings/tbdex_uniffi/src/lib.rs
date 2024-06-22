@@ -11,7 +11,23 @@ use crate::{
         submit_order,
     },
     messages::{
-        close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, Message,
+        close::Close,
+        order::Order,
+        order_status::OrderStatus,
+        quote::Quote,
+        rfq::{
+            data::{
+                CreateRfqData as CreateRfqDataData,
+                CreateSelectedPayinMethod as CreateSelectedPayinMethodData,
+                CreateSelectedPayoutMethod as CreateSelectedPayoutMethodData,
+                PrivatePaymentDetails as PrivatePaymentDetailsData, Rfq as RfqData,
+                RfqData as RfqDataData, RfqPrivateData as RfqPrivateDataData,
+                SelectedPayinMethod as SelectedPayinMethodData,
+                SelectedPayoutMethod as SelectedPayoutMethodData,
+            },
+            Rfq,
+        },
+        Message,
     },
     resources::{
         balance::Balance,
@@ -34,15 +50,6 @@ use tbdex::{
         quote::{
             PaymentInstructions as PaymentInstructionsData, Quote as QuoteData,
             QuoteData as QuoteDataData, QuoteDetails as QuoteDetailsData,
-        },
-        rfq::{
-            CreateRfqData as CreateRfqDataData,
-            CreateSelectedPayinMethod as CreateSelectedPayinMethodData,
-            CreateSelectedPayoutMethod as CreateSelectedPayoutMethodData,
-            PrivatePaymentDetails as PrivatePaymentDetailsData, Rfq as RfqData,
-            RfqData as RfqDataData, RfqPrivateData as RfqPrivateDataData,
-            SelectedPayinMethod as SelectedPayinMethodData,
-            SelectedPayoutMethod as SelectedPayoutMethodData,
         },
         MessageKind, MessageMetadata as MessageMetadataData,
     },

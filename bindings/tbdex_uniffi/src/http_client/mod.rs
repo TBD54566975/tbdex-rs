@@ -32,7 +32,7 @@ pub fn get_balances(pfi_did: String, requestor_did: Arc<BearerDid>) -> Result<Ve
 }
 
 pub fn create_exchange(rfq: Arc<Rfq>, reply_to: Option<String>) -> Result<()> {
-    TbdexHttpClient::create_exchange(rfq.get_data()?, reply_to).map_err(|e| Arc::new(e.into()))?;
+    TbdexHttpClient::create_exchange(rfq.to_inner()?, reply_to).map_err(|e| Arc::new(e.into()))?;
     Ok(())
 }
 
