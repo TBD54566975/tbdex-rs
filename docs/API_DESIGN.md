@@ -7,7 +7,6 @@
 - [Web5 Dependencies](#web5-dependencies)
 - [Resources](#resources)
   - [`ResourceKind`](#resourcekind)
-  - [`Resource`](#resource)
   - [`ResourceMetadata`](#resourcemetadata)
   - [`Offering`](#offering)
     - [`OfferingData`](#offeringdata)
@@ -19,7 +18,6 @@
     - [`BalanceData`](#balancedata)
 - [Messages](#messages)
   - [`MessageKind`](#messagekind)
-  - [`Message`](#message)
   - [`MessageMetadata`](#messagemetadata)
   - [`Rfq`](#rfq)
     - [`CreateRfqData`](#createrfqdata)
@@ -40,7 +38,30 @@
   - [`Close`](#close)
     - [`CloseData`](#closedata)
 - [HTTP Client](#http-client)
-  - [`TbdexHttpClient`](#tbdexhttpclient)
+  - [`Exchange`](#exchange)
+  - [`get_offerings()`](#get_offerings)
+  - [`get_balances()`](#get_balances)
+  - [`create_exchange()`](#create_exchange)
+  - [`submit_order()`](#submit_order)
+  - [`submit_close()`](#submit_close)
+  - [`get_exchange()`](#get_exchange)
+  - [`get_exchanges()`](#get_exchanges)
+
+> [!WARNING]
+>
+> We need to define `JsonNode`
+
+> [!WARNING]
+>
+> Snake vs camel casing is inconsistent
+
+> [!NOTE]
+>
+> All `CONSTRUCTOR(json: string)` instances in this APID perform cryptographic verification.
+
+> [!WARNING]
+>
+> `FUNCTION` needs to be added to the Custom DSL
 
 # Web5 Dependencies
 
@@ -60,18 +81,6 @@ ENUM ResourceKind
   offering,
   balance,
 ```
-
-## `Resource`
-
-```pseudocode!
-INTERFACE Resource
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
-```
-
-> 🚧 `signature` is a required field on all `Resource` implementations, but we have a `sign()` method which must be called
-> 
-> 🚧 instead we should've passed a `Signer` (or `BearerDid`) into the constructor
 
 ## `ResourceMetadata`
 
@@ -93,10 +102,9 @@ CLASS Offering IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: OfferingData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(from: string, data: OfferingData, protocol: string)
-  CONSTRUCTOR(json: string)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
+  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
+  CONSTRUCTOR(json: string) 
+  METHOD to_json(): string
 ```
 
 ### `OfferingData`
@@ -166,10 +174,9 @@ CLASS Balance IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: BalanceData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(from: string, data: BalanceData, protocol: string)
+  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
   CONSTRUCTOR(json: string)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
+  METHOD to_json(): string
 ```
 
 ### `BalanceData`
@@ -191,14 +198,6 @@ ENUM MessageKind
   order,
   orderstatus,
   close,
-```
-
-## `Message`
-
-```pseudocode!
-INTERFACE Message
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
 ```
 
 ## `MessageMetadata`
@@ -223,13 +222,9 @@ CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA data: RfqData
   PUBLIC DATA privateData: RfqPrivateData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
+  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string, requireAllPrivateData: bool?)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
-  METHOD verifyOfferingRequirements(offering: Offering): bool
-  METHOD verifyAllPrivateData(): bool
-  METHOD verifyPresentPrivateData(): bool
+  METHOD to_json(): string
 ```
 
 ### `CreateRfqData`
@@ -310,10 +305,9 @@ CLASS Quote IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: QuoteData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
+  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
+  METHOD to_json(): string
 ```
 
 ### `QuoteData`
@@ -349,10 +343,9 @@ CLASS PaymentInstructions
 CLASS Order IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA signature: string
-  CONSTRUCTOR(to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
+  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
+  METHOD to_json(): string
 ```
 
 ## `OrderStatus`
@@ -362,10 +355,9 @@ CLASS OrderStatus IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: OrderStatusData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
+  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
+  METHOD to_json(): string
 ```
 
 ### `OrderStatusData`
@@ -382,10 +374,9 @@ CLASS Close IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CloseData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
+  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD sign(bearer_did: BearerDid)
-  METHOD verify(): bool
+  METHOD to_json(): string
 ```
 
 ### `CloseData`
@@ -398,15 +389,55 @@ CLASS CloseData
 
 # HTTP Client
 
-## `TbdexHttpClient`
+## `Exchange`
 
 ```pseudocode!
-CLASS TbdexHttpClient
-  STATIC METHOD getOfferings(pfiDid: string): []Offering
-  STATIC METHOD getBalances(pfiDid: string, requesterDid: BearerDid): []Balance
-  STATIC METHOD createExchange(rfq: Rfq, replyTo: string?)
-  STATIC METHOD submitOrder(order: Order)
-  STATIC METHOD submitClose(close: Close)
-  STATIC METHOD getExchange(pfiDid: string, requesterDid: BearerDid, exchangeId: string): []Message
-  STATIC METHOD getExchanges(pfiDid: string, requesterDid: BearerDid): []Message
+CLASS Exchange
+  PUBLIC DATA rfq: Rfq
+  PUBLIC DATA quote: Quote
+  PUBLIC DATA order: Order
+  PUBLIC DATA order_statuses: []OrderStatus
+  PUBLIC DATA close: Close
+```
+
+## `get_offerings()`
+
+```pseudocode!
+FUNCTION get_offerings(pfi_did_uri: string): []Offering
+```
+
+## `get_balances()`
+
+```pseudocode!
+FUNCTION get_balances(pfi_did_uri: string, bearer_did: BearerDid): []Balance
+```
+
+## `create_exchange()`
+
+```pseudocode!
+FUNCTION create_exchange(rfq: Rfq, reply_to: string?)
+```
+
+## `submit_order()`
+
+```pseudocode!
+FUNCTION submit_order(order: Order)
+```
+
+## `submit_close()`
+
+```pseudocode!
+FUNCTION submit_close(order: Order)
+```
+
+## `get_exchange()`
+
+```pseudocode!
+FUNCTION get_exchange(pfi_did_uri: string, bearer_did: BearerDid, exchange_id: string): Exchange
+```
+
+## `get_exchanges()`
+
+```pseudocode!
+FUNCTION get_exchanges(pfi_did_uri: string, bearer_did: BearerDid): []string
 ```
