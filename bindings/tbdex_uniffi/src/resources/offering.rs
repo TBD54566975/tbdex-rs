@@ -154,7 +154,7 @@ pub mod data {
         pub name: Option<String>,
         pub description: Option<String>,
         pub group: Option<String>,
-        pub required_payment_details: Option<String>, // 🚧 JsonNode
+        pub required_payment_details: Option<String>, // JSON serialized
         pub fee: Option<String>,
         pub min: Option<String>,
         pub max: Option<String>,
@@ -249,7 +249,7 @@ pub mod data {
         pub name: Option<String>,
         pub description: Option<String>,
         pub group: Option<String>,
-        pub required_payment_details: Option<String>, // 🚧 JsonNode
+        pub required_payment_details: Option<String>, // JSON serialized
         pub fee: Option<String>,
         pub min: Option<String>,
         pub max: Option<String>,

@@ -126,7 +126,7 @@ pub mod data {
     #[derive(Clone)]
     pub struct CreateSelectedPayinMethod {
         pub kind: String,
-        pub payment_details: String,
+        pub payment_details: String, // JSON serialized
         pub amount: String,
     }
 
@@ -145,7 +145,7 @@ pub mod data {
     #[derive(Clone)]
     pub struct CreateSelectedPayoutMethod {
         pub kind: String,
-        pub payment_details: String,
+        pub payment_details: String, // JSON serialized
     }
 
     impl CreateSelectedPayoutMethod {
@@ -244,7 +244,7 @@ pub mod data {
 
     #[derive(Clone)]
     pub struct PrivatePaymentDetails {
-        pub payment_details: String,
+        pub payment_details: String, // JSON serialized
     }
 
     impl PrivatePaymentDetails {
