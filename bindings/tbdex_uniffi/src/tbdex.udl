@@ -59,7 +59,7 @@ dictionary OfferingDataData {
   string payout_units_per_payin_unit;
   PayinDetailsData payin;
   PayoutDetailsData payout;
-  PresentationDefinitionData required_claims;
+  PresentationDefinitionData? required_claims;
 };
 
 dictionary PayinDetailsData {
@@ -462,6 +462,7 @@ dictionary FilterData {
 
 interface PresentationDefinition {
   constructor(PresentationDefinitionData data);
+  PresentationDefinitionData get_data();
   [Throws=Web5RustCoreError]
   sequence<string> select_credentials([ByRef] sequence<string> vc_jwts);
 };

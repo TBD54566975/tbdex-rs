@@ -870,6 +870,8 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -988,6 +990,8 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_presentationdefinition_new(`data`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
+    fun uniffi_tbdex_uniffi_fn_method_presentationdefinition_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_presentationdefinition_select_credentials(`ptr`: Pointer,`vcJwts`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_quote(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1222,6 +1226,8 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_presentationdefinition_get_data(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_method_presentationdefinition_select_credentials(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_quote_get_data(
@@ -1373,6 +1379,9 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json() != 42316.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_presentationdefinition_get_data() != 50448.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_presentationdefinition_select_credentials() != 2690.toShort()) {
@@ -3892,6 +3901,8 @@ public object FfiConverterTypeOrderStatus: FfiConverter<OrderStatus, Pointer> {
 
 public interface PresentationDefinitionInterface {
     
+    fun `getData`(): PresentationDefinitionData
+    
     fun `selectCredentials`(`vcJwts`: List<kotlin.String>): List<kotlin.String>
     
     companion object
@@ -3984,6 +3995,18 @@ open class PresentationDefinition: Disposable, AutoCloseable, PresentationDefini
             UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_clone_presentationdefinition(pointer!!, status)
         }
     }
+
+    override fun `getData`(): PresentationDefinitionData {
+            return FfiConverterTypePresentationDefinitionData.lift(
+    callWithPointer {
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_presentationdefinition_get_data(
+        it, _status)
+}
+    }
+    )
+    }
+    
 
     
     @Throws(Web5RustCoreException::class)override fun `selectCredentials`(`vcJwts`: List<kotlin.String>): List<kotlin.String> {
@@ -6102,7 +6125,7 @@ data class OfferingDataData (
     var `payoutUnitsPerPayinUnit`: kotlin.String, 
     var `payin`: PayinDetailsData, 
     var `payout`: PayoutDetailsData, 
-    var `requiredClaims`: PresentationDefinitionData
+    var `requiredClaims`: PresentationDefinitionData?
 ) {
     
     companion object
@@ -6115,7 +6138,7 @@ public object FfiConverterTypeOfferingDataData: FfiConverterRustBuffer<OfferingD
             FfiConverterString.read(buf),
             FfiConverterTypePayinDetailsData.read(buf),
             FfiConverterTypePayoutDetailsData.read(buf),
-            FfiConverterTypePresentationDefinitionData.read(buf),
+            FfiConverterOptionalTypePresentationDefinitionData.read(buf),
         )
     }
 
@@ -6124,7 +6147,7 @@ public object FfiConverterTypeOfferingDataData: FfiConverterRustBuffer<OfferingD
             FfiConverterString.allocationSize(value.`payoutUnitsPerPayinUnit`) +
             FfiConverterTypePayinDetailsData.allocationSize(value.`payin`) +
             FfiConverterTypePayoutDetailsData.allocationSize(value.`payout`) +
-            FfiConverterTypePresentationDefinitionData.allocationSize(value.`requiredClaims`)
+            FfiConverterOptionalTypePresentationDefinitionData.allocationSize(value.`requiredClaims`)
     )
 
     override fun write(value: OfferingDataData, buf: ByteBuffer) {
@@ -6132,7 +6155,7 @@ public object FfiConverterTypeOfferingDataData: FfiConverterRustBuffer<OfferingD
             FfiConverterString.write(value.`payoutUnitsPerPayinUnit`, buf)
             FfiConverterTypePayinDetailsData.write(value.`payin`, buf)
             FfiConverterTypePayoutDetailsData.write(value.`payout`, buf)
-            FfiConverterTypePresentationDefinitionData.write(value.`requiredClaims`, buf)
+            FfiConverterOptionalTypePresentationDefinitionData.write(value.`requiredClaims`, buf)
     }
 }
 
@@ -7172,6 +7195,35 @@ public object FfiConverterOptionalTypePaymentInstructionsData: FfiConverterRustB
         } else {
             buf.put(1)
             FfiConverterTypePaymentInstructionsData.write(value, buf)
+        }
+    }
+}
+
+
+
+
+public object FfiConverterOptionalTypePresentationDefinitionData: FfiConverterRustBuffer<PresentationDefinitionData?> {
+    override fun read(buf: ByteBuffer): PresentationDefinitionData? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypePresentationDefinitionData.read(buf)
+    }
+
+    override fun allocationSize(value: PresentationDefinitionData?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypePresentationDefinitionData.allocationSize(value)
+        }
+    }
+
+    override fun write(value: PresentationDefinitionData?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypePresentationDefinitionData.write(value, buf)
         }
     }
 }

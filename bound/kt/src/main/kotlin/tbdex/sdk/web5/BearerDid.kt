@@ -12,7 +12,7 @@ class BearerDid {
     val document: Document
     val keyManager: KeyManager
 
-    private val rustCoreBearerDid: RustCoreBearerDid
+    val rustCoreBearerDid: RustCoreBearerDid
 
     constructor(uri: String, keyManager: KeyManager) {
         this.rustCoreBearerDid = RustCoreBearerDid(uri, keyManager.getRustCoreKeyManager())

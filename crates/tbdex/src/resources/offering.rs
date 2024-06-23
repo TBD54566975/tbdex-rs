@@ -65,7 +65,7 @@ pub struct OfferingData {
     pub payout_units_per_payin_unit: String,
     pub payin: PayinDetails,
     pub payout: PayoutDetails,
-    pub required_claims: PresentationDefinition,
+    pub required_claims: Option<PresentationDefinition>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
@@ -142,12 +142,12 @@ mod tests {
                     currency_code: "BTC".to_string(),
                     ..Default::default()
                 },
-                required_claims: PresentationDefinition {
+                required_claims: Some(PresentationDefinition {
                     id: "7ce4004c-3c38-4853-968b-e411bafcd945".to_string(),
                     name: None,
                     purpose: None,
                     input_descriptors: vec![],
-                },
+                }),
             },
             "1.0".to_string(),
         )

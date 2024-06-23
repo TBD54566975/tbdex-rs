@@ -2,6 +2,8 @@ package tbdex.sdk.resources
 
 import com.fasterxml.jackson.databind.JsonNode
 import tbdex.sdk.Json
+import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.PresentationDefinition
 import tbdex.sdk.rust.Offering as RustCoreOffering
 import tbdex.sdk.rust.OfferingDataData as RustCoreOfferingData
 import tbdex.sdk.rust.PayinDetailsData as RustCorePayinDetails
@@ -16,14 +18,18 @@ class Offering {
 
     private val rustCoreOffering: RustCoreOffering
 
-//    constructor(
-//        //            bearerDid: BearerDid,
-//        from: String,
-//        data: OfferingData,
-//        protocol: String
-//    ) {
-//        throw Error()
-//    }
+    constructor(
+        bearerDid: BearerDid,
+        from: String,
+        data: OfferingData,
+        protocol: String
+    ) {
+        this.rustCoreOffering = RustCoreOffering(bearerDid.rustCoreBearerDid, from, data.toRustCore(), protocol)
+
+        this.metadata = rustCoreOffering.getData().metadata
+        this.data = OfferingData.fromRustCore(rustCoreOffering.getData().data)
+        this.signature = rustCoreOffering.getData().signature
+    }
 
     constructor(json: String) {
         this.rustCoreOffering = RustCoreOffering.fromJsonString(json)
@@ -43,9 +49,17 @@ data class OfferingData(
     val payoutUnitsPerPayinUnit: String,
     val payin: PayinDetails,
     val payout: PayoutDetails,
-//    val requiredClaims: PresentationDefinitionV2?
+    val requiredClaims: PresentationDefinition?
 ) {
-    //
+    fun toRustCore(): RustCoreOfferingData {
+        return RustCoreOfferingData(
+            this.description,
+            this.payoutUnitsPerPayinUnit,
+            this.payin.toRustCore(),
+            this.payout.toRustCore(),
+            this.requiredClaims?.rustCorePresentationDefinition?.getData()
+        )
+    }
 
     companion object {
         internal fun fromRustCore (rustCoreOfferingData: RustCoreOfferingData): OfferingData {
@@ -54,6 +68,7 @@ data class OfferingData(
                 rustCoreOfferingData.payoutUnitsPerPayinUnit,
                 PayinDetails.fromRustCore(rustCoreOfferingData.payin),
                 PayoutDetails.fromRustCore(rustCoreOfferingData.payout),
+                rustCoreOfferingData.requiredClaims?.let { PresentationDefinition(it) }
             )
         }
     }
@@ -65,7 +80,14 @@ data class PayinDetails(
     val max: String? = null,
     val methods: List<PayinMethod>
 ) {
-    //
+    fun toRustCore(): RustCorePayinDetails {
+        return RustCorePayinDetails(
+            this.currencyCode,
+            this.min,
+            this.max,
+            this.methods.map { it.toRustCore() }
+        )
+    }
 
     companion object {
         internal fun fromRustCore(rustCorePayinDetails: RustCorePayinDetails): PayinDetails {
@@ -89,7 +111,18 @@ data class PayinMethod(
     val min: String? = null,
     val max: String? = null
 ) {
-    //
+    fun toRustCore(): RustCorePayinMethod {
+        return RustCorePayinMethod(
+            this.kind,
+            this.name,
+            this.description,
+            this.group,
+            this.requiredPaymentDetails?.let { Json.stringify(it) },
+            this.fee,
+            this.min,
+            this.max
+        )
+    }
 
     companion object {
         internal fun fromRustCore(rustCorePayinMethod: RustCorePayinMethod): PayinMethod {
@@ -113,7 +146,14 @@ data class PayoutDetails(
     val max: String? = null,
     val methods: List<PayoutMethod>
 ) {
-    //
+    fun toRustCore(): RustCorePayoutDetails {
+        return RustCorePayoutDetails(
+            this.currencyCode,
+            this.min,
+            this.max,
+            this.methods.map { it.toRustCore() }
+        )
+    }
 
     companion object {
         internal fun fromRustCore(rustCorePayoutDetails: RustCorePayoutDetails): PayoutDetails {
@@ -138,7 +178,19 @@ data class PayoutMethod(
     val max: String? = null,
     val estimatedSettlementTime: Long
 ) {
-    //
+    fun toRustCore(): RustCorePayoutMethod {
+        return RustCorePayoutMethod(
+            this.kind,
+            this.name,
+            this.description,
+            this.group,
+            this.requiredPaymentDetails?.let { Json.stringify(it) },
+            this.fee,
+            this.min,
+            this.max,
+            this.estimatedSettlementTime
+        )
+    }
 
     companion object {
         internal fun fromRustCore(rustCorePayoutMethod: RustCorePayoutMethod): PayoutMethod {

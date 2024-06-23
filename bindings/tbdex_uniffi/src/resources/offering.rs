@@ -78,7 +78,7 @@ pub mod data {
         pub payout_units_per_payin_unit: String,
         pub payin: PayinDetails,
         pub payout: PayoutDetails,
-        pub required_claims: PresentationDefinition,
+        pub required_claims: Option<PresentationDefinition>,
     }
 
     impl OfferingData {
