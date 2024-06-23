@@ -28,6 +28,19 @@ impl Quote {
         Ok(Self(Arc::new(RwLock::new(quote))))
     }
 
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner_quote = InnerQuote::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        Ok(Self(Arc::new(RwLock::new(inner_quote))))
+    }
+
+    pub fn to_json(&self) -> Result<String> {
+        let inner_quote = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+        inner_quote.to_json().map_err(|e| Arc::new(e.into()))
+    }
+
     pub fn get_data(&self) -> Result<InnerQuote> {
         let quote = self
             .0

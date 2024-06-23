@@ -143,6 +143,10 @@ dictionary MessageMetadataData {
 interface Rfq {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
   [Throws=RustCoreError]
   RfqData get_data();
 
@@ -211,6 +215,10 @@ dictionary PrivatePaymentDetailsData {
 interface Quote {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, string exchange_id, QuoteDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
   [Throws=RustCoreError]
   QuoteData get_data();
 };
@@ -242,6 +250,10 @@ dictionary PaymentInstructionsData {
 interface Order {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, string exchange_id, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
   [Throws=RustCoreError]
   OrderData get_data();
 };
@@ -254,6 +266,10 @@ dictionary OrderData {
 interface OrderStatus {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
   [Throws=RustCoreError]
   OrderStatusData get_data();
 };
@@ -271,6 +287,10 @@ dictionary OrderStatusDataData {
 interface Close {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, string exchange_id, CloseDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
   [Throws=RustCoreError]
   CloseData get_data();
 };

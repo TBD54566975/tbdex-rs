@@ -29,7 +29,7 @@ impl Offering {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        Ok(inner_offering.to_json().map_err(|e| Arc::new(e.into()))?)
+        inner_offering.to_json().map_err(|e| Arc::new(e.into()))
     }
 
     pub fn get_data(&self) -> Result<data::Offering> {

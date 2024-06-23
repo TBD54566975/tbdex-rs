@@ -29,6 +29,19 @@ impl Rfq {
         Ok(Self(Arc::new(RwLock::new(rfq))))
     }
 
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner_rfq = InnerRfq::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        Ok(Self(Arc::new(RwLock::new(inner_rfq))))
+    }
+
+    pub fn to_json(&self) -> Result<String> {
+        let inner_rfq = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+        inner_rfq.to_json().map_err(|e| Arc::new(e.into()))
+    }
+
     pub fn get_data(&self) -> Result<data::Rfq> {
         let rfq = self
             .0

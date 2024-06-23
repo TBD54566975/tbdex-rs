@@ -19,26 +19,23 @@ impl Exchange {
     pub fn from_inner(inner: InnerExchange) -> Self {
         Self {
             rfq: Arc::new(Rfq(Arc::new(RwLock::new(inner.rfq.clone())))),
-            quote: match &inner.quote {
-                None => None,
-                Some(q) => Some(Arc::new(Quote(Arc::new(RwLock::new(q.clone()))))),
-            },
-            order: match &inner.order {
-                None => None,
-                Some(o) => Some(Arc::new(Order(Arc::new(RwLock::new(o.clone()))))),
-            },
-            order_statuses: match &inner.order_statuses {
-                None => None,
-                Some(os) => Some(
-                    os.iter()
-                        .map(|o| Arc::new(OrderStatus(Arc::new(RwLock::new(o.clone())))))
-                        .collect::<Vec<_>>(),
-                ),
-            },
-            close: match &inner.close {
-                None => None,
-                Some(c) => Some(Arc::new(Close(Arc::new(RwLock::new(c.clone()))))),
-            },
+            quote: inner
+                .quote
+                .as_ref()
+                .map(|q| Arc::new(Quote(Arc::new(RwLock::new(q.clone()))))),
+            order: inner
+                .order
+                .as_ref()
+                .map(|o| Arc::new(Order(Arc::new(RwLock::new(o.clone()))))),
+            order_statuses: inner.order_statuses.as_ref().map(|os| {
+                os.iter()
+                    .map(|o| Arc::new(OrderStatus(Arc::new(RwLock::new(o.clone())))))
+                    .collect::<Vec<_>>()
+            }),
+            close: inner
+                .close
+                .as_ref()
+                .map(|c| Arc::new(Close(Arc::new(RwLock::new(c.clone()))))),
         }
     }
 }

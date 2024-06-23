@@ -36,20 +36,15 @@ impl From<TypeIdError> for MessageError {
 
 type Result<T> = std::result::Result<T, MessageError>;
 
-#[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
+#[derive(Debug, Default, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum MessageKind {
+    #[default]
     Rfq,
     Quote,
     Order,
     OrderStatus,
     Close,
-}
-
-impl Default for MessageKind {
-    fn default() -> Self {
-        MessageKind::Rfq
-    }
 }
 
 impl MessageKind {
