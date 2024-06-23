@@ -1,9 +1,9 @@
-use super::{Message, MessageKind, MessageMetadata, Result};
+use super::{MessageKind, MessageMetadata, Result};
 use chrono::Utc;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use web5::apid::dids::bearer_did::BearerDid;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Close {
     pub metadata: MessageMetadata,
     pub data: CloseData,
@@ -12,6 +12,7 @@ pub struct Close {
 
 impl Close {
     pub fn new(
+        bearer_did: BearerDid,
         to: String,
         from: String,
         exchange_id: String,
@@ -19,48 +20,47 @@ impl Close {
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
+        let metadata = MessageMetadata {
+            from,
+            to,
+            kind: MessageKind::Close,
+            id: MessageKind::Close.typesafe_id()?,
+            exchange_id,
+            external_id,
+            protocol,
+            created_at: Utc::now().to_rfc3339(),
+        };
+
         Ok(Self {
-            metadata: MessageMetadata {
-                from,
-                to,
-                kind: MessageKind::Close,
-                id: MessageKind::Close.typesafe_id()?,
-                exchange_id,
-                external_id,
-                protocol,
-                created_at: Utc::now().to_rfc3339(),
-            },
-            data,
-            signature: String::default(), // not set until call to sign()
+            metadata: metadata.clone(),
+            data: data.clone(),
+            signature: crate::signature::sign(
+                bearer_did,
+                serde_json::to_value(metadata)?,
+                serde_json::to_value(data)?,
+            )?,
         })
     }
-}
 
-impl Message for Close {
-    fn sign(&mut self, bearer_did: BearerDid) -> Result<()> {
-        let metadata = serde_json::to_value(&self.metadata)?;
-        let data = serde_json::to_value(&self.data)?;
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let close = serde_json::from_str::<Self>(json)?;
 
-        self.signature = crate::signature::sign(bearer_did, metadata, data)?;
+        crate::signature::verify(
+            &close.metadata.from,
+            serde_json::to_value(close.metadata.clone())?,
+            serde_json::to_value(close.data.clone())?,
+            close.signature.clone(),
+        )?;
 
-        Ok(())
+        Ok(close)
     }
 
-    fn verify(&self) -> Result<()> {
-        let metadata = serde_json::to_value(&self.metadata)?;
-        let data = serde_json::to_value(&self.data)?;
-
-        crate::signature::verify(&self.metadata.from, metadata, data, self.signature.clone())?;
-
-        Ok(())
-    }
-
-    fn clone_box(&self) -> Box<dyn Message> {
-        Box::new(self.clone())
+    pub fn to_json(&self) -> Result<String> {
+        Ok(serde_json::to_string(&self)?)
     }
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct CloseData {
     pub reason: Option<String>,
     pub success: Option<bool>,

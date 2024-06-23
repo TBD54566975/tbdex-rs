@@ -1,9 +1,9 @@
-use super::{Message, MessageKind, MessageMetadata, Result};
+use super::{MessageKind, MessageMetadata, Result};
 use chrono::Utc;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use web5::apid::dids::bearer_did::BearerDid;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Order {
     pub metadata: MessageMetadata,
     pub signature: String,
@@ -11,51 +11,51 @@ pub struct Order {
 
 impl Order {
     pub fn new(
+        bearer_did: BearerDid,
         to: String,
         from: String,
         exchange_id: String,
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
+        let metadata = MessageMetadata {
+            from,
+            to,
+            kind: MessageKind::Order,
+            id: MessageKind::Order.typesafe_id()?,
+            exchange_id,
+            external_id,
+            protocol,
+            created_at: Utc::now().to_rfc3339(),
+        };
+
         Ok(Self {
-            metadata: MessageMetadata {
-                from,
-                to,
-                kind: MessageKind::Order,
-                id: MessageKind::Order.typesafe_id()?,
-                exchange_id,
-                external_id,
-                protocol,
-                created_at: Utc::now().to_rfc3339(),
-            },
-            signature: String::default(), // not set until call to sign()
+            metadata: metadata.clone(),
+            signature: crate::signature::sign(
+                bearer_did,
+                serde_json::to_value(metadata)?,
+                serde_json::to_value(&OrderData {})?,
+            )?,
         })
     }
-}
 
-impl Message for Order {
-    fn sign(&mut self, bearer_did: BearerDid) -> Result<()> {
-        let metadata = serde_json::to_value(&self.metadata)?;
-        let data = serde_json::to_value(&OrderData {})?;
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let order = serde_json::from_str::<Self>(json)?;
 
-        self.signature = crate::signature::sign(bearer_did, metadata, data)?;
+        crate::signature::verify(
+            &order.metadata.from,
+            serde_json::to_value(order.metadata.clone())?,
+            serde_json::to_value(&OrderData {})?,
+            order.signature.clone(),
+        )?;
 
-        Ok(())
+        Ok(order)
     }
 
-    fn verify(&self) -> Result<()> {
-        let metadata = serde_json::to_value(&self.metadata)?;
-        let data = serde_json::to_value(&OrderData {})?;
-
-        crate::signature::verify(&self.metadata.from, metadata, data, self.signature.clone())?;
-
-        Ok(())
-    }
-
-    fn clone_box(&self) -> Box<dyn Message> {
-        Box::new(self.clone())
+    pub fn to_json(&self) -> Result<String> {
+        Ok(serde_json::to_string(&self)?)
     }
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct OrderData;

@@ -8,7 +8,7 @@ use crate::{
     errors::RustCoreError,
     http_client::{
         create_exchange, get_balances, get_exchange, get_exchanges, get_offerings, submit_close,
-        submit_order,
+        submit_order, Exchange as ExchangeData,
     },
     messages::{
         close::Close,
@@ -27,7 +27,6 @@ use crate::{
             },
             Rfq,
         },
-        Message,
     },
     resources::{
         balance::Balance,
@@ -39,7 +38,6 @@ use crate::{
             },
             Offering,
         },
-        Resource,
     },
 };
 use tbdex::{

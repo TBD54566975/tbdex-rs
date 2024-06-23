@@ -1,24 +1,31 @@
-use super::Message;
 use crate::{
     errors::{Result, RustCoreError},
     resources::offering::Offering,
 };
 use std::sync::{Arc, RwLock};
-use tbdex::messages::{rfq::Rfq as InnerRfq, Message as InnerMessage};
+use tbdex::messages::rfq::Rfq as InnerRfq;
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Rfq(pub Arc<RwLock<InnerRfq>>);
 
 impl Rfq {
     pub fn new(
+        bearer_did: Arc<BearerDid>,
         to: String,
         from: String,
         create_rfq_data: data::CreateRfqData,
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let rfq = InnerRfq::new(to, from, create_rfq_data.to_inner()?, protocol, external_id)
-            .map_err(|e| Arc::new(e.into()))?;
+        let rfq = InnerRfq::new(
+            bearer_did.0.clone(),
+            to,
+            from,
+            create_rfq_data.to_inner()?,
+            protocol,
+            external_id,
+        )
+        .map_err(|e| Arc::new(e.into()))?;
         Ok(Self(Arc::new(RwLock::new(rfq))))
     }
 
@@ -68,25 +75,6 @@ impl Rfq {
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
         rfq.verify_present_private_data()
             .map_err(|e| Arc::new(e.into()))
-    }
-}
-
-impl Message for Rfq {
-    fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
-        let mut rfq = self
-            .0
-            .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
-        rfq.sign(bearer_did.0.clone())
-            .map_err(|e| Arc::new(e.into()))
-    }
-
-    fn verify(&self) -> Result<()> {
-        let rfq = self
-            .0
-            .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
-        rfq.verify().map_err(|e| Arc::new(e.into()))
     }
 }
 

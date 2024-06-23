@@ -5,7 +5,7 @@ use crate::signature::SignatureError;
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeJsonError;
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
-use web5::apid::dids::bearer_did::{BearerDid, BearerDidError};
+use web5::apid::dids::bearer_did::BearerDidError;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum ResourceError {
@@ -57,9 +57,4 @@ pub struct ResourceMetadata {
     pub protocol: String,
     pub created_at: String,
     pub updated_at: Option<String>,
-}
-
-pub trait Resource: Send + Sync {
-    fn sign(&mut self, bearer_did: BearerDid) -> Result<()>;
-    fn verify(&self) -> Result<()>;
 }

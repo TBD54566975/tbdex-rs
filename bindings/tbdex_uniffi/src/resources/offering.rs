@@ -1,16 +1,35 @@
-use super::Resource;
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::resources::{offering::Offering as InnerOffering, Resource as InnerResource};
+use tbdex::resources::offering::Offering as InnerOffering;
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Offering(pub Arc<RwLock<InnerOffering>>);
 
 impl Offering {
-    pub fn new(from: String, data: data::OfferingData, protocol: String) -> Result<Self> {
-        let offering =
-            InnerOffering::new(from, data.to_inner()?, protocol).map_err(|e| Arc::new(e.into()))?;
-        Ok(Self(Arc::new(RwLock::new(offering))))
+    pub fn new(
+        bearer_did: Arc<BearerDid>,
+        from: String,
+        data: data::OfferingData,
+        protocol: String,
+    ) -> Result<Self> {
+        let inner_offering =
+            InnerOffering::new(bearer_did.0.clone(), from, data.to_inner()?, protocol)
+                .map_err(|e| Arc::new(e.into()))?;
+        Ok(Self(Arc::new(RwLock::new(inner_offering))))
+    }
+
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner_offering =
+            InnerOffering::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        Ok(Self(Arc::new(RwLock::new(inner_offering))))
+    }
+
+    pub fn to_json(&self) -> Result<String> {
+        let inner_offering = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+        Ok(inner_offering.to_json().map_err(|e| Arc::new(e.into()))?)
     }
 
     pub fn get_data(&self) -> Result<data::Offering> {
@@ -31,28 +50,6 @@ impl Offering {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
         Ok(inner_offering.clone())
-    }
-}
-
-impl Resource for Offering {
-    fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
-        let mut offering = self
-            .0
-            .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
-
-        offering
-            .sign(bearer_did.0.clone())
-            .map_err(|e| Arc::new(e.into()))
-    }
-
-    fn verify(&self) -> Result<()> {
-        let offering = self
-            .0
-            .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
-
-        offering.verify().map_err(|e| Arc::new(e.into()))
     }
 }
 
