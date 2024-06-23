@@ -637,18 +637,6 @@ internal interface UniffiForeignFutureCompleteVoid : com.sun.jna.Callback {
 internal interface UniffiCallbackInterfaceKeyManagerMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`publicJwk`: RustBuffer.ByValue,`uniffiOutReturn`: PointerByReference,uniffiCallStatus: UniffiRustCallStatus,)
 }
-internal interface UniffiCallbackInterfaceMessageMethod0 : com.sun.jna.Callback {
-    fun callback(`uniffiHandle`: Long,`bearerDid`: Pointer,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
-}
-internal interface UniffiCallbackInterfaceMessageMethod1 : com.sun.jna.Callback {
-    fun callback(`uniffiHandle`: Long,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
-}
-internal interface UniffiCallbackInterfaceResourceMethod0 : com.sun.jna.Callback {
-    fun callback(`uniffiHandle`: Long,`bearerDid`: Pointer,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
-}
-internal interface UniffiCallbackInterfaceResourceMethod1 : com.sun.jna.Callback {
-    fun callback(`uniffiHandle`: Long,`uniffiOutReturn`: Pointer,uniffiCallStatus: UniffiRustCallStatus,)
-}
 internal interface UniffiCallbackInterfaceSignerMethod0 : com.sun.jna.Callback {
     fun callback(`uniffiHandle`: Long,`payload`: RustBuffer.ByValue,`uniffiOutReturn`: RustBuffer,uniffiCallStatus: UniffiRustCallStatus,)
 }
@@ -664,44 +652,6 @@ internal open class UniffiVTableCallbackInterfaceKeyManager(
 
    internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceKeyManager) {
         `getSigner` = other.`getSigner`
-        `uniffiFree` = other.`uniffiFree`
-    }
-
-}
-@Structure.FieldOrder("sign", "verify", "uniffiFree")
-internal open class UniffiVTableCallbackInterfaceMessage(
-    @JvmField internal var `sign`: UniffiCallbackInterfaceMessageMethod0? = null,
-    @JvmField internal var `verify`: UniffiCallbackInterfaceMessageMethod1? = null,
-    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
-) : Structure() {
-    class UniffiByValue(
-        `sign`: UniffiCallbackInterfaceMessageMethod0? = null,
-        `verify`: UniffiCallbackInterfaceMessageMethod1? = null,
-        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
-    ): UniffiVTableCallbackInterfaceMessage(`sign`,`verify`,`uniffiFree`,), Structure.ByValue
-
-   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceMessage) {
-        `sign` = other.`sign`
-        `verify` = other.`verify`
-        `uniffiFree` = other.`uniffiFree`
-    }
-
-}
-@Structure.FieldOrder("sign", "verify", "uniffiFree")
-internal open class UniffiVTableCallbackInterfaceResource(
-    @JvmField internal var `sign`: UniffiCallbackInterfaceResourceMethod0? = null,
-    @JvmField internal var `verify`: UniffiCallbackInterfaceResourceMethod1? = null,
-    @JvmField internal var `uniffiFree`: UniffiCallbackInterfaceFree? = null,
-) : Structure() {
-    class UniffiByValue(
-        `sign`: UniffiCallbackInterfaceResourceMethod0? = null,
-        `verify`: UniffiCallbackInterfaceResourceMethod1? = null,
-        `uniffiFree`: UniffiCallbackInterfaceFree? = null,
-    ): UniffiVTableCallbackInterfaceResource(`sign`,`verify`,`uniffiFree`,), Structure.ByValue
-
-   internal fun uniffiSetValue(other: UniffiVTableCallbackInterfaceResource) {
-        `sign` = other.`sign`
-        `verify` = other.`verify`
         `uniffiFree` = other.`uniffiFree`
     }
 
@@ -722,18 +672,6 @@ internal open class UniffiVTableCallbackInterfaceSigner(
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -950,14 +888,14 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_balance(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_balance_new(`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_balance_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_balance_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_balance_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_balance_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_balance_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_balance_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_bearerdid(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_bearerdid(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -972,64 +910,56 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_close(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_close_new(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_close_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_close_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_close_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_close_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_close_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_close_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_keymanager(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_keymanager(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_method_keymanager_get_signer(`ptr`: Pointer,`publicJwk`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_clone_message(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Pointer
-    fun uniffi_tbdex_uniffi_fn_free_message(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_message_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_message_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_offering(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_offering(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_offering_new(`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_offering_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_offering_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_offering_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_offering_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_order(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_order(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_order_new(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_order_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_order_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_order_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_order_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_order_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_order_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_new(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_orderstatus_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_orderstatus_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_orderstatus_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_orderstatus_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_presentationdefinition(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_presentationdefinition(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1042,34 +972,26 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_quote(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_quote_new(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_quote_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_quote_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_quote_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_quote_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_quote_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_clone_resource(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Pointer
-    fun uniffi_tbdex_uniffi_fn_free_resource(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_resource_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_resource_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_quote_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_clone_rfq(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_rfq(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_rfq_new(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`createRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_rfq_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`createRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_rfq_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_rfq_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
-    fun uniffi_tbdex_uniffi_fn_method_rfq_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_rfq_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_all_private_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Byte
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_offering_requirements(`ptr`: Pointer,`offering`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1248,9 +1170,7 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_balance_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_balance_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_balance_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_balance_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_bearerdid_get_data(
     ): Short
@@ -1258,51 +1178,31 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_close_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_close_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_close_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_close_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_keymanager_get_signer(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_message_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_message_verify(
-    ): Short
     fun uniffi_tbdex_uniffi_checksum_method_offering_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_offering_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_offering_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_offering_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_order_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_order_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_order_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_order_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_presentationdefinition_select_credentials(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_quote_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_quote_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_quote_verify(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_resource_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_resource_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_quote_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_rfq_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_rfq_sign(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_rfq_verify(
+    fun uniffi_tbdex_uniffi_checksum_method_rfq_to_json(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data(
     ): Short
@@ -1324,21 +1224,35 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_web5rustcoreerror_variant(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_balance_from_json_string(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_balance_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_bearerdid_new(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_close_from_json_string(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_close_new(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_offering_new(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_order_new(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_orderstatus_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_orderstatus_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_presentationdefinition_new(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_quote_from_json_string(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_quote_new(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_rfq_new(
     ): Short
@@ -1365,7 +1279,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_balances() != 18789.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange() != 8603.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange() != 50398.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchanges() != 64807.toShort()) {
@@ -1386,10 +1300,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_balance_get_data() != 45636.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_sign() != 31562.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_verify() != 32284.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_to_json() != 2963.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_bearerdid_get_data() != 7101.toShort()) {
@@ -1401,46 +1312,28 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_close_get_data() != 42568.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_close_sign() != 32431.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_close_verify() != 45185.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_close_to_json() != 63038.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_keymanager_get_signer() != 33675.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_message_sign() != 61716.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_message_verify() != 13297.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
     if (lib.uniffi_tbdex_uniffi_checksum_method_offering_get_data() != 54801.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_sign() != 19151.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_verify() != 54031.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_to_json() != 24105.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_order_get_data() != 46414.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_order_sign() != 53221.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_order_verify() != 45406.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_order_to_json() != 64999.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data() != 32040.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_sign() != 48830.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_verify() != 24041.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json() != 42316.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_presentationdefinition_select_credentials() != 2690.toShort()) {
@@ -1449,25 +1342,13 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_quote_get_data() != 23104.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_sign() != 32536.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_verify() != 43839.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_resource_sign() != 59095.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_resource_verify() != 17996.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_to_json() != 20930.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_get_data() != 45129.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_sign() != 34335.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify() != 7299.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_to_json() != 56973.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data() != 54169.toShort()) {
@@ -1500,31 +1381,52 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_web5rustcoreerror_variant() != 12994.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_new() != 53595.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_from_json_string() != 47556.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_new() != 49171.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_bearerdid_new() != 8830.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_close_new() != 12632.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_close_from_json_string() != 64811.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_new() != 45496.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_close_new() != 7037.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_new() != 53881.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string() != 21018.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_new() != 3800.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_new() != 30449.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string() != 63305.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_new() != 26328.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_from_json_string() != 11447.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_new() != 5401.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_presentationdefinition_new() != 49889.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_new() != 46314.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_from_json_string() != 59989.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_new() != 44366.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_new() != 24782.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string() != 27704.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_new() != 39566.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1859,9 +1761,7 @@ public interface BalanceInterface {
     
     fun `getData`(): BalanceData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     companion object
 }
@@ -1883,11 +1783,11 @@ open class Balance: Disposable, AutoCloseable, BalanceInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`from`: kotlin.String, `data`: BalanceDataData, `protocol`: kotlin.String) :
+    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `data`: BalanceDataData, `protocol`: kotlin.String) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_balance_new(
-        FfiConverterString.lower(`from`),FfiConverterTypeBalanceDataData.lower(`data`),FfiConverterString.lower(`protocol`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterTypeBalanceDataData.lower(`data`),FfiConverterString.lower(`protocol`),_status)
 }
     )
 
@@ -1968,34 +1868,35 @@ open class Balance: Disposable, AutoCloseable, BalanceInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Balance {
+            return FfiConverterTypeBalance.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_balance_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -2381,9 +2282,7 @@ public interface CloseInterface {
     
     fun `getData`(): CloseData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     companion object
 }
@@ -2405,11 +2304,11 @@ open class Close: Disposable, AutoCloseable, CloseInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: CloseDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
+    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: CloseDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_close_new(
-        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeCloseDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeCloseDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
 }
     )
 
@@ -2490,34 +2389,35 @@ open class Close: Disposable, AutoCloseable, CloseInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Close {
+            return FfiConverterTypeClose.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_close_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -2878,259 +2778,11 @@ public object FfiConverterTypeKeyManager: FfiConverter<KeyManager, Pointer> {
 //
 
 
-public interface MessageInterface {
-    
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
-    
-    companion object
-}
-
-open class Message: Disposable, AutoCloseable, MessageInterface {
-
-    constructor(pointer: Pointer) {
-        this.pointer = pointer
-        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
-    }
-
-    /**
-     * This constructor can be used to instantiate a fake object. Only used for tests. Any
-     * attempt to actually use an object constructed this way will fail as there is no
-     * connected Rust object.
-     */
-    @Suppress("UNUSED_PARAMETER")
-    constructor(noPointer: NoPointer) {
-        this.pointer = null
-        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
-    }
-
-    protected val pointer: Pointer?
-    protected val cleanable: UniffiCleaner.Cleanable
-
-    private val wasDestroyed = AtomicBoolean(false)
-    private val callCounter = AtomicLong(1)
-
-    override fun destroy() {
-        // Only allow a single call to this method.
-        // TODO: maybe we should log a warning if called more than once?
-        if (this.wasDestroyed.compareAndSet(false, true)) {
-            // This decrement always matches the initial count of 1 given at creation time.
-            if (this.callCounter.decrementAndGet() == 0L) {
-                cleanable.clean()
-            }
-        }
-    }
-
-    @Synchronized
-    override fun close() {
-        this.destroy()
-    }
-
-    internal inline fun <R> callWithPointer(block: (ptr: Pointer) -> R): R {
-        // Check and increment the call counter, to keep the object alive.
-        // This needs a compare-and-set retry loop in case of concurrent updates.
-        do {
-            val c = this.callCounter.get()
-            if (c == 0L) {
-                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
-            }
-            if (c == Long.MAX_VALUE) {
-                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
-            }
-        } while (! this.callCounter.compareAndSet(c, c + 1L))
-        // Now we can safely do the method call without the pointer being freed concurrently.
-        try {
-            return block(this.uniffiClonePointer())
-        } finally {
-            // This decrement always matches the increment we performed above.
-            if (this.callCounter.decrementAndGet() == 0L) {
-                cleanable.clean()
-            }
-        }
-    }
-
-    // Use a static inner class instead of a closure so as not to accidentally
-    // capture `this` as part of the cleanable's action.
-    private class UniffiCleanAction(private val pointer: Pointer?) : Runnable {
-        override fun run() {
-            pointer?.let { ptr ->
-                uniffiRustCall { status ->
-                    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_free_message(ptr, status)
-                }
-            }
-        }
-    }
-
-    fun uniffiClonePointer(): Pointer {
-        return uniffiRustCall() { status ->
-            UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_clone_message(pointer!!, status)
-        }
-    }
-
-    
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_message_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_message_verify(
-        it, _status)
-}
-    }
-    
-    
-
-    
-
-    
-    
-    companion object
-    
-}
-
-public object FfiConverterTypeMessage: FfiConverter<Message, Pointer> {
-
-    override fun lower(value: Message): Pointer {
-        return value.uniffiClonePointer()
-    }
-
-    override fun lift(value: Pointer): Message {
-        return Message(value)
-    }
-
-    override fun read(buf: ByteBuffer): Message {
-        // The Rust code always writes pointers as 8 bytes, and will
-        // fail to compile if they don't fit.
-        return lift(Pointer(buf.getLong()))
-    }
-
-    override fun allocationSize(value: Message) = 8UL
-
-    override fun write(value: Message, buf: ByteBuffer) {
-        // The Rust code always expects pointers written as 8 bytes,
-        // and will fail to compile if they don't fit.
-        buf.putLong(Pointer.nativeValue(lower(value)))
-    }
-}
-
-
-// This template implements a class for working with a Rust struct via a Pointer/Arc<T>
-// to the live Rust struct on the other side of the FFI.
-//
-// Each instance implements core operations for working with the Rust `Arc<T>` and the
-// Kotlin Pointer to work with the live Rust struct on the other side of the FFI.
-//
-// There's some subtlety here, because we have to be careful not to operate on a Rust
-// struct after it has been dropped, and because we must expose a public API for freeing
-// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
-//
-//   * Each instance holds an opaque pointer to the underlying Rust struct.
-//     Method calls need to read this pointer from the object's state and pass it in to
-//     the Rust FFI.
-//
-//   * When an instance is no longer needed, its pointer should be passed to a
-//     special destructor function provided by the Rust FFI, which will drop the
-//     underlying Rust struct.
-//
-//   * Given an instance, calling code is expected to call the special
-//     `destroy` method in order to free it after use, either by calling it explicitly
-//     or by using a higher-level helper like the `use` method. Failing to do so risks
-//     leaking the underlying Rust struct.
-//
-//   * We can't assume that calling code will do the right thing, and must be prepared
-//     to handle Kotlin method calls executing concurrently with or even after a call to
-//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
-//
-//   * We must never allow Rust code to operate on the underlying Rust struct after
-//     the destructor has been called, and must never call the destructor more than once.
-//     Doing so may trigger memory unsafety.
-//
-//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
-//     is implemented to call the destructor when the Kotlin object becomes unreachable.
-//     This is done in a background thread. This is not a panacea, and client code should be aware that
-//      1. the thread may starve if some there are objects that have poorly performing
-//     `drop` methods or do significant work in their `drop` methods.
-//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
-//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
-//
-// If we try to implement this with mutual exclusion on access to the pointer, there is the
-// possibility of a race between a method call and a concurrent call to `destroy`:
-//
-//    * Thread A starts a method call, reads the value of the pointer, but is interrupted
-//      before it can pass the pointer over the FFI to Rust.
-//    * Thread B calls `destroy` and frees the underlying Rust struct.
-//    * Thread A resumes, passing the already-read pointer value to Rust and triggering
-//      a use-after-free.
-//
-// One possible solution would be to use a `ReadWriteLock`, with each method call taking
-// a read lock (and thus allowed to run concurrently) and the special `destroy` method
-// taking a write lock (and thus blocking on live method calls). However, we aim not to
-// generate methods with any hidden blocking semantics, and a `destroy` method that might
-// block if called incorrectly seems to meet that bar.
-//
-// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
-// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
-// has been called. These are updated according to the following rules:
-//
-//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
-//      The initial value for the flag is false.
-//
-//    * At the start of each method call, we atomically check the counter.
-//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
-//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
-//
-//    * At the end of each method call, we atomically decrement and check the counter.
-//      If it has reached zero then we destroy the underlying Rust struct.
-//
-//    * When `destroy` is called, we atomically flip the flag from false to true.
-//      If the flag was already true we silently fail.
-//      Otherwise we atomically decrement and check the counter.
-//      If it has reached zero then we destroy the underlying Rust struct.
-//
-// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
-// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
-//
-// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
-// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
-// of the underlying Rust code.
-//
-// This makes a cleaner a better alternative to _not_ calling `destroy()` as
-// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
-// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
-// thread may be starved, and the app will leak memory.
-//
-// In this case, `destroy`ing manually may be a better solution.
-//
-// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
-// with Rust peers are reclaimed:
-//
-// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
-// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
-// 3. The memory is reclaimed when the process terminates.
-//
-// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
-//
-
-
 public interface OfferingInterface {
     
     fun `getData`(): OfferingData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     companion object
 }
@@ -3152,11 +2804,11 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`from`: kotlin.String, `data`: OfferingDataData, `protocol`: kotlin.String) :
+    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `data`: OfferingDataData, `protocol`: kotlin.String) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_new(
-        FfiConverterString.lower(`from`),FfiConverterTypeOfferingDataData.lower(`data`),FfiConverterString.lower(`protocol`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterTypeOfferingDataData.lower(`data`),FfiConverterString.lower(`protocol`),_status)
 }
     )
 
@@ -3237,34 +2889,35 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Offering {
+            return FfiConverterTypeOffering.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -3396,9 +3049,7 @@ public interface OrderInterface {
     
     fun `getData`(): OrderData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     companion object
 }
@@ -3420,11 +3071,11 @@ open class Order: Disposable, AutoCloseable, OrderInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
+    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_order_new(
-        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
 }
     )
 
@@ -3505,34 +3156,35 @@ open class Order: Disposable, AutoCloseable, OrderInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Order {
+            return FfiConverterTypeOrder.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_order_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -3664,9 +3316,7 @@ public interface OrderStatusInterface {
     
     fun `getData`(): OrderStatusData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     companion object
 }
@@ -3688,11 +3338,11 @@ open class OrderStatus: Disposable, AutoCloseable, OrderStatusInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: OrderStatusDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
+    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: OrderStatusDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_orderstatus_new(
-        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeOrderStatusDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeOrderStatusDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
 }
     )
 
@@ -3773,34 +3423,35 @@ open class OrderStatus: Disposable, AutoCloseable, OrderStatusInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): OrderStatus {
+            return FfiConverterTypeOrderStatus.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_orderstatus_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -4172,9 +3823,7 @@ public interface QuoteInterface {
     
     fun `getData`(): QuoteData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     companion object
 }
@@ -4196,11 +3845,11 @@ open class Quote: Disposable, AutoCloseable, QuoteInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: QuoteDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
+    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: QuoteDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_quote_new(
-        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeQuoteDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeQuoteDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
 }
     )
 
@@ -4281,34 +3930,35 @@ open class Quote: Disposable, AutoCloseable, QuoteInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Quote {
+            return FfiConverterTypeQuote.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_quote_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -4436,259 +4086,11 @@ public object FfiConverterTypeQuote: FfiConverter<Quote, Pointer> {
 //
 
 
-public interface ResourceInterface {
-    
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
-    
-    companion object
-}
-
-open class Resource: Disposable, AutoCloseable, ResourceInterface {
-
-    constructor(pointer: Pointer) {
-        this.pointer = pointer
-        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
-    }
-
-    /**
-     * This constructor can be used to instantiate a fake object. Only used for tests. Any
-     * attempt to actually use an object constructed this way will fail as there is no
-     * connected Rust object.
-     */
-    @Suppress("UNUSED_PARAMETER")
-    constructor(noPointer: NoPointer) {
-        this.pointer = null
-        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
-    }
-
-    protected val pointer: Pointer?
-    protected val cleanable: UniffiCleaner.Cleanable
-
-    private val wasDestroyed = AtomicBoolean(false)
-    private val callCounter = AtomicLong(1)
-
-    override fun destroy() {
-        // Only allow a single call to this method.
-        // TODO: maybe we should log a warning if called more than once?
-        if (this.wasDestroyed.compareAndSet(false, true)) {
-            // This decrement always matches the initial count of 1 given at creation time.
-            if (this.callCounter.decrementAndGet() == 0L) {
-                cleanable.clean()
-            }
-        }
-    }
-
-    @Synchronized
-    override fun close() {
-        this.destroy()
-    }
-
-    internal inline fun <R> callWithPointer(block: (ptr: Pointer) -> R): R {
-        // Check and increment the call counter, to keep the object alive.
-        // This needs a compare-and-set retry loop in case of concurrent updates.
-        do {
-            val c = this.callCounter.get()
-            if (c == 0L) {
-                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
-            }
-            if (c == Long.MAX_VALUE) {
-                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
-            }
-        } while (! this.callCounter.compareAndSet(c, c + 1L))
-        // Now we can safely do the method call without the pointer being freed concurrently.
-        try {
-            return block(this.uniffiClonePointer())
-        } finally {
-            // This decrement always matches the increment we performed above.
-            if (this.callCounter.decrementAndGet() == 0L) {
-                cleanable.clean()
-            }
-        }
-    }
-
-    // Use a static inner class instead of a closure so as not to accidentally
-    // capture `this` as part of the cleanable's action.
-    private class UniffiCleanAction(private val pointer: Pointer?) : Runnable {
-        override fun run() {
-            pointer?.let { ptr ->
-                uniffiRustCall { status ->
-                    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_free_resource(ptr, status)
-                }
-            }
-        }
-    }
-
-    fun uniffiClonePointer(): Pointer {
-        return uniffiRustCall() { status ->
-            UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_clone_resource(pointer!!, status)
-        }
-    }
-
-    
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_resource_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_resource_verify(
-        it, _status)
-}
-    }
-    
-    
-
-    
-
-    
-    
-    companion object
-    
-}
-
-public object FfiConverterTypeResource: FfiConverter<Resource, Pointer> {
-
-    override fun lower(value: Resource): Pointer {
-        return value.uniffiClonePointer()
-    }
-
-    override fun lift(value: Pointer): Resource {
-        return Resource(value)
-    }
-
-    override fun read(buf: ByteBuffer): Resource {
-        // The Rust code always writes pointers as 8 bytes, and will
-        // fail to compile if they don't fit.
-        return lift(Pointer(buf.getLong()))
-    }
-
-    override fun allocationSize(value: Resource) = 8UL
-
-    override fun write(value: Resource, buf: ByteBuffer) {
-        // The Rust code always expects pointers written as 8 bytes,
-        // and will fail to compile if they don't fit.
-        buf.putLong(Pointer.nativeValue(lower(value)))
-    }
-}
-
-
-// This template implements a class for working with a Rust struct via a Pointer/Arc<T>
-// to the live Rust struct on the other side of the FFI.
-//
-// Each instance implements core operations for working with the Rust `Arc<T>` and the
-// Kotlin Pointer to work with the live Rust struct on the other side of the FFI.
-//
-// There's some subtlety here, because we have to be careful not to operate on a Rust
-// struct after it has been dropped, and because we must expose a public API for freeing
-// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
-//
-//   * Each instance holds an opaque pointer to the underlying Rust struct.
-//     Method calls need to read this pointer from the object's state and pass it in to
-//     the Rust FFI.
-//
-//   * When an instance is no longer needed, its pointer should be passed to a
-//     special destructor function provided by the Rust FFI, which will drop the
-//     underlying Rust struct.
-//
-//   * Given an instance, calling code is expected to call the special
-//     `destroy` method in order to free it after use, either by calling it explicitly
-//     or by using a higher-level helper like the `use` method. Failing to do so risks
-//     leaking the underlying Rust struct.
-//
-//   * We can't assume that calling code will do the right thing, and must be prepared
-//     to handle Kotlin method calls executing concurrently with or even after a call to
-//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
-//
-//   * We must never allow Rust code to operate on the underlying Rust struct after
-//     the destructor has been called, and must never call the destructor more than once.
-//     Doing so may trigger memory unsafety.
-//
-//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
-//     is implemented to call the destructor when the Kotlin object becomes unreachable.
-//     This is done in a background thread. This is not a panacea, and client code should be aware that
-//      1. the thread may starve if some there are objects that have poorly performing
-//     `drop` methods or do significant work in their `drop` methods.
-//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
-//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
-//
-// If we try to implement this with mutual exclusion on access to the pointer, there is the
-// possibility of a race between a method call and a concurrent call to `destroy`:
-//
-//    * Thread A starts a method call, reads the value of the pointer, but is interrupted
-//      before it can pass the pointer over the FFI to Rust.
-//    * Thread B calls `destroy` and frees the underlying Rust struct.
-//    * Thread A resumes, passing the already-read pointer value to Rust and triggering
-//      a use-after-free.
-//
-// One possible solution would be to use a `ReadWriteLock`, with each method call taking
-// a read lock (and thus allowed to run concurrently) and the special `destroy` method
-// taking a write lock (and thus blocking on live method calls). However, we aim not to
-// generate methods with any hidden blocking semantics, and a `destroy` method that might
-// block if called incorrectly seems to meet that bar.
-//
-// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
-// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
-// has been called. These are updated according to the following rules:
-//
-//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
-//      The initial value for the flag is false.
-//
-//    * At the start of each method call, we atomically check the counter.
-//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
-//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
-//
-//    * At the end of each method call, we atomically decrement and check the counter.
-//      If it has reached zero then we destroy the underlying Rust struct.
-//
-//    * When `destroy` is called, we atomically flip the flag from false to true.
-//      If the flag was already true we silently fail.
-//      Otherwise we atomically decrement and check the counter.
-//      If it has reached zero then we destroy the underlying Rust struct.
-//
-// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
-// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
-//
-// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
-// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
-// of the underlying Rust code.
-//
-// This makes a cleaner a better alternative to _not_ calling `destroy()` as
-// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
-// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
-// thread may be starved, and the app will leak memory.
-//
-// In this case, `destroy`ing manually may be a better solution.
-//
-// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
-// with Rust peers are reclaimed:
-//
-// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
-// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
-// 3. The memory is reclaimed when the process terminates.
-//
-// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
-//
-
-
 public interface RfqInterface {
     
     fun `getData`(): RfqData
     
-    fun `sign`(`bearerDid`: BearerDid)
-    
-    fun `verify`()
+    fun `toJson`(): kotlin.String
     
     fun `verifyAllPrivateData`(): kotlin.Boolean
     
@@ -4716,11 +4118,11 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`to`: kotlin.String, `from`: kotlin.String, `createRfqData`: CreateRfqDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
+    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `createRfqData`: CreateRfqDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_new(
-        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterTypeCreateRfqDataData.lower(`createRfqData`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterTypeCreateRfqDataData.lower(`createRfqData`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
 }
     )
 
@@ -4801,27 +4203,16 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
-        = 
+    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+            return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_sign(
-        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
-}
-    }
-    
-    
-
-    
-    @Throws(RustCoreException::class)override fun `verify`()
-        = 
-    callWithPointer {
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_to_json(
         it, _status)
 }
     }
-    
+    )
+    }
     
 
     
@@ -4866,8 +4257,20 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
 
     
+    companion object {
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Rfq {
+            return FfiConverterTypeRfq.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
     
-    companion object
+
+        
+    }
     
 }
 
@@ -6081,6 +5484,58 @@ public object FfiConverterTypeDocumentData: FfiConverterRustBuffer<DocumentData>
 
 
 
+data class ExchangeData (
+    var `rfq`: Rfq, 
+    var `quote`: Quote?, 
+    var `order`: Order?, 
+    var `orderStatuses`: List<OrderStatus>?, 
+    var `close`: Close?
+) : Disposable {
+    
+    @Suppress("UNNECESSARY_SAFE_CALL") // codegen is much simpler if we unconditionally emit safe calls here
+    override fun destroy() {
+        
+    Disposable.destroy(
+        this.`rfq`, 
+        this.`quote`, 
+        this.`order`, 
+        this.`orderStatuses`, 
+        this.`close`)
+    }
+    
+    companion object
+}
+
+public object FfiConverterTypeExchangeData: FfiConverterRustBuffer<ExchangeData> {
+    override fun read(buf: ByteBuffer): ExchangeData {
+        return ExchangeData(
+            FfiConverterTypeRfq.read(buf),
+            FfiConverterOptionalTypeQuote.read(buf),
+            FfiConverterOptionalTypeOrder.read(buf),
+            FfiConverterOptionalSequenceTypeOrderStatus.read(buf),
+            FfiConverterOptionalTypeClose.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: ExchangeData) = (
+            FfiConverterTypeRfq.allocationSize(value.`rfq`) +
+            FfiConverterOptionalTypeQuote.allocationSize(value.`quote`) +
+            FfiConverterOptionalTypeOrder.allocationSize(value.`order`) +
+            FfiConverterOptionalSequenceTypeOrderStatus.allocationSize(value.`orderStatuses`) +
+            FfiConverterOptionalTypeClose.allocationSize(value.`close`)
+    )
+
+    override fun write(value: ExchangeData, buf: ByteBuffer) {
+            FfiConverterTypeRfq.write(value.`rfq`, buf)
+            FfiConverterOptionalTypeQuote.write(value.`quote`, buf)
+            FfiConverterOptionalTypeOrder.write(value.`order`, buf)
+            FfiConverterOptionalSequenceTypeOrderStatus.write(value.`orderStatuses`, buf)
+            FfiConverterOptionalTypeClose.write(value.`close`, buf)
+    }
+}
+
+
+
 data class FieldData (
     var `id`: kotlin.String?, 
     var `name`: kotlin.String?, 
@@ -7268,6 +6723,93 @@ public object FfiConverterOptionalString: FfiConverterRustBuffer<kotlin.String?>
 
 
 
+public object FfiConverterOptionalTypeClose: FfiConverterRustBuffer<Close?> {
+    override fun read(buf: ByteBuffer): Close? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeClose.read(buf)
+    }
+
+    override fun allocationSize(value: Close?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeClose.allocationSize(value)
+        }
+    }
+
+    override fun write(value: Close?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeClose.write(value, buf)
+        }
+    }
+}
+
+
+
+
+public object FfiConverterOptionalTypeOrder: FfiConverterRustBuffer<Order?> {
+    override fun read(buf: ByteBuffer): Order? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeOrder.read(buf)
+    }
+
+    override fun allocationSize(value: Order?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeOrder.allocationSize(value)
+        }
+    }
+
+    override fun write(value: Order?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeOrder.write(value, buf)
+        }
+    }
+}
+
+
+
+
+public object FfiConverterOptionalTypeQuote: FfiConverterRustBuffer<Quote?> {
+    override fun read(buf: ByteBuffer): Quote? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeQuote.read(buf)
+    }
+
+    override fun allocationSize(value: Quote?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeQuote.allocationSize(value)
+        }
+    }
+
+    override fun write(value: Quote?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeQuote.write(value, buf)
+        }
+    }
+}
+
+
+
+
 public object FfiConverterOptionalTypeFilterData: FfiConverterRustBuffer<FilterData?> {
     override fun read(buf: ByteBuffer): FilterData? {
         if (buf.get().toInt() == 0) {
@@ -7413,6 +6955,35 @@ public object FfiConverterOptionalSequenceString: FfiConverterRustBuffer<List<ko
 
 
 
+public object FfiConverterOptionalSequenceTypeOrderStatus: FfiConverterRustBuffer<List<OrderStatus>?> {
+    override fun read(buf: ByteBuffer): List<OrderStatus>? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterSequenceTypeOrderStatus.read(buf)
+    }
+
+    override fun allocationSize(value: List<OrderStatus>?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterSequenceTypeOrderStatus.allocationSize(value)
+        }
+    }
+
+    override fun write(value: List<OrderStatus>?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterSequenceTypeOrderStatus.write(value, buf)
+        }
+    }
+}
+
+
+
+
 public object FfiConverterOptionalSequenceTypeServiceData: FfiConverterRustBuffer<List<ServiceData>?> {
     override fun read(buf: ByteBuffer): List<ServiceData>? {
         if (buf.get().toInt() == 0) {
@@ -7546,31 +7117,6 @@ public object FfiConverterSequenceTypeBalance: FfiConverterRustBuffer<List<Balan
 
 
 
-public object FfiConverterSequenceTypeMessage: FfiConverterRustBuffer<List<Message>> {
-    override fun read(buf: ByteBuffer): List<Message> {
-        val len = buf.getInt()
-        return List<Message>(len) {
-            FfiConverterTypeMessage.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<Message>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypeMessage.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<Message>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypeMessage.write(it, buf)
-        }
-    }
-}
-
-
-
-
 public object FfiConverterSequenceTypeOffering: FfiConverterRustBuffer<List<Offering>> {
     override fun read(buf: ByteBuffer): List<Offering> {
         val len = buf.getInt()
@@ -7589,6 +7135,31 @@ public object FfiConverterSequenceTypeOffering: FfiConverterRustBuffer<List<Offe
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeOffering.write(it, buf)
+        }
+    }
+}
+
+
+
+
+public object FfiConverterSequenceTypeOrderStatus: FfiConverterRustBuffer<List<OrderStatus>> {
+    override fun read(buf: ByteBuffer): List<OrderStatus> {
+        val len = buf.getInt()
+        return List<OrderStatus>(len) {
+            FfiConverterTypeOrderStatus.read(buf)
+        }
+    }
+
+    override fun allocationSize(value: List<OrderStatus>): ULong {
+        val sizeForLength = 4UL
+        val sizeForItems = value.map { FfiConverterTypeOrderStatus.allocationSize(it) }.sum()
+        return sizeForLength + sizeForItems
+    }
+
+    override fun write(value: List<OrderStatus>, buf: ByteBuffer) {
+        buf.putInt(value.size)
+        value.iterator().forEach {
+            FfiConverterTypeOrderStatus.write(it, buf)
         }
     }
 }
@@ -7796,8 +7367,8 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
     }
     
 
-    @Throws(RustCoreException::class) fun `getExchange`(`pfiDid`: kotlin.String, `requestorDid`: BearerDid, `exchangeId`: kotlin.String): List<Message> {
-            return FfiConverterSequenceTypeMessage.lift(
+    @Throws(RustCoreException::class) fun `getExchange`(`pfiDid`: kotlin.String, `requestorDid`: BearerDid, `exchangeId`: kotlin.String): ExchangeData {
+            return FfiConverterTypeExchangeData.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_exchange(
         FfiConverterString.lower(`pfiDid`),FfiConverterTypeBearerDid.lower(`requestorDid`),FfiConverterString.lower(`exchangeId`),_status)
