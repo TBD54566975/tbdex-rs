@@ -73,7 +73,7 @@ use web5::apid::{
 };
 use web5_uniffi_wrapper::{
     credentials::presentation_definition::PresentationDefinition,
-    crypto::key_manager::KeyManager,
+    crypto::{in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
     dids::bearer_did::{BearerDid, BearerDidData},
     dsa::Signer,
     errors::RustCoreError as Web5RustCoreError,

@@ -393,6 +393,15 @@ interface KeyManager {
   Signer get_signer(JwkData public_jwk);
 };
 
+interface InMemoryKeyManager {
+  constructor();
+  [Throws=Web5RustCoreError]
+  Signer get_signer(JwkData public_jwk);
+  [Throws=Web5RustCoreError]
+  JwkData import_private_jwk(JwkData private_key);
+  KeyManager get_as_key_manager();
+};
+
 dictionary BearerDidData {
   DidData did;
   DocumentData document;
