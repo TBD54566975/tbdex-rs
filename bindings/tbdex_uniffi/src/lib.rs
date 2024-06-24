@@ -79,8 +79,4 @@ use web5_uniffi_wrapper::{
     errors::RustCoreError as Web5RustCoreError,
 };
 
-pub fn hello_world() {
-    println!("Hello world")
-}
-
 uniffi::include_scaffolding!("tbdex");

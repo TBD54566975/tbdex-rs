@@ -37,6 +37,14 @@ class Balance {
         this.signature = rustCoreBalance.getData().signature
     }
 
+    constructor(rustCoreBalance: RustCoreBalance) {
+        this.rustCoreBalance = rustCoreBalance
+
+        this.metadata = this.rustCoreBalance.getData().metadata
+        this.data = this.rustCoreBalance.getData().data
+        this.signature = this.rustCoreBalance.getData().signature
+    }
+
     fun toJson(): String {
         return this.rustCoreBalance.toJson()
     }

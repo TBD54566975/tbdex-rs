@@ -870,8 +870,6 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
-
-
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -1060,8 +1058,6 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_get_offerings(`pfiDid`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_func_hello_world(uniffi_out_err: UniffiRustCallStatus, 
-    ): Unit
     fun uniffi_tbdex_uniffi_fn_func_submit_close(`close`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_func_submit_order(`order`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1187,8 +1183,6 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_checksum_func_get_exchanges(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_func_get_offerings(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_func_hello_world(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_func_submit_close(
     ): Short
@@ -1322,9 +1316,6 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_offerings() != 4292.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_hello_world() != 12574.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_submit_close() != 11219.toShort()) {
@@ -7758,14 +7749,6 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
 }
     )
     }
-    
- fun `helloWorld`()
-        = 
-    uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_hello_world(
-        _status)
-}
-    
     
 
     @Throws(RustCoreException::class) fun `submitClose`(`close`: Close)

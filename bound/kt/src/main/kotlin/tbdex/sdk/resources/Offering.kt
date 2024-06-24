@@ -39,6 +39,14 @@ class Offering {
         this.signature = rustCoreOffering.getData().signature
     }
 
+    constructor(rustCoreOffering: RustCoreOffering) {
+        this.rustCoreOffering = rustCoreOffering
+
+        this.metadata = this.rustCoreOffering.getData().metadata
+        this.data = OfferingData.fromRustCore(this.rustCoreOffering.getData().data)
+        this.signature = this.rustCoreOffering.getData().signature
+    }
+
     fun toJson(): String {
         return this.rustCoreOffering.toJson()
     }

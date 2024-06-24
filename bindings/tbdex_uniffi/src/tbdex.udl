@@ -1,6 +1,4 @@
 namespace tbdex {
-  void hello_world();
-
   [Throws=RustCoreError]
   sequence<Offering> get_offerings(string pfi_did);
   [Throws=RustCoreError]

@@ -21,7 +21,7 @@ class Rfq {
     val privateData: RfqPrivateData
     val signature: String
 
-    private val rustCoreRfq: RustCoreRfq
+    val rustCoreRfq: RustCoreRfq
 
     constructor(
         bearerDid: BearerDid,
