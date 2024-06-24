@@ -16,7 +16,7 @@ class Offering {
     val data: OfferingData
     val signature: String
 
-    private val rustCoreOffering: RustCoreOffering
+    val rustCoreOffering: RustCoreOffering
 
     constructor(
         bearerDid: BearerDid,
