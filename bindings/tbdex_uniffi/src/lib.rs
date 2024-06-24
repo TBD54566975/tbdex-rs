@@ -43,7 +43,7 @@ use crate::{
 use tbdex::{
     messages::{
         close::{Close as CloseData, CloseData as CloseDataData},
-        order::Order as OrderData,
+        order::{Order as OrderData, OrderData as OrderDataData},
         order_status::{OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData},
         quote::{
             PaymentInstructions as PaymentInstructionsData, Quote as QuoteData,

@@ -56,5 +56,6 @@ pub struct ResourceMetadata {
     pub id: String,
     pub protocol: String,
     pub created_at: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<String>,
 }

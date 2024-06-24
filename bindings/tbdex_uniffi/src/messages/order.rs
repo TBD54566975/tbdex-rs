@@ -15,11 +15,11 @@ impl Order {
         external_id: Option<String>,
     ) -> Result<Self> {
         let order = InnerOrder::new(
-            bearer_did.0.clone(),
-            to,
-            from,
-            exchange_id,
-            protocol,
+            &bearer_did.0.clone(),
+            &to,
+            &from,
+            &exchange_id,
+            &protocol,
             external_id,
         )
         .map_err(|e| Arc::new(e.into()))?;

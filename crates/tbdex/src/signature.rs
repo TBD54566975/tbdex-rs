@@ -5,6 +5,7 @@ use serde_json::Error as SerdeJsonError;
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 use std::fmt::Debug;
+use web5::apid::dids::bearer_did::BearerDid;
 use web5::apid::dids::{
     bearer_did::BearerDidError,
     resolution::{
@@ -61,13 +62,20 @@ fn compute_digest(value: &Value) -> Result<Vec<u8>> {
     Ok(hasher.finalize().to_vec())
 }
 
-pub fn sign(jose_signer: Signer, metadata: Value, data: Value) -> Result<String> {
+pub fn sign(bearer_did: &BearerDid, metadata: &Value, data: &Value) -> Result<String> {
     let mut combined = Map::new();
-    combined.insert("metadata".to_string(), metadata);
-    combined.insert("data".to_string(), data);
+    combined.insert("metadata".to_string(), metadata.clone());
+    combined.insert("data".to_string(), data.clone());
 
     let digest = compute_digest(&Value::Object(combined))?;
 
+    // default to first VM
+    let key_id = bearer_did.document.verification_method[0].id.clone();
+    let web5_signer = bearer_did.get_signer(key_id.clone())?;
+    let jose_signer = Signer {
+        kid: key_id,
+        web5_signer,
+    };
     let detached_compact_jws = jose_signer.sign_detached_compact_jws(&digest)?;
 
     Ok(detached_compact_jws)
@@ -75,14 +83,14 @@ pub fn sign(jose_signer: Signer, metadata: Value, data: Value) -> Result<String>
 
 pub fn verify(
     did_uri: &str,
-    metadata: Value,
-    data: Value,
-    detached_compact_jws: String,
+    metadata: &Value,
+    data: &Value,
+    detached_compact_jws: &str,
 ) -> Result<()> {
     // re-attach the payload
     let mut combined = Map::new();
-    combined.insert("metadata".to_string(), metadata);
-    combined.insert("data".to_string(), data);
+    combined.insert("metadata".to_string(), metadata.clone());
+    combined.insert("data".to_string(), data.clone());
     let digest = compute_digest(&Value::Object(combined))?;
     let payload = general_purpose::URL_SAFE_NO_PAD.encode(digest);
 

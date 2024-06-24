@@ -7,6 +7,7 @@ pub mod rfq;
 use crate::signature::SignatureError;
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeJsonError;
+use std::str::FromStr;
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
 use web5::apid::dids::bearer_did::BearerDidError;
 
@@ -20,6 +21,8 @@ pub enum MessageError {
     BearerDid(#[from] BearerDidError),
     #[error(transparent)]
     Signature(#[from] SignatureError),
+    #[error("unknown kind {0}")]
+    UnknownKind(String),
 }
 
 impl From<SerdeJsonError> for MessageError {
@@ -55,6 +58,21 @@ impl MessageKind {
     }
 }
 
+impl FromStr for MessageKind {
+    type Err = MessageError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "rfq" => Ok(MessageKind::Rfq),
+            "quote" => Ok(MessageKind::Quote),
+            "order" => Ok(MessageKind::Order),
+            "orderstatus" => Ok(MessageKind::OrderStatus),
+            "close" => Ok(MessageKind::Close),
+            _ => Err(MessageError::UnknownKind(s.to_string())),
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Default, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageMetadata {
@@ -63,6 +81,7 @@ pub struct MessageMetadata {
     pub kind: MessageKind,
     pub id: String,
     pub exchange_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub external_id: Option<String>,
     pub protocol: String,
     pub created_at: String,

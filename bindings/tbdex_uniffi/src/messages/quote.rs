@@ -16,12 +16,12 @@ impl Quote {
         external_id: Option<String>,
     ) -> Result<Self> {
         let quote = InnerQuote::new(
-            bearer_did.0.clone(),
-            to,
-            from,
-            exchange_id,
-            data,
-            protocol,
+            &bearer_did.0.clone(),
+            &to,
+            &from,
+            &exchange_id,
+            &data,
+            &protocol,
             external_id,
         )
         .map_err(|e| Arc::new(e.into()))?;

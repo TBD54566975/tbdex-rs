@@ -1,5 +1,3 @@
-use crate::jose::Signer;
-
 use super::{MessageKind, MessageMetadata, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -14,54 +12,49 @@ pub struct OrderStatus {
 
 impl OrderStatus {
     pub fn new(
-        bearer_did: BearerDid,
-        to: String,
-        from: String,
-        exchange_id: String,
-        data: OrderStatusData,
-        protocol: String,
+        bearer_did: &BearerDid,
+        to: &str,
+        from: &str,
+        exchange_id: &str,
+        data: &OrderStatusData,
+        protocol: &str,
         external_id: Option<String>,
     ) -> Result<Self> {
         let metadata = MessageMetadata {
-            from,
-            to,
+            from: from.to_string(),
+            to: to.to_string(),
             kind: MessageKind::OrderStatus,
             id: MessageKind::OrderStatus.typesafe_id()?,
-            exchange_id,
+            exchange_id: exchange_id.to_string(),
             external_id,
-            protocol,
+            protocol: protocol.to_string(),
             created_at: Utc::now().to_rfc3339(),
-        };
-
-        let key_id = bearer_did.document.verification_method[0].id.clone();
-        let web5_signer = bearer_did.get_signer(key_id.clone())?;
-        let jose_signer = Signer {
-            kid: key_id,
-            web5_signer,
         };
 
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
-                jose_signer,
-                serde_json::to_value(metadata)?,
-                serde_json::to_value(data)?,
+                bearer_did,
+                &serde_json::to_value(metadata)?,
+                &serde_json::to_value(data)?,
             )?,
         })
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let order_status = serde_json::from_str::<Self>(json)?;
-
-        crate::signature::verify(
-            &order_status.metadata.from,
-            serde_json::to_value(order_status.metadata.clone())?,
-            serde_json::to_value(order_status.data.clone())?,
-            order_status.signature.clone(),
-        )?;
-
+        order_status.verify()?;
         Ok(order_status)
+    }
+
+    pub fn verify(&self) -> Result<()> {
+        Ok(crate::signature::verify(
+            &self.metadata.from,
+            &serde_json::to_value(self.metadata.clone())?,
+            &serde_json::to_value(self.data.clone())?,
+            &self.signature,
+        )?)
     }
 
     pub fn to_json(&self) -> Result<String> {
@@ -70,6 +63,7 @@ impl OrderStatus {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct OrderStatusData {
     pub order_status: String,
 }

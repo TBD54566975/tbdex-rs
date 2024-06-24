@@ -1,5 +1,3 @@
-use crate::jose::Signer;
-
 use super::{ResourceKind, ResourceMetadata, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -14,51 +12,46 @@ pub struct Balance {
 
 impl Balance {
     pub fn new(
-        bearer_did: BearerDid,
-        from: String,
-        data: BalanceData,
-        protocol: String,
+        bearer_did: &BearerDid,
+        from: &str,
+        data: &BalanceData,
+        protocol: &str,
     ) -> Result<Self> {
         let now = Utc::now().to_rfc3339();
 
         let metadata = ResourceMetadata {
             kind: ResourceKind::Balance,
-            from,
+            from: from.to_string(),
             id: ResourceKind::Balance.typesafe_id()?,
-            protocol,
+            protocol: protocol.to_string(),
             created_at: now.clone(),
             updated_at: Some(now),
-        };
-
-        let key_id = bearer_did.document.verification_method[0].id.clone();
-        let web5_signer = bearer_did.get_signer(key_id.clone())?;
-        let jose_signer = Signer {
-            kid: key_id,
-            web5_signer,
         };
 
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
-                jose_signer,
-                serde_json::to_value(metadata)?,
-                serde_json::to_value(data)?,
+                bearer_did,
+                &serde_json::to_value(metadata)?,
+                &serde_json::to_value(data)?,
             )?,
         })
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let offering = serde_json::from_str::<Self>(json)?;
+        let balance = serde_json::from_str::<Self>(json)?;
+        balance.verify()?;
+        Ok(balance)
+    }
 
-        crate::signature::verify(
-            &offering.metadata.from,
-            serde_json::to_value(offering.metadata.clone())?,
-            serde_json::to_value(offering.data.clone())?,
-            offering.signature.clone(),
-        )?;
-
-        Ok(offering)
+    pub fn verify(&self) -> Result<()> {
+        Ok(crate::signature::verify(
+            &self.metadata.from,
+            &serde_json::to_value(self.metadata.clone())?,
+            &serde_json::to_value(self.data.clone())?,
+            &self.signature,
+        )?)
     }
 
     pub fn to_json(&self) -> Result<String> {

@@ -1,5 +1,3 @@
-use crate::jose::Signer;
-
 use super::{ResourceKind, ResourceMetadata, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -16,51 +14,46 @@ pub struct Offering {
 
 impl Offering {
     pub fn new(
-        bearer_did: BearerDid,
-        from: String,
-        data: OfferingData,
-        protocol: String,
+        bearer_did: &BearerDid,
+        from: &str,
+        data: &OfferingData,
+        protocol: &str,
     ) -> Result<Self> {
         let now = Utc::now().to_rfc3339();
 
         let metadata = ResourceMetadata {
             kind: ResourceKind::Offering,
-            from,
+            from: from.to_string(),
             id: ResourceKind::Offering.typesafe_id()?,
-            protocol,
+            protocol: protocol.to_string(),
             created_at: now.clone(),
             updated_at: Some(now),
-        };
-
-        let key_id = bearer_did.document.verification_method[0].id.clone();
-        let web5_signer = bearer_did.get_signer(key_id.clone())?;
-        let jose_signer = Signer {
-            kid: key_id,
-            web5_signer,
         };
 
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
-                jose_signer,
-                serde_json::to_value(metadata)?,
-                serde_json::to_value(data)?,
+                bearer_did,
+                &serde_json::to_value(metadata)?,
+                &serde_json::to_value(data)?,
             )?,
         })
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let offering = serde_json::from_str::<Self>(json)?;
-
-        crate::signature::verify(
-            &offering.metadata.from,
-            serde_json::to_value(offering.metadata.clone())?,
-            serde_json::to_value(offering.data.clone())?,
-            offering.signature.clone(),
-        )?;
-
+        offering.verify()?;
         Ok(offering)
+    }
+
+    pub fn verify(&self) -> Result<()> {
+        Ok(crate::signature::verify(
+            &self.metadata.from,
+            &serde_json::to_value(self.metadata.clone())?,
+            &serde_json::to_value(self.data.clone())?,
+            &self.signature,
+        )?)
     }
 
     pub fn to_json(&self) -> Result<String> {
@@ -75,6 +68,7 @@ pub struct OfferingData {
     pub payout_units_per_payin_unit: String,
     pub payin: PayinDetails,
     pub payout: PayoutDetails,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_claims: Option<PresentationDefinition>,
 }
 
@@ -82,7 +76,9 @@ pub struct OfferingData {
 #[serde(rename_all = "camelCase")]
 pub struct PayinDetails {
     pub currency_code: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub min: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max: Option<String>,
     pub methods: Vec<PayinMethod>,
 }
@@ -91,12 +87,19 @@ pub struct PayinDetails {
 #[serde(rename_all = "camelCase")]
 pub struct PayinMethod {
     pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub group: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_payment_details: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub fee: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub min: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max: Option<String>,
 }
 
@@ -104,7 +107,9 @@ pub struct PayinMethod {
 #[serde(rename_all = "camelCase")]
 pub struct PayoutDetails {
     pub currency_code: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub min: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max: Option<String>,
     pub methods: Vec<PayoutMethod>,
 }
@@ -113,12 +118,19 @@ pub struct PayoutDetails {
 #[serde(rename_all = "camelCase")]
 pub struct PayoutMethod {
     pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub group: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub required_payment_details: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub fee: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub min: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub max: Option<String>,
     pub estimated_settlement_time: i64,
 }
@@ -143,9 +155,9 @@ mod tests {
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
         let offering = Offering::new(
-            bearer_did,
-            did_jwk.did.uri,
-            OfferingData {
+            &bearer_did,
+            &did_jwk.did.uri,
+            &OfferingData {
                 description: "Selling BTC for USD".to_string(),
                 payout_units_per_payin_unit: "1.5".to_string(),
                 payin: PayinDetails {
@@ -163,7 +175,7 @@ mod tests {
                     input_descriptors: vec![],
                 }),
             },
-            "1.0".to_string(),
+            "1.0",
         )
         .unwrap();
 

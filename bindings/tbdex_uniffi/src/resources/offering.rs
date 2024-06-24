@@ -13,7 +13,7 @@ impl Offering {
         protocol: String,
     ) -> Result<Self> {
         let inner_offering =
-            InnerOffering::new(bearer_did.0.clone(), from, data.to_inner()?, protocol)
+            InnerOffering::new(&bearer_did.0.clone(), &from, &data.to_inner()?, &protocol)
                 .map_err(|e| Arc::new(e.into()))?;
         Ok(Self(Arc::new(RwLock::new(inner_offering))))
     }

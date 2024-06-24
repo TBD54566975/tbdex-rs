@@ -1,25 +1,26 @@
 use super::Result;
 use crate::{
-    http_client::generate_access_token,
-    jose::Signer,
-    messages::{close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq},
+    http_client::{generate_access_token, HttpClientError},
+    messages::{
+        close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, MessageKind,
+    },
 };
 use reqwest::blocking::Client;
-use serde::Serialize;
-use web5::apid::{
-    crypto::{
-        jwk::Jwk,
-        key_managers::{in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
-    },
-    dids::bearer_did::BearerDid,
-};
+use serde::{Deserialize, Serialize};
+use std::str::FromStr;
+use web5::apid::dids::bearer_did::BearerDid;
 
-#[derive(Clone, Default, Debug, PartialEq)]
+#[derive(Clone, Default, Deserialize, Serialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Exchange {
     pub rfq: Rfq,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub quote: Option<Quote>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<Order>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub order_statuses: Option<Vec<OrderStatus>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub close: Option<Close>,
 }
 
@@ -31,107 +32,112 @@ struct CreateExchangeRequest {
     reply_to: Option<String>,
 }
 
-pub fn create_exchange(rfq: Rfq, reply_to: Option<String>) -> Result<()> {
-    // TODO did:dht resolution not functional
-    let key_manager = InMemoryKeyManager::new();
-    let public_jwk = key_manager
-        .import_private_jwk(Jwk {
-            crv: "Ed25519".to_string(),
-            alg: "EdDSA".to_string(),
-            kty: "OKP".to_string(),
-            x: "kW2-CfY0XmGTVLurk7BJ14Mqc4L-oJpD3jH5ZmwxyUw".to_string(),
-            y: None,
-            d: Some("jVOdpSIN-DhddW_XVnDipukuzu6-8zieXQtkECZYJ04".to_string()),
-        })
-        .unwrap();
-    let web5_signer = key_manager.get_signer(public_jwk).unwrap();
-    let client_did_uri =
-        "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy#0".to_string();
-    let jose_signer = Signer {
-        kid: client_did_uri.clone(),
-        web5_signer,
-    };
+pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
+    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
     let endpoint = "http://localhost:9000/exchanges";
-    // TODO all of the above
+    // TODO the above
 
-    let access_token = generate_access_token(&rfq.metadata.to, &client_did_uri, jose_signer)?;
-    let create_exchange_request = CreateExchangeRequest { rfq, reply_to };
-    let request_body = serde_json::to_string(&create_exchange_request)?;
+    // TODO uncomment with did:dht resolution support
+    // rfq.verify()?;
 
-    // todo handle error responses
-    Client::new()
+    let request_body = serde_json::to_string(&CreateExchangeRequest {
+        rfq: rfq.clone(),
+        reply_to,
+    })?;
+
+    // todo handle error responses response.status() and response.text()
+    let _response = Client::new()
         .post(endpoint)
+        .header("Content-Type", "application/json")
         .body(request_body)
-        .bearer_auth(access_token)
         .send()?;
 
     Ok(())
 }
 
-pub fn submit_order(_order: Order) -> Result<()> {
-    println!("TbdexHttpClient::submit_order() invoked");
+pub fn submit_order(order: &Order) -> Result<()> {
+    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
+    let endpoint = format!(
+        "http://localhost:9000/exchanges/{}",
+        order.metadata.exchange_id
+    );
+    // TODO the above
+
+    // TODO uncomment with did:dht resolution support
+    // order.verify()?;
+
+    let request_body = serde_json::to_string(&order)?;
+    // todo handle error responses response.status() and response.text()
+    let _response = Client::new()
+        .put(endpoint)
+        .header("Content-Type", "application/json")
+        .body(request_body)
+        .send()?;
+
     Ok(())
 }
 
-pub fn submit_close(_close: Close) -> Result<()> {
+pub fn submit_close(_close: &Close) -> Result<()> {
     println!("TbdexHttpClient::submit_close() invoked");
     Ok(())
 }
 
-pub fn get_exchange(
-    _pfi_did: String,
-    _requestor_did: BearerDid,
-    _exchange_id: String,
-) -> Result<Exchange> {
-    println!("TbdexHttpClient::get_exchange() invoked");
-    Ok(Exchange::default())
+#[derive(Deserialize)]
+struct GetExchangeResponse {
+    data: Vec<serde_json::Value>,
 }
 
-pub fn get_exchanges(_pfi_did: String, _requestor_did: BearerDid) -> Result<Vec<String>> {
+pub fn get_exchange(
+    pfi_did_uri: &str,
+    bearer_did: &BearerDid,
+    exchange_id: &str,
+) -> Result<Exchange> {
+    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
+    let endpoint = format!("http://localhost:9000/exchanges/{}", exchange_id);
+    // TODO the above
+
+    let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
+
+    let response = Client::new()
+        .get(endpoint)
+        .bearer_auth(access_token)
+        .send()?
+        .text()?;
+
+    // TODO handle error response
+
+    let mut exchange = Exchange::default();
+
+    // TODO cryptographic verifications
+
+    let data = serde_json::from_str::<GetExchangeResponse>(&response)?.data;
+    for message in data {
+        let kind = message
+            .get("metadata")
+            .and_then(|m| m.get("kind"))
+            .and_then(|k| k.as_str())
+            .ok_or(HttpClientError::ExchangeMapping)?;
+
+        match MessageKind::from_str(kind)? {
+            MessageKind::Rfq => exchange.rfq = serde_json::from_value(message)?,
+            MessageKind::Quote => exchange.quote = Some(serde_json::from_value(message)?),
+            MessageKind::Order => exchange.order = Some(serde_json::from_value(message)?),
+            MessageKind::OrderStatus => {
+                let order_status = serde_json::from_value::<OrderStatus>(message)?;
+                if let Some(order_statuses) = &mut exchange.order_statuses {
+                    order_statuses.push(order_status);
+                } else {
+                    exchange.order_statuses = Some(vec![order_status]);
+                }
+            }
+            MessageKind::Close => exchange.close = Some(serde_json::from_value(message)?),
+        }
+    }
+
+    Ok(exchange)
+}
+
+pub fn get_exchanges(_pfi_did: &str, _requestor_did: &BearerDid) -> Result<Vec<String>> {
     println!("TbdexHttpClient::get_exchanges() invoked");
     Ok(vec![])
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::messages::rfq::{CreateRfqData, CreateSelectedPayinMethod};
-    use std::sync::Arc;
-
-    #[test]
-    fn can_create_exchange() {
-        // TODO replace the below with did:dht once implemented
-        let did_uri = "did:jwk:eyJrdHkiOiJPS1AiLCJ1c2UiOiJzaWciLCJjcnYiOiJFZDI1NTE5Iiwia2lkIjoiVnRTSFhQbEtEdzFFRW9PajVYTjNYV2hqU1BZVk52WC1lNHZqUk8weVlKQSIsIngiOiJpejcwc3ZTTHhOWmhzRHhlSlFfam5PVmJYM0tGTmtjQmNNaldqWm1YRXNBIiwiYWxnIjoiRWREU0EifQ";
-        let key_manager = InMemoryKeyManager::new();
-        let bearer_did = BearerDid::new(did_uri, Arc::new(key_manager)).unwrap();
-        // TODO the above
-
-        let pfi_did = "did:dht:swit41ctrddy1s38c5j46yfgbxmwo1emau71zo5hn1tws1g63hiy".to_string();
-
-        // TODO we really need bearer DIDs at this point
-        // let rfq = Rfq::new(
-        //     bearer_did,
-        //     "did:test:pfi".to_string(),
-        //     did_uri.to_string(),
-        //     CreateRfqData {
-        //         offering_id: "offering_123".to_string(),
-        //         payin: CreateSelectedPayinMethod {
-        //             kind: "BTC".to_string(),
-        //             payment_details: serde_json::json!({"tmp": "payment-details"}),
-        //             amount: "101".to_string(),
-        //         },
-        //         payout: CreateSelectedPayoutMethod {
-        //             kind: "BTC".to_string(),
-        //             payment_details: serde_json::json!({"tmp": "payment-details"}),
-        //         },
-        //         claims: vec!["some-claim".to_string()],
-        //     },
-        //     "1.0".to_string(),
-        //     None,
-        // )
-        // .unwrap();
-
-        // let balances = create_exchange(pfi_did, bearer_did).unwrap();
-        // assert_ne!(0, balances.len());
-    }
 }

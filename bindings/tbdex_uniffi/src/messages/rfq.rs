@@ -18,11 +18,11 @@ impl Rfq {
         external_id: Option<String>,
     ) -> Result<Self> {
         let rfq = InnerRfq::new(
-            bearer_did.0.clone(),
-            to,
-            from,
-            create_rfq_data.to_inner()?,
-            protocol,
+            &bearer_did.0.clone(),
+            &to,
+            &from,
+            &create_rfq_data.to_inner()?,
+            &protocol,
             external_id,
         )
         .map_err(|e| Arc::new(e.into()))?;
@@ -127,14 +127,19 @@ pub mod data {
     #[derive(Clone)]
     pub struct CreateSelectedPayinMethod {
         pub kind: String,
-        pub payment_details: String, // JSON serialized
+        pub payment_details: Option<String>, // JSON serialized
         pub amount: String,
     }
 
     impl CreateSelectedPayinMethod {
         pub fn to_inner(&self) -> Result<InnerCreateSelectedPayinMethod> {
-            let payment_details: serde_json::Value =
-                serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
+            let payment_details = match &self.payment_details {
+                Some(pd) => Some(
+                    serde_json::from_str::<serde_json::Value>(pd)
+                        .map_err(|e| Arc::new(e.into()))?,
+                ),
+                None => None,
+            };
             Ok(InnerCreateSelectedPayinMethod {
                 kind: self.kind.clone(),
                 payment_details,
@@ -146,13 +151,18 @@ pub mod data {
     #[derive(Clone)]
     pub struct CreateSelectedPayoutMethod {
         pub kind: String,
-        pub payment_details: String, // JSON serialized
+        pub payment_details: Option<String>, // JSON serialized
     }
 
     impl CreateSelectedPayoutMethod {
         pub fn to_inner(&self) -> Result<InnerCreateSelectedPayoutMethod> {
-            let payment_details: serde_json::Value =
-                serde_json::from_str(&self.payment_details).map_err(|e| Arc::new(e.into()))?;
+            let payment_details = match &self.payment_details {
+                Some(pd) => Some(
+                    serde_json::from_str::<serde_json::Value>(pd)
+                        .map_err(|e| Arc::new(e.into()))?,
+                ),
+                None => None,
+            };
             Ok(InnerCreateSelectedPayoutMethod {
                 kind: self.kind.clone(),
                 payment_details,

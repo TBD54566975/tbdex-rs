@@ -1,12 +1,14 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::{jose::Signer, resources::offering::Offering};
+use crate::resources::offering::Offering;
 use base64::{engine::general_purpose, Engine as _};
+use chrono::Utc;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use web5::apid::dids::bearer_did::BearerDid;
 
 #[derive(Clone, Serialize, Default, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Rfq {
     pub metadata: MessageMetadata,
     pub data: RfqData,
@@ -16,58 +18,53 @@ pub struct Rfq {
 
 impl Rfq {
     pub fn new(
-        bearer_did: BearerDid,
-        to: String,
-        from: String,
-        create_rfq_data: CreateRfqData,
-        protocol: String,
+        bearer_did: &BearerDid,
+        to: &str,
+        from: &str,
+        create_rfq_data: &CreateRfqData,
+        protocol: &str,
         external_id: Option<String>,
     ) -> Result<Self> {
         let id = MessageKind::Rfq.typesafe_id()?;
 
         let metadata = MessageMetadata {
-            from,
-            to,
+            from: from.to_string(),
+            to: to.to_string(),
             kind: MessageKind::Rfq,
             id: id.clone(),
             exchange_id: id.clone(),
             external_id,
-            protocol,
-            created_at: String::default(),
+            protocol: protocol.to_string(),
+            created_at: Utc::now().to_rfc3339(),
         };
 
-        let (data, private_data) = hash_private_data(&create_rfq_data);
-
-        let key_id = bearer_did.document.verification_method[0].id.clone();
-        let web5_signer = bearer_did.get_signer(key_id.clone())?;
-        let jose_signer = Signer {
-            kid: key_id,
-            web5_signer,
-        };
+        let (data, private_data) = hash_private_data(create_rfq_data);
 
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             private_data,
             signature: crate::signature::sign(
-                jose_signer,
-                serde_json::to_value(metadata)?,
-                serde_json::to_value(data)?,
+                bearer_did,
+                &serde_json::to_value(metadata)?,
+                &serde_json::to_value(data)?,
             )?,
         })
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let rfq = serde_json::from_str::<Self>(json)?;
-
-        crate::signature::verify(
-            &rfq.metadata.from,
-            serde_json::to_value(rfq.metadata.clone())?,
-            serde_json::to_value(rfq.data.clone())?,
-            rfq.signature.clone(),
-        )?;
-
+        rfq.verify()?;
         Ok(rfq)
+    }
+
+    pub fn verify(&self) -> Result<()> {
+        Ok(crate::signature::verify(
+            &self.metadata.from,
+            &serde_json::to_value(self.metadata.clone())?,
+            &serde_json::to_value(self.data.clone())?,
+            &self.signature,
+        )?)
     }
 
     pub fn to_json(&self) -> Result<String> {
@@ -101,57 +98,75 @@ pub struct CreateRfqData {
 #[derive(Clone)]
 pub struct CreateSelectedPayinMethod {
     pub kind: String,
-    pub payment_details: serde_json::Value,
+    pub payment_details: Option<serde_json::Value>,
     pub amount: String,
 }
 
 #[derive(Clone)]
 pub struct CreateSelectedPayoutMethod {
     pub kind: String,
-    pub payment_details: serde_json::Value,
+    pub payment_details: Option<serde_json::Value>,
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct RfqData {
     pub offering_id: String,
     pub payin: SelectedPayinMethod,
     pub payout: SelectedPayoutMethod,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub claims_hash: Option<String>,
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct SelectedPayinMethod {
     pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_details_hash: Option<String>,
     pub amount: String,
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct SelectedPayoutMethod {
     pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_details_hash: Option<String>,
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct RfqPrivateData {
     pub salt: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub payin: Option<PrivatePaymentDetails>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub payout: Option<PrivatePaymentDetails>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub claims: Option<Vec<String>>,
 }
 
 #[derive(Clone, Default, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct PrivatePaymentDetails {
-    pub payment_details: serde_json::Value,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_details: Option<serde_json::Value>,
 }
 
 fn hash_private_data(create_rfq_data: &CreateRfqData) -> (RfqData, RfqPrivateData) {
     let salt = generate_random_salt();
 
-    let payin_payment_details_hash =
-        digest_private_data(&salt, &create_rfq_data.payin.payment_details);
-    let payout_payment_details_hash =
-        digest_private_data(&salt, &create_rfq_data.payout.payment_details);
+    let payin_payment_details_hash = create_rfq_data
+        .payin
+        .payment_details
+        .as_ref()
+        .map(|pd| digest_private_data(&salt, pd));
+    let payout_payment_details_hash = create_rfq_data
+        .payout
+        .payment_details
+        .as_ref()
+        .map(|pd| digest_private_data(&salt, pd));
     let claims_hash = if create_rfq_data.claims.is_empty() {
         None
     } else {
@@ -162,26 +177,37 @@ fn hash_private_data(create_rfq_data: &CreateRfqData) -> (RfqData, RfqPrivateDat
         offering_id: create_rfq_data.offering_id.clone(),
         payin: SelectedPayinMethod {
             kind: create_rfq_data.payin.kind.clone(),
-            payment_details_hash: Some(payin_payment_details_hash),
+            payment_details_hash: payin_payment_details_hash,
             amount: create_rfq_data.payin.amount.clone(),
         },
         payout: SelectedPayoutMethod {
             kind: create_rfq_data.payout.kind.clone(),
-            payment_details_hash: Some(payout_payment_details_hash),
+            payment_details_hash: payout_payment_details_hash,
         },
         claims_hash,
     };
 
-    let private_rfq_data = RfqPrivateData {
-        salt: salt.clone(),
-        payin: Some(PrivatePaymentDetails {
-            payment_details: create_rfq_data.payin.payment_details.clone(),
-        }),
-        payout: Some(PrivatePaymentDetails {
-            payment_details: create_rfq_data.payout.payment_details.clone(),
-        }),
-        claims: Some(create_rfq_data.claims.clone()),
-    };
+    let private_rfq_data =
+        RfqPrivateData {
+            salt: salt.clone(),
+            payin: create_rfq_data
+                .payin
+                .payment_details
+                .as_ref()
+                .map(|pd| PrivatePaymentDetails {
+                    payment_details: Some(pd.clone()),
+                }),
+            payout: create_rfq_data.payout.payment_details.as_ref().map(|pd| {
+                PrivatePaymentDetails {
+                    payment_details: Some(pd.clone()),
+                }
+            }),
+            claims: if !create_rfq_data.claims.is_empty() {
+                Some(create_rfq_data.claims.clone())
+            } else {
+                None
+            },
+        };
 
     (hashed_rfq_data, private_rfq_data)
 }
@@ -193,14 +219,13 @@ fn generate_random_salt() -> String {
 }
 
 fn digest_private_data<T: Serialize>(salt: &str, value: &T) -> String {
-    let payload = format!(
-        "{}{}",
-        salt,
-        serde_json::to_string(value).expect("Failed to serialize value")
-    );
+    let digestible = serde_json::json!([salt, value]);
+    let serialized = serde_json::to_string(&digestible).unwrap(); // 🚧 unwrap!
+
     let mut hasher = Sha256::new();
-    hasher.update(payload.as_bytes());
+    hasher.update(serialized.as_bytes());
     let digest = hasher.finalize();
+
     general_purpose::URL_SAFE_NO_PAD.encode(digest)
 }
 
@@ -224,23 +249,23 @@ mod tests {
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
         let rfq = Rfq::new(
-            bearer_did,
-            "did:test:pfi".to_string(),
-            did_jwk.did.uri.clone(),
-            CreateRfqData {
+            &bearer_did,
+            "did:test:pfi",
+            &did_jwk.did.uri,
+            &CreateRfqData {
                 offering_id: "offering_123".to_string(),
                 payin: CreateSelectedPayinMethod {
                     kind: "BTC".to_string(),
-                    payment_details: serde_json::json!({"tmp": "payment-details"}),
+                    payment_details: Some(serde_json::json!({"tmp": "payment-details"})),
                     amount: "101".to_string(),
                 },
                 payout: CreateSelectedPayoutMethod {
                     kind: "BTC".to_string(),
-                    payment_details: serde_json::json!({"tmp": "payment-details"}),
+                    payment_details: Some(serde_json::json!({"tmp": "payment-details"})),
                 },
                 claims: vec!["some-claim".to_string()],
             },
-            "1.0".to_string(),
+            "1.0",
             None,
         )
         .unwrap();
