@@ -1,7 +1,7 @@
 use serde_json::Error as SerdeJsonError;
 use std::sync::{Arc, PoisonError};
 use std::{any::type_name, fmt::Debug};
-use tbdex::http_client::TbdexHttpClientError;
+use tbdex::http_client::HttpClientError;
 use tbdex::messages::MessageError;
 use tbdex::resources::ResourceError;
 use thiserror::Error;
@@ -84,8 +84,8 @@ impl From<MessageError> for RustCoreError {
     }
 }
 
-impl From<TbdexHttpClientError> for RustCoreError {
-    fn from(error: TbdexHttpClientError) -> Self {
+impl From<HttpClientError> for RustCoreError {
+    fn from(error: HttpClientError) -> Self {
         RustCoreError::new(error)
     }
 }

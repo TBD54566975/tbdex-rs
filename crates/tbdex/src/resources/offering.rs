@@ -1,3 +1,5 @@
+use crate::jose::Signer;
+
 use super::{ResourceKind, ResourceMetadata, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -30,11 +32,18 @@ impl Offering {
             updated_at: Some(now),
         };
 
+        let key_id = bearer_did.document.verification_method[0].id.clone();
+        let web5_signer = bearer_did.get_signer(key_id.clone())?;
+        let jose_signer = Signer {
+            kid: key_id,
+            web5_signer,
+        };
+
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
-                bearer_did,
+                jose_signer,
                 serde_json::to_value(metadata)?,
                 serde_json::to_value(data)?,
             )?,
@@ -60,6 +69,7 @@ impl Offering {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct OfferingData {
     pub description: String,
     pub payout_units_per_payin_unit: String,
@@ -69,6 +79,7 @@ pub struct OfferingData {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct PayinDetails {
     pub currency_code: String,
     pub min: Option<String>,
@@ -77,6 +88,7 @@ pub struct PayinDetails {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct PayinMethod {
     pub kind: String,
     pub name: Option<String>,
@@ -89,6 +101,7 @@ pub struct PayinMethod {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct PayoutDetails {
     pub currency_code: String,
     pub min: Option<String>,
@@ -97,6 +110,7 @@ pub struct PayoutDetails {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct PayoutMethod {
     pub kind: String,
     pub name: Option<String>,

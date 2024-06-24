@@ -1,5 +1,5 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::resources::offering::Offering;
+use crate::{jose::Signer, resources::offering::Offering};
 use base64::{engine::general_purpose, Engine as _};
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
@@ -38,12 +38,19 @@ impl Rfq {
 
         let (data, private_data) = hash_private_data(&create_rfq_data);
 
+        let key_id = bearer_did.document.verification_method[0].id.clone();
+        let web5_signer = bearer_did.get_signer(key_id.clone())?;
+        let jose_signer = Signer {
+            kid: key_id,
+            web5_signer,
+        };
+
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             private_data,
             signature: crate::signature::sign(
-                bearer_did,
+                jose_signer,
                 serde_json::to_value(metadata)?,
                 serde_json::to_value(data)?,
             )?,

@@ -4,7 +4,7 @@ use crate::{
     resources::{balance::Balance, offering::Offering},
 };
 use std::sync::{Arc, RwLock};
-use tbdex::http_client::Exchange as InnerExchange;
+use tbdex::http_client::exchanges::Exchange as InnerExchange;
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Exchange {
@@ -42,7 +42,7 @@ impl Exchange {
 
 pub fn get_offerings(pfi_did: String) -> Result<Vec<Arc<Offering>>> {
     let inner_offerings =
-        tbdex::http_client::get_offerings(pfi_did).map_err(|e| Arc::new(e.into()))?;
+        tbdex::http_client::offerings::get_offerings(pfi_did).map_err(|e| Arc::new(e.into()))?;
 
     let offerings = inner_offerings
         .into_iter()
@@ -53,8 +53,9 @@ pub fn get_offerings(pfi_did: String) -> Result<Vec<Arc<Offering>>> {
 }
 
 pub fn get_balances(pfi_did: String, requestor_did: Arc<BearerDid>) -> Result<Vec<Arc<Balance>>> {
-    let inner_balances = tbdex::http_client::get_balances(pfi_did, requestor_did.0.clone())
-        .map_err(|e| Arc::new(e.into()))?;
+    let inner_balances =
+        tbdex::http_client::balances::get_balances(pfi_did, requestor_did.0.clone())
+            .map_err(|e| Arc::new(e.into()))?;
 
     let balances = inner_balances
         .into_iter()
@@ -65,18 +66,20 @@ pub fn get_balances(pfi_did: String, requestor_did: Arc<BearerDid>) -> Result<Ve
 }
 
 pub fn create_exchange(rfq: Arc<Rfq>, reply_to: Option<String>) -> Result<()> {
-    tbdex::http_client::create_exchange(rfq.to_inner()?, reply_to)
+    tbdex::http_client::exchanges::create_exchange(rfq.to_inner()?, reply_to)
         .map_err(|e| Arc::new(e.into()))?;
     Ok(())
 }
 
 pub fn submit_order(order: Arc<Order>) -> Result<()> {
-    tbdex::http_client::submit_order(order.get_data()?).map_err(|e| Arc::new(e.into()))?;
+    tbdex::http_client::exchanges::submit_order(order.get_data()?)
+        .map_err(|e| Arc::new(e.into()))?;
     Ok(())
 }
 
 pub fn submit_close(close: Arc<Close>) -> Result<()> {
-    tbdex::http_client::submit_close(close.get_data()?).map_err(|e| Arc::new(e.into()))?;
+    tbdex::http_client::exchanges::submit_close(close.get_data()?)
+        .map_err(|e| Arc::new(e.into()))?;
     Ok(())
 }
 
@@ -86,14 +89,15 @@ pub fn get_exchange(
     exchange_id: String,
 ) -> Result<Exchange> {
     let inner_exchange =
-        tbdex::http_client::get_exchange(pfi_did, requestor_did.0.clone(), exchange_id)
+        tbdex::http_client::exchanges::get_exchange(pfi_did, requestor_did.0.clone(), exchange_id)
             .map_err(|e| Arc::new(e.into()))?;
 
     Ok(Exchange::from_inner(inner_exchange))
 }
 
 pub fn get_exchanges(pfi_did: String, requestor_did: Arc<BearerDid>) -> Result<Vec<String>> {
-    let exchange_ids = tbdex::http_client::get_exchanges(pfi_did, requestor_did.0.clone())
-        .map_err(|e| Arc::new(e.into()))?;
+    let exchange_ids =
+        tbdex::http_client::exchanges::get_exchanges(pfi_did, requestor_did.0.clone())
+            .map_err(|e| Arc::new(e.into()))?;
     Ok(exchange_ids)
 }

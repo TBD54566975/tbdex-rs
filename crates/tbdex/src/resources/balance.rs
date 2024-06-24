@@ -1,3 +1,5 @@
+use crate::jose::Signer;
+
 use super::{ResourceKind, ResourceMetadata, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -28,11 +30,18 @@ impl Balance {
             updated_at: Some(now),
         };
 
+        let key_id = bearer_did.document.verification_method[0].id.clone();
+        let web5_signer = bearer_did.get_signer(key_id.clone())?;
+        let jose_signer = Signer {
+            kid: key_id,
+            web5_signer,
+        };
+
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
-                bearer_did,
+                jose_signer,
                 serde_json::to_value(metadata)?,
                 serde_json::to_value(data)?,
             )?,
@@ -58,6 +67,7 @@ impl Balance {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BalanceData {
     pub currency_code: String,
     pub available: String,

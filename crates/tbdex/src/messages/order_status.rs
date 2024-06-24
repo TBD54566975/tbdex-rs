@@ -1,3 +1,5 @@
+use crate::jose::Signer;
+
 use super::{MessageKind, MessageMetadata, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -31,11 +33,18 @@ impl OrderStatus {
             created_at: Utc::now().to_rfc3339(),
         };
 
+        let key_id = bearer_did.document.verification_method[0].id.clone();
+        let web5_signer = bearer_did.get_signer(key_id.clone())?;
+        let jose_signer = Signer {
+            kid: key_id,
+            web5_signer,
+        };
+
         Ok(Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
-                bearer_did,
+                jose_signer,
                 serde_json::to_value(metadata)?,
                 serde_json::to_value(data)?,
             )?,
