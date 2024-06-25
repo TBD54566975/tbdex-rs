@@ -24,7 +24,7 @@ pub enum MessageError {
     #[error("unknown kind {0}")]
     UnknownKind(String),
     #[error("offering verification failure {0}")]
-    OfferingVerification(String)
+    OfferingVerification(String),
 }
 
 impl From<SerdeJsonError> for MessageError {
