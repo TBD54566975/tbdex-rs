@@ -125,11 +125,6 @@ impl Rfq {
             }
         }
 
-        // verify payin
-        // verify payout
-        // verify claims
-
-        println!("Rfq.verify_offering_requirements() invoked");
         Ok(true)
     }
 
