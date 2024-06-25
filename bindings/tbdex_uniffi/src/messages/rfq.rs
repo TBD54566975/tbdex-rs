@@ -255,13 +255,15 @@ pub mod data {
 
     #[derive(Clone)]
     pub struct PrivatePaymentDetails {
-        pub payment_details: String, // JSON serialized
+        pub payment_details: Option<String>, // JSON serialized
     }
 
     impl PrivatePaymentDetails {
         pub fn from_inner(inner: InnerPrivatePaymentDetails) -> Result<Self> {
-            let payment_details =
-                serde_json::to_string(&inner.payment_details).map_err(|e| Arc::new(e.into()))?;
+            let payment_details = match &inner.payment_details {
+                Some(pd) => Some(serde_json::to_string(pd).map_err(|e| Arc::new(e.into()))?),
+                None => None,
+            };
             Ok(Self { payment_details })
         }
     }

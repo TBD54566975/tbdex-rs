@@ -7,8 +7,12 @@ mod errors;
 use crate::{
     errors::RustCoreError,
     http_client::{
-        create_exchange, get_balances, get_exchange, get_exchanges, get_offerings, submit_close,
-        submit_order, Exchange as ExchangeData,
+        balances::get_balances,
+        exchanges::{
+            create_exchange, get_exchange, get_exchanges, submit_close, submit_order,
+            Exchange as ExchangeData,
+        },
+        offerings::get_offerings,
     },
     messages::{
         close::Close,
@@ -78,5 +82,18 @@ use web5_uniffi_wrapper::{
     dsa::Signer,
     errors::RustCoreError as Web5RustCoreError,
 };
+
+// 🚧 TODO temporary hack in place while did:dht resolution is incomplete
+pub fn tmp_hack_bearer_did(
+    did: DidData,
+    document: DocumentData,
+    key_manager: std::sync::Arc<dyn KeyManager>,
+) -> std::sync::Arc<BearerDid> {
+    std::sync::Arc::new(BearerDid(web5::apid::dids::bearer_did::BearerDid {
+        did,
+        document,
+        key_manager: key_manager.to_inner(),
+    }))
+}
 
 uniffi::include_scaffolding!("tbdex");

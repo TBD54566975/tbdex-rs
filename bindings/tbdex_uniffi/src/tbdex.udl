@@ -1,4 +1,6 @@
 namespace tbdex {
+  BearerDid tmp_hack_bearer_did(DidData did, DocumentData document, KeyManager key_manager);
+
   [Throws=RustCoreError]
   sequence<Offering> get_offerings(string pfi_did_uri);
   [Throws=RustCoreError]
@@ -207,7 +209,7 @@ dictionary RfqPrivateDataData {
 };
 
 dictionary PrivatePaymentDetailsData {
-  string payment_details;
+  string? payment_details;
 };
 
 interface Quote {

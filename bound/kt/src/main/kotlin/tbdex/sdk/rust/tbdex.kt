@@ -870,6 +870,8 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -1050,18 +1052,20 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_create_exchange(`rfq`: Pointer,`replyTo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_func_get_balances(`pfiDid`: RustBuffer.ByValue,`requestorDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_func_get_balances(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_func_get_exchange(`pfiDid`: RustBuffer.ByValue,`requestorDid`: Pointer,`exchangeId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_func_get_exchange(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,`exchangeId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_func_get_exchanges(`pfiDid`: RustBuffer.ByValue,`requestorDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_func_get_exchanges(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_func_get_offerings(`pfiDid`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_func_get_offerings(`pfiDidUri`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_submit_close(`close`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_func_submit_order(`order`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    fun uniffi_tbdex_uniffi_fn_func_tmp_hack_bearer_did(`did`: RustBuffer.ByValue,`document`: RustBuffer.ByValue,`keyManager`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
     fun ffi_tbdex_uniffi_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun ffi_tbdex_uniffi_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -1188,6 +1192,8 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_func_submit_order(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_func_tmp_hack_bearer_did(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_method_balance_get_data(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_balance_to_json(
@@ -1306,22 +1312,25 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_func_create_exchange() != 7308.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_balances() != 18789.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_balances() != 51715.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange() != 50398.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange() != 12075.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchanges() != 64807.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchanges() != 41220.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_offerings() != 4292.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_offerings() != 20626.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_submit_close() != 11219.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_submit_order() != 22522.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_func_tmp_hack_bearer_did() != 51792.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_balance_get_data() != 45636.toShort()) {
@@ -5631,7 +5640,7 @@ public object FfiConverterTypeCreateRfqDataData: FfiConverterRustBuffer<CreateRf
 
 data class CreateSelectedPayinMethodData (
     var `kind`: kotlin.String, 
-    var `paymentDetails`: kotlin.String, 
+    var `paymentDetails`: kotlin.String?, 
     var `amount`: kotlin.String
 ) {
     
@@ -5642,20 +5651,20 @@ public object FfiConverterTypeCreateSelectedPayinMethodData: FfiConverterRustBuf
     override fun read(buf: ByteBuffer): CreateSelectedPayinMethodData {
         return CreateSelectedPayinMethodData(
             FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
             FfiConverterString.read(buf),
         )
     }
 
     override fun allocationSize(value: CreateSelectedPayinMethodData) = (
             FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterString.allocationSize(value.`paymentDetails`) +
+            FfiConverterOptionalString.allocationSize(value.`paymentDetails`) +
             FfiConverterString.allocationSize(value.`amount`)
     )
 
     override fun write(value: CreateSelectedPayinMethodData, buf: ByteBuffer) {
             FfiConverterString.write(value.`kind`, buf)
-            FfiConverterString.write(value.`paymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`paymentDetails`, buf)
             FfiConverterString.write(value.`amount`, buf)
     }
 }
@@ -5664,7 +5673,7 @@ public object FfiConverterTypeCreateSelectedPayinMethodData: FfiConverterRustBuf
 
 data class CreateSelectedPayoutMethodData (
     var `kind`: kotlin.String, 
-    var `paymentDetails`: kotlin.String
+    var `paymentDetails`: kotlin.String?
 ) {
     
     companion object
@@ -5674,18 +5683,18 @@ public object FfiConverterTypeCreateSelectedPayoutMethodData: FfiConverterRustBu
     override fun read(buf: ByteBuffer): CreateSelectedPayoutMethodData {
         return CreateSelectedPayoutMethodData(
             FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
     override fun allocationSize(value: CreateSelectedPayoutMethodData) = (
             FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterString.allocationSize(value.`paymentDetails`)
+            FfiConverterOptionalString.allocationSize(value.`paymentDetails`)
     )
 
     override fun write(value: CreateSelectedPayoutMethodData, buf: ByteBuffer) {
             FfiConverterString.write(value.`kind`, buf)
-            FfiConverterString.write(value.`paymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`paymentDetails`, buf)
     }
 }
 
@@ -6154,6 +6163,7 @@ public object FfiConverterTypeOfferingDataData: FfiConverterRustBuffer<OfferingD
 
 data class OrderData (
     var `metadata`: MessageMetadataData, 
+    var `data`: OrderDataData, 
     var `signature`: kotlin.String
 ) {
     
@@ -6164,18 +6174,46 @@ public object FfiConverterTypeOrderData: FfiConverterRustBuffer<OrderData> {
     override fun read(buf: ByteBuffer): OrderData {
         return OrderData(
             FfiConverterTypeMessageMetadataData.read(buf),
+            FfiConverterTypeOrderDataData.read(buf),
             FfiConverterString.read(buf),
         )
     }
 
     override fun allocationSize(value: OrderData) = (
             FfiConverterTypeMessageMetadataData.allocationSize(value.`metadata`) +
+            FfiConverterTypeOrderDataData.allocationSize(value.`data`) +
             FfiConverterString.allocationSize(value.`signature`)
     )
 
     override fun write(value: OrderData, buf: ByteBuffer) {
             FfiConverterTypeMessageMetadataData.write(value.`metadata`, buf)
+            FfiConverterTypeOrderDataData.write(value.`data`, buf)
             FfiConverterString.write(value.`signature`, buf)
+    }
+}
+
+
+
+class OrderDataData {
+    override fun equals(other: Any?): Boolean {
+        return other is OrderDataData
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+
+    companion object
+}
+
+public object FfiConverterTypeOrderDataData: FfiConverterRustBuffer<OrderDataData> {
+    override fun read(buf: ByteBuffer): OrderDataData {
+        return OrderDataData()
+    }
+
+    override fun allocationSize(value: OrderDataData) = 0UL
+
+    override fun write(value: OrderDataData, buf: ByteBuffer) {
     }
 }
 
@@ -6490,7 +6528,7 @@ public object FfiConverterTypePresentationDefinitionData: FfiConverterRustBuffer
 
 
 data class PrivatePaymentDetailsData (
-    var `paymentDetails`: kotlin.String
+    var `paymentDetails`: kotlin.String?
 ) {
     
     companion object
@@ -6499,16 +6537,16 @@ data class PrivatePaymentDetailsData (
 public object FfiConverterTypePrivatePaymentDetailsData: FfiConverterRustBuffer<PrivatePaymentDetailsData> {
     override fun read(buf: ByteBuffer): PrivatePaymentDetailsData {
         return PrivatePaymentDetailsData(
-            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
     override fun allocationSize(value: PrivatePaymentDetailsData) = (
-            FfiConverterString.allocationSize(value.`paymentDetails`)
+            FfiConverterOptionalString.allocationSize(value.`paymentDetails`)
     )
 
     override fun write(value: PrivatePaymentDetailsData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`paymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`paymentDetails`, buf)
     }
 }
 
@@ -7711,41 +7749,41 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
     
     
 
-    @Throws(RustCoreException::class) fun `getBalances`(`pfiDid`: kotlin.String, `requestorDid`: BearerDid): List<Balance> {
+    @Throws(RustCoreException::class) fun `getBalances`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid): List<Balance> {
             return FfiConverterSequenceTypeBalance.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_balances(
-        FfiConverterString.lower(`pfiDid`),FfiConverterTypeBearerDid.lower(`requestorDid`),_status)
+        FfiConverterString.lower(`pfiDidUri`),FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
 }
     )
     }
     
 
-    @Throws(RustCoreException::class) fun `getExchange`(`pfiDid`: kotlin.String, `requestorDid`: BearerDid, `exchangeId`: kotlin.String): ExchangeData {
+    @Throws(RustCoreException::class) fun `getExchange`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid, `exchangeId`: kotlin.String): ExchangeData {
             return FfiConverterTypeExchangeData.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_exchange(
-        FfiConverterString.lower(`pfiDid`),FfiConverterTypeBearerDid.lower(`requestorDid`),FfiConverterString.lower(`exchangeId`),_status)
+        FfiConverterString.lower(`pfiDidUri`),FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`exchangeId`),_status)
 }
     )
     }
     
 
-    @Throws(RustCoreException::class) fun `getExchanges`(`pfiDid`: kotlin.String, `requestorDid`: BearerDid): List<kotlin.String> {
+    @Throws(RustCoreException::class) fun `getExchanges`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid): List<kotlin.String> {
             return FfiConverterSequenceString.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_exchanges(
-        FfiConverterString.lower(`pfiDid`),FfiConverterTypeBearerDid.lower(`requestorDid`),_status)
+        FfiConverterString.lower(`pfiDidUri`),FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
 }
     )
     }
     
 
-    @Throws(RustCoreException::class) fun `getOfferings`(`pfiDid`: kotlin.String): List<Offering> {
+    @Throws(RustCoreException::class) fun `getOfferings`(`pfiDidUri`: kotlin.String): List<Offering> {
             return FfiConverterSequenceTypeOffering.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_offerings(
-        FfiConverterString.lower(`pfiDid`),_status)
+        FfiConverterString.lower(`pfiDidUri`),_status)
 }
     )
     }
@@ -7767,6 +7805,15 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
         FfiConverterTypeOrder.lower(`order`),_status)
 }
     
+    
+ fun `tmpHackBearerDid`(`did`: DidData, `document`: DocumentData, `keyManager`: KeyManager): BearerDid {
+            return FfiConverterTypeBearerDid.lift(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_tmp_hack_bearer_did(
+        FfiConverterTypeDidData.lower(`did`),FfiConverterTypeDocumentData.lower(`document`),FfiConverterTypeKeyManager.lower(`keyManager`),_status)
+}
+    )
+    }
     
 
 

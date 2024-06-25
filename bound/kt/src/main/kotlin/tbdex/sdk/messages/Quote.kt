@@ -45,6 +45,14 @@ class Quote {
         this.signature = rustCoreQuote.getData().signature
     }
 
+    constructor(rustCoreQuote: RustCoreQuote) {
+        this.rustCoreQuote = rustCoreQuote
+
+        this.metadata = this.rustCoreQuote.getData().metadata
+        this.data = this.rustCoreQuote.getData().data
+        this.signature = this.rustCoreQuote.getData().signature
+    }
+
     fun toJson(): String {
         return this.rustCoreQuote.toJson()
     }

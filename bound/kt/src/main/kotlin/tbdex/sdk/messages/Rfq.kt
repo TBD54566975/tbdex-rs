@@ -52,6 +52,16 @@ class Rfq {
         this.signature = rfqData.signature
     }
 
+    constructor(rustCoreRfq: RustCoreRfq) {
+        this.rustCoreRfq = rustCoreRfq
+
+        val rfqData = this.rustCoreRfq.getData()
+        this.metadata = rfqData.metadata
+        this.data = RfqData.fromRustCore(rfqData.data)
+        this.privateData = RfqPrivateData.fromRustCore(rfqData.privateData)
+        this.signature = rfqData.signature
+    }
+
     fun toJson(): String {
         return this.rustCoreRfq.toJson()
     }
@@ -87,13 +97,13 @@ data class CreateRfqData(
 
 data class CreateSelectedPayinMethod(
     val kind: String,
-    val paymentDetails: JsonNode,
+    val paymentDetails: JsonNode? = null,
     val amount: String
 ) {
     fun toRustCore(): RustCoreCreateSelectedPayinMethod {
         return RustCoreCreateSelectedPayinMethod(
             this.kind,
-            Json.stringify(this.paymentDetails),
+            this.paymentDetails?.let { Json.stringify(it) },
             this.amount
         )
     }
@@ -101,12 +111,12 @@ data class CreateSelectedPayinMethod(
 
 data class CreateSelectedPayoutMethod(
     val kind: String,
-    val paymentDetails: JsonNode
+    val paymentDetails: JsonNode? = null
 ) {
     fun toRustCore(): RustCoreCreateSelectedPayoutMethod {
         return RustCoreCreateSelectedPayoutMethod(
             this.kind,
-            Json.stringify(this.paymentDetails)
+            this.paymentDetails?.let { Json.stringify(it) }
         )
     }
 }
@@ -178,7 +188,7 @@ data class RfqPrivateData(
 }
 
 data class PrivatePaymentDetails(
-    val paymentDetails: JsonNode
+    val paymentDetails: JsonNode? = null
 ) {
     companion object {
         internal fun fromRustCore(rustCorePrivatePaymentDetails: RustCorePrivatePaymentDetails): PrivatePaymentDetails {

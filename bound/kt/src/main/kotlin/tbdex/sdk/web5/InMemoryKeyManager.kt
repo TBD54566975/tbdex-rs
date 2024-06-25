@@ -21,7 +21,7 @@ class InMemoryKeyManager : KeyManager {
         return this.rustCoreInMemoryKeyManager.getAsKeyManager()
     }
 
-    fun importPrivateJwk(privateJwk: Jwk) {
-        this.rustCoreInMemoryKeyManager.importPrivateJwk(privateJwk)
+    fun importPrivateJwk(privateJwk: Jwk): Jwk {
+        return this.rustCoreInMemoryKeyManager.importPrivateJwk(privateJwk)
     }
 }

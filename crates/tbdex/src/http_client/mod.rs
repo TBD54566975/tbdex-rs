@@ -201,5 +201,7 @@ mod tests {
                 panic!("Failed to close exchange after 3 attempts");
             }
         }
+
+        println!("Exchange completed successfully!")
     }
 }

@@ -38,6 +38,14 @@ class Close {
         this.signature = rustCoreClose.getData().signature
     }
 
+    constructor(rustCoreClose: RustCoreClose) {
+        this.rustCoreClose = rustCoreClose
+
+        this.metadata = rustCoreClose.getData().metadata
+        this.data = rustCoreClose.getData().data
+        this.signature = rustCoreClose.getData().signature
+    }
+
     fun toJson(): String {
         return this.rustCoreClose.toJson()
     }

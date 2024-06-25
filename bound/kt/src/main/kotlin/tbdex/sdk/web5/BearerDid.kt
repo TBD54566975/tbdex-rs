@@ -1,5 +1,6 @@
 package tbdex.sdk.web5
 
+import tbdex.sdk.rust.tmpHackBearerDid
 import tbdex.sdk.rust.DidData as RustCoreDid
 import tbdex.sdk.rust.DocumentData as RustCoreDocument
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
@@ -20,6 +21,15 @@ class BearerDid {
         this.did = this.rustCoreBearerDid.getData().did
         this.document = this.rustCoreBearerDid.getData().document
         this.keyManager = keyManager
+    }
+
+    // TODO temporarily doing this because did:dht resolution incomplete
+    constructor(did: Did, document: Document, keyManager: KeyManager) {
+        this.did = did
+        this.document = document
+        this.keyManager = keyManager
+
+        this.rustCoreBearerDid = tmpHackBearerDid(did, document, keyManager.getRustCoreKeyManager())
     }
 
     fun getSigner(): Signer {

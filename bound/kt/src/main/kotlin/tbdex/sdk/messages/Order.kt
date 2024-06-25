@@ -30,6 +30,13 @@ class Order {
         this.signature = rustCoreOrder.getData().signature
     }
 
+    constructor(rustCoreOrder: RustCoreOrder) {
+        this.rustCoreOrder = rustCoreOrder
+
+        this.metadata = this.rustCoreOrder.getData().metadata
+        this.signature = this.rustCoreOrder.getData().signature
+    }
+
     fun toJson(): String {
         return this.rustCoreOrder.toJson()
     }

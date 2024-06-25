@@ -37,6 +37,14 @@ class OrderStatus {
         this.signature = rustCoreOrderStatus.getData().signature
     }
 
+    constructor(rustCoreOrderStatus: RustCoreOrderStatus) {
+        this.rustCoreOrderStatus = rustCoreOrderStatus
+
+        this.metadata = this.rustCoreOrderStatus.getData().metadata
+        this.data = this.rustCoreOrderStatus.getData().data
+        this.signature = this.rustCoreOrderStatus.getData().signature
+    }
+
     fun toJson(): String {
         return this.rustCoreOrderStatus.toJson()
     }
