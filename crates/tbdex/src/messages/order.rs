@@ -1,4 +1,5 @@
 use super::{MessageKind, MessageMetadata, Result};
+use crate::json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::apid::dids::bearer_did::BearerDid;
@@ -32,7 +33,7 @@ impl Order {
 
         let data = OrderData {};
 
-        Ok(Self {
+        let order = Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
@@ -40,7 +41,12 @@ impl Order {
                 &serde_json::to_value(metadata)?,
                 &serde_json::to_value(&data)?,
             )?,
-        })
+        };
+
+        // 🚧 TODO commenting out until did:dht support
+        // order.verify()?;
+
+        Ok(order)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
@@ -50,12 +56,21 @@ impl Order {
     }
 
     pub fn verify(&self) -> Result<()> {
-        Ok(crate::signature::verify(
+        // verify resource json schema
+        crate::json_schemas::validate(MESSAGE_JSON_SCHEMA, self)?;
+
+        // verify data json schema
+        crate::json_schemas::validate(ORDER_DATA_JSON_SCHEMA, &self.data)?;
+
+        // verify signature
+        crate::signature::verify(
             &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(&OrderData {})?,
             &self.signature,
-        )?)
+        )?;
+
+        Ok(())
     }
 
     pub fn to_json(&self) -> Result<String> {

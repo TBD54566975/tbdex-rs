@@ -5,6 +5,7 @@ edition = "2021"
 homepage.workspace = true
 repository.workspace = true
 license-file.workspace = true
+build = "build.rs"
 
 [dependencies]
 base64 = "0.22.0"
@@ -21,3 +22,6 @@ thiserror = { workspace = true }
 type-safe-id = { version = "0.3.0", features = ["serde"] }
 uuid = "1.9.0"
 web5 = { workspace = true }
+
+[build-dependencies]
+reqwest = { version = "0.12.5", features = ["blocking"] }

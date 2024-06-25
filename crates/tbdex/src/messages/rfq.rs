@@ -1,5 +1,11 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::{messages::MessageError, resources::offering::Offering};
+use crate::{
+    json_schemas::generated::{
+        MESSAGE_JSON_SCHEMA, RFQ_DATA_JSON_SCHEMA, RFQ_PRIVATE_DATA_JSON_SCHEMA,
+    },
+    messages::MessageError,
+    resources::offering::Offering,
+};
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
 use jsonschema::JSONSchema;
@@ -43,7 +49,7 @@ impl Rfq {
 
         let (data, private_data) = hash_private_data(create_rfq_data);
 
-        Ok(Self {
+        let rfq = Self {
             metadata: metadata.clone(),
             data: data.clone(),
             private_data,
@@ -52,7 +58,12 @@ impl Rfq {
                 &serde_json::to_value(metadata)?,
                 &serde_json::to_value(data)?,
             )?,
-        })
+        };
+
+        // 🚧 TODO commenting out until did:dht support
+        // rfq.verify()?;
+
+        Ok(rfq)
     }
 
     pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
@@ -70,12 +81,24 @@ impl Rfq {
     }
 
     pub fn verify(&self) -> Result<()> {
-        Ok(crate::signature::verify(
+        // verify resource json schema
+        crate::json_schemas::validate(MESSAGE_JSON_SCHEMA, self)?;
+
+        // verify data json schema
+        crate::json_schemas::validate(RFQ_DATA_JSON_SCHEMA, &self.data)?;
+
+        // verify private data json schema
+        crate::json_schemas::validate(RFQ_PRIVATE_DATA_JSON_SCHEMA, &self.private_data)?;
+
+        // verify signature
+        crate::signature::verify(
             &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
-        )?)
+        )?;
+
+        Ok(())
     }
 
     pub fn to_json(&self) -> Result<String> {
@@ -140,6 +163,7 @@ impl Rfq {
             }
         }
 
+        // 🚧 TODO make use of new json_schemas module
         // verify payin json schema
         if let Some(payin_method) = offering
             .data

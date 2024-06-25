@@ -4,7 +4,7 @@ pub mod order_status;
 pub mod quote;
 pub mod rfq;
 
-use crate::signature::SignatureError;
+use crate::{json_schemas::JsonSchemaError, signature::SignatureError};
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeJsonError;
 use std::str::FromStr;
@@ -25,6 +25,8 @@ pub enum MessageError {
     UnknownKind(String),
     #[error("offering verification failure {0}")]
     OfferingVerification(String),
+    #[error(transparent)]
+    JsonSchema(#[from] JsonSchemaError),
 }
 
 impl From<SerdeJsonError> for MessageError {
