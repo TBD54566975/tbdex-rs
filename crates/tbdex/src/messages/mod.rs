@@ -23,6 +23,8 @@ pub enum MessageError {
     Signature(#[from] SignatureError),
     #[error("unknown kind {0}")]
     UnknownKind(String),
+    #[error("offering verification failure {0}")]
+    OfferingVerification(String)
 }
 
 impl From<SerdeJsonError> for MessageError {

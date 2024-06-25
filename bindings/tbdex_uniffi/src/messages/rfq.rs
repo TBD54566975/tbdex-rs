@@ -68,7 +68,7 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        rfq.verify_offering_requirements(offering.to_inner()?)
+        rfq.verify_offering_requirements(&offering.to_inner()?)
             .map_err(|e| Arc::new(e.into()))
     }
 

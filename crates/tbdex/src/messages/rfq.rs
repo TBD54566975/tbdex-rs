@@ -1,5 +1,5 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::resources::offering::Offering;
+use crate::{messages::MessageError, resources::offering::Offering};
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
 use rand::{rngs::OsRng, RngCore};
@@ -71,7 +71,64 @@ impl Rfq {
         Ok(serde_json::to_string(&self)?)
     }
 
-    pub fn verify_offering_requirements(&self, _offering: Offering) -> Result<bool> {
+    pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<bool> {
+        if offering.metadata.protocol != self.metadata.protocol {
+            return Err(MessageError::OfferingVerification(format!(
+                "offering has protocol version {} but rfq has protocol version {}",
+                offering.metadata.protocol, self.metadata.protocol
+            )));
+        }
+
+        if offering.metadata.id != self.data.offering_id {
+            return Err(MessageError::OfferingVerification(format!(
+                "offering id is {} but rfq has offering id {}",
+                offering.metadata.id, self.data.offering_id
+            )));
+        }
+
+        let payin_amount = self.data.payin.amount.parse::<f64>().map_err(|_| {
+            MessageError::OfferingVerification(format!(
+                "rfq payin amount invalid decimal string {}",
+                self.data.payin.amount
+            ))
+        })?;
+
+        if let Some(max_amount) = offering.data.payin.max.as_ref() {
+            let max_amount = max_amount.parse::<f64>().map_err(|_| {
+                MessageError::OfferingVerification(format!(
+                    "offering max amount invalid decimal string {}",
+                    max_amount
+                ))
+            })?;
+
+            if payin_amount > max_amount {
+                return Err(MessageError::OfferingVerification(format!(
+                    "rfq payin of {} is larger than max offering amount of {}",
+                    payin_amount, max_amount
+                )));
+            }
+        }
+
+        if let Some(min_amount) = offering.data.payin.min.as_ref() {
+            let min_amount = min_amount.parse::<f64>().map_err(|_| {
+                MessageError::OfferingVerification(format!(
+                    "offering min amount invalid decimal string {}",
+                    min_amount
+                ))
+            })?;
+
+            if payin_amount < min_amount {
+                return Err(MessageError::OfferingVerification(format!(
+                    "rfq payin of {} is smaller than min offering amount of {}",
+                    payin_amount, min_amount
+                )));
+            }
+        }
+
+        // verify payin
+        // verify payout
+        // verify claims
+
         println!("Rfq.verify_offering_requirements() invoked");
         Ok(true)
     }
