@@ -55,9 +55,17 @@ impl Rfq {
         })
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
+    pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
         let rfq = serde_json::from_str::<Self>(json)?;
+
         rfq.verify()?;
+
+        if require_all_private_data {
+            rfq.verify_all_private_data()?;
+        } else {
+            rfq.verify_present_private_data()?;
+        }
+
         Ok(rfq)
     }
 
@@ -149,7 +157,7 @@ impl Rfq {
                     )
                 })?;
 
-            let compiled = JSONSchema::compile(&json_schema).map_err(|_| {
+            let compiled = JSONSchema::compile(json_schema).map_err(|_| {
                 MessageError::OfferingVerification(
                     "failed to compile offering JSON schema".to_string(),
                 )
@@ -192,7 +200,7 @@ impl Rfq {
                     )
                 })?;
 
-            let compiled = JSONSchema::compile(&json_schema).map_err(|_| {
+            let compiled = JSONSchema::compile(json_schema).map_err(|_| {
                 MessageError::OfferingVerification(
                     "failed to compile offering JSON schema".to_string(),
                 )
@@ -221,12 +229,12 @@ impl Rfq {
         // verify claims
         if let Some(required_claims) = &offering.data.required_claims {
             let vc_jwts = required_claims
-                .select_credentials(&self.private_data.claims.clone().unwrap_or_else(Vec::new))
+                .select_credentials(&self.private_data.claims.clone().unwrap_or_default())
                 .map_err(|_| {
                     MessageError::OfferingVerification("failed to select credentials".to_string())
                 })?;
 
-            if vc_jwts.len() == 0 {
+            if vc_jwts.is_empty() {
                 return Err(MessageError::OfferingVerification(
                     "no matching credentials found".to_string(),
                 ));
@@ -246,12 +254,58 @@ impl Rfq {
     }
 
     pub fn verify_all_private_data(&self) -> Result<bool> {
-        println!("Rfq.verify_all_private_data() invoked");
+        if let Some(hash) = &self.data.payin.payment_details_hash {
+            let digest = digest_private_data(&self.private_data.salt, &self.private_data.payin);
+            if &digest != hash {
+                return Ok(false);
+            }
+        }
+
+        if let Some(hash) = &self.data.payout.payment_details_hash {
+            let digest = digest_private_data(&self.private_data.salt, &self.private_data.payout);
+            if &digest != hash {
+                return Ok(false);
+            }
+        }
+
+        if let Some(hash) = &self.data.claims_hash {
+            let digest = digest_private_data(&self.private_data.salt, &self.private_data.claims);
+            if &digest != hash {
+                return Ok(false);
+            }
+        }
+
         Ok(true)
     }
 
     pub fn verify_present_private_data(&self) -> Result<bool> {
-        println!("Rfq.verify_present_private_data() invoked");
+        if let Some(hash) = &self.data.payin.payment_details_hash {
+            if let Some(data) = &self.private_data.payin {
+                let digest = digest_private_data(&self.private_data.salt, &data);
+                if &digest != hash {
+                    return Ok(false);
+                }
+            }
+        }
+
+        if let Some(hash) = &self.data.payout.payment_details_hash {
+            if let Some(data) = &self.private_data.payout {
+                let digest = digest_private_data(&self.private_data.salt, &data);
+                if &digest != hash {
+                    return Ok(false);
+                }
+            }
+        }
+
+        if let Some(hash) = &self.data.claims_hash {
+            if let Some(data) = &self.private_data.claims {
+                let digest = digest_private_data(&self.private_data.salt, &data);
+                if &digest != hash {
+                    return Ok(false);
+                }
+            }
+        }
+
         Ok(true)
     }
 }
@@ -445,7 +499,7 @@ mod tests {
 
         assert_ne!(String::default(), rfq_json_string);
 
-        let parsed_rfq = Rfq::from_json_string(&rfq_json_string).unwrap();
+        let parsed_rfq = Rfq::from_json_string(&rfq_json_string, true).unwrap();
 
         assert_eq!(rfq, parsed_rfq);
     }

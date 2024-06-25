@@ -144,7 +144,7 @@ interface Rfq {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
-  constructor([ByRef] string json);
+  constructor([ByRef] string json, boolean require_all_private_data);
   [Throws=RustCoreError]
   string to_json();
   [Throws=RustCoreError]
