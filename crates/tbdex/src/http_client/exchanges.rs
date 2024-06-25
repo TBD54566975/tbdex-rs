@@ -37,8 +37,6 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
     let endpoint = "http://localhost:9000/exchanges";
     // TODO the above
 
-    // TODO verify private data?
-
     // TODO uncomment with did:dht resolution support
     // rfq.verify()?;
 
