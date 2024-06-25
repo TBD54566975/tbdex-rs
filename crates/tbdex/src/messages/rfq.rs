@@ -2,6 +2,7 @@ use super::{MessageKind, MessageMetadata, Result};
 use crate::{messages::MessageError, resources::offering::Offering};
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
+use jsonschema::JSONSchema;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -72,6 +73,7 @@ impl Rfq {
     }
 
     pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<bool> {
+        // verify protocol version
         if offering.metadata.protocol != self.metadata.protocol {
             return Err(MessageError::OfferingVerification(format!(
                 "offering has protocol version {} but rfq has protocol version {}",
@@ -79,6 +81,7 @@ impl Rfq {
             )));
         }
 
+        // verify offering id
         if offering.metadata.id != self.data.offering_id {
             return Err(MessageError::OfferingVerification(format!(
                 "offering id is {} but rfq has offering id {}",
@@ -93,6 +96,7 @@ impl Rfq {
             ))
         })?;
 
+        // verify max amount
         if let Some(max_amount) = offering.data.payin.max.as_ref() {
             let max_amount = max_amount.parse::<f64>().map_err(|_| {
                 MessageError::OfferingVerification(format!(
@@ -109,6 +113,7 @@ impl Rfq {
             }
         }
 
+        // verify min amount
         if let Some(min_amount) = offering.data.payin.min.as_ref() {
             let min_amount = min_amount.parse::<f64>().map_err(|_| {
                 MessageError::OfferingVerification(format!(
@@ -124,6 +129,94 @@ impl Rfq {
                 )));
             }
         }
+
+        // verify payin json schema
+        if let Some(payin_method) = offering
+            .data
+            .payin
+            .methods
+            .iter()
+            .find(|m| m.kind == self.data.payin.kind)
+        {
+            let json_schema = payin_method
+                .required_payment_details
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification(
+                        "missing required payment details in schema".to_string(),
+                    )
+                })?;
+
+            let compiled = JSONSchema::compile(&json_schema).map_err(|_| {
+                MessageError::OfferingVerification(
+                    "failed to compile offering JSON schema".to_string(),
+                )
+            })?;
+
+            let payin_details = self.private_data.payin.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing private payin data".to_string())
+            })?;
+
+            let payment_details = payin_details.payment_details.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing payment details".to_string())
+            })?;
+
+            if !compiled.is_valid(payment_details) {
+                return Err(MessageError::OfferingVerification(
+                    "payin failed JSON schema validation".to_string(),
+                ));
+            }
+        } else {
+            return Err(MessageError::OfferingVerification(format!(
+                "kind {} not found in offering",
+                self.data.payin.kind
+            )));
+        }
+
+        // verify payout json schema
+        if let Some(payout_method) = offering
+            .data
+            .payout
+            .methods
+            .iter()
+            .find(|m| m.kind == self.data.payout.kind)
+        {
+            let json_schema = payout_method
+                .required_payment_details
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification(
+                        "missing required payment details in schema".to_string(),
+                    )
+                })?;
+
+            let compiled = JSONSchema::compile(&json_schema).map_err(|_| {
+                MessageError::OfferingVerification(
+                    "failed to compile offering JSON schema".to_string(),
+                )
+            })?;
+
+            let payout_details = self.private_data.payout.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing private payout data".to_string())
+            })?;
+
+            let payment_details = payout_details.payment_details.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing payment details".to_string())
+            })?;
+
+            if !compiled.is_valid(payment_details) {
+                return Err(MessageError::OfferingVerification(
+                    "payout failed JSON schema validation".to_string(),
+                ));
+            }
+        } else {
+            return Err(MessageError::OfferingVerification(format!(
+                "kind {} not found in offering",
+                self.data.payout.kind
+            )));
+        }
+
+        // verify claims
 
         Ok(true)
     }
