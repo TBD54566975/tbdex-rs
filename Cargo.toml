@@ -1,9 +1,10 @@
 [workspace]
-members = [
-    "crates/*",
+members = [ 
+    "bindings/tbdex_uniffi", "crates/pfi_exemplar_integration_test",
+    "crates/tbdex",
 ]
 default-members = [
-    "crates/*",
+    "crates/tbdex",
 ]
 resolver = "2"
 
@@ -11,3 +12,9 @@ resolver = "2"
 homepage = "https://github.com/TBD54566975/tbdex-rs"
 repository = "https://github.com/TBD54566975/tbdex-rs.git"
 license-file = "LICENSE"
+
+[workspace.dependencies]
+serde = { version = "1.0.193", features = ["derive"] }
+serde_json = "1.0.108"
+thiserror = "1.0.50"
+web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "f4de14fbada87543a335e1b8dd4442cd21c04db7" }
