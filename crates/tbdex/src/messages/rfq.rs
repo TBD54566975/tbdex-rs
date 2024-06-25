@@ -6,7 +6,9 @@ use jsonschema::JSONSchema;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::apid::{
+    credentials::verifiable_credential_1_1::VerifiableCredential, dids::bearer_did::BearerDid,
+};
 
 #[derive(Clone, Serialize, Default, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -217,6 +219,28 @@ impl Rfq {
         }
 
         // verify claims
+        if let Some(required_claims) = &offering.data.required_claims {
+            let vc_jwts = required_claims
+                .select_credentials(&self.private_data.claims.clone().unwrap_or_else(Vec::new))
+                .map_err(|_| {
+                    MessageError::OfferingVerification("failed to select credentials".to_string())
+                })?;
+
+            if vc_jwts.len() == 0 {
+                return Err(MessageError::OfferingVerification(
+                    "no matching credentials found".to_string(),
+                ));
+            }
+
+            for vc_jwt in vc_jwts {
+                VerifiableCredential::verify(&vc_jwt).map_err(|_| {
+                    MessageError::OfferingVerification(format!(
+                        "vc_jwt failed verifiction {}",
+                        vc_jwt
+                    ))
+                })?;
+            }
+        }
 
         Ok(true)
     }
