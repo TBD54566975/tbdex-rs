@@ -1,7 +1,7 @@
 pub mod balance;
 pub mod offering;
 
-use crate::signature::SignatureError;
+use crate::{json_schemas::JsonSchemaError, signature::SignatureError};
 use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeJsonError;
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
@@ -17,6 +17,8 @@ pub enum ResourceError {
     BearerDid(#[from] BearerDidError),
     #[error(transparent)]
     Signature(#[from] SignatureError),
+    #[error(transparent)]
+    JsonSchema(#[from] JsonSchemaError),
 }
 
 impl From<SerdeJsonError> for ResourceError {

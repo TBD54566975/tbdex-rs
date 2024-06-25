@@ -1,4 +1,5 @@
 use super::{ResourceKind, ResourceMetadata, Result};
+use crate::json_schemas::generated::{OFFERING_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::apid::{
@@ -30,7 +31,7 @@ impl Offering {
             updated_at: Some(now),
         };
 
-        Ok(Self {
+        let offering = Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
@@ -38,7 +39,11 @@ impl Offering {
                 &serde_json::to_value(metadata)?,
                 &serde_json::to_value(data)?,
             )?,
-        })
+        };
+
+        offering.verify()?;
+
+        Ok(offering)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
@@ -48,12 +53,21 @@ impl Offering {
     }
 
     pub fn verify(&self) -> Result<()> {
-        Ok(crate::signature::verify(
+        // verify resource json schema
+        crate::json_schemas::validate(RESOURCE_JSON_SCHEMA, self)?;
+
+        // verify data json schema
+        crate::json_schemas::validate(OFFERING_DATA_JSON_SCHEMA, &self.data)?;
+
+        // verify signature
+        crate::signature::verify(
             &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
-        )?)
+        )?;
+
+        Ok(())
     }
 
     pub fn to_json(&self) -> Result<String> {

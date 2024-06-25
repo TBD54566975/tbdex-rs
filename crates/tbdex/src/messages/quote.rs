@@ -1,4 +1,5 @@
 use super::{MessageKind, MessageMetadata, Result};
+use crate::json_schemas::generated::{MESSAGE_JSON_SCHEMA, QUOTE_DATA_JSON_SCHEMA};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::apid::dids::bearer_did::BearerDid;
@@ -31,7 +32,7 @@ impl Quote {
             created_at: Utc::now().to_rfc3339(),
         };
 
-        Ok(Self {
+        let quote = Self {
             metadata: metadata.clone(),
             data: data.clone(),
             signature: crate::signature::sign(
@@ -39,7 +40,11 @@ impl Quote {
                 &serde_json::to_value(metadata)?,
                 &serde_json::to_value(data)?,
             )?,
-        })
+        };
+
+        quote.verify()?;
+
+        Ok(quote)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
@@ -49,12 +54,21 @@ impl Quote {
     }
 
     pub fn verify(&self) -> Result<()> {
-        Ok(crate::signature::verify(
+        // verify resource json schema
+        crate::json_schemas::validate(MESSAGE_JSON_SCHEMA, self)?;
+
+        // verify data json schema
+        crate::json_schemas::validate(QUOTE_DATA_JSON_SCHEMA, &self.data)?;
+
+        // verify signature
+        crate::signature::verify(
             &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
-        )?)
+        )?;
+
+        Ok(())
     }
 
     pub fn to_json(&self) -> Result<String> {
