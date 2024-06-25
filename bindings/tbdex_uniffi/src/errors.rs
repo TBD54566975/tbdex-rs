@@ -1,6 +1,7 @@
-use std::sync::Arc;
+use serde_json::Error as SerdeJsonError;
+use std::sync::{Arc, PoisonError};
 use std::{any::type_name, fmt::Debug};
-use tbdex::http_client::TbdexHttpClientError;
+use tbdex::http_client::HttpClientError;
 use tbdex::messages::MessageError;
 use tbdex::resources::ResourceError;
 use thiserror::Error;
@@ -16,6 +17,13 @@ pub enum RustCoreError {
 }
 
 impl RustCoreError {
+    pub fn from_poison_error<T>(error: PoisonError<T>, error_type: &str) -> Arc<Self> {
+        Arc::new(RustCoreError::Error {
+            r#type: error_type.to_string(),
+            variant: "PoisonError".to_string(),
+            message: error.to_string(),
+        })
+    }
     fn new<T>(error: T) -> Self
     where
         T: std::error::Error + 'static,
@@ -76,8 +84,14 @@ impl From<MessageError> for RustCoreError {
     }
 }
 
-impl From<TbdexHttpClientError> for RustCoreError {
-    fn from(error: TbdexHttpClientError) -> Self {
+impl From<HttpClientError> for RustCoreError {
+    fn from(error: HttpClientError) -> Self {
+        RustCoreError::new(error)
+    }
+}
+
+impl From<SerdeJsonError> for RustCoreError {
+    fn from(error: SerdeJsonError) -> Self {
         RustCoreError::new(error)
     }
 }

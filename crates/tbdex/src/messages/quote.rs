@@ -1,7 +1,9 @@
-use super::{Message, MessageKind, MessageMetadata, Result};
+use super::{MessageKind, MessageMetadata, Result};
+use chrono::Utc;
+use serde::{Deserialize, Serialize};
 use web5::apid::dids::bearer_did::BearerDid;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Quote {
     pub metadata: MessageMetadata,
     pub data: QuoteData,
@@ -10,60 +12,80 @@ pub struct Quote {
 
 impl Quote {
     pub fn new(
-        to: String,
-        from: String,
-        exchange_id: String,
-        data: QuoteData,
-        protocol: String,
+        bearer_did: &BearerDid,
+        to: &str,
+        from: &str,
+        exchange_id: &str,
+        data: &QuoteData,
+        protocol: &str,
         external_id: Option<String>,
-    ) -> Self {
-        // 🚧 not functional
-        Self {
-            metadata: MessageMetadata {
-                from,
-                to,
-                kind: MessageKind::Quote,
-                id: String::default(),
-                exchange_id,
-                external_id,
-                protocol,
-                created_at: String::default(),
-            },
-            data,
-            signature: String::default(),
-        }
+    ) -> Result<Self> {
+        let metadata = MessageMetadata {
+            from: from.to_string(),
+            to: to.to_string(),
+            kind: MessageKind::Quote,
+            id: MessageKind::Quote.typesafe_id()?,
+            exchange_id: exchange_id.to_string(),
+            external_id,
+            protocol: protocol.to_string(),
+            created_at: Utc::now().to_rfc3339(),
+        };
+
+        Ok(Self {
+            metadata: metadata.clone(),
+            data: data.clone(),
+            signature: crate::signature::sign(
+                bearer_did,
+                &serde_json::to_value(metadata)?,
+                &serde_json::to_value(data)?,
+            )?,
+        })
+    }
+
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let quote = serde_json::from_str::<Self>(json)?;
+        quote.verify()?;
+        Ok(quote)
+    }
+
+    pub fn verify(&self) -> Result<()> {
+        Ok(crate::signature::verify(
+            &self.metadata.from,
+            &serde_json::to_value(self.metadata.clone())?,
+            &serde_json::to_value(self.data.clone())?,
+            &self.signature,
+        )?)
+    }
+
+    pub fn to_json(&self) -> Result<String> {
+        Ok(serde_json::to_string(&self)?)
     }
 }
 
-impl Message for Quote {
-    fn sign(&self, _bearer_did: BearerDid) -> Result<()> {
-        println!("Quote.sign() invoked");
-        Ok(())
-    }
-
-    fn verify(&self) -> Result<()> {
-        println!("Quote.verify() invoked");
-        Ok(())
-    }
-}
-
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct QuoteData {
     pub expires_at: String,
     pub payin: QuoteDetails,
     pub payout: QuoteDetails,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct QuoteDetails {
     pub currency_code: String,
     pub amount: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub fee: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub payment_instructions: Option<PaymentInstructions>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct PaymentInstructions {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub link: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub instruction: Option<String>,
 }

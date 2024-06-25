@@ -1,10 +1,10 @@
 namespace tbdex {
-  void hello_world();
+  BearerDid tmp_hack_bearer_did(DidData did, DocumentData document, KeyManager key_manager);
 
   [Throws=RustCoreError]
-  sequence<Offering> get_offerings(string pfi_did);
+  sequence<Offering> get_offerings(string pfi_did_uri);
   [Throws=RustCoreError]
-  sequence<Balance> get_balances(string pfi_did, BearerDid requestor_did);
+  sequence<Balance> get_balances(string pfi_did_uri, BearerDid bearer_did);
   [Throws=RustCoreError]
   void create_exchange(Rfq rfq, string? reply_to);
   [Throws=RustCoreError]
@@ -12,9 +12,9 @@ namespace tbdex {
   [Throws=RustCoreError]
   void submit_close(Close close);
   [Throws=RustCoreError]
-  sequence<Message> get_exchange(string pfi_did, BearerDid requestor_did, string exchange_id);
+  ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
   [Throws=RustCoreError]
-  sequence<string> get_exchanges(string pfi_did, BearerDid requestor_did);
+  sequence<string> get_exchanges(string pfi_did_uri, BearerDid bearer_did);
 };
 
 interface RustCoreError {
@@ -28,18 +28,9 @@ enum ResourceKind {
   "Balance"
 };
 
-[Trait]
-interface Resource {
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
-};
-
 dictionary ResourceMetadataData {
   ResourceKind kind;
   string from;
-  string to;
   string id;
   string protocol;
   string created_at;
@@ -47,12 +38,14 @@ dictionary ResourceMetadataData {
 };
 
 interface Offering {
-  constructor(string from, OfferingDataData data, string protocol);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string from, OfferingDataData data, string protocol);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   OfferingData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 dictionary OfferingData {
@@ -66,7 +59,7 @@ dictionary OfferingDataData {
   string payout_units_per_payin_unit;
   PayinDetailsData payin;
   PayoutDetailsData payout;
-  PresentationDefinitionData required_claims;
+  PresentationDefinitionData? required_claims;
 };
 
 dictionary PayinDetailsData {
@@ -118,12 +111,14 @@ dictionary BalanceDataData {
 };
 
 interface Balance {
-  constructor(string from, BalanceDataData data, string protocol);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string from, BalanceDataData data, string protocol);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   BalanceData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 enum MessageKind {
@@ -132,14 +127,6 @@ enum MessageKind {
   "Order",
   "OrderStatus",
   "Close"
-};
-
-[Trait]
-interface Message {
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 dictionary MessageMetadataData {
@@ -154,12 +141,14 @@ dictionary MessageMetadataData {
 };
 
 interface Rfq {
-  constructor(string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   RfqData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 
   [Throws=RustCoreError]
   boolean verify_offering_requirements(Offering offering);
@@ -185,13 +174,13 @@ dictionary CreateRfqDataData {
 
 dictionary CreateSelectedPayinMethodData {
   string kind;
-  string payment_details;
+  string? payment_details;
   string amount;
 };
 
 dictionary CreateSelectedPayoutMethodData {
   string kind;
-  string payment_details;
+  string? payment_details;
 };
 
 dictionary RfqDataData {
@@ -220,16 +209,18 @@ dictionary RfqPrivateDataData {
 };
 
 dictionary PrivatePaymentDetailsData {
-  string payment_details;
+  string? payment_details;
 };
 
 interface Quote {
-  constructor(string to, string from, string exchange_id, QuoteDataData data, string protocol, string? external_id);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, string exchange_id, QuoteDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   QuoteData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 dictionary QuoteData {
@@ -257,26 +248,35 @@ dictionary PaymentInstructionsData {
 };
 
 interface Order {
-  constructor(string to, string from, string exchange_id, string protocol, string? external_id);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, string exchange_id, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   OrderData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 dictionary OrderData {
   MessageMetadataData metadata;
+  OrderDataData data;
   string signature;
 };
 
+dictionary OrderDataData {
+
+};
+
 interface OrderStatus {
-  constructor(string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   OrderStatusData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 dictionary OrderStatusData {
@@ -290,12 +290,14 @@ dictionary OrderStatusDataData {
 };
 
 interface Close {
-  constructor(string to, string from, string exchange_id, CloseDataData data, string protocol, string? external_id);
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, string exchange_id, CloseDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
   CloseData get_data();
-  [Throws=RustCoreError]
-  void sign(BearerDid bearer_did);
-  [Throws=RustCoreError]
-  void verify();
 };
 
 dictionary CloseData {
@@ -309,6 +311,13 @@ dictionary CloseDataData {
   boolean? success;
 };
 
+dictionary ExchangeData {
+  Rfq rfq;
+  Quote? quote;
+  Order? order;
+  sequence<OrderStatus>? order_statuses;
+  Close? close;
+};
 
 
 
@@ -389,6 +398,15 @@ interface KeyManager {
   Signer get_signer(JwkData public_jwk);
 };
 
+interface InMemoryKeyManager {
+  constructor();
+  [Throws=Web5RustCoreError]
+  Signer get_signer(JwkData public_jwk);
+  [Throws=Web5RustCoreError]
+  JwkData import_private_jwk(JwkData private_key);
+  KeyManager get_as_key_manager();
+};
+
 dictionary BearerDidData {
   DidData did;
   DocumentData document;
@@ -449,6 +467,7 @@ dictionary FilterData {
 
 interface PresentationDefinition {
   constructor(PresentationDefinitionData data);
+  PresentationDefinitionData get_data();
   [Throws=Web5RustCoreError]
   sequence<string> select_credentials([ByRef] sequence<string> vc_jwts);
 };
