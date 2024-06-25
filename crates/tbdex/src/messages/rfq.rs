@@ -2,10 +2,13 @@ use super::{MessageKind, MessageMetadata, Result};
 use crate::{messages::MessageError, resources::offering::Offering};
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
+use jsonschema::JSONSchema;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::apid::{
+    credentials::verifiable_credential_1_1::VerifiableCredential, dids::bearer_did::BearerDid,
+};
 
 #[derive(Clone, Serialize, Default, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -52,9 +55,17 @@ impl Rfq {
         })
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
+    pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
         let rfq = serde_json::from_str::<Self>(json)?;
+
         rfq.verify()?;
+
+        if require_all_private_data {
+            rfq.verify_all_private_data()?;
+        } else {
+            rfq.verify_present_private_data()?;
+        }
+
         Ok(rfq)
     }
 
@@ -72,6 +83,7 @@ impl Rfq {
     }
 
     pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<bool> {
+        // verify protocol version
         if offering.metadata.protocol != self.metadata.protocol {
             return Err(MessageError::OfferingVerification(format!(
                 "offering has protocol version {} but rfq has protocol version {}",
@@ -79,6 +91,7 @@ impl Rfq {
             )));
         }
 
+        // verify offering id
         if offering.metadata.id != self.data.offering_id {
             return Err(MessageError::OfferingVerification(format!(
                 "offering id is {} but rfq has offering id {}",
@@ -93,6 +106,7 @@ impl Rfq {
             ))
         })?;
 
+        // verify max amount
         if let Some(max_amount) = offering.data.payin.max.as_ref() {
             let max_amount = max_amount.parse::<f64>().map_err(|_| {
                 MessageError::OfferingVerification(format!(
@@ -109,6 +123,7 @@ impl Rfq {
             }
         }
 
+        // verify min amount
         if let Some(min_amount) = offering.data.payin.min.as_ref() {
             let min_amount = min_amount.parse::<f64>().map_err(|_| {
                 MessageError::OfferingVerification(format!(
@@ -125,16 +140,172 @@ impl Rfq {
             }
         }
 
+        // verify payin json schema
+        if let Some(payin_method) = offering
+            .data
+            .payin
+            .methods
+            .iter()
+            .find(|m| m.kind == self.data.payin.kind)
+        {
+            let json_schema = payin_method
+                .required_payment_details
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification(
+                        "missing required payment details in schema".to_string(),
+                    )
+                })?;
+
+            let compiled = JSONSchema::compile(json_schema).map_err(|_| {
+                MessageError::OfferingVerification(
+                    "failed to compile offering JSON schema".to_string(),
+                )
+            })?;
+
+            let payin_details = self.private_data.payin.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing private payin data".to_string())
+            })?;
+
+            let payment_details = payin_details.payment_details.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing payment details".to_string())
+            })?;
+
+            if !compiled.is_valid(payment_details) {
+                return Err(MessageError::OfferingVerification(
+                    "payin failed JSON schema validation".to_string(),
+                ));
+            }
+        } else {
+            return Err(MessageError::OfferingVerification(format!(
+                "kind {} not found in offering",
+                self.data.payin.kind
+            )));
+        }
+
+        // verify payout json schema
+        if let Some(payout_method) = offering
+            .data
+            .payout
+            .methods
+            .iter()
+            .find(|m| m.kind == self.data.payout.kind)
+        {
+            let json_schema = payout_method
+                .required_payment_details
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification(
+                        "missing required payment details in schema".to_string(),
+                    )
+                })?;
+
+            let compiled = JSONSchema::compile(json_schema).map_err(|_| {
+                MessageError::OfferingVerification(
+                    "failed to compile offering JSON schema".to_string(),
+                )
+            })?;
+
+            let payout_details = self.private_data.payout.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing private payout data".to_string())
+            })?;
+
+            let payment_details = payout_details.payment_details.as_ref().ok_or_else(|| {
+                MessageError::OfferingVerification("missing payment details".to_string())
+            })?;
+
+            if !compiled.is_valid(payment_details) {
+                return Err(MessageError::OfferingVerification(
+                    "payout failed JSON schema validation".to_string(),
+                ));
+            }
+        } else {
+            return Err(MessageError::OfferingVerification(format!(
+                "kind {} not found in offering",
+                self.data.payout.kind
+            )));
+        }
+
+        // verify claims
+        if let Some(required_claims) = &offering.data.required_claims {
+            let vc_jwts = required_claims
+                .select_credentials(&self.private_data.claims.clone().unwrap_or_default())
+                .map_err(|_| {
+                    MessageError::OfferingVerification("failed to select credentials".to_string())
+                })?;
+
+            if vc_jwts.is_empty() {
+                return Err(MessageError::OfferingVerification(
+                    "no matching credentials found".to_string(),
+                ));
+            }
+
+            for vc_jwt in vc_jwts {
+                VerifiableCredential::verify(&vc_jwt).map_err(|_| {
+                    MessageError::OfferingVerification(format!(
+                        "vc_jwt failed verifiction {}",
+                        vc_jwt
+                    ))
+                })?;
+            }
+        }
+
         Ok(true)
     }
 
     pub fn verify_all_private_data(&self) -> Result<bool> {
-        println!("Rfq.verify_all_private_data() invoked");
+        if let Some(hash) = &self.data.payin.payment_details_hash {
+            let digest = digest_private_data(&self.private_data.salt, &self.private_data.payin);
+            if &digest != hash {
+                return Ok(false);
+            }
+        }
+
+        if let Some(hash) = &self.data.payout.payment_details_hash {
+            let digest = digest_private_data(&self.private_data.salt, &self.private_data.payout);
+            if &digest != hash {
+                return Ok(false);
+            }
+        }
+
+        if let Some(hash) = &self.data.claims_hash {
+            let digest = digest_private_data(&self.private_data.salt, &self.private_data.claims);
+            if &digest != hash {
+                return Ok(false);
+            }
+        }
+
         Ok(true)
     }
 
     pub fn verify_present_private_data(&self) -> Result<bool> {
-        println!("Rfq.verify_present_private_data() invoked");
+        if let Some(hash) = &self.data.payin.payment_details_hash {
+            if let Some(data) = &self.private_data.payin {
+                let digest = digest_private_data(&self.private_data.salt, &data);
+                if &digest != hash {
+                    return Ok(false);
+                }
+            }
+        }
+
+        if let Some(hash) = &self.data.payout.payment_details_hash {
+            if let Some(data) = &self.private_data.payout {
+                let digest = digest_private_data(&self.private_data.salt, &data);
+                if &digest != hash {
+                    return Ok(false);
+                }
+            }
+        }
+
+        if let Some(hash) = &self.data.claims_hash {
+            if let Some(data) = &self.private_data.claims {
+                let digest = digest_private_data(&self.private_data.salt, &data);
+                if &digest != hash {
+                    return Ok(false);
+                }
+            }
+        }
+
         Ok(true)
     }
 }
@@ -328,7 +499,7 @@ mod tests {
 
         assert_ne!(String::default(), rfq_json_string);
 
-        let parsed_rfq = Rfq::from_json_string(&rfq_json_string).unwrap();
+        let parsed_rfq = Rfq::from_json_string(&rfq_json_string, true).unwrap();
 
         assert_eq!(rfq, parsed_rfq);
     }

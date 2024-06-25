@@ -1010,7 +1010,7 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_rfq(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(`json`: RustBuffer.ByValue,`requireAllPrivateData`: Byte,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_constructor_rfq_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`createRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
@@ -1474,7 +1474,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_new() != 24782.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string() != 27704.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string() != 45885.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_new() != 39566.toShort()) {
@@ -4593,11 +4593,11 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
     companion object {
         
-    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Rfq {
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String, `requireAllPrivateData`: kotlin.Boolean): Rfq {
             return FfiConverterTypeRfq.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(
-        FfiConverterString.lower(`json`),_status)
+        FfiConverterString.lower(`json`),FfiConverterBoolean.lower(`requireAllPrivateData`),_status)
 }
     )
     }

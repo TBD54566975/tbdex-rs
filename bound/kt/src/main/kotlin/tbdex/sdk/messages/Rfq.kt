@@ -42,8 +42,8 @@ class Rfq {
         this.signature = rfqData.signature
     }
 
-    constructor(json: String) {
-        this.rustCoreRfq = RustCoreRfq.fromJsonString(json)
+    constructor(json: String, requireAllPrivateData: Boolean = false) {
+        this.rustCoreRfq = RustCoreRfq.fromJsonString(json, requireAllPrivateData)
 
         val rfqData = rustCoreRfq.getData()
         this.metadata = rfqData.metadata
