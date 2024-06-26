@@ -12,6 +12,8 @@ pub enum JsonSchemaError {
     SerdeJson(String),
     #[error("json schema failure {0:?}")]
     JsonSchema(Vec<String>),
+    #[error("unsupported json schema version {0}")]
+    UnsupportedVersion(String),
 }
 
 impl From<SerdeJsonError> for JsonSchemaError {
@@ -55,12 +57,24 @@ impl SchemaResolver for LocalSchemaResolver {
     }
 }
 
-pub fn validate<T: Serialize>(schema: &str, value: &T) -> Result<()> {
-    let schema_value = serde_json::from_str::<serde_json::Value>(&schema.replace("\\#", "#"))?;
+pub fn validate_from_str<T: Serialize>(schema_str: &str, value: &T) -> Result<()> {
+    let schema = &serde_json::from_str::<serde_json::Value>(&schema_str.replace("\\#", "#"))?;
+
+    validate(schema, value)?;
+
+    Ok(())
+}
+
+pub fn validate<T: Serialize>(schema: &serde_json::Value, value: &T) -> Result<()> {
+    if let Some(serde_json::Value::String(url)) = schema.get("$schema") {
+        if url.contains("draft-04") || url.contains("draft-06") {
+            return Err(JsonSchemaError::UnsupportedVersion(url.to_string()));
+        }
+    }
 
     let compiled = JSONSchema::options()
         .with_resolver(LocalSchemaResolver::new())
-        .compile(&schema_value)
+        .compile(schema)
         .map_err(|e| JsonSchemaError::JsonSchema(vec![e.to_string()]))?;
 
     let instance = serde_json::to_value(value)?;

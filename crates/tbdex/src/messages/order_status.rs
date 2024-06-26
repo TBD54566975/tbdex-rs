@@ -55,10 +55,10 @@ impl OrderStatus {
 
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
-        crate::json_schemas::validate(MESSAGE_JSON_SCHEMA, self)?;
+        crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
         // verify data json schema
-        crate::json_schemas::validate(ORDER_STATUS_DATA_JSON_SCHEMA, &self.data)?;
+        crate::json_schemas::validate_from_str(ORDER_STATUS_DATA_JSON_SCHEMA, &self.data)?;
 
         // verify signature
         crate::signature::verify(
