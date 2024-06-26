@@ -74,7 +74,7 @@ dictionary PayinMethodData {
   string? name;
   string? description;
   string? group;
-  string? required_payment_details;
+  string? json_serialized_required_payment_details;
   string? fee;
   string? min;
   string? max;
@@ -92,7 +92,7 @@ dictionary PayoutMethodData {
   string? name;
   string? description;
   string? group;
-  string? required_payment_details;
+  string? json_serialized_required_payment_details;
   string? fee;
   string? min;
   string? max;
@@ -174,13 +174,13 @@ dictionary CreateRfqDataData {
 
 dictionary CreateSelectedPayinMethodData {
   string kind;
-  string? payment_details;
+  string? json_serialized_payment_details;
   string amount;
 };
 
 dictionary CreateSelectedPayoutMethodData {
   string kind;
-  string? payment_details;
+  string? json_serialized_payment_details;
 };
 
 dictionary RfqDataData {
@@ -209,7 +209,7 @@ dictionary RfqPrivateDataData {
 };
 
 dictionary PrivatePaymentDetailsData {
-  string? payment_details;
+  string? json_serialized_payment_details;
 };
 
 interface Quote {

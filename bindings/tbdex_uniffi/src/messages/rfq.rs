@@ -128,13 +128,13 @@ pub mod data {
     #[derive(Clone)]
     pub struct CreateSelectedPayinMethod {
         pub kind: String,
-        pub payment_details: Option<String>, // JSON serialized
+        pub json_serialized_payment_details: Option<String>, // JSON serialized
         pub amount: String,
     }
 
     impl CreateSelectedPayinMethod {
         pub fn to_inner(&self) -> Result<InnerCreateSelectedPayinMethod> {
-            let payment_details = match &self.payment_details {
+            let payment_details = match &self.json_serialized_payment_details {
                 Some(pd) => Some(
                     serde_json::from_str::<serde_json::Value>(pd)
                         .map_err(|e| Arc::new(e.into()))?,
@@ -152,12 +152,12 @@ pub mod data {
     #[derive(Clone)]
     pub struct CreateSelectedPayoutMethod {
         pub kind: String,
-        pub payment_details: Option<String>, // JSON serialized
+        pub json_serialized_payment_details: Option<String>, // JSON serialized
     }
 
     impl CreateSelectedPayoutMethod {
         pub fn to_inner(&self) -> Result<InnerCreateSelectedPayoutMethod> {
-            let payment_details = match &self.payment_details {
+            let payment_details = match &self.json_serialized_payment_details {
                 Some(pd) => Some(
                     serde_json::from_str::<serde_json::Value>(pd)
                         .map_err(|e| Arc::new(e.into()))?,
@@ -256,16 +256,18 @@ pub mod data {
 
     #[derive(Clone)]
     pub struct PrivatePaymentDetails {
-        pub payment_details: Option<String>, // JSON serialized
+        pub json_serialized_payment_details: Option<String>, // JSON serialized
     }
 
     impl PrivatePaymentDetails {
         pub fn from_inner(inner: InnerPrivatePaymentDetails) -> Result<Self> {
-            let payment_details = match &inner.payment_details {
+            let json_serialized_payment_details = match &inner.payment_details {
                 Some(pd) => Some(serde_json::to_string(pd).map_err(|e| Arc::new(e.into()))?),
                 None => None,
             };
-            Ok(Self { payment_details })
+            Ok(Self {
+                json_serialized_payment_details,
+            })
         }
     }
 }

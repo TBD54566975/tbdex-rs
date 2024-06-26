@@ -151,7 +151,7 @@ pub mod data {
         pub name: Option<String>,
         pub description: Option<String>,
         pub group: Option<String>,
-        pub required_payment_details: Option<String>, // JSON serialized
+        pub json_serialized_required_payment_details: Option<String>, // JSON serialized
         pub fee: Option<String>,
         pub min: Option<String>,
         pub max: Option<String>,
@@ -159,13 +159,14 @@ pub mod data {
 
     impl PayinMethod {
         pub fn to_inner(&self) -> Result<InnerPayinMethod> {
-            let required_payment_details = match self.required_payment_details.clone() {
-                None => None,
-                Some(s) => Some(
-                    serde_json::from_str::<serde_json::Value>(&s)
-                        .map_err(|e| Arc::new(e.into()))?,
-                ),
-            };
+            let required_payment_details =
+                match self.json_serialized_required_payment_details.clone() {
+                    None => None,
+                    Some(s) => Some(
+                        serde_json::from_str::<serde_json::Value>(&s)
+                            .map_err(|e| Arc::new(e.into()))?,
+                    ),
+                };
 
             Ok(InnerPayinMethod {
                 kind: self.kind.clone(),
@@ -180,17 +181,18 @@ pub mod data {
         }
 
         pub fn from_inner(inner: InnerPayinMethod) -> Result<Self> {
-            let required_payment_details = match inner.required_payment_details.clone() {
-                None => None,
-                Some(s) => Some(serde_json::to_string(&s).map_err(|e| Arc::new(e.into()))?),
-            };
+            let json_serialized_required_payment_details =
+                match inner.required_payment_details.clone() {
+                    None => None,
+                    Some(s) => Some(serde_json::to_string(&s).map_err(|e| Arc::new(e.into()))?),
+                };
 
             Ok(Self {
                 kind: inner.kind.clone(),
                 name: inner.name.clone(),
                 description: inner.description.clone(),
                 group: inner.group.clone(),
-                required_payment_details,
+                json_serialized_required_payment_details,
                 fee: inner.fee.clone(),
                 min: inner.min.clone(),
                 max: inner.max.clone(),
@@ -246,7 +248,7 @@ pub mod data {
         pub name: Option<String>,
         pub description: Option<String>,
         pub group: Option<String>,
-        pub required_payment_details: Option<String>, // JSON serialized
+        pub json_serialized_required_payment_details: Option<String>, // JSON serialized
         pub fee: Option<String>,
         pub min: Option<String>,
         pub max: Option<String>,
@@ -255,13 +257,14 @@ pub mod data {
 
     impl PayoutMethod {
         pub fn to_inner(&self) -> Result<InnerPayoutMethod> {
-            let required_payment_details = match self.required_payment_details.clone() {
-                None => None,
-                Some(s) => Some(
-                    serde_json::from_str::<serde_json::Value>(&s)
-                        .map_err(|e| Arc::new(e.into()))?,
-                ),
-            };
+            let required_payment_details =
+                match self.json_serialized_required_payment_details.clone() {
+                    None => None,
+                    Some(s) => Some(
+                        serde_json::from_str::<serde_json::Value>(&s)
+                            .map_err(|e| Arc::new(e.into()))?,
+                    ),
+                };
 
             Ok(InnerPayoutMethod {
                 kind: self.kind.clone(),
@@ -277,17 +280,18 @@ pub mod data {
         }
 
         pub fn from_inner(inner: InnerPayoutMethod) -> Result<Self> {
-            let required_payment_details = match inner.required_payment_details.clone() {
-                None => None,
-                Some(s) => Some(serde_json::to_string(&s).map_err(|e| Arc::new(e.into()))?),
-            };
+            let json_serialized_required_payment_details =
+                match inner.required_payment_details.clone() {
+                    None => None,
+                    Some(s) => Some(serde_json::to_string(&s).map_err(|e| Arc::new(e.into()))?),
+                };
 
             Ok(Self {
                 kind: inner.kind.clone(),
                 name: inner.name.clone(),
                 description: inner.description.clone(),
                 group: inner.group.clone(),
-                required_payment_details,
+                json_serialized_required_payment_details,
                 fee: inner.fee.clone(),
                 min: inner.min.clone(),
                 max: inner.max.clone(),

@@ -193,7 +193,7 @@ data class PrivatePaymentDetails(
     companion object {
         internal fun fromRustCore(rustCorePrivatePaymentDetails: RustCorePrivatePaymentDetails): PrivatePaymentDetails {
             return PrivatePaymentDetails(
-                Json.jsonMapper.readTree(rustCorePrivatePaymentDetails.paymentDetails)
+                Json.jsonMapper.readTree(rustCorePrivatePaymentDetails.jsonSerializedPaymentDetails)
             )
         }
     }

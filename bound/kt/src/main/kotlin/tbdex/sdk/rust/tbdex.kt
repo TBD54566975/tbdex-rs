@@ -5640,7 +5640,7 @@ public object FfiConverterTypeCreateRfqDataData: FfiConverterRustBuffer<CreateRf
 
 data class CreateSelectedPayinMethodData (
     var `kind`: kotlin.String, 
-    var `paymentDetails`: kotlin.String?, 
+    var `jsonSerializedPaymentDetails`: kotlin.String?, 
     var `amount`: kotlin.String
 ) {
     
@@ -5658,13 +5658,13 @@ public object FfiConverterTypeCreateSelectedPayinMethodData: FfiConverterRustBuf
 
     override fun allocationSize(value: CreateSelectedPayinMethodData) = (
             FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`paymentDetails`) +
+            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPaymentDetails`) +
             FfiConverterString.allocationSize(value.`amount`)
     )
 
     override fun write(value: CreateSelectedPayinMethodData, buf: ByteBuffer) {
             FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`paymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`jsonSerializedPaymentDetails`, buf)
             FfiConverterString.write(value.`amount`, buf)
     }
 }
@@ -5673,7 +5673,7 @@ public object FfiConverterTypeCreateSelectedPayinMethodData: FfiConverterRustBuf
 
 data class CreateSelectedPayoutMethodData (
     var `kind`: kotlin.String, 
-    var `paymentDetails`: kotlin.String?
+    var `jsonSerializedPaymentDetails`: kotlin.String?
 ) {
     
     companion object
@@ -5689,12 +5689,12 @@ public object FfiConverterTypeCreateSelectedPayoutMethodData: FfiConverterRustBu
 
     override fun allocationSize(value: CreateSelectedPayoutMethodData) = (
             FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`paymentDetails`)
+            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPaymentDetails`)
     )
 
     override fun write(value: CreateSelectedPayoutMethodData, buf: ByteBuffer) {
             FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`paymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`jsonSerializedPaymentDetails`, buf)
     }
 }
 
@@ -6319,7 +6319,7 @@ data class PayinMethodData (
     var `name`: kotlin.String?, 
     var `description`: kotlin.String?, 
     var `group`: kotlin.String?, 
-    var `requiredPaymentDetails`: kotlin.String?, 
+    var `jsonSerializedRequiredPaymentDetails`: kotlin.String?, 
     var `fee`: kotlin.String?, 
     var `min`: kotlin.String?, 
     var `max`: kotlin.String?
@@ -6347,7 +6347,7 @@ public object FfiConverterTypePayinMethodData: FfiConverterRustBuffer<PayinMetho
             FfiConverterOptionalString.allocationSize(value.`name`) +
             FfiConverterOptionalString.allocationSize(value.`description`) +
             FfiConverterOptionalString.allocationSize(value.`group`) +
-            FfiConverterOptionalString.allocationSize(value.`requiredPaymentDetails`) +
+            FfiConverterOptionalString.allocationSize(value.`jsonSerializedRequiredPaymentDetails`) +
             FfiConverterOptionalString.allocationSize(value.`fee`) +
             FfiConverterOptionalString.allocationSize(value.`min`) +
             FfiConverterOptionalString.allocationSize(value.`max`)
@@ -6358,7 +6358,7 @@ public object FfiConverterTypePayinMethodData: FfiConverterRustBuffer<PayinMetho
             FfiConverterOptionalString.write(value.`name`, buf)
             FfiConverterOptionalString.write(value.`description`, buf)
             FfiConverterOptionalString.write(value.`group`, buf)
-            FfiConverterOptionalString.write(value.`requiredPaymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`jsonSerializedRequiredPaymentDetails`, buf)
             FfiConverterOptionalString.write(value.`fee`, buf)
             FfiConverterOptionalString.write(value.`min`, buf)
             FfiConverterOptionalString.write(value.`max`, buf)
@@ -6438,7 +6438,7 @@ data class PayoutMethodData (
     var `name`: kotlin.String?, 
     var `description`: kotlin.String?, 
     var `group`: kotlin.String?, 
-    var `requiredPaymentDetails`: kotlin.String?, 
+    var `jsonSerializedRequiredPaymentDetails`: kotlin.String?, 
     var `fee`: kotlin.String?, 
     var `min`: kotlin.String?, 
     var `max`: kotlin.String?, 
@@ -6468,7 +6468,7 @@ public object FfiConverterTypePayoutMethodData: FfiConverterRustBuffer<PayoutMet
             FfiConverterOptionalString.allocationSize(value.`name`) +
             FfiConverterOptionalString.allocationSize(value.`description`) +
             FfiConverterOptionalString.allocationSize(value.`group`) +
-            FfiConverterOptionalString.allocationSize(value.`requiredPaymentDetails`) +
+            FfiConverterOptionalString.allocationSize(value.`jsonSerializedRequiredPaymentDetails`) +
             FfiConverterOptionalString.allocationSize(value.`fee`) +
             FfiConverterOptionalString.allocationSize(value.`min`) +
             FfiConverterOptionalString.allocationSize(value.`max`) +
@@ -6480,7 +6480,7 @@ public object FfiConverterTypePayoutMethodData: FfiConverterRustBuffer<PayoutMet
             FfiConverterOptionalString.write(value.`name`, buf)
             FfiConverterOptionalString.write(value.`description`, buf)
             FfiConverterOptionalString.write(value.`group`, buf)
-            FfiConverterOptionalString.write(value.`requiredPaymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`jsonSerializedRequiredPaymentDetails`, buf)
             FfiConverterOptionalString.write(value.`fee`, buf)
             FfiConverterOptionalString.write(value.`min`, buf)
             FfiConverterOptionalString.write(value.`max`, buf)
@@ -6528,7 +6528,7 @@ public object FfiConverterTypePresentationDefinitionData: FfiConverterRustBuffer
 
 
 data class PrivatePaymentDetailsData (
-    var `paymentDetails`: kotlin.String?
+    var `jsonSerializedPaymentDetails`: kotlin.String?
 ) {
     
     companion object
@@ -6542,11 +6542,11 @@ public object FfiConverterTypePrivatePaymentDetailsData: FfiConverterRustBuffer<
     }
 
     override fun allocationSize(value: PrivatePaymentDetailsData) = (
-            FfiConverterOptionalString.allocationSize(value.`paymentDetails`)
+            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPaymentDetails`)
     )
 
     override fun write(value: PrivatePaymentDetailsData, buf: ByteBuffer) {
-            FfiConverterOptionalString.write(value.`paymentDetails`, buf)
+            FfiConverterOptionalString.write(value.`jsonSerializedPaymentDetails`, buf)
     }
 }
 
