@@ -11,7 +11,7 @@ build = "build.rs"
 base64 = "0.22.0"
 chrono = "0.4.38"
 josekit = "0.8.6"
-jsonschema = "0.18.0"
+jsonschema = { version = "0.18.0", features = ["draft201909", "draft202012"] }
 rand = "0.8.5"
 reqwest = { version = "0.12.5", features = ["blocking"] }
 sha2 = "0.10.8"

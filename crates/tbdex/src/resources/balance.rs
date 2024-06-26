@@ -52,10 +52,10 @@ impl Balance {
 
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
-        crate::json_schemas::validate(RESOURCE_JSON_SCHEMA, self)?;
+        crate::json_schemas::validate_from_str(RESOURCE_JSON_SCHEMA, self)?;
 
         // verify data json schema
-        crate::json_schemas::validate(BALANCE_DATA_JSON_SCHEMA, &self.data)?;
+        crate::json_schemas::validate_from_str(BALANCE_DATA_JSON_SCHEMA, &self.data)?;
 
         // verify signature
         crate::signature::verify(

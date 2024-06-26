@@ -8,7 +8,6 @@ use crate::{
 };
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
-use jsonschema::JSONSchema;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -82,13 +81,13 @@ impl Rfq {
 
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
-        crate::json_schemas::validate(MESSAGE_JSON_SCHEMA, self)?;
+        crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
         // verify data json schema
-        crate::json_schemas::validate(RFQ_DATA_JSON_SCHEMA, &self.data)?;
+        crate::json_schemas::validate_from_str(RFQ_DATA_JSON_SCHEMA, &self.data)?;
 
         // verify private data json schema
-        crate::json_schemas::validate(RFQ_PRIVATE_DATA_JSON_SCHEMA, &self.private_data)?;
+        crate::json_schemas::validate_from_str(RFQ_PRIVATE_DATA_JSON_SCHEMA, &self.private_data)?;
 
         // verify signature
         crate::signature::verify(
@@ -181,25 +180,20 @@ impl Rfq {
                     )
                 })?;
 
-            let compiled = JSONSchema::compile(json_schema).map_err(|_| {
-                MessageError::OfferingVerification(
-                    "failed to compile offering JSON schema".to_string(),
-                )
-            })?;
+            let payment_details = self
+                .private_data
+                .payin
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification("missing private payin data".to_string())
+                })?
+                .payment_details
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification("missing payment details".to_string())
+                })?;
 
-            let payin_details = self.private_data.payin.as_ref().ok_or_else(|| {
-                MessageError::OfferingVerification("missing private payin data".to_string())
-            })?;
-
-            let payment_details = payin_details.payment_details.as_ref().ok_or_else(|| {
-                MessageError::OfferingVerification("missing payment details".to_string())
-            })?;
-
-            if !compiled.is_valid(payment_details) {
-                return Err(MessageError::OfferingVerification(
-                    "payin failed JSON schema validation".to_string(),
-                ));
-            }
+            crate::json_schemas::validate(json_schema, payment_details)?;
         } else {
             return Err(MessageError::OfferingVerification(format!(
                 "kind {} not found in offering",
@@ -224,25 +218,20 @@ impl Rfq {
                     )
                 })?;
 
-            let compiled = JSONSchema::compile(json_schema).map_err(|_| {
-                MessageError::OfferingVerification(
-                    "failed to compile offering JSON schema".to_string(),
-                )
-            })?;
+            let payment_details = self
+                .private_data
+                .payout
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification("missing private payout data".to_string())
+                })?
+                .payment_details
+                .as_ref()
+                .ok_or_else(|| {
+                    MessageError::OfferingVerification("missing payment details".to_string())
+                })?;
 
-            let payout_details = self.private_data.payout.as_ref().ok_or_else(|| {
-                MessageError::OfferingVerification("missing private payout data".to_string())
-            })?;
-
-            let payment_details = payout_details.payment_details.as_ref().ok_or_else(|| {
-                MessageError::OfferingVerification("missing payment details".to_string())
-            })?;
-
-            if !compiled.is_valid(payment_details) {
-                return Err(MessageError::OfferingVerification(
-                    "payout failed JSON schema validation".to_string(),
-                ));
-            }
+            crate::json_schemas::validate(json_schema, payment_details)?;
         } else {
             return Err(MessageError::OfferingVerification(format!(
                 "kind {} not found in offering",
