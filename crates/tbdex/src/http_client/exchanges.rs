@@ -8,7 +8,7 @@ use crate::{
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::dids::bearer_did::BearerDid;
 
 #[derive(Clone, Default, Deserialize, Serialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]

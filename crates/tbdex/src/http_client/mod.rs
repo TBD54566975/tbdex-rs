@@ -8,7 +8,7 @@ use reqwest::Error as ReqwestError;
 use serde_json::Error as SerdeJsonError;
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
-use web5::apid::dids::bearer_did::{BearerDid, BearerDidError};
+use web5::dids::bearer_did::{BearerDid, BearerDidError};
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum HttpClientError {

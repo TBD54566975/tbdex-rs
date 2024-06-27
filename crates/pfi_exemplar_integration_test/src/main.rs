@@ -9,7 +9,7 @@ use tbdex::{
         rfq::{CreateRfqData, CreateSelectedPayinMethod, CreateSelectedPayoutMethod, Rfq},
     },
 };
-use web5::apid::{
+use web5::{
     crypto::{jwk::Jwk, key_managers::in_memory_key_manager::InMemoryKeyManager},
     dids::{
         bearer_did::BearerDid,

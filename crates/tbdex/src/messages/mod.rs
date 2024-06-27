@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Error as SerdeJsonError;
 use std::str::FromStr;
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
-use web5::apid::dids::bearer_did::BearerDidError;
+use web5::dids::bearer_did::BearerDidError;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum MessageError {

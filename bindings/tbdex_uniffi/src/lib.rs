@@ -42,12 +42,7 @@ use tbdex::{
         ResourceKind, ResourceMetadata as ResourceMetadataData,
     },
 };
-use web5::apid::{
-    credentials::presentation_definition::{
-        Constraints as ConstraintsData, Field as FieldData, Filter as FilterData,
-        InputDescriptor as InputDescriptorData, Optionality,
-        PresentationDefinition as PresentationDefinitionData,
-    },
+use web5::{
     crypto::jwk::Jwk as JwkData,
     dids::{
         data_model::{
@@ -59,9 +54,8 @@ use web5::apid::{
 };
 use web5_uniffi_wrapper::{
     credentials::presentation_definition::PresentationDefinition,
-    crypto::{in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
+    crypto::{dsa::Signer, in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
     dids::bearer_did::{BearerDid, BearerDidData},
-    dsa::Signer,
     errors::RustCoreError as Web5RustCoreError,
 };
 
@@ -71,7 +65,7 @@ pub fn tmp_hack_bearer_did(
     document: DocumentData,
     key_manager: std::sync::Arc<dyn KeyManager>,
 ) -> std::sync::Arc<BearerDid> {
-    std::sync::Arc::new(BearerDid(web5::apid::dids::bearer_did::BearerDid {
+    std::sync::Arc::new(BearerDid(web5::dids::bearer_did::BearerDid {
         did,
         document,
         key_manager: key_manager.to_inner(),

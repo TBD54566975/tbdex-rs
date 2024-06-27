@@ -11,7 +11,7 @@ use chrono::Utc;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use web5::apid::{
+use web5::{
     credentials::verifiable_credential_1_1::VerifiableCredential, dids::bearer_did::BearerDid,
 };
 
@@ -469,9 +469,11 @@ fn digest_private_data<T: Serialize>(salt: &str, value: &T) -> String {
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use web5::apid::{
-        crypto::key_managers::in_memory_key_manager::InMemoryKeyManager,
-        dids::methods::did_jwk::DidJwk, dsa::ed25519::Ed25519Generator,
+    use web5::{
+        crypto::{
+            dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
+        },
+        dids::methods::did_jwk::DidJwk,
     };
 
     #[test]

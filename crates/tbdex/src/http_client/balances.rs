@@ -2,7 +2,7 @@ use super::{generate_access_token, Result};
 use crate::resources::balance::Balance;
 use reqwest::blocking::Client;
 use serde::Deserialize;
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::dids::bearer_did::BearerDid;
 
 #[derive(Deserialize)]
 struct GetBalancesResponse {
