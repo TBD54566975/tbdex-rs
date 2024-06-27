@@ -324,6 +324,7 @@ impl Rfq {
 }
 
 #[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateRfqData {
     pub offering_id: String,
     pub payin: CreateSelectedPayinMethod,
@@ -332,6 +333,7 @@ pub struct CreateRfqData {
 }
 
 #[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateSelectedPayinMethod {
     pub kind: String,
     pub payment_details: Option<serde_json::Value>,
@@ -339,6 +341,7 @@ pub struct CreateSelectedPayinMethod {
 }
 
 #[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateSelectedPayoutMethod {
     pub kind: String,
     pub payment_details: Option<serde_json::Value>,
