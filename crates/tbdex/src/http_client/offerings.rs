@@ -16,7 +16,7 @@ pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
     // TODO handle error response
 
     let offerings_response = serde_json::from_str::<GetOfferingsResponse>(&response)?;
-    // 🚧 TODO for some reason the call to the latter json schema and sig verification are both failing
+    // TODO pfi-exemplar's signature is failing verification
     // for offering in &offerings_response.data {
     //     offering.verify()?;
     // }
