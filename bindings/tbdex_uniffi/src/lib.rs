@@ -19,29 +19,11 @@ use crate::{
         order::Order,
         order_status::OrderStatus,
         quote::Quote,
-        rfq::{
-            data::{
-                CreateRfqData as CreateRfqDataData,
-                CreateSelectedPayinMethod as CreateSelectedPayinMethodData,
-                CreateSelectedPayoutMethod as CreateSelectedPayoutMethodData,
-                PrivatePaymentDetails as PrivatePaymentDetailsData, Rfq as RfqData,
-                RfqData as RfqDataData, RfqPrivateData as RfqPrivateDataData,
-                SelectedPayinMethod as SelectedPayinMethodData,
-                SelectedPayoutMethod as SelectedPayoutMethodData,
-            },
-            Rfq,
-        },
+        rfq::{data::Rfq as RfqData, Rfq},
     },
     resources::{
         balance::Balance,
-        offering::{
-            data::{
-                Offering as OfferingData, OfferingData as OfferingDataData,
-                PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
-                PayoutDetails as PayoutDetailsData, PayoutMethod as PayoutMethodData,
-            },
-            Offering,
-        },
+        offering::{data::Offering as OfferingData, Offering},
     },
 };
 use tbdex::{

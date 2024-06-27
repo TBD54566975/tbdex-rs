@@ -954,7 +954,7 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_offering_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`jsonSerializedData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_offering_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1012,7 +1012,7 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(`json`: RustBuffer.ByValue,`requireAllPrivateData`: Byte,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_rfq_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`createRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_rfq_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`jsonSerializedCreateRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_rfq_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1450,7 +1450,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string() != 21018.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_new() != 30449.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_new() != 34222.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string() != 63305.toShort()) {
@@ -1477,7 +1477,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string() != 45885.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_new() != 39566.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_new() != 5327.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1537,26 +1537,6 @@ public object FfiConverterUByte: FfiConverter<UByte, Byte> {
 
     override fun write(value: UByte, buf: ByteBuffer) {
         buf.put(value.toByte())
-    }
-}
-
-public object FfiConverterLong: FfiConverter<Long, Long> {
-    override fun lift(value: Long): Long {
-        return value
-    }
-
-    override fun read(buf: ByteBuffer): Long {
-        return buf.getLong()
-    }
-
-    override fun lower(value: Long): Long {
-        return value
-    }
-
-    override fun allocationSize(value: Long) = 8UL
-
-    override fun write(value: Long, buf: ByteBuffer) {
-        buf.putLong(value)
     }
 }
 
@@ -3124,11 +3104,11 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `data`: OfferingDataData, `protocol`: kotlin.String) :
+    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `jsonSerializedData`: kotlin.String, `protocol`: kotlin.String) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterTypeOfferingDataData.lower(`data`),FfiConverterString.lower(`protocol`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedData`),FfiConverterString.lower(`protocol`),_status)
 }
     )
 
@@ -4452,11 +4432,11 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `createRfqData`: CreateRfqDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
+    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `jsonSerializedCreateRfqData`: kotlin.String, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
         this(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterTypeCreateRfqDataData.lower(`createRfqData`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedCreateRfqData`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
 }
     )
 
@@ -5601,105 +5581,6 @@ public object FfiConverterTypeConstraintsData: FfiConverterRustBuffer<Constraint
 
 
 
-data class CreateRfqDataData (
-    var `offeringId`: kotlin.String, 
-    var `payin`: CreateSelectedPayinMethodData, 
-    var `payout`: CreateSelectedPayoutMethodData, 
-    var `claims`: List<kotlin.String>
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeCreateRfqDataData: FfiConverterRustBuffer<CreateRfqDataData> {
-    override fun read(buf: ByteBuffer): CreateRfqDataData {
-        return CreateRfqDataData(
-            FfiConverterString.read(buf),
-            FfiConverterTypeCreateSelectedPayinMethodData.read(buf),
-            FfiConverterTypeCreateSelectedPayoutMethodData.read(buf),
-            FfiConverterSequenceString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: CreateRfqDataData) = (
-            FfiConverterString.allocationSize(value.`offeringId`) +
-            FfiConverterTypeCreateSelectedPayinMethodData.allocationSize(value.`payin`) +
-            FfiConverterTypeCreateSelectedPayoutMethodData.allocationSize(value.`payout`) +
-            FfiConverterSequenceString.allocationSize(value.`claims`)
-    )
-
-    override fun write(value: CreateRfqDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`offeringId`, buf)
-            FfiConverterTypeCreateSelectedPayinMethodData.write(value.`payin`, buf)
-            FfiConverterTypeCreateSelectedPayoutMethodData.write(value.`payout`, buf)
-            FfiConverterSequenceString.write(value.`claims`, buf)
-    }
-}
-
-
-
-data class CreateSelectedPayinMethodData (
-    var `kind`: kotlin.String, 
-    var `jsonSerializedPaymentDetails`: kotlin.String?, 
-    var `amount`: kotlin.String
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeCreateSelectedPayinMethodData: FfiConverterRustBuffer<CreateSelectedPayinMethodData> {
-    override fun read(buf: ByteBuffer): CreateSelectedPayinMethodData {
-        return CreateSelectedPayinMethodData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: CreateSelectedPayinMethodData) = (
-            FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPaymentDetails`) +
-            FfiConverterString.allocationSize(value.`amount`)
-    )
-
-    override fun write(value: CreateSelectedPayinMethodData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`jsonSerializedPaymentDetails`, buf)
-            FfiConverterString.write(value.`amount`, buf)
-    }
-}
-
-
-
-data class CreateSelectedPayoutMethodData (
-    var `kind`: kotlin.String, 
-    var `jsonSerializedPaymentDetails`: kotlin.String?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeCreateSelectedPayoutMethodData: FfiConverterRustBuffer<CreateSelectedPayoutMethodData> {
-    override fun read(buf: ByteBuffer): CreateSelectedPayoutMethodData {
-        return CreateSelectedPayoutMethodData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: CreateSelectedPayoutMethodData) = (
-            FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPaymentDetails`)
-    )
-
-    override fun write(value: CreateSelectedPayoutMethodData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`jsonSerializedPaymentDetails`, buf)
-    }
-}
-
-
-
 data class DidData (
     var `uri`: kotlin.String, 
     var `url`: kotlin.String, 
@@ -6089,7 +5970,7 @@ public object FfiConverterTypeMessageMetadataData: FfiConverterRustBuffer<Messag
 
 data class OfferingData (
     var `metadata`: ResourceMetadataData, 
-    var `data`: OfferingDataData, 
+    var `jsonSerializedData`: kotlin.String, 
     var `signature`: kotlin.String
 ) {
     
@@ -6100,62 +5981,21 @@ public object FfiConverterTypeOfferingData: FfiConverterRustBuffer<OfferingData>
     override fun read(buf: ByteBuffer): OfferingData {
         return OfferingData(
             FfiConverterTypeResourceMetadataData.read(buf),
-            FfiConverterTypeOfferingDataData.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterString.read(buf),
         )
     }
 
     override fun allocationSize(value: OfferingData) = (
             FfiConverterTypeResourceMetadataData.allocationSize(value.`metadata`) +
-            FfiConverterTypeOfferingDataData.allocationSize(value.`data`) +
+            FfiConverterString.allocationSize(value.`jsonSerializedData`) +
             FfiConverterString.allocationSize(value.`signature`)
     )
 
     override fun write(value: OfferingData, buf: ByteBuffer) {
             FfiConverterTypeResourceMetadataData.write(value.`metadata`, buf)
-            FfiConverterTypeOfferingDataData.write(value.`data`, buf)
+            FfiConverterString.write(value.`jsonSerializedData`, buf)
             FfiConverterString.write(value.`signature`, buf)
-    }
-}
-
-
-
-data class OfferingDataData (
-    var `description`: kotlin.String, 
-    var `payoutUnitsPerPayinUnit`: kotlin.String, 
-    var `payin`: PayinDetailsData, 
-    var `payout`: PayoutDetailsData, 
-    var `requiredClaims`: PresentationDefinitionData?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeOfferingDataData: FfiConverterRustBuffer<OfferingDataData> {
-    override fun read(buf: ByteBuffer): OfferingDataData {
-        return OfferingDataData(
-            FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
-            FfiConverterTypePayinDetailsData.read(buf),
-            FfiConverterTypePayoutDetailsData.read(buf),
-            FfiConverterOptionalTypePresentationDefinitionData.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: OfferingDataData) = (
-            FfiConverterString.allocationSize(value.`description`) +
-            FfiConverterString.allocationSize(value.`payoutUnitsPerPayinUnit`) +
-            FfiConverterTypePayinDetailsData.allocationSize(value.`payin`) +
-            FfiConverterTypePayoutDetailsData.allocationSize(value.`payout`) +
-            FfiConverterOptionalTypePresentationDefinitionData.allocationSize(value.`requiredClaims`)
-    )
-
-    override fun write(value: OfferingDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`description`, buf)
-            FfiConverterString.write(value.`payoutUnitsPerPayinUnit`, buf)
-            FfiConverterTypePayinDetailsData.write(value.`payin`, buf)
-            FfiConverterTypePayoutDetailsData.write(value.`payout`, buf)
-            FfiConverterOptionalTypePresentationDefinitionData.write(value.`requiredClaims`, buf)
     }
 }
 
@@ -6277,96 +6117,6 @@ public object FfiConverterTypeOrderStatusDataData: FfiConverterRustBuffer<OrderS
 
 
 
-data class PayinDetailsData (
-    var `currencyCode`: kotlin.String, 
-    var `min`: kotlin.String?, 
-    var `max`: kotlin.String?, 
-    var `methods`: List<PayinMethodData>
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypePayinDetailsData: FfiConverterRustBuffer<PayinDetailsData> {
-    override fun read(buf: ByteBuffer): PayinDetailsData {
-        return PayinDetailsData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterSequenceTypePayinMethodData.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: PayinDetailsData) = (
-            FfiConverterString.allocationSize(value.`currencyCode`) +
-            FfiConverterOptionalString.allocationSize(value.`min`) +
-            FfiConverterOptionalString.allocationSize(value.`max`) +
-            FfiConverterSequenceTypePayinMethodData.allocationSize(value.`methods`)
-    )
-
-    override fun write(value: PayinDetailsData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`currencyCode`, buf)
-            FfiConverterOptionalString.write(value.`min`, buf)
-            FfiConverterOptionalString.write(value.`max`, buf)
-            FfiConverterSequenceTypePayinMethodData.write(value.`methods`, buf)
-    }
-}
-
-
-
-data class PayinMethodData (
-    var `kind`: kotlin.String, 
-    var `name`: kotlin.String?, 
-    var `description`: kotlin.String?, 
-    var `group`: kotlin.String?, 
-    var `jsonSerializedRequiredPaymentDetails`: kotlin.String?, 
-    var `fee`: kotlin.String?, 
-    var `min`: kotlin.String?, 
-    var `max`: kotlin.String?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypePayinMethodData: FfiConverterRustBuffer<PayinMethodData> {
-    override fun read(buf: ByteBuffer): PayinMethodData {
-        return PayinMethodData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: PayinMethodData) = (
-            FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`name`) +
-            FfiConverterOptionalString.allocationSize(value.`description`) +
-            FfiConverterOptionalString.allocationSize(value.`group`) +
-            FfiConverterOptionalString.allocationSize(value.`jsonSerializedRequiredPaymentDetails`) +
-            FfiConverterOptionalString.allocationSize(value.`fee`) +
-            FfiConverterOptionalString.allocationSize(value.`min`) +
-            FfiConverterOptionalString.allocationSize(value.`max`)
-    )
-
-    override fun write(value: PayinMethodData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`name`, buf)
-            FfiConverterOptionalString.write(value.`description`, buf)
-            FfiConverterOptionalString.write(value.`group`, buf)
-            FfiConverterOptionalString.write(value.`jsonSerializedRequiredPaymentDetails`, buf)
-            FfiConverterOptionalString.write(value.`fee`, buf)
-            FfiConverterOptionalString.write(value.`min`, buf)
-            FfiConverterOptionalString.write(value.`max`, buf)
-    }
-}
-
-
-
 data class PaymentInstructionsData (
     var `link`: kotlin.String?, 
     var `instruction`: kotlin.String?
@@ -6391,100 +6141,6 @@ public object FfiConverterTypePaymentInstructionsData: FfiConverterRustBuffer<Pa
     override fun write(value: PaymentInstructionsData, buf: ByteBuffer) {
             FfiConverterOptionalString.write(value.`link`, buf)
             FfiConverterOptionalString.write(value.`instruction`, buf)
-    }
-}
-
-
-
-data class PayoutDetailsData (
-    var `currencyCode`: kotlin.String, 
-    var `min`: kotlin.String?, 
-    var `max`: kotlin.String?, 
-    var `methods`: List<PayoutMethodData>
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypePayoutDetailsData: FfiConverterRustBuffer<PayoutDetailsData> {
-    override fun read(buf: ByteBuffer): PayoutDetailsData {
-        return PayoutDetailsData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterSequenceTypePayoutMethodData.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: PayoutDetailsData) = (
-            FfiConverterString.allocationSize(value.`currencyCode`) +
-            FfiConverterOptionalString.allocationSize(value.`min`) +
-            FfiConverterOptionalString.allocationSize(value.`max`) +
-            FfiConverterSequenceTypePayoutMethodData.allocationSize(value.`methods`)
-    )
-
-    override fun write(value: PayoutDetailsData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`currencyCode`, buf)
-            FfiConverterOptionalString.write(value.`min`, buf)
-            FfiConverterOptionalString.write(value.`max`, buf)
-            FfiConverterSequenceTypePayoutMethodData.write(value.`methods`, buf)
-    }
-}
-
-
-
-data class PayoutMethodData (
-    var `kind`: kotlin.String, 
-    var `name`: kotlin.String?, 
-    var `description`: kotlin.String?, 
-    var `group`: kotlin.String?, 
-    var `jsonSerializedRequiredPaymentDetails`: kotlin.String?, 
-    var `fee`: kotlin.String?, 
-    var `min`: kotlin.String?, 
-    var `max`: kotlin.String?, 
-    var `estimatedSettlementTime`: kotlin.Long
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypePayoutMethodData: FfiConverterRustBuffer<PayoutMethodData> {
-    override fun read(buf: ByteBuffer): PayoutMethodData {
-        return PayoutMethodData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterLong.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: PayoutMethodData) = (
-            FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`name`) +
-            FfiConverterOptionalString.allocationSize(value.`description`) +
-            FfiConverterOptionalString.allocationSize(value.`group`) +
-            FfiConverterOptionalString.allocationSize(value.`jsonSerializedRequiredPaymentDetails`) +
-            FfiConverterOptionalString.allocationSize(value.`fee`) +
-            FfiConverterOptionalString.allocationSize(value.`min`) +
-            FfiConverterOptionalString.allocationSize(value.`max`) +
-            FfiConverterLong.allocationSize(value.`estimatedSettlementTime`)
-    )
-
-    override fun write(value: PayoutMethodData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`name`, buf)
-            FfiConverterOptionalString.write(value.`description`, buf)
-            FfiConverterOptionalString.write(value.`group`, buf)
-            FfiConverterOptionalString.write(value.`jsonSerializedRequiredPaymentDetails`, buf)
-            FfiConverterOptionalString.write(value.`fee`, buf)
-            FfiConverterOptionalString.write(value.`min`, buf)
-            FfiConverterOptionalString.write(value.`max`, buf)
-            FfiConverterLong.write(value.`estimatedSettlementTime`, buf)
     }
 }
 
@@ -6522,31 +6178,6 @@ public object FfiConverterTypePresentationDefinitionData: FfiConverterRustBuffer
             FfiConverterOptionalString.write(value.`name`, buf)
             FfiConverterOptionalString.write(value.`purpose`, buf)
             FfiConverterSequenceTypeInputDescriptorData.write(value.`inputDescriptors`, buf)
-    }
-}
-
-
-
-data class PrivatePaymentDetailsData (
-    var `jsonSerializedPaymentDetails`: kotlin.String?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypePrivatePaymentDetailsData: FfiConverterRustBuffer<PrivatePaymentDetailsData> {
-    override fun read(buf: ByteBuffer): PrivatePaymentDetailsData {
-        return PrivatePaymentDetailsData(
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: PrivatePaymentDetailsData) = (
-            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPaymentDetails`)
-    )
-
-    override fun write(value: PrivatePaymentDetailsData, buf: ByteBuffer) {
-            FfiConverterOptionalString.write(value.`jsonSerializedPaymentDetails`, buf)
     }
 }
 
@@ -6702,8 +6333,8 @@ public object FfiConverterTypeResourceMetadataData: FfiConverterRustBuffer<Resou
 
 data class RfqData (
     var `metadata`: MessageMetadataData, 
-    var `data`: RfqDataData, 
-    var `privateData`: RfqPrivateDataData, 
+    var `jsonSerializedData`: kotlin.String, 
+    var `jsonSerializedPrivateData`: kotlin.String, 
     var `signature`: kotlin.String
 ) {
     
@@ -6714,160 +6345,24 @@ public object FfiConverterTypeRfqData: FfiConverterRustBuffer<RfqData> {
     override fun read(buf: ByteBuffer): RfqData {
         return RfqData(
             FfiConverterTypeMessageMetadataData.read(buf),
-            FfiConverterTypeRfqDataData.read(buf),
-            FfiConverterTypeRfqPrivateDataData.read(buf),
+            FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterString.read(buf),
         )
     }
 
     override fun allocationSize(value: RfqData) = (
             FfiConverterTypeMessageMetadataData.allocationSize(value.`metadata`) +
-            FfiConverterTypeRfqDataData.allocationSize(value.`data`) +
-            FfiConverterTypeRfqPrivateDataData.allocationSize(value.`privateData`) +
+            FfiConverterString.allocationSize(value.`jsonSerializedData`) +
+            FfiConverterString.allocationSize(value.`jsonSerializedPrivateData`) +
             FfiConverterString.allocationSize(value.`signature`)
     )
 
     override fun write(value: RfqData, buf: ByteBuffer) {
             FfiConverterTypeMessageMetadataData.write(value.`metadata`, buf)
-            FfiConverterTypeRfqDataData.write(value.`data`, buf)
-            FfiConverterTypeRfqPrivateDataData.write(value.`privateData`, buf)
+            FfiConverterString.write(value.`jsonSerializedData`, buf)
+            FfiConverterString.write(value.`jsonSerializedPrivateData`, buf)
             FfiConverterString.write(value.`signature`, buf)
-    }
-}
-
-
-
-data class RfqDataData (
-    var `offeringId`: kotlin.String, 
-    var `payin`: SelectedPayinMethodData, 
-    var `payout`: SelectedPayoutMethodData, 
-    var `claimsHash`: kotlin.String?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeRfqDataData: FfiConverterRustBuffer<RfqDataData> {
-    override fun read(buf: ByteBuffer): RfqDataData {
-        return RfqDataData(
-            FfiConverterString.read(buf),
-            FfiConverterTypeSelectedPayinMethodData.read(buf),
-            FfiConverterTypeSelectedPayoutMethodData.read(buf),
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: RfqDataData) = (
-            FfiConverterString.allocationSize(value.`offeringId`) +
-            FfiConverterTypeSelectedPayinMethodData.allocationSize(value.`payin`) +
-            FfiConverterTypeSelectedPayoutMethodData.allocationSize(value.`payout`) +
-            FfiConverterOptionalString.allocationSize(value.`claimsHash`)
-    )
-
-    override fun write(value: RfqDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`offeringId`, buf)
-            FfiConverterTypeSelectedPayinMethodData.write(value.`payin`, buf)
-            FfiConverterTypeSelectedPayoutMethodData.write(value.`payout`, buf)
-            FfiConverterOptionalString.write(value.`claimsHash`, buf)
-    }
-}
-
-
-
-data class RfqPrivateDataData (
-    var `salt`: kotlin.String, 
-    var `payin`: PrivatePaymentDetailsData?, 
-    var `payout`: PrivatePaymentDetailsData?, 
-    var `claims`: List<kotlin.String>?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeRfqPrivateDataData: FfiConverterRustBuffer<RfqPrivateDataData> {
-    override fun read(buf: ByteBuffer): RfqPrivateDataData {
-        return RfqPrivateDataData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalTypePrivatePaymentDetailsData.read(buf),
-            FfiConverterOptionalTypePrivatePaymentDetailsData.read(buf),
-            FfiConverterOptionalSequenceString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: RfqPrivateDataData) = (
-            FfiConverterString.allocationSize(value.`salt`) +
-            FfiConverterOptionalTypePrivatePaymentDetailsData.allocationSize(value.`payin`) +
-            FfiConverterOptionalTypePrivatePaymentDetailsData.allocationSize(value.`payout`) +
-            FfiConverterOptionalSequenceString.allocationSize(value.`claims`)
-    )
-
-    override fun write(value: RfqPrivateDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`salt`, buf)
-            FfiConverterOptionalTypePrivatePaymentDetailsData.write(value.`payin`, buf)
-            FfiConverterOptionalTypePrivatePaymentDetailsData.write(value.`payout`, buf)
-            FfiConverterOptionalSequenceString.write(value.`claims`, buf)
-    }
-}
-
-
-
-data class SelectedPayinMethodData (
-    var `kind`: kotlin.String, 
-    var `paymentDetailsHash`: kotlin.String?, 
-    var `amount`: kotlin.String
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeSelectedPayinMethodData: FfiConverterRustBuffer<SelectedPayinMethodData> {
-    override fun read(buf: ByteBuffer): SelectedPayinMethodData {
-        return SelectedPayinMethodData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-            FfiConverterString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: SelectedPayinMethodData) = (
-            FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`paymentDetailsHash`) +
-            FfiConverterString.allocationSize(value.`amount`)
-    )
-
-    override fun write(value: SelectedPayinMethodData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`paymentDetailsHash`, buf)
-            FfiConverterString.write(value.`amount`, buf)
-    }
-}
-
-
-
-data class SelectedPayoutMethodData (
-    var `kind`: kotlin.String, 
-    var `paymentDetailsHash`: kotlin.String?
-) {
-    
-    companion object
-}
-
-public object FfiConverterTypeSelectedPayoutMethodData: FfiConverterRustBuffer<SelectedPayoutMethodData> {
-    override fun read(buf: ByteBuffer): SelectedPayoutMethodData {
-        return SelectedPayoutMethodData(
-            FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
-        )
-    }
-
-    override fun allocationSize(value: SelectedPayoutMethodData) = (
-            FfiConverterString.allocationSize(value.`kind`) +
-            FfiConverterOptionalString.allocationSize(value.`paymentDetailsHash`)
-    )
-
-    override fun write(value: SelectedPayoutMethodData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`kind`, buf)
-            FfiConverterOptionalString.write(value.`paymentDetailsHash`, buf)
     }
 }
 
@@ -7231,64 +6726,6 @@ public object FfiConverterOptionalTypePaymentInstructionsData: FfiConverterRustB
 
 
 
-public object FfiConverterOptionalTypePresentationDefinitionData: FfiConverterRustBuffer<PresentationDefinitionData?> {
-    override fun read(buf: ByteBuffer): PresentationDefinitionData? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypePresentationDefinitionData.read(buf)
-    }
-
-    override fun allocationSize(value: PresentationDefinitionData?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypePresentationDefinitionData.allocationSize(value)
-        }
-    }
-
-    override fun write(value: PresentationDefinitionData?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypePresentationDefinitionData.write(value, buf)
-        }
-    }
-}
-
-
-
-
-public object FfiConverterOptionalTypePrivatePaymentDetailsData: FfiConverterRustBuffer<PrivatePaymentDetailsData?> {
-    override fun read(buf: ByteBuffer): PrivatePaymentDetailsData? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypePrivatePaymentDetailsData.read(buf)
-    }
-
-    override fun allocationSize(value: PrivatePaymentDetailsData?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypePrivatePaymentDetailsData.allocationSize(value)
-        }
-    }
-
-    override fun write(value: PrivatePaymentDetailsData?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypePrivatePaymentDetailsData.write(value, buf)
-        }
-    }
-}
-
-
-
-
 public object FfiConverterOptionalTypeOptionality: FfiConverterRustBuffer<Optionality?> {
     override fun read(buf: ByteBuffer): Optionality? {
         if (buf.get().toInt() == 0) {
@@ -7602,56 +7039,6 @@ public object FfiConverterSequenceTypeInputDescriptorData: FfiConverterRustBuffe
         buf.putInt(value.size)
         value.iterator().forEach {
             FfiConverterTypeInputDescriptorData.write(it, buf)
-        }
-    }
-}
-
-
-
-
-public object FfiConverterSequenceTypePayinMethodData: FfiConverterRustBuffer<List<PayinMethodData>> {
-    override fun read(buf: ByteBuffer): List<PayinMethodData> {
-        val len = buf.getInt()
-        return List<PayinMethodData>(len) {
-            FfiConverterTypePayinMethodData.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<PayinMethodData>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypePayinMethodData.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<PayinMethodData>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypePayinMethodData.write(it, buf)
-        }
-    }
-}
-
-
-
-
-public object FfiConverterSequenceTypePayoutMethodData: FfiConverterRustBuffer<List<PayoutMethodData>> {
-    override fun read(buf: ByteBuffer): List<PayoutMethodData> {
-        val len = buf.getInt()
-        return List<PayoutMethodData>(len) {
-            FfiConverterTypePayoutMethodData.read(buf)
-        }
-    }
-
-    override fun allocationSize(value: List<PayoutMethodData>): ULong {
-        val sizeForLength = 4UL
-        val sizeForItems = value.map { FfiConverterTypePayoutMethodData.allocationSize(it) }.sum()
-        return sizeForLength + sizeForItems
-    }
-
-    override fun write(value: List<PayoutMethodData>, buf: ByteBuffer) {
-        buf.putInt(value.size)
-        value.iterator().forEach {
-            FfiConverterTypePayoutMethodData.write(it, buf)
         }
     }
 }

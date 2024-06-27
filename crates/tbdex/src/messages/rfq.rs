@@ -323,7 +323,7 @@ impl Rfq {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
 pub struct CreateRfqData {
     pub offering_id: String,
     pub payin: CreateSelectedPayinMethod,
@@ -331,14 +331,14 @@ pub struct CreateRfqData {
     pub claims: Vec<String>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
 pub struct CreateSelectedPayinMethod {
     pub kind: String,
     pub payment_details: Option<serde_json::Value>,
     pub amount: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
 pub struct CreateSelectedPayoutMethod {
     pub kind: String,
     pub payment_details: Option<serde_json::Value>,

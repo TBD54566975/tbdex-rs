@@ -39,7 +39,7 @@ dictionary ResourceMetadataData {
 
 interface Offering {
   [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string from, OfferingDataData data, string protocol);
+  constructor(BearerDid bearer_did, string from, string json_serialized_data, string protocol);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -50,53 +50,8 @@ interface Offering {
 
 dictionary OfferingData {
   ResourceMetadataData metadata;
-  OfferingDataData data;
+  string json_serialized_data;
   string signature;
-};
-
-dictionary OfferingDataData {
-  string description;
-  string payout_units_per_payin_unit;
-  PayinDetailsData payin;
-  PayoutDetailsData payout;
-  PresentationDefinitionData? required_claims;
-};
-
-dictionary PayinDetailsData {
-  string currency_code;
-  string? min;
-  string? max;
-  sequence<PayinMethodData> methods;
-};
-
-dictionary PayinMethodData {
-  string kind;
-  string? name;
-  string? description;
-  string? group;
-  string? json_serialized_required_payment_details;
-  string? fee;
-  string? min;
-  string? max;
-};
-
-dictionary PayoutDetailsData {
-  string currency_code;
-  string? min;
-  string? max;
-  sequence<PayoutMethodData> methods;
-};
-
-dictionary PayoutMethodData {
-  string kind;
-  string? name;
-  string? description;
-  string? group;
-  string? json_serialized_required_payment_details;
-  string? fee;
-  string? min;
-  string? max;
-  i64 estimated_settlement_time;
 };
 
 dictionary BalanceData {
@@ -142,7 +97,7 @@ dictionary MessageMetadataData {
 
 interface Rfq {
   [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, CreateRfqDataData create_rfq_data, string protocol, string? external_id);
+  constructor(BearerDid bearer_did, string to, string from, string json_serialized_create_rfq_data, string protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json, boolean require_all_private_data);
   [Throws=RustCoreError]
@@ -160,56 +115,9 @@ interface Rfq {
 
 dictionary RfqData {
   MessageMetadataData metadata;
-  RfqDataData data;
-  RfqPrivateDataData private_data;
+  string json_serialized_data;
+  string json_serialized_private_data;
   string signature;
-};
-
-dictionary CreateRfqDataData {
-  string offering_id;
-  CreateSelectedPayinMethodData payin;
-  CreateSelectedPayoutMethodData payout;
-  sequence<string> claims; 
-};
-
-dictionary CreateSelectedPayinMethodData {
-  string kind;
-  string? json_serialized_payment_details;
-  string amount;
-};
-
-dictionary CreateSelectedPayoutMethodData {
-  string kind;
-  string? json_serialized_payment_details;
-};
-
-dictionary RfqDataData {
-  string offering_id;
-  SelectedPayinMethodData payin;
-  SelectedPayoutMethodData payout;
-  string? claims_hash;
-};
-
-dictionary SelectedPayinMethodData {
-  string kind;
-  string? payment_details_hash;
-  string amount;
-};
-
-dictionary SelectedPayoutMethodData {
-  string kind;
-  string? payment_details_hash;
-};
-
-dictionary RfqPrivateDataData {
-  string salt;
-  PrivatePaymentDetailsData? payin;
-  PrivatePaymentDetailsData? payout;
-  sequence<string>? claims;
-};
-
-dictionary PrivatePaymentDetailsData {
-  string? json_serialized_payment_details;
 };
 
 interface Quote {
