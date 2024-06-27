@@ -99,7 +99,7 @@ pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
             }
             Some(s) => s
                 .iter()
-                .find(|s| s.r#type == "PFI".to_string())
+                .find(|s| s.r#type == *"PFI")
                 .ok_or(HttpClientError::MissingServiceEndpoint(
                     pfi_did_uri.to_string(),
                 ))?

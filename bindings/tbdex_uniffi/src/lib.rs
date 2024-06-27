@@ -59,17 +59,4 @@ use web5_uniffi_wrapper::{
     errors::RustCoreError as Web5RustCoreError,
 };
 
-// 🚧 TODO temporary hack in place while did:dht resolution is incomplete
-pub fn tmp_hack_bearer_did(
-    did: DidData,
-    document: DocumentData,
-    key_manager: std::sync::Arc<dyn KeyManager>,
-) -> std::sync::Arc<BearerDid> {
-    std::sync::Arc::new(BearerDid(web5::dids::bearer_did::BearerDid {
-        did,
-        document,
-        key_manager: key_manager.to_inner(),
-    }))
-}
-
 uniffi::include_scaffolding!("tbdex");

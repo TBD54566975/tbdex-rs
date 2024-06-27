@@ -870,8 +870,6 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
-
-
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -1064,8 +1062,6 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_func_submit_order(`order`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_func_tmp_hack_bearer_did(`did`: RustBuffer.ByValue,`document`: RustBuffer.ByValue,`keyManager`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Pointer
     fun ffi_tbdex_uniffi_rustbuffer_alloc(`size`: Long,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun ffi_tbdex_uniffi_rustbuffer_from_bytes(`bytes`: ForeignBytes.ByValue,uniffi_out_err: UniffiRustCallStatus, 
@@ -1191,8 +1187,6 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_checksum_func_submit_close(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_func_submit_order(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_func_tmp_hack_bearer_did(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_balance_get_data(
     ): Short
@@ -1328,9 +1322,6 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_submit_order() != 22522.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_tmp_hack_bearer_did() != 51792.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_balance_get_data() != 45636.toShort()) {
@@ -6877,15 +6868,6 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
         FfiConverterTypeOrder.lower(`order`),_status)
 }
     
-    
- fun `tmpHackBearerDid`(`did`: DidData, `document`: DocumentData, `keyManager`: KeyManager): BearerDid {
-            return FfiConverterTypeBearerDid.lift(
-    uniffiRustCall() { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_tmp_hack_bearer_did(
-        FfiConverterTypeDidData.lower(`did`),FfiConverterTypeDocumentData.lower(`document`),FfiConverterTypeKeyManager.lower(`keyManager`),_status)
-}
-    )
-    }
     
 
 

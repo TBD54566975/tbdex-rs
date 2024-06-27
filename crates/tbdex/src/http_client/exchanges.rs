@@ -88,7 +88,7 @@ pub fn get_exchange(
     bearer_did: &BearerDid,
     exchange_id: &str,
 ) -> Result<Exchange> {
-    let service_endpoint = get_service_endpoint(&pfi_did_uri)?;
+    let service_endpoint = get_service_endpoint(pfi_did_uri)?;
     let get_exchange_endpoint = format!("{}/exchanges/{}", service_endpoint, exchange_id);
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
