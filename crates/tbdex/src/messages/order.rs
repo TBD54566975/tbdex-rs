@@ -43,8 +43,7 @@ impl Order {
             )?,
         };
 
-        // 🚧 TODO commenting out until did:dht support
-        // order.verify()?;
+        order.verify()?;
 
         Ok(order)
     }

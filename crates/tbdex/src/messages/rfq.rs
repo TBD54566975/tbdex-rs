@@ -59,8 +59,7 @@ impl Rfq {
             )?,
         };
 
-        // 🚧 TODO commenting out until did:dht support
-        // rfq.verify()?;
+        rfq.verify()?;
 
         Ok(rfq)
     }
@@ -162,7 +161,6 @@ impl Rfq {
             }
         }
 
-        // 🚧 TODO make use of new json_schemas module
         // verify payin json schema
         if let Some(payin_method) = offering
             .data

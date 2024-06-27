@@ -8,7 +8,12 @@ use reqwest::Error as ReqwestError;
 use serde_json::Error as SerdeJsonError;
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
-use web5::dids::bearer_did::{BearerDid, BearerDidError};
+use web5::dids::{
+    bearer_did::{BearerDid, BearerDidError},
+    resolution::{
+        resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
+    },
+};
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum HttpClientError {
@@ -26,6 +31,10 @@ pub enum HttpClientError {
     Message(#[from] MessageError),
     #[error("unable to map response to exchange")]
     ExchangeMapping,
+    #[error(transparent)]
+    Resolution(#[from] ResolutionMetadataError),
+    #[error("missing service endpoint for {0}")]
+    MissingServiceEndpoint(String),
 }
 
 impl From<ReqwestError> for HttpClientError {
@@ -70,4 +79,38 @@ fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<St
     let access_token = jose_signer.sign_jwt(&payload)?;
 
     Ok(access_token)
+}
+
+pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
+    let resolution_result = ResolutionResult::new(pfi_did_uri);
+
+    let endpoint = match &resolution_result.document {
+        None => {
+            return Err(match resolution_result.resolution_metadata.error {
+                Some(e) => HttpClientError::Resolution(e),
+                None => HttpClientError::Resolution(ResolutionMetadataError::InternalError),
+            })
+        }
+        Some(d) => match &d.service {
+            None => {
+                return Err(HttpClientError::MissingServiceEndpoint(
+                    pfi_did_uri.to_string(),
+                ))
+            }
+            Some(s) => s
+                .iter()
+                .find(|s| s.r#type == "PFI".to_string())
+                .ok_or(HttpClientError::MissingServiceEndpoint(
+                    pfi_did_uri.to_string(),
+                ))?
+                .service_endpoint
+                .first()
+                .ok_or(HttpClientError::MissingServiceEndpoint(
+                    pfi_did_uri.to_string(),
+                ))?
+                .clone(),
+        },
+    };
+
+    Ok(endpoint)
 }

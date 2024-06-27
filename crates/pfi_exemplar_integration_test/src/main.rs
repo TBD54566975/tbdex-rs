@@ -11,11 +11,7 @@ use tbdex::{
 };
 use web5::{
     crypto::{jwk::Jwk, key_managers::in_memory_key_manager::InMemoryKeyManager},
-    dids::{
-        bearer_did::BearerDid,
-        data_model::{document::Document, verification_method::VerificationMethod},
-        did::Did,
-    },
+    dids::bearer_did::BearerDid,
 };
 
 fn main() {
@@ -33,26 +29,7 @@ fn main() {
             d: Some("jVOdpSIN-DhddW_XVnDipukuzu6-8zieXQtkECZYJ04".to_string()),
         })
         .unwrap();
-    let bearer_did = BearerDid {
-        did: Did::new(&did_uri).unwrap(),
-        document: Document {
-            id: did_uri.clone(),
-            verification_method: vec![VerificationMethod {
-                id: format!("{}#0", did_uri),
-                r#type: "JsonWebKey".to_string(),
-                controller: did_uri.clone(),
-                public_key_jwk: Jwk {
-                    crv: "Ed25519".to_string(),
-                    kty: "OKP".to_string(),
-                    alg: "EdDSA".to_string(),
-                    x: "kW2-CfY0XmGTVLurk7BJ14Mqc4L-oJpD3jH5ZmwxyUw".to_string(),
-                    ..Default::default()
-                },
-            }],
-            ..Default::default()
-        },
-        key_manager: Arc::new(key_manager),
-    };
+    let bearer_did = BearerDid::new(&did_uri, Arc::new(key_manager)).unwrap();
 
     // request offerings
     let offerings = get_offerings(&pfi_did_uri).unwrap();
