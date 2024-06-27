@@ -2,7 +2,7 @@ use super::{MessageKind, MessageMetadata, Result};
 use crate::json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::dids::bearer_did::BearerDid;
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Order {
@@ -43,8 +43,7 @@ impl Order {
             )?,
         };
 
-        // 🚧 TODO commenting out until did:dht support
-        // order.verify()?;
+        order.verify()?;
 
         Ok(order)
     }

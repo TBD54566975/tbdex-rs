@@ -2,7 +2,7 @@ use super::{ResourceKind, ResourceMetadata, Result};
 use crate::json_schemas::generated::{OFFERING_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use web5::apid::{
+use web5::{
     credentials::presentation_definition::PresentationDefinition, dids::bearer_did::BearerDid,
 };
 
@@ -153,9 +153,11 @@ pub struct PayoutMethod {
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use web5::apid::{
-        crypto::key_managers::in_memory_key_manager::InMemoryKeyManager,
-        dids::methods::did_jwk::DidJwk, dsa::ed25519::Ed25519Generator,
+    use web5::{
+        crypto::{
+            dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
+        },
+        dids::methods::did_jwk::DidJwk,
     };
 
     #[test]

@@ -11,7 +11,7 @@ use chrono::Utc;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use web5::apid::{
+use web5::{
     credentials::verifiable_credential_1_1::VerifiableCredential, dids::bearer_did::BearerDid,
 };
 
@@ -59,8 +59,7 @@ impl Rfq {
             )?,
         };
 
-        // 🚧 TODO commenting out until did:dht support
-        // rfq.verify()?;
+        rfq.verify()?;
 
         Ok(rfq)
     }
@@ -162,7 +161,6 @@ impl Rfq {
             }
         }
 
-        // 🚧 TODO make use of new json_schemas module
         // verify payin json schema
         if let Some(payin_method) = offering
             .data
@@ -323,7 +321,8 @@ impl Rfq {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateRfqData {
     pub offering_id: String,
     pub payin: CreateSelectedPayinMethod,
@@ -331,14 +330,16 @@ pub struct CreateRfqData {
     pub claims: Vec<String>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateSelectedPayinMethod {
     pub kind: String,
     pub payment_details: Option<serde_json::Value>,
     pub amount: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateSelectedPayoutMethod {
     pub kind: String,
     pub payment_details: Option<serde_json::Value>,
@@ -469,9 +470,11 @@ fn digest_private_data<T: Serialize>(salt: &str, value: &T) -> String {
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use web5::apid::{
-        crypto::key_managers::in_memory_key_manager::InMemoryKeyManager,
-        dids::methods::did_jwk::DidJwk, dsa::ed25519::Ed25519Generator,
+    use web5::{
+        crypto::{
+            dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
+        },
+        dids::methods::did_jwk::DidJwk,
     };
 
     #[test]

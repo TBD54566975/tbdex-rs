@@ -1,10 +1,11 @@
 pub mod generated;
 
 use generated::DEFINITIONS_JSON_SCHEMA;
-use jsonschema::{JSONSchema, SchemaResolver};
+use jsonschema::{JSONSchema, SchemaResolver, SchemaResolverError};
+use reqwest::blocking::get;
 use serde::Serialize;
 use serde_json::Error as SerdeJsonError;
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum JsonSchemaError {
@@ -45,14 +46,25 @@ impl SchemaResolver for LocalSchemaResolver {
         _root_schema: &josekit::Value,
         url: &reqwest::Url,
         _original_reference: &str,
-    ) -> std::result::Result<std::sync::Arc<josekit::Value>, jsonschema::SchemaResolverError> {
+    ) -> std::result::Result<std::sync::Arc<josekit::Value>, SchemaResolverError> {
         if let Some(schema) = self.schemas.get(url.as_str()) {
             Ok(std::sync::Arc::new(schema.clone()))
         } else {
-            Err(jsonschema::SchemaResolverError::new(std::io::Error::new(
-                std::io::ErrorKind::NotFound,
-                format!("schema not found {}", url),
-            )))
+            match get(url.as_str()) {
+                Ok(response) => {
+                    let schema: serde_json::Value = response.json().map_err(|err| {
+                        SchemaResolverError::new(std::io::Error::new(
+                            std::io::ErrorKind::InvalidData,
+                            format!("failed to parse schema: {}", err),
+                        ))
+                    })?;
+                    Ok(Arc::new(schema))
+                }
+                Err(err) => Err(SchemaResolverError::new(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    format!("schema not found {}: {}", url, err),
+                ))),
+            }
         }
     }
 }

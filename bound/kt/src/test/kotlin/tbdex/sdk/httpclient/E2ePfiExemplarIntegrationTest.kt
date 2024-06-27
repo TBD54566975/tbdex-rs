@@ -1,13 +1,11 @@
 package tbdex.sdk.httpclient
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.RustCoreException
-import tbdex.sdk.rust.VerificationMethodData
 import tbdex.sdk.rust.Web5RustCoreException
 import tbdex.sdk.web5.*
 
@@ -27,17 +25,7 @@ class E2ePfiExemplarIntegrationTest {
                 "kW2-CfY0XmGTVLurk7BJ14Mqc4L-oJpD3jH5ZmwxyUw",
                 null
             ))
-            val did = Did(didUri, "", "", "", null, null, null, null)
-            val bearerDid = BearerDid(did, Document(
-                didUri, null, null, null,
-                listOf(VerificationMethodData(
-                    "$didUri#0",
-                    "JsonWebKey",
-                    didUri,
-                    publicJwk
-                )),
-                null, null, null, null, null, null
-            ), keyManager)
+            val bearerDid = BearerDid(didUri, keyManager)
 
             // get offerings
             val offerings = getOfferings(pfiDidUri)

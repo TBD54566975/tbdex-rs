@@ -12,10 +12,12 @@ use std::{
     fmt::{Debug, Formatter},
     sync::Arc,
 };
-use web5::apid::{
-    crypto::jwk::Jwk,
+use web5::{
+    crypto::{
+        dsa::{ed25519::Ed25519Verifier, DsaError, Signer as Web5Signer, Verifier as Web5Verifier},
+        jwk::Jwk,
+    },
     dids::data_model::document::Document,
-    dsa::{ed25519::Ed25519Verifier, DsaError, Signer as Web5Signer, Verifier as Web5Verifier},
 };
 
 #[derive(Clone)]

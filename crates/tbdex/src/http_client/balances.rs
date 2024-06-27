@@ -1,8 +1,8 @@
-use super::{generate_access_token, Result};
+use super::{generate_access_token, get_service_endpoint, Result};
 use crate::resources::balance::Balance;
 use reqwest::blocking::Client;
 use serde::Deserialize;
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::dids::bearer_did::BearerDid;
 
 #[derive(Deserialize)]
 struct GetBalancesResponse {
@@ -10,14 +10,13 @@ struct GetBalancesResponse {
 }
 
 pub fn get_balances(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<Vec<Balance>> {
-    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
-    let endpoint = "http://localhost:9000/balance";
-    // TODO the above
+    let service_endpoint = get_service_endpoint(pfi_did_uri)?;
+    let balances_endpoint = format!("{}/balances", service_endpoint);
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
 
     let response = Client::new()
-        .get(endpoint)
+        .get(balances_endpoint)
         .bearer_auth(access_token)
         .send()?
         .text()?;

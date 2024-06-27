@@ -2,7 +2,7 @@ use super::{ResourceKind, ResourceMetadata, Result};
 use crate::json_schemas::generated::{BALANCE_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::dids::bearer_did::BearerDid;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Balance {

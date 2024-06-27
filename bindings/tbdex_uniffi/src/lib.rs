@@ -19,29 +19,11 @@ use crate::{
         order::Order,
         order_status::OrderStatus,
         quote::Quote,
-        rfq::{
-            data::{
-                CreateRfqData as CreateRfqDataData,
-                CreateSelectedPayinMethod as CreateSelectedPayinMethodData,
-                CreateSelectedPayoutMethod as CreateSelectedPayoutMethodData,
-                PrivatePaymentDetails as PrivatePaymentDetailsData, Rfq as RfqData,
-                RfqData as RfqDataData, RfqPrivateData as RfqPrivateDataData,
-                SelectedPayinMethod as SelectedPayinMethodData,
-                SelectedPayoutMethod as SelectedPayoutMethodData,
-            },
-            Rfq,
-        },
+        rfq::{data::Rfq as RfqData, Rfq},
     },
     resources::{
         balance::Balance,
-        offering::{
-            data::{
-                Offering as OfferingData, OfferingData as OfferingDataData,
-                PayinDetails as PayinDetailsData, PayinMethod as PayinMethodData,
-                PayoutDetails as PayoutDetailsData, PayoutMethod as PayoutMethodData,
-            },
-            Offering,
-        },
+        offering::{data::Offering as OfferingData, Offering},
     },
 };
 use tbdex::{
@@ -60,12 +42,7 @@ use tbdex::{
         ResourceKind, ResourceMetadata as ResourceMetadataData,
     },
 };
-use web5::apid::{
-    credentials::presentation_definition::{
-        Constraints as ConstraintsData, Field as FieldData, Filter as FilterData,
-        InputDescriptor as InputDescriptorData, Optionality,
-        PresentationDefinition as PresentationDefinitionData,
-    },
+use web5::{
     crypto::jwk::Jwk as JwkData,
     dids::{
         data_model::{
@@ -77,23 +54,9 @@ use web5::apid::{
 };
 use web5_uniffi_wrapper::{
     credentials::presentation_definition::PresentationDefinition,
-    crypto::{in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
+    crypto::{dsa::Signer, in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
     dids::bearer_did::{BearerDid, BearerDidData},
-    dsa::Signer,
     errors::RustCoreError as Web5RustCoreError,
 };
-
-// 🚧 TODO temporary hack in place while did:dht resolution is incomplete
-pub fn tmp_hack_bearer_did(
-    did: DidData,
-    document: DocumentData,
-    key_manager: std::sync::Arc<dyn KeyManager>,
-) -> std::sync::Arc<BearerDid> {
-    std::sync::Arc::new(BearerDid(web5::apid::dids::bearer_did::BearerDid {
-        did,
-        document,
-        key_manager: key_manager.to_inner(),
-    }))
-}
 
 uniffi::include_scaffolding!("tbdex");

@@ -1,4 +1,4 @@
-use super::Result;
+use super::{get_service_endpoint, Result};
 use crate::{
     http_client::{generate_access_token, HttpClientError},
     messages::{
@@ -8,7 +8,7 @@ use crate::{
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use web5::apid::dids::bearer_did::BearerDid;
+use web5::dids::bearer_did::BearerDid;
 
 #[derive(Clone, Default, Deserialize, Serialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -33,12 +33,10 @@ struct CreateExchangeRequest {
 }
 
 pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
-    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
-    let endpoint = "http://localhost:9000/exchanges";
-    // TODO the above
+    let service_endpoint = get_service_endpoint(&rfq.metadata.to)?;
+    let create_exchange_endpoint = format!("{}/exchanges", service_endpoint);
 
-    // TODO uncomment with did:dht resolution support
-    // rfq.verify()?;
+    rfq.verify()?;
 
     let request_body = serde_json::to_string(&CreateExchangeRequest {
         rfq: rfq.clone(),
@@ -47,7 +45,7 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 
     // todo handle error responses response.status() and response.text()
     let _response = Client::new()
-        .post(endpoint)
+        .post(create_exchange_endpoint)
         .header("Content-Type", "application/json")
         .body(request_body)
         .send()?;
@@ -56,20 +54,18 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 }
 
 pub fn submit_order(order: &Order) -> Result<()> {
-    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
-    let endpoint = format!(
-        "http://localhost:9000/exchanges/{}",
-        order.metadata.exchange_id
+    let service_endpoint = get_service_endpoint(&order.metadata.to)?;
+    let submit_order_endpoint = format!(
+        "{}/exchanges/{}",
+        service_endpoint, order.metadata.exchange_id
     );
-    // TODO the above
 
-    // TODO uncomment with did:dht resolution support
-    // order.verify()?;
+    order.verify()?;
 
     let request_body = serde_json::to_string(&order)?;
     // todo handle error responses response.status() and response.text()
     let _response = Client::new()
-        .put(endpoint)
+        .put(submit_order_endpoint)
         .header("Content-Type", "application/json")
         .body(request_body)
         .send()?;
@@ -92,14 +88,13 @@ pub fn get_exchange(
     bearer_did: &BearerDid,
     exchange_id: &str,
 ) -> Result<Exchange> {
-    // TODO resolve pfi did for service endpoint; waiting on did:dht resolution
-    let endpoint = format!("http://localhost:9000/exchanges/{}", exchange_id);
-    // TODO the above
+    let service_endpoint = get_service_endpoint(pfi_did_uri)?;
+    let get_exchange_endpoint = format!("{}/exchanges/{}", service_endpoint, exchange_id);
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
 
     let response = Client::new()
-        .get(endpoint)
+        .get(get_exchange_endpoint)
         .bearer_auth(access_token)
         .send()?
         .text()?;
@@ -107,8 +102,6 @@ pub fn get_exchange(
     // TODO handle error response
 
     let mut exchange = Exchange::default();
-
-    // TODO cryptographic verifications
 
     let data = serde_json::from_str::<GetExchangeResponse>(&response)?.data;
     for message in data {
@@ -119,18 +112,35 @@ pub fn get_exchange(
             .ok_or(HttpClientError::ExchangeMapping)?;
 
         match MessageKind::from_str(kind)? {
-            MessageKind::Rfq => exchange.rfq = serde_json::from_value(message)?,
-            MessageKind::Quote => exchange.quote = Some(serde_json::from_value(message)?),
-            MessageKind::Order => exchange.order = Some(serde_json::from_value(message)?),
+            MessageKind::Rfq => {
+                let rfq = serde_json::from_value::<Rfq>(message)?;
+                rfq.verify()?;
+                exchange.rfq = rfq;
+            }
+            MessageKind::Quote => {
+                let quote = serde_json::from_value::<Quote>(message)?;
+                quote.verify()?;
+                exchange.quote = Some(quote);
+            }
+            MessageKind::Order => {
+                let order = serde_json::from_value::<Order>(message)?;
+                order.verify()?;
+                exchange.order = Some(order);
+            }
             MessageKind::OrderStatus => {
                 let order_status = serde_json::from_value::<OrderStatus>(message)?;
+                order_status.verify()?;
                 if let Some(order_statuses) = &mut exchange.order_statuses {
                     order_statuses.push(order_status);
                 } else {
                     exchange.order_statuses = Some(vec![order_status]);
                 }
             }
-            MessageKind::Close => exchange.close = Some(serde_json::from_value(message)?),
+            MessageKind::Close => {
+                let close = serde_json::from_value::<Close>(message)?;
+                close.verify()?;
+                exchange.close = Some(close);
+            }
         }
     }
 

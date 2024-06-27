@@ -5,8 +5,8 @@ use serde_json::Error as SerdeJsonError;
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 use std::fmt::Debug;
-use web5::apid::dids::bearer_did::BearerDid;
-use web5::apid::dids::{
+use web5::dids::bearer_did::BearerDid;
+use web5::dids::{
     bearer_did::BearerDidError,
     resolution::{
         resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
