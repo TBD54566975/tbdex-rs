@@ -55,10 +55,6 @@
 >
 > Snake vs camel casing is inconsistent
 
-> [!NOTE]
->
-> All `CONSTRUCTOR(json: string)` instances in this APID perform cryptographic verification.
-
 > [!WARNING]
 >
 > `FUNCTION` needs to be added to the Custom DSL
@@ -96,6 +92,10 @@ CLASS ResourceMetadata
 ```
 
 ## `Offering`
+
+> [!NOTE]
+>
+> All `CONSTRUCTOR(json: string)` instances in this APID perform cryptographic verification on the `signature` property.
 
 ```pseudocode!
 CLASS Offering IMPLEMENTS Resource
