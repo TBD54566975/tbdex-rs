@@ -2,11 +2,8 @@ package tbdex.sdk.httpclient
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotEquals
-import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import tbdex.sdk.messages.*
-import tbdex.sdk.rust.RustCoreException
-import tbdex.sdk.rust.Web5RustCoreException
 import tbdex.sdk.web5.*
 
 class E2ePfiExemplarIntegrationTest {
