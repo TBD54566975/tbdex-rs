@@ -16,7 +16,7 @@ class E2ePfiExemplarIntegrationTest {
 
         val didUri = "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy"
         val keyManager = InMemoryKeyManager(listOf())
-        val publicJwk = keyManager.importPrivateJwk(Jwk(
+        keyManager.importPrivateJwk(Jwk(
             "EdDSA",
             "OKP",
             "Ed25519",
