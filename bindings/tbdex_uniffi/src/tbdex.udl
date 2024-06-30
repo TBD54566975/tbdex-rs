@@ -15,10 +15,9 @@ namespace tbdex {
   sequence<string> get_exchanges(string pfi_did_uri, BearerDid bearer_did);
 };
 
+[Error]
 interface RustCoreError {
-  string error_type();
-  string variant();
-  string message();
+  Error(string type, string variant, string msg);
 };
 
 enum ResourceKind {

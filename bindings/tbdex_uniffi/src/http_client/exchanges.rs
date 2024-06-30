@@ -40,20 +40,17 @@ impl Exchange {
 }
 
 pub fn create_exchange(rfq: Arc<Rfq>, reply_to: Option<String>) -> Result<()> {
-    tbdex::http_client::exchanges::create_exchange(&rfq.to_inner()?, reply_to)
-        .map_err(|e| Arc::new(e.into()))?;
+    tbdex::http_client::exchanges::create_exchange(&rfq.to_inner()?, reply_to)?;
     Ok(())
 }
 
 pub fn submit_order(order: Arc<Order>) -> Result<()> {
-    tbdex::http_client::exchanges::submit_order(&order.get_data()?)
-        .map_err(|e| Arc::new(e.into()))?;
+    tbdex::http_client::exchanges::submit_order(&order.get_data()?)?;
     Ok(())
 }
 
 pub fn submit_close(close: Arc<Close>) -> Result<()> {
-    tbdex::http_client::exchanges::submit_close(&close.get_data()?)
-        .map_err(|e| Arc::new(e.into()))?;
+    tbdex::http_client::exchanges::submit_close(&close.get_data()?)?;
     Ok(())
 }
 
@@ -66,15 +63,13 @@ pub fn get_exchange(
         &pfi_did_uri,
         &bearer_did.0.clone(),
         &exchange_id,
-    )
-    .map_err(|e| Arc::new(e.into()))?;
+    )?;
 
     Ok(Exchange::from_inner(inner_exchange))
 }
 
 pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<Vec<String>> {
     let exchange_ids =
-        tbdex::http_client::exchanges::get_exchanges(&pfi_did_uri, &bearer_did.0.clone())
-            .map_err(|e| Arc::new(e.into()))?;
+        tbdex::http_client::exchanges::get_exchanges(&pfi_did_uri, &bearer_did.0.clone())?;
     Ok(exchange_ids)
 }

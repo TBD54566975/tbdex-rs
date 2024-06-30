@@ -12,16 +12,13 @@ impl Offering {
         json_serialized_data: String,
         protocol: String,
     ) -> Result<Self> {
-        let data = serde_json::from_str::<InnerOfferingData>(&json_serialized_data)
-            .map_err(|e| Arc::new(e.into()))?;
-        let inner_offering = InnerOffering::new(&bearer_did.0.clone(), &from, &data, &protocol)
-            .map_err(|e| Arc::new(e.into()))?;
+        let data = serde_json::from_str::<InnerOfferingData>(&json_serialized_data)?;
+        let inner_offering = InnerOffering::new(&bearer_did.0.clone(), &from, &data, &protocol)?;
         Ok(Self(Arc::new(RwLock::new(inner_offering))))
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner_offering =
-            InnerOffering::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        let inner_offering = InnerOffering::from_json_string(json)?;
         Ok(Self(Arc::new(RwLock::new(inner_offering))))
     }
 
@@ -30,7 +27,8 @@ impl Offering {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        inner_offering.to_json().map_err(|e| Arc::new(e.into()))
+
+        Ok(inner_offering.to_json()?)
     }
 
     pub fn get_data(&self) -> Result<data::Offering> {
@@ -38,8 +36,7 @@ impl Offering {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        let json_serialized_data =
-            serde_json::to_string(&inner_offering.data.clone()).map_err(|e| Arc::new(e.into()))?;
+        let json_serialized_data = serde_json::to_string(&inner_offering.data.clone())?;
         Ok(data::Offering {
             metadata: inner_offering.metadata.clone(),
             json_serialized_data,

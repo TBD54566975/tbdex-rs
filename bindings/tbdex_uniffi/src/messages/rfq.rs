@@ -18,8 +18,7 @@ impl Rfq {
         external_id: Option<String>,
     ) -> Result<Self> {
         let create_rfq_data =
-            serde_json::from_str::<InnerCreateRfqData>(&json_serialized_create_rfq_data)
-                .map_err(|e| Arc::new(e.into()))?;
+            serde_json::from_str::<InnerCreateRfqData>(&json_serialized_create_rfq_data)?;
         let rfq = InnerRfq::new(
             &bearer_did.0.clone(),
             &to,
@@ -27,14 +26,14 @@ impl Rfq {
             &create_rfq_data,
             &protocol,
             external_id,
-        )
-        .map_err(|e| Arc::new(e.into()))?;
+        )?;
+
         Ok(Self(Arc::new(RwLock::new(rfq))))
     }
 
     pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
-        let inner_rfq = InnerRfq::from_json_string(json, require_all_private_data)
-            .map_err(|e| Arc::new(e.into()))?;
+        let inner_rfq = InnerRfq::from_json_string(json, require_all_private_data)?;
+
         Ok(Self(Arc::new(RwLock::new(inner_rfq))))
     }
 
@@ -43,7 +42,8 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        inner_rfq.to_json().map_err(|e| Arc::new(e.into()))
+
+        Ok(inner_rfq.to_json()?)
     }
 
     pub fn get_data(&self) -> Result<data::Rfq> {
@@ -51,10 +51,8 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        let json_serialized_data =
-            serde_json::to_string(&inner_rfq.data.clone()).map_err(|e| Arc::new(e.into()))?;
-        let json_serialized_private_data = serde_json::to_string(&inner_rfq.private_data.clone())
-            .map_err(|e| Arc::new(e.into()))?;
+        let json_serialized_data = serde_json::to_string(&inner_rfq.data.clone())?;
+        let json_serialized_private_data = serde_json::to_string(&inner_rfq.private_data.clone())?;
         Ok(data::Rfq {
             metadata: inner_rfq.metadata.clone(),
             json_serialized_data,
@@ -68,6 +66,7 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
         Ok(inner_rfq.clone())
     }
 
@@ -76,8 +75,8 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        rfq.verify_offering_requirements(&offering.to_inner()?)
-            .map_err(|e| Arc::new(e.into()))
+
+        Ok(rfq.verify_offering_requirements(&offering.to_inner()?)?)
     }
 
     pub fn verify_all_private_data(&self) -> Result<bool> {
@@ -85,8 +84,8 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        rfq.verify_all_private_data()
-            .map_err(|e| Arc::new(e.into()))
+
+        Ok(rfq.verify_all_private_data()?)
     }
 
     pub fn verify_present_private_data(&self) -> Result<bool> {
@@ -94,8 +93,8 @@ impl Rfq {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        rfq.verify_present_private_data()
-            .map_err(|e| Arc::new(e.into()))
+
+        Ok(rfq.verify_present_private_data()?)
     }
 }
 
