@@ -286,19 +286,18 @@ dictionary ServiceData {
   sequence<string> service_endpoint;
 };
 
+[Error]
 interface Web5RustCoreError {
-  string error_type();
-  string variant();
-  string message();
+  Error(string type, string variant, string msg);
 };
 
-[Trait]
+[Trait, WithForeign]
 interface Signer {
   [Throws=Web5RustCoreError]
-  bytes sign([ByRef] sequence<u8> payload);
+  bytes sign(bytes payload);
 };
 
-[Trait]
+[Trait, WithForeign]
 interface KeyManager {
   [Throws=Web5RustCoreError]
   Signer get_signer(JwkData public_jwk);
