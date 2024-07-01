@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        async function fetchOfferings() {
+            try {
+                document.getElementById('loadingMessage').style.display = 'block'; // Show loading message
+                const response = await fetch('/frontend/api/offerings');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                document.getElementById('offerings').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('createExchangeButton').style.display = 'block'; // Show the button
+                document.getElementById('fetchMessage').style.display = 'block'; // Show fetch completion message
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            } finally {
+                document.getElementById('loadingMessage').style.display = 'none'; // Hide loading message
+            }
+        }
+
+        async function createExchange() {
+            try {
+                document.getElementById('createExchangeLoadingMessage').style.display = 'block'; // Show create exchange loading message
+                const response = await fetch('/frontend/api/exchanges', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                document.getElementById('exchangeResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            } finally {
+                document.getElementById('createExchangeLoadingMessage').style.display = 'none'; // Hide create exchange loading message
+            }
+        }
+    </script>
+    <style>
+        #createExchangeButton, #fetchMessage, #createExchangeLoadingMessage {
+            display: none; /* Initially hidden */
+        }
+        #loadingMessage {
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <h1>Example UX</h1>
+    <button onclick="fetchOfferings()">Get Offerings</button>
+    <p id="loadingMessage">Loading, please wait...</p>
+    <p id="fetchMessage">Scroll down to create the exchange</p>
+    <pre id="offerings"></pre>
+    <button id="createExchangeButton" onclick="createExchange()">Create Exchange</button>
+    <p id="createExchangeLoadingMessage">Creating exchange, please wait...</p>
+    <pre id="exchangeResponse"></pre>
+</body>
+</html>

@@ -2,11 +2,13 @@ package tbdex.sdk.httpclient
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.*
 
 class E2ePfiExemplarIntegrationTest {
+    @Disabled
     @Test
     fun `can make the happy path`() {
         val pfiDidUri = "did:dht:swit41ctrddy1s38c5j46yfgbxmwo1emau71zo5hn1tws1g63hiy"

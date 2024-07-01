@@ -14,7 +14,7 @@ class InMemoryKeyManager : KeyManager {
 
     override fun getSigner(publicJwk: Jwk): Signer {
         val innerSigner = this.rustCoreInMemoryKeyManager.getSigner(publicJwk)
-        return OuterSigner(innerSigner)
+        return ToOuterSigner(innerSigner)
     }
 
     override fun getRustCoreKeyManager(): RustCoreKeyManager {

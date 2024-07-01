@@ -311,6 +311,18 @@ interface InMemoryKeyManager {
   KeyManager get_as_key_manager();
 };
 
+dictionary PortableDidData {
+  string did_uri;
+  DocumentData document;
+  sequence<JwkData> private_jwks;
+};
+
+interface PortableDid {
+  [Throws=Web5RustCoreError]
+  constructor([ByRef] string json);
+  PortableDidData get_data();
+};
+
 dictionary BearerDidData {
   DidData did;
   DocumentData document;
@@ -320,6 +332,8 @@ dictionary BearerDidData {
 interface BearerDid {
   [Throws=Web5RustCoreError]
   constructor([ByRef] string uri, KeyManager key_manager);
+  [Throws=Web5RustCoreError, Name=from_portable_did]
+  constructor(PortableDid portable_did);
   BearerDidData get_data();
   [Throws=Web5RustCoreError]
   Signer get_signer(string key_id);
