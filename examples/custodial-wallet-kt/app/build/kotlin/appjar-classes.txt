@@ -1,1 +1,0 @@
-/Users/kendallw/Development/tbdex/rs/examples/custodial-wallet-kt/app/build/classes/kotlin/main/com/example/ApplicationKt.class
