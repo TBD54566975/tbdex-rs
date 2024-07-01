@@ -30,24 +30,28 @@ fun main() {
 
     val bearerDid = BearerDid(PortableDid(PORTABLE_DID_JSON))
 
+    var offeringId = ""
+    var exchangeId = ""
+
     get("/frontend") { _, res ->
         res.type("text/html")
         htmlContentString
     }
 
     get("/frontend/api/offerings") { _, res ->
-        val offerings = tbdex.sdk.rust.getOfferings(PFI_DID_URI)
+        val offerings = tbdex.sdk.httpclient.getOfferings(PFI_DID_URI)
+        offeringId = offerings[0].metadata.id
         res.type("application/json")
         offerings.map { it.toJson() }
     }
 
-    post("/frontend/api/exchanges") { _, res ->
+    post("/frontend/api/submit-rfq") { _, res ->
         val rfq = Rfq(
             bearerDid,
             PFI_DID_URI,
             bearerDid.did.uri,
             CreateRfqData(
-                offeringId = "offering_01j159htqbfcar5qn9094fs301",
+                offeringId = offeringId,
                 payin = CreateSelectedPayinMethod(
                     "USD_LEDGER",
                     null,
@@ -65,9 +69,28 @@ fun main() {
             "1.0", null
         )
 
+        exchangeId = rfq.metadata.id
+
         tbdex.sdk.httpclient.createExchange(rfq) // TODO reply to
 
         res.type("application/json")
         rfq.toJson()
+    }
+
+    get("/frontend/api/poll-quote") { _, res ->
+        val exchange = tbdex.sdk.httpclient.getExchange(PFI_DID_URI, bearerDid, exchangeId)
+        val quote = exchange.quote ?: throw Exception("Quote should not be null")
+        res.type("application/json")
+        quote.toJson()
+    }
+
+    post("/frontend/api/submit-order") { _, res ->
+        // todo
+    }
+
+    get("/frontend/api/poll-order") { _, res ->
+        val exchange = tbdex.sdk.httpclient.getExchange(PFI_DID_URI, bearerDid, exchangeId)
+        res.type("application/json")
+        exchange.toString() // todo toJson()
     }
 }

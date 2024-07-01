@@ -27,6 +27,10 @@ data class Exchange(
             )
         }
     }
+
+    fun toJson(): String {
+        return this.rustCoreRfq.toJson()
+    }
 }
 
 fun createExchange(rfq: Rfq, replyTo: String? = null) {
