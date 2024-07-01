@@ -23,13 +23,14 @@ impl Quote {
             &data,
             &protocol,
             external_id,
-        )
-        .map_err(|e| Arc::new(e.into()))?;
+        )?;
+
         Ok(Self(Arc::new(RwLock::new(quote))))
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner_quote = InnerQuote::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        let inner_quote = InnerQuote::from_json_string(json)?;
+
         Ok(Self(Arc::new(RwLock::new(inner_quote))))
     }
 
@@ -38,7 +39,8 @@ impl Quote {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        inner_quote.to_json().map_err(|e| Arc::new(e.into()))
+
+        Ok(inner_quote.to_json()?)
     }
 
     pub fn get_data(&self) -> Result<InnerQuote> {
@@ -46,6 +48,7 @@ impl Quote {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
         Ok(quote.clone())
     }
 }

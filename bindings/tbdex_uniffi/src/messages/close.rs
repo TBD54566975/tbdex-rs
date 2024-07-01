@@ -23,13 +23,14 @@ impl Close {
             &data,
             &protocol,
             external_id,
-        )
-        .map_err(|e| Arc::new(e.into()))?;
+        )?;
+
         Ok(Self(Arc::new(RwLock::new(close))))
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner_close = InnerClose::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        let inner_close = InnerClose::from_json_string(json)?;
+
         Ok(Self(Arc::new(RwLock::new(inner_close))))
     }
 
@@ -38,7 +39,8 @@ impl Close {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        inner_close.to_json().map_err(|e| Arc::new(e.into()))
+
+        Ok(inner_close.to_json()?)
     }
 
     pub fn get_data(&self) -> Result<InnerClose> {
@@ -46,6 +48,7 @@ impl Close {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
         Ok(close.clone())
     }
 }

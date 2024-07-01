@@ -12,13 +12,14 @@ impl Balance {
         data: BalanceData,
         protocol: String,
     ) -> Result<Self> {
-        let inner_balance = InnerBalance::new(&bearer_did.0.clone(), &from, &data, &protocol)
-            .map_err(|e| Arc::new(e.into()))?;
+        let inner_balance = InnerBalance::new(&bearer_did.0.clone(), &from, &data, &protocol)?;
+
         Ok(Self(Arc::new(RwLock::new(inner_balance))))
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner_balance = InnerBalance::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        let inner_balance = InnerBalance::from_json_string(json)?;
+
         Ok(Self(Arc::new(RwLock::new(inner_balance))))
     }
 
@@ -27,7 +28,8 @@ impl Balance {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        inner_balance.to_json().map_err(|e| Arc::new(e.into()))
+
+        Ok(inner_balance.to_json()?)
     }
 
     pub fn get_data(&self) -> Result<InnerBalance> {
@@ -35,6 +37,7 @@ impl Balance {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
         Ok(balance.clone())
     }
 }

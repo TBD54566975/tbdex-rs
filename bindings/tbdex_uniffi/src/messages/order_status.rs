@@ -23,14 +23,14 @@ impl OrderStatus {
             &data,
             &protocol,
             external_id,
-        )
-        .map_err(|e| Arc::new(e.into()))?;
+        )?;
+
         Ok(Self(Arc::new(RwLock::new(order_status))))
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner_order_status =
-            InnerOrderStatus::from_json_string(json).map_err(|e| Arc::new(e.into()))?;
+        let inner_order_status = InnerOrderStatus::from_json_string(json)?;
+
         Ok(Self(Arc::new(RwLock::new(inner_order_status))))
     }
 
@@ -39,7 +39,8 @@ impl OrderStatus {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        inner_order_status.to_json().map_err(|e| Arc::new(e.into()))
+
+        Ok(inner_order_status.to_json()?)
     }
 
     pub fn get_data(&self) -> Result<InnerOrderStatus> {
@@ -47,6 +48,7 @@ impl OrderStatus {
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
         Ok(order_status.clone())
     }
 }
