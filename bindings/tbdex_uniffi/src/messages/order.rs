@@ -32,6 +32,15 @@ impl Order {
         Ok(Self(Arc::new(RwLock::new(inner_order))))
     }
 
+    pub fn to_inner(&self) -> Result<InnerOrder> {
+        let inner_order = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(inner_order.clone())
+    }
+
     pub fn to_json(&self) -> Result<String> {
         let inner_order = self
             .0

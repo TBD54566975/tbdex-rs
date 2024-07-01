@@ -77,7 +77,7 @@ fun main() {
         rfq.toJson()
     }
 
-    get("/frontend/api/poll-quote") { _, res ->
+    get("/frontend/api/poll-exchange") { _, res ->
         val exchange = tbdex.sdk.httpclient.getExchange(PFI_DID_URI, bearerDid, exchangeId)
         val quote = exchange.quote ?: throw Exception("Quote should not be null")
         res.type("application/json")
@@ -86,11 +86,5 @@ fun main() {
 
     post("/frontend/api/submit-order") { _, res ->
         // todo
-    }
-
-    get("/frontend/api/poll-order") { _, res ->
-        val exchange = tbdex.sdk.httpclient.getExchange(PFI_DID_URI, bearerDid, exchangeId)
-        res.type("application/json")
-        exchange.toString() // todo toJson()
     }
 }

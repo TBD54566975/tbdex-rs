@@ -10,7 +10,7 @@ namespace tbdex {
   [Throws=RustCoreError]
   void submit_close(Close close);
   [Throws=RustCoreError]
-  ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
+  Exchange get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
   [Throws=RustCoreError]
   sequence<string> get_exchanges(string pfi_did_uri, BearerDid bearer_did);
 };
@@ -224,6 +224,11 @@ dictionary ExchangeData {
   Close? close;
 };
 
+interface Exchange {
+  [Throws=RustCoreError]
+  string to_json();
+  ExchangeData get_data();
+};
 
 
 

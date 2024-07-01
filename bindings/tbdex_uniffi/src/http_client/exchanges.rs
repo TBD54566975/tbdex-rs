@@ -6,7 +6,8 @@ use std::sync::{Arc, RwLock};
 use tbdex::http_client::exchanges::Exchange as InnerExchange;
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
-pub struct Exchange {
+#[derive(Clone)]
+pub struct ExchangeData {
     pub rfq: Arc<Rfq>,
     pub quote: Option<Arc<Quote>>,
     pub order: Option<Arc<Order>>,
@@ -14,9 +15,11 @@ pub struct Exchange {
     pub close: Option<Arc<Close>>,
 }
 
+pub struct Exchange(pub ExchangeData);
+
 impl Exchange {
     pub fn from_inner(inner: InnerExchange) -> Self {
-        Self {
+        Self(ExchangeData {
             rfq: Arc::new(Rfq(Arc::new(RwLock::new(inner.rfq.clone())))),
             quote: inner
                 .quote
@@ -35,7 +38,39 @@ impl Exchange {
                 .close
                 .as_ref()
                 .map(|c| Arc::new(Close(Arc::new(RwLock::new(c.clone()))))),
-        }
+        })
+    }
+
+    pub fn to_json(&self) -> Result<String> {
+        let inner_exchange = InnerExchange {
+            rfq: self.0.rfq.to_inner()?,
+            quote: match &self.0.quote {
+                None => None,
+                Some(q) => Some(q.to_inner()?),
+            },
+            order: match &self.0.order {
+                None => None,
+                Some(o) => Some(o.to_inner()?),
+            },
+            order_statuses: match &self.0.order_statuses {
+                None => None,
+                Some(os) => {
+                    let order_statuses: Result<Vec<_>> =
+                        os.iter().map(|os| os.to_inner()).collect();
+                    Some(order_statuses?)
+                }
+            },
+            close: match &self.0.close {
+                None => None,
+                Some(c) => Some(c.to_inner()?),
+            },
+        };
+
+        Ok(inner_exchange.to_json()?)
+    }
+
+    pub fn get_data(&self) -> ExchangeData {
+        self.0.clone()
     }
 }
 
@@ -58,14 +93,14 @@ pub fn get_exchange(
     pfi_did_uri: String,
     bearer_did: Arc<BearerDid>,
     exchange_id: String,
-) -> Result<Exchange> {
+) -> Result<Arc<Exchange>> {
     let inner_exchange = tbdex::http_client::exchanges::get_exchange(
         &pfi_did_uri,
         &bearer_did.0.clone(),
         &exchange_id,
     )?;
 
-    Ok(Exchange::from_inner(inner_exchange))
+    Ok(Arc::new(Exchange::from_inner(inner_exchange)))
 }
 
 pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<Vec<String>> {

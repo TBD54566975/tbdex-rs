@@ -34,6 +34,15 @@ impl Close {
         Ok(Self(Arc::new(RwLock::new(inner_close))))
     }
 
+    pub fn to_inner(&self) -> Result<InnerClose> {
+        let inner_close = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(inner_close.clone())
+    }
+
     pub fn to_json(&self) -> Result<String> {
         let inner_close = self
             .0

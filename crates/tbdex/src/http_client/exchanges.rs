@@ -24,6 +24,12 @@ pub struct Exchange {
     pub close: Option<Close>,
 }
 
+impl Exchange {
+    pub fn to_json(&self) -> Result<String> {
+        Ok(serde_json::to_string(&self)?)
+    }
+}
+
 #[derive(Serialize)]
 #[serde(rename_all = "lowercase")]
 struct CreateExchangeRequest {

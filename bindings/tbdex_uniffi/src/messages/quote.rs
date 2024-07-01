@@ -34,6 +34,15 @@ impl Quote {
         Ok(Self(Arc::new(RwLock::new(inner_quote))))
     }
 
+    pub fn to_inner(&self) -> Result<InnerQuote> {
+        let innter_quote = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(innter_quote.clone())
+    }
+
     pub fn to_json(&self) -> Result<String> {
         let inner_quote = self
             .0
