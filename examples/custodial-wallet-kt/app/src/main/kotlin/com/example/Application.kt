@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import spark.Spark.get
 import spark.Spark.post
 import spark.Spark.port
-import tbdex.sdk.messages.CreateRfqData
-import tbdex.sdk.messages.CreateSelectedPayinMethod
-import tbdex.sdk.messages.CreateSelectedPayoutMethod
-import tbdex.sdk.messages.Rfq
+import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PortableDid
 import java.nio.file.Files
@@ -77,14 +74,24 @@ fun main() {
         rfq.toJson()
     }
 
-    get("/frontend/api/poll-exchange") { _, res ->
-        val exchange = tbdex.sdk.httpclient.getExchange(PFI_DID_URI, bearerDid, exchangeId)
-        val quote = exchange.quote ?: throw Exception("Quote should not be null")
+    post("/frontend/api/submit-order") { _, res ->
+        val order = Order(
+            bearerDid,
+            PFI_DID_URI,
+            bearerDid.did.uri,
+            exchangeId,
+            "1.0", null
+        )
+
+        tbdex.sdk.httpclient.submitOrder(order)
+
         res.type("application/json")
-        quote.toJson()
+        order.toJson()
     }
 
-    post("/frontend/api/submit-order") { _, res ->
-        // todo
+    get("/frontend/api/poll-exchange") { _, res ->
+        val exchange = tbdex.sdk.httpclient.getExchange(PFI_DID_URI, bearerDid, exchangeId)
+        res.type("application/json")
+        exchange.toJson()
     }
 }
