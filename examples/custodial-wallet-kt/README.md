@@ -6,6 +6,9 @@ The intention of this project is to showcase a simple end-to-end example of a tb
 
 ### Configure 
 
+---
+
+This project comes fully functional with fake data out-of-the-box. However, as a developer, you're able to add & edit ...
 
 ---
 
