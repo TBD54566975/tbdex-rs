@@ -4,7 +4,6 @@ import spark.Spark.get
 import spark.Spark.post
 import spark.Spark.port
 import tbdex.sdk.messages.*
-import tbdex.sdk.rust.MessageKind
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PortableDid
 import java.nio.file.Files

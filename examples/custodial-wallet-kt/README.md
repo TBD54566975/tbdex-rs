@@ -1,4 +1,13 @@
+# Kotlin Client w/ `replyTo` Example
 
+The intention of this project is to showcase a simple end-to-end example of a tbDEX exchange, from the perspective of the *Client* (often referred to as "*Alice*" elsewhere), with the utilization of the `replyTo` field during the [Create Exchange](https://github.com/TBD54566975/tbdex/tree/main/specs/http-api#create-exchange), or said differently, this example consists of an HTTP server for which the PFI is expected to callback to for the Quote, Order Status, and Close messages.
+
+## Tutorial
+
+### Configure 
+
+
+---
 
 TODO 
 - automate the `mvn install` for tbdex-core-kt
