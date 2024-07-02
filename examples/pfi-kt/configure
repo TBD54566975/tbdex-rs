@@ -1,0 +1,4 @@
+#!/bin/bash
+
+PFI_PORTABLE_DID=$(./web5 did create dht --no-indent)
+echo "PFI_PORTABLE_DID=$PFI_PORTABLE_DID" > ./app/src/main/resources/.env

@@ -56,10 +56,10 @@ fun main() {
                 ),
                 payout = CreateSelectedPayoutMethod(
                     "MOMO_MPESA",
-                    ObjectMapper().readTree("""{
-                        "phoneNumber": "867-5309",
-                        "reason": "cause"
-                    }""")
+                    mapOf(
+                        "phoneNumber" to "867-5309",
+                        "reason" to "cause"
+                    )
                 ),
                 claims = listOf(VC)
             ),
