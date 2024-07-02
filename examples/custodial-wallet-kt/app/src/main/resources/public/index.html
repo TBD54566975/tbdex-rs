@@ -38,18 +38,23 @@
 
         let continuePolling = true;
         while (continuePolling) {
-          const response = await fetch("/frontend/api/poll-exchange");
-          const exchange = await response.json();
-
-          if (exchange.quote != null) {
-            document.getElementById("getQuoteResponse").style.display = "block";
-            document.getElementById("exchangeWithQuote").textContent =
-              JSON.stringify(exchange, null, 2);
-            document.getElementById("indication").textContent =
-              "Now submit the Order";
-            document.getElementById("submitOrderButton").disabled = false;
-            continuePolling = false;
+          const response = await fetch("/frontend/api/poll-quote");
+          if (response.status == 200) {
+            const quote = await response.json();
+            console.log(quote)
           }
+
+          await new Promise(resolve => setTimeout(resolve, 3000))
+
+          // if (exchange.quote != null) {
+          //   document.getElementById("getQuoteResponse").style.display = "block";
+          //   document.getElementById("exchangeWithQuote").textContent =
+          //     JSON.stringify(exchange, null, 2);
+          //   document.getElementById("indication").textContent =
+          //     "Now submit the Order";
+          //   document.getElementById("submitOrderButton").disabled = false;
+          //   continuePolling = false;
+          // }
         }
       };
 

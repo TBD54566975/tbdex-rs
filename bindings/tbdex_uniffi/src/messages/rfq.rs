@@ -61,6 +61,10 @@ impl Rfq {
         })
     }
 
+    pub fn from_inner(inner_rfq: InnerRfq) -> Self {
+        Self(Arc::new(RwLock::new(inner_rfq)))
+    }
+
     pub fn to_inner(&self) -> Result<InnerRfq> {
         let inner_rfq = self
             .0

@@ -15,6 +15,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.17.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("tbdex.sdk.core:tbdex-core-kt:1.0-SNAPSHOT")
 }
 

@@ -25,7 +25,7 @@ fun main() {
     val offeringsApi = OfferingsApi(bearerDid)
     offeringsApi.setupGetOfferings()
 
-    val exchangesApi = ExchangesApi(offeringsApi)
+    val exchangesApi = ExchangesApi(bearerDid, offeringsApi)
     exchangesApi.setupCreateExchange()
     exchangesApi.setupSubmitOrder()
 }

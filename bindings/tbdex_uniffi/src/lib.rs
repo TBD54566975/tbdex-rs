@@ -9,8 +9,8 @@ use crate::{
     http_client::{
         balances::get_balances,
         exchanges::{
-            create_exchange, get_exchange, get_exchanges, submit_close, submit_order, Exchange,
-            ExchangeData,
+            create_exchange, get_exchange, get_exchanges, submit_close, submit_order,
+            CreateExchangeRequestBody, CreateExchangeRequestBodyData, Exchange, ExchangeData,
         },
         offerings::get_offerings,
     },

@@ -56,14 +56,15 @@ class OfferingsApi(private val bearerDid: BearerDid) {
                         id = "bbdb9b7c-5754-4f46-b63b-590bada959e0",
                         constraints = Constraints(
                             fields = listOf(
-                                Field(
-                                    path = listOf("$.type[*]"),
-                                    filter = Filter(
-                                        type = "string",
-                                        pattern = "^SanctionCredential$"
-                                    ),
-                                    optional = false,
-                                ),
+                                // TODO rust core PresentationDefinition select_credentials() is failing to select on type
+//                                Field(
+//                                    path = listOf("$.type[*]"),
+//                                    filter = Filter(
+//                                        type = "string",
+//                                        pattern = "^SanctionCredential$"
+//                                    ),
+//                                    optional = false,
+//                                ),
                                 Field(
                                     path = listOf("$.issuer"),
                                     filter = Filter(
@@ -83,7 +84,8 @@ class OfferingsApi(private val bearerDid: BearerDid) {
 
     fun setupGetOfferings() {
         get("/offerings") { _, res ->
-            "[${offering.toJson()}]"
+            res.type("application/json")
+            "{\"data\": [${offering.toJson()}]}"
         }
     }
 }

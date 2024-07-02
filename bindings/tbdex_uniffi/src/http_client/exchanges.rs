@@ -3,7 +3,9 @@ use crate::{
     messages::{close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq},
 };
 use std::sync::{Arc, RwLock};
-use tbdex::http_client::exchanges::Exchange as InnerExchange;
+use tbdex::http_client::exchanges::{
+    CreateExchangeRequestBody as InnerCreateExchangeRequestBody, Exchange as InnerExchange,
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 #[derive(Clone)]
@@ -107,4 +109,27 @@ pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<
     let exchange_ids =
         tbdex::http_client::exchanges::get_exchanges(&pfi_did_uri, &bearer_did.0.clone())?;
     Ok(exchange_ids)
+}
+
+#[derive(Clone)]
+pub struct CreateExchangeRequestBodyData {
+    pub rfq: Arc<Rfq>,
+    pub reply_to: Option<String>,
+}
+
+pub struct CreateExchangeRequestBody(pub CreateExchangeRequestBodyData);
+
+impl CreateExchangeRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner = InnerCreateExchangeRequestBody::from_json_string(json)?;
+        let rfq = Rfq::from_inner(inner.rfq);
+        Ok(Self(CreateExchangeRequestBodyData {
+            rfq: Arc::new(rfq),
+            reply_to: inner.reply_to,
+        }))
+    }
+
+    pub fn get_data(&self) -> CreateExchangeRequestBodyData {
+        self.0.clone()
+    }
 }

@@ -230,7 +230,16 @@ interface Exchange {
   ExchangeData get_data();
 };
 
+dictionary CreateExchangeRequestBodyData {
+  Rfq rfq;
+  string? reply_to;
+};
 
+interface CreateExchangeRequestBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  CreateExchangeRequestBodyData get_data();
+};
 
 
 
