@@ -80,29 +80,30 @@ fun main() {
         }
     }
 
-    data class PfiReplyToRequestBody(val metadata: MessageMetadata)
-
     var quote: Quote? = null
     val orderStatuses: MutableList<OrderStatus> = mutableListOf()
     var close: Close? = null
 
     post("/pfi-reply-to") { req, res ->
         try {
+            // todo we need parse support
+
             println("received callback")
             val requestBodyString = req.body()
-            println(requestBodyString)
-            val requestBody = Json.jsonMapper.readValue(requestBodyString, PfiReplyToRequestBody::class.java)
-            println(requestBody)
 
-            // TODO MessageKind is only in the rust namespace right now
-            if (requestBody.metadata.kind == MessageKind.QUOTE) {
+            try {
                 quote = Quote(requestBodyString)
-            } else if (requestBody.metadata.kind == MessageKind.ORDER_STATUS) {
-                orderStatuses.add(OrderStatus(requestBodyString))
-            } else if (requestBody.metadata.kind == MessageKind.CLOSE) {
-                close = Close(requestBodyString)
+            } catch (ex: Exception) {
+                try {
+                    orderStatuses.add(OrderStatus(requestBodyString))
+                } catch (ex: Exception) {
+                    try {
+                        close = Close(requestBodyString)
+                    } catch (ex: Exception) {
+                        throw ex
+                    }
+                }
             }
-
         } catch (ex: Exception) {
             println(ex.message)
             println(ex)
@@ -141,14 +142,22 @@ fun main() {
     get("/frontend/api/poll-order-statuses") { _, res ->
         if (orderStatuses.size > 0) {
             res.type("application/json")
+            res.status(200)
             orderStatuses.map { it.toJson() }
+        } else {
+            res.status(204)
+            "{}"
         }
     }
 
     get("/frontend/api/poll-close") { _, res ->
         if (close != null) {
             res.type("application/json")
+            res.status(200)
             close!!.toJson()
+        } else {
+            res.status(204)
+            "{}"
         }
     }
 }
