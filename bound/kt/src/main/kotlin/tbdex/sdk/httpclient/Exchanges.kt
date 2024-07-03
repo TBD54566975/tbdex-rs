@@ -8,6 +8,7 @@ import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
 import tbdex.sdk.rust.submitClose as rustCoreSubmitClose
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
+import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 
 data class Exchange(
     val rfq: Rfq,
@@ -48,4 +49,16 @@ fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Ex
 
 fun getExchanges(pfiDidUri: String, bearerDid: BearerDid): List<String> {
     return rustCoreGetExchanges(pfiDidUri, bearerDid.rustCoreBearerDid)
+}
+
+class CreateExchangeRequestBody {
+    val rfq: Rfq
+    val replyTo: String?
+
+    constructor(json: String) {
+        val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
+        val data = rustCoreCreateExchangeRequestBody.getData()
+        this.rfq = Rfq(data.rfq)
+        this.replyTo = data.replyTo
+    }
 }

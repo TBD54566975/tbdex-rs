@@ -1,6 +1,5 @@
 package tbdex.sdk.resources
 
-import com.fasterxml.jackson.databind.JsonNode
 import tbdex.sdk.Json
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PresentationDefinition
@@ -68,7 +67,7 @@ data class PayinMethod(
     val name: String? = null,
     val description: String? = null,
     val group: String? = null,
-    val requiredPaymentDetails: JsonNode? = null,
+    val requiredPaymentDetails: Map<String, Any?>? = null,
     val fee: String? = null,
     val min: String? = null,
     val max: String? = null
@@ -86,7 +85,7 @@ data class PayoutMethod(
     val name: String? = null,
     val description: String? = null,
     val group: String? = null,
-    val requiredPaymentDetails: JsonNode? = null,
+    val requiredPaymentDetails: Map<String, Any?>? = null,
     val fee: String? = null,
     val min: String? = null,
     val max: String? = null,

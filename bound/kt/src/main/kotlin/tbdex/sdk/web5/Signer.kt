@@ -6,7 +6,7 @@ interface Signer {
     fun sign(payload: ByteArray): ByteArray
 }
 
-class OuterSigner : Signer {
+class ToOuterSigner : Signer {
     private val rustCoreSigner: RustCoreSigner
 
     constructor(rustCoreSigner: RustCoreSigner) {

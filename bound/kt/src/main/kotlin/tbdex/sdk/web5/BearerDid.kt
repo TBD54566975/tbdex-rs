@@ -22,10 +22,18 @@ class BearerDid {
         this.keyManager = keyManager
     }
 
+    constructor(portableDid: PortableDid) {
+        this.rustCoreBearerDid = RustCoreBearerDid.fromPortableDid(portableDid.rustCorePortableDid)
+
+        this.did = this.rustCoreBearerDid.getData().did
+        this.document = this.rustCoreBearerDid.getData().document
+        this.keyManager = ToOuterKeyManager(this.rustCoreBearerDid.getData().keyManager)
+    }
+
     fun getSigner(): Signer {
         // TODO currently hardcoding to first VM
         val keyId = this.document.verificationMethod.first().id
         val innerSigner = this.rustCoreBearerDid.getSigner(keyId)
-        return OuterSigner(innerSigner)
+        return ToOuterSigner(innerSigner)
     }
 }

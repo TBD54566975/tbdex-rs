@@ -1,6 +1,5 @@
 package tbdex.sdk.messages
 
-import com.fasterxml.jackson.databind.JsonNode
 import tbdex.sdk.Json
 import tbdex.sdk.resources.Offering
 import tbdex.sdk.web5.BearerDid
@@ -80,13 +79,13 @@ data class CreateRfqData(
 
 data class CreateSelectedPayinMethod(
     val kind: String,
-    val paymentDetails: JsonNode? = null,
+    val paymentDetails: Map<String, Any?>? = null,
     val amount: String
 )
 
 data class CreateSelectedPayoutMethod(
     val kind: String,
-    val paymentDetails: JsonNode? = null
+    val paymentDetails: Map<String, Any?>? = null
 )
 
 data class RfqData(
@@ -115,5 +114,5 @@ data class RfqPrivateData(
 )
 
 data class PrivatePaymentDetails(
-    val paymentDetails: JsonNode? = null
+    val paymentDetails: Map<String, Any?>? = null
 )

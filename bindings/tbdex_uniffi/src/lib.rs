@@ -10,7 +10,7 @@ use crate::{
         balances::get_balances,
         exchanges::{
             create_exchange, get_exchange, get_exchanges, submit_close, submit_order,
-            Exchange as ExchangeData,
+            CreateExchangeRequestBody, CreateExchangeRequestBodyData, Exchange as ExchangeData,
         },
         offerings::get_offerings,
     },
@@ -50,12 +50,16 @@ use web5::{
             verification_method::VerificationMethod as VerificationMethodData,
         },
         did::Did as DidData,
+        portable_did::PortableDid as PortableDidData,
     },
 };
 use web5_uniffi_wrapper::{
     credentials::presentation_definition::PresentationDefinition,
     crypto::{dsa::Signer, in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
-    dids::bearer_did::{BearerDid, BearerDidData},
+    dids::{
+        bearer_did::{BearerDid, BearerDidData},
+        portable_did::PortableDid,
+    },
     errors::RustCoreError as Web5RustCoreError,
 };
 
