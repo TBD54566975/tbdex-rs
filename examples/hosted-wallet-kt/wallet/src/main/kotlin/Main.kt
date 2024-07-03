@@ -101,7 +101,7 @@ fun main() {
     while (webhook.close == null) {
         Thread.sleep(3000)
     }
-    println("Close received to webhook ${webhook.close!!.metadata.id} ${webhook.close!!.data.success}")
+    println("Close received to webhook ${webhook.close!!.metadata.id} ${webhook.close!!.data.success}\n")
 
     println("Exchange completed successfully!")
     webhook.stopServer()
