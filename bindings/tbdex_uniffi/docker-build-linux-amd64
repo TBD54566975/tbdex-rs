@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker build -f DockerfileBindLinuxAmd64 -t tbdex-uniffi-linux-amd64-image ../../
+docker run -d --name tbdex-uniffi-linux-amd64-container tbdex-uniffi-linux-amd64-image
+docker cp tbdex-uniffi-linux-amd64-container:/app/target/release/libtbdex_uniffi.so ../../bound/kt/src/main/resources
+docker stop tbdex-uniffi-linux-amd64-container
+docker rm tbdex-uniffi-linux-amd64-container

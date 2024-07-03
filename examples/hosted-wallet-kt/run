@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Create the network
+docker network create hosted-wallet-kt-network
+
+# Build the image
+docker build -t hosted-wallet-kt .
+docker build -f Dockerfile -t hosted-wallet-kt ../../
+
+# Run the pfi application
+docker run -d --name pfi-app --network hosted-wallet-kt-network -p 8082:8082 hosted-wallet-kt ./gradlew :pfi:run
+
+# Run the wallet application
+docker run -d --name wallet-app --network hosted-wallet-kt-network -p 8081:8081 hosted-wallet-kt ./gradlew :wallet:run

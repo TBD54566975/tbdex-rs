@@ -1,0 +1,21 @@
+FROM --platform=linux/amd64 ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    gradle \
+    maven \
+    git
+
+COPY bound/kt /app/bound/kt
+COPY examples/hosted-wallet-kt  /app/examples/hosted-wallet-kt
+
+WORKDIR /app/bound/kt
+RUN mvn install
+
+WORKDIR /app/examples/hosted-wallet-kt
+RUN ./gradlew build
+
+EXPOSE 8081
+EXPOSE 8082
+
+CMD ["bash"]
