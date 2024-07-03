@@ -1,0 +1,17 @@
+[package]
+name = "jeb5"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+uniffi = { version = "0.27.1", features = ["cli"] }
+
+[build-dependencies]
+uniffi = { version = "0.27.1", features = ["build"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "uniffi-bindgen.rs"

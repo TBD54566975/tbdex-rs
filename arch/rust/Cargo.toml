@@ -1,0 +1,8 @@
+[workspace]
+members = [ 
+    "crates/jeb5", 
+]
+default-members = [
+    "crates/jeb5",
+]
+resolver = "2"

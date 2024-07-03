@@ -1,0 +1,12 @@
+
+# Create UniFFI bindings
+bind-kotlin:
+  cargo build --release --package jeb5
+  cargo run --release --package jeb5 \
+    --bin uniffi-bindgen \
+    generate --library target/release/libjeb5.dylib \
+    --language kotlin \
+    --out-dir target/bindgen-kotlin
+  cp target/release/libjeb5.dylib ../kt/lib/src/main/resources
+  cp target/bindgen-kotlin/tbdex/sdk/tmp/jeb5.kt ../kt/lib/src/main/kotlin/tbdex/sdk/tmp/
+

@@ -1,0 +1,4 @@
+namespace jeb5 {
+  void hello_world();  
+  string hello_jeb5();
+};
