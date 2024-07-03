@@ -15,7 +15,8 @@ class E2ePfiExemplarIntegrationTest {
     @Disabled
     @Test
     fun `can make the happy path`() {
-        val pfiDidUri = "did:dht:swit41ctrddy1s38c5j46yfgbxmwo1emau71zo5hn1tws1g63hiy"
+//        val pfiDidUri = "did:dht:swit41ctrddy1s38c5j46yfgbxmwo1emau71zo5hn1tws1g63hiy"
+        val pfiDidUri = "did:web:localhost%3A8891"
 
         val didUri = "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy"
         val keyManager = InMemoryKeyManager(listOf())
