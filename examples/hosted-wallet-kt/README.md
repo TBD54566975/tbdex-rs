@@ -2,6 +2,45 @@
 
 The intention of this project is to showcase a simple end-to-end example of a tbDEX exchange, primarily from the perspective of the *Client* (often referred to as "*Alice*" elsewhere), with the utilization of the `replyTo` field during the [Create Exchange](https://github.com/TBD54566975/tbdex/tree/main/specs/http-api#create-exchange), or said differently, this example consists of an HTTP server for which the PFI is expected to callback to for the Quote, Order Status, and Close messages.
 
+# How-To
+
+## 1. Install `tbdex-core-kt` to local maven repository
+
+> [!NOTE]
+>
+> This is only necessary initially, or upon any changes made to the `tbdex-core-kt` project.
+
+```shell
+(cd ../../bound/kt; mvn install)
+```
+
+## 2. Run `pfi/` in one terminal
+
+> [!NOTE]
+>
+> Wait for the log message, "*PFI server running...*"
+
+```shell
+gradle :pfi:run
+```
+
+## 3. Run `wallet/` in a second terminal
+
+```shell
+gradle :wallet:run
+```
+
+You should begin to see log outputs beginning with:
+
+```shell
+1. Fetching offerings...
+Successfully fetched offering_01j1v9pk2zeh9bsstkhrhwtgrc
+
+2. Creating exchange...
+```
+
+# About
+
 The composition of this project is 2-part:
 
 1. `pfi/`
