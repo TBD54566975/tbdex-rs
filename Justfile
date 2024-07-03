@@ -26,12 +26,11 @@ bind: setup
   just bind-kotlin
 
 bind-kotlin: setup
-  cargo build --release --package tbdex_uniffi
-  cargo run --package tbdex_uniffi \
+  cargo build --release --target aarch64-apple-darwin --package tbdex_uniffi
+  cargo run --release --package tbdex_uniffi \
     --bin uniffi-bindgen \
-    generate --library target/release/libtbdex_uniffi.dylib \
+    generate --library target/aarch64-apple-darwin/release/libtbdex_uniffi.dylib \
     --language kotlin \
     --out-dir target/bindgen-kotlin
-  cp target/release/libtbdex_uniffi.dylib bound/kt/src/main/resources/natives
+  cp target/aarch64-apple-darwin/release/libtbdex_uniffi.dylib bound/kt/src/main/resources
   cp target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt bound/kt/src/main/kotlin/tbdex/sdk/rust
-  cd bound/kt && ./fix-load.sh

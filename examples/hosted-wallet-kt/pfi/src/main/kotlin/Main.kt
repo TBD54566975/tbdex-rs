@@ -2,6 +2,7 @@ import spark.Spark.port
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PortableDid
 import java.io.File
+import java.util.Locale
 import java.util.Properties
 
 fun readEnv() {
