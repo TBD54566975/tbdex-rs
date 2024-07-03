@@ -6,20 +6,44 @@ package org.example
 import tbdex.sdk.tmp.Greeter
 import tbdex.sdk.tmp.helloWorld
 import java.io.File
+import java.util.*
 
 private fun printSystemInfo() {
     // Print the operating system name and version
-    try {
-        val osRelease = File("/etc/os-release")
-        if (osRelease.exists()) {
-            osRelease.forEachLine { line ->
-                println(line)
+    val osName = System.getProperty("os.name").lowercase(Locale.getDefault())
+    println("Operating System: $osName")
+
+    if (osName.contains("linux")) {
+        try {
+            val osRelease = File("/etc/os-release")
+            if (osRelease.exists()) {
+                osRelease.forEachLine { line ->
+                    println(line)
+                }
+            } else {
+                println("/etc/os-release not found")
             }
-        } else {
-            println("/etc/os-release not found")
+        } catch (e: Exception) {
+            println("Failed to read /etc/os-release: ${e.message}")
         }
-    } catch (e: Exception) {
-        println("Failed to read /etc/os-release: ${e.message}")
+    } else if (osName.contains("mac")) {
+        try {
+            val process = Runtime.getRuntime().exec("sw_vers")
+            process.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { println(it) }
+            }
+        } catch (e: Exception) {
+            println("Failed to get macOS version: ${e.message}")
+        }
+    } else if (osName.contains("win")) {
+        try {
+            val process = Runtime.getRuntime().exec("cmd.exe /c ver")
+            process.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { println(it) }
+            }
+        } catch (e: Exception) {
+            println("Failed to get Windows version: ${e.message}")
+        }
     }
 
     // Print the architecture
@@ -31,9 +55,10 @@ private fun printSystemInfo() {
     }
 }
 
+
 fun main() {
     printSystemInfo()
 
     Greeter().greet()
-//    helloWorld()
+    helloWorld()
 }
