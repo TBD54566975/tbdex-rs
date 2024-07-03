@@ -24,8 +24,8 @@ fun main() {
     readEnv()
 
     val pfiDidUri = System.getProperty("PFI_DID_URI")
-    val verifiableCredential = System.getProperty("VERIFIABLE_CREDENTIAL")
-    val bearerDid = BearerDid(PortableDid(System.getProperty("PORTABLE_DID_JSON")))
+    val verifiableCredential = System.getProperty("HOSTED_WALLET_VERIFIABLE_CREDENTIAL")
+    val bearerDid = BearerDid(PortableDid(System.getProperty("HOSTED_WALLET_PORTABLE_DID_JSON")))
 
     // 0. setup replyTo endpoint (for webhook callbacks for Quote, OrderStatus, and Close
     val webhook = Webhook()

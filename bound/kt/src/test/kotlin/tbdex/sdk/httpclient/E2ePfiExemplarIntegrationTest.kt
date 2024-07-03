@@ -7,6 +7,11 @@ import tbdex.sdk.messages.*
 import tbdex.sdk.web5.*
 
 class E2ePfiExemplarIntegrationTest {
+    // this test is intended for early-development purposes
+    // it's a "happy-path" integration into the tbdex-pfi-exemplar
+    // to run it, you'll need to run your own tbdex-pfi-exemplar locally,
+    // and then update the magic strings below (DID URIs, private keys, VC, etc)
+    // https://github.com/TBD54566975/tbd-examples/tree/main/javascript/tbdex-pfi-exemplar
     @Disabled
     @Test
     fun `can make the happy path`() {
