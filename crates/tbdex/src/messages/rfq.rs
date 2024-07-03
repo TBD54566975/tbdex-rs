@@ -169,29 +169,22 @@ impl Rfq {
             .iter()
             .find(|m| m.kind == self.data.payin.kind)
         {
-            let json_schema = payin_method
-                .required_payment_details
-                .as_ref()
-                .ok_or_else(|| {
-                    MessageError::OfferingVerification(
-                        "missing required payment details in schema".to_string(),
-                    )
-                })?;
+            if let Some(json_schema) = &payin_method.required_payment_details {
+                let payment_details = self
+                    .private_data
+                    .payin
+                    .as_ref()
+                    .ok_or_else(|| {
+                        MessageError::OfferingVerification("missing private payin data".to_string())
+                    })?
+                    .payment_details
+                    .as_ref()
+                    .ok_or_else(|| {
+                        MessageError::OfferingVerification("missing payment details".to_string())
+                    })?;
 
-            let payment_details = self
-                .private_data
-                .payin
-                .as_ref()
-                .ok_or_else(|| {
-                    MessageError::OfferingVerification("missing private payin data".to_string())
-                })?
-                .payment_details
-                .as_ref()
-                .ok_or_else(|| {
-                    MessageError::OfferingVerification("missing payment details".to_string())
-                })?;
-
-            crate::json_schemas::validate(json_schema, payment_details)?;
+                crate::json_schemas::validate(json_schema, payment_details)?;
+            }
         } else {
             return Err(MessageError::OfferingVerification(format!(
                 "kind {} not found in offering",
@@ -207,29 +200,24 @@ impl Rfq {
             .iter()
             .find(|m| m.kind == self.data.payout.kind)
         {
-            let json_schema = payout_method
-                .required_payment_details
-                .as_ref()
-                .ok_or_else(|| {
-                    MessageError::OfferingVerification(
-                        "missing required payment details in schema".to_string(),
-                    )
-                })?;
+            if let Some(json_schema) = &payout_method.required_payment_details {
+                let payment_details = self
+                    .private_data
+                    .payout
+                    .as_ref()
+                    .ok_or_else(|| {
+                        MessageError::OfferingVerification(
+                            "missing private payout data".to_string(),
+                        )
+                    })?
+                    .payment_details
+                    .as_ref()
+                    .ok_or_else(|| {
+                        MessageError::OfferingVerification("missing payment details".to_string())
+                    })?;
 
-            let payment_details = self
-                .private_data
-                .payout
-                .as_ref()
-                .ok_or_else(|| {
-                    MessageError::OfferingVerification("missing private payout data".to_string())
-                })?
-                .payment_details
-                .as_ref()
-                .ok_or_else(|| {
-                    MessageError::OfferingVerification("missing payment details".to_string())
-                })?;
-
-            crate::json_schemas::validate(json_schema, payment_details)?;
+                crate::json_schemas::validate(json_schema, payment_details)?;
+            }
         } else {
             return Err(MessageError::OfferingVerification(format!(
                 "kind {} not found in offering",

@@ -31,6 +31,10 @@ impl Rfq {
         Ok(Self(Arc::new(RwLock::new(rfq))))
     }
 
+    pub fn from_inner(inner_rfq: InnerRfq) -> Self {
+        Self(Arc::new(RwLock::new(inner_rfq)))
+    }
+
     pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
         let inner_rfq = InnerRfq::from_json_string(json, require_all_private_data)?;
 

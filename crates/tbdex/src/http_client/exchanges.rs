@@ -24,12 +24,22 @@ pub struct Exchange {
     pub close: Option<Close>,
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "lowercase")]
-struct CreateExchangeRequest {
-    rfq: Rfq,
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateExchangeRequestBody {
+    pub rfq: Rfq,
     #[serde(skip_serializing_if = "Option::is_none")]
-    reply_to: Option<String>,
+    pub reply_to: Option<String>,
+}
+
+impl CreateExchangeRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let request_body = serde_json::from_str::<Self>(json)?;
+
+        request_body.rfq.verify()?;
+
+        Ok(request_body)
+    }
 }
 
 pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
@@ -38,7 +48,7 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 
     rfq.verify()?;
 
-    let request_body = serde_json::to_string(&CreateExchangeRequest {
+    let request_body = serde_json::to_string(&CreateExchangeRequestBody {
         rfq: rfq.clone(),
         reply_to,
     })?;
