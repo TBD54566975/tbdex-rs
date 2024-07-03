@@ -1,8 +1,9 @@
-import spark.Spark
-import spark.Spark.*
 import tbdex.sdk.messages.Close
 import tbdex.sdk.messages.OrderStatus
 import tbdex.sdk.messages.Quote
+import spark.Spark.port
+import spark.Spark.post
+import spark.Spark.stop
 
 class Webhook {
     var quote: Quote? = null

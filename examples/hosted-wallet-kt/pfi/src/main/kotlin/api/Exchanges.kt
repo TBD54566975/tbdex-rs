@@ -9,7 +9,14 @@ import spark.Response
 import spark.Spark.post
 import spark.Spark.put
 import tbdex.sdk.httpclient.CreateExchangeRequestBody
-import tbdex.sdk.messages.*
+import tbdex.sdk.messages.Quote
+import tbdex.sdk.messages.QuoteData
+import tbdex.sdk.messages.QuoteDetails
+import tbdex.sdk.messages.Order
+import tbdex.sdk.messages.OrderStatus
+import tbdex.sdk.messages.OrderStatusData
+import tbdex.sdk.messages.Close
+import tbdex.sdk.messages.CloseData
 import tbdex.sdk.web5.BearerDid
 
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {

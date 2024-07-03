@@ -1,7 +1,17 @@
 package data
 
-import tbdex.sdk.resources.*
-import tbdex.sdk.web5.*
+import tbdex.sdk.resources.Offering
+import tbdex.sdk.resources.OfferingData
+import tbdex.sdk.resources.PayinDetails
+import tbdex.sdk.resources.PayinMethod
+import tbdex.sdk.resources.PayoutDetails
+import tbdex.sdk.resources.PayoutMethod
+import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.PresentationDefinition
+import tbdex.sdk.web5.InputDescriptor
+import tbdex.sdk.web5.Constraints
+import tbdex.sdk.web5.Field
+import tbdex.sdk.web5.Filter
 
 class Offerings(private val bearerDid: BearerDid) {
     private var offerings: MutableList<Offering> = mutableListOf()
@@ -9,19 +19,7 @@ class Offerings(private val bearerDid: BearerDid) {
     init {
         // this app currently always seeds the fake data
         // and doesn't support the ability for developers to dynamically add/remove offerings
-        seedFakeOffering()
-    }
 
-    fun getOffering(offeringId: String): Offering {
-        return offerings.find { it.metadata.id == offeringId }
-            ?: throw Exception("No offering with ID $offeringId")
-    }
-
-    fun getOfferings(): List<Offering> {
-        return offerings
-    }
-
-    fun seedFakeOffering() {
         offerings.add(Offering(
             bearerDid,
             bearerDid.did.uri,
@@ -89,5 +87,14 @@ class Offerings(private val bearerDid: BearerDid) {
             ),
             "1.0"
         ))
+    }
+
+    fun getOffering(offeringId: String): Offering {
+        return offerings.find { it.metadata.id == offeringId }
+            ?: throw Exception("No offering with ID $offeringId")
+    }
+
+    fun getOfferings(): List<Offering> {
+        return offerings
     }
 }

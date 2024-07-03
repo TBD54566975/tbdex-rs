@@ -2,7 +2,7 @@ import spark.Spark.port
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PortableDid
 import java.io.File
-import java.util.*
+import java.util.Properties
 
 fun readEnv() {
     val envFile = File(Thread.currentThread().contextClassLoader.getResource(".env")?.file ?: throw Error("no .env file found"))
