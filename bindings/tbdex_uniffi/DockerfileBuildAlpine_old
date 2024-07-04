@@ -1,0 +1,41 @@
+FROM --platform=linux/amd64 alpine:latest
+
+# Install build dependencies
+RUN apk add --no-cache \
+    build-base \
+    cmake \
+    pkgconfig \
+    openssl-dev \
+    curl \
+    wget \
+    git \
+    ca-certificates \
+    linux-headers
+
+# Install rustup and set default toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN rustup default 1.78.0
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY Cargo.toml Cargo.lock ./
+COPY crates/tbdex crates/tbdex
+COPY crates/pfi_exemplar_integration_test crates/pfi_exemplar_integration_test
+COPY bindings/tbdex_uniffi bindings/tbdex_uniffi
+
+WORKDIR /app/bindings/tbdex_uniffi
+
+# Set environment variables to help linker find OpenSSL libraries
+ENV OPENSSL_DIR=/usr
+ENV OPENSSL_LIB_DIR=/usr/lib
+ENV OPENSSL_INCLUDE_DIR=/usr/include
+ENV PKG_CONFIG_PATH=/usr/lib/pkgconfig
+
+# Build the project
+RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target x86_64-unknown-linux-musl
+
+CMD tail -f /dev/null
