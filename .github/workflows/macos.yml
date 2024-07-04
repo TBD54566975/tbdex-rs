@@ -15,11 +15,11 @@ jobs:
         run: rustup toolchain install stable
       - name: Build
         run: cargo build -p tbdex_uniffi --release
-      - name: Upload Build Artifacts
+      - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
-          name: intel-build
-          path: target/release/
+          name: intel-build-dylib
+          path: target/release/libtbdex_uniffi.dylib
 
   build-apple-silicon:
     runs-on: macos-12
@@ -30,8 +30,8 @@ jobs:
         run: rustup toolchain install stable
       - name: Build
         run: cargo build -p tbdex_uniffi --release
-      - name: Upload Build Artifacts
+      - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
-          name: apple-silicon-build
-          path: target/release/
+          name: apple-silicon-build-dylib
+          path: target/release/libtbdex_uniffi.dylib
