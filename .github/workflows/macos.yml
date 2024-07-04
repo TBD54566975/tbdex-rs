@@ -7,22 +7,24 @@ on:
 
 jobs:
   build-intel:
-    runs-on: macos-latest
+    runs-on: macos-13
     name: Build on Intel (x86) macOS
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust
         run: rustup toolchain install stable
+      - name: Set Target
+        run: rustup target add x86_64-apple-darwin
       - name: Build
-        run: cargo build -p tbdex_uniffi --release
+        run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
       - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
           name: intel-build-dylib
-          path: target/release/libtbdex_uniffi.dylib
+          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
 
   build-apple-silicon:
-    runs-on: macos-12
+    runs-on: macos-latest
     name: Build on Apple Silicon (ARM) macOS
     steps:
       - uses: actions/checkout@v2
