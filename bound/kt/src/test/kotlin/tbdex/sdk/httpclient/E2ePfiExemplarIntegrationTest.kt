@@ -56,7 +56,7 @@ class E2ePfiExemplarIntegrationTest {
                 payout = CreateSelectedPayoutMethod(
                     "SPEI",
                     mapOf(
-                        "clabe" to "140180000081896657",
+                        "clabe" to "123",
                         "fullName" to "Bo Ta"
                     )
                 ),
