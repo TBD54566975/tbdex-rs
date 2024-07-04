@@ -20,6 +20,7 @@ use web5::{
 pub struct Rfq {
     pub metadata: MessageMetadata,
     pub data: RfqData,
+    #[serde(default)]
     pub private_data: RfqPrivateData,
     pub signature: String,
 }

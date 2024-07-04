@@ -59,7 +59,7 @@ type Result<T> = std::result::Result<T, HttpClientError>;
 
 fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<String> {
     let now = SystemTime::now();
-    let exp = now + Duration::from_secs(60);
+    let exp = now + Duration::from_secs(360);
 
     let mut payload = JwtPayload::new();
     payload.set_audience(vec![pfi_did_uri]);

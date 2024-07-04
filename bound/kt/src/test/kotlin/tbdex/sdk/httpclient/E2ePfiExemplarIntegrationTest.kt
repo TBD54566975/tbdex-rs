@@ -47,17 +47,17 @@ class E2ePfiExemplarIntegrationTest {
             pfiDidUri,
             bearerDid.did.uri,
             CreateRfqData(
-                offeringId = offerings[0].metadata.id,
+                offeringId = "offering_01hv22zfv1eptadkm92v278gh9",
                 payin = CreateSelectedPayinMethod(
-                    "USD_LEDGER",
+                    "STORED_BALANCE",
                     null,
-                    "101"
+                    "100"
                 ),
                 payout = CreateSelectedPayoutMethod(
-                    "MOMO_MPESA",
+                    "SPEI",
                     mapOf(
-                        "phoneNumber" to "867-5309",
-                        "reason" to "cause"
+                        "clabe" to "140180000081896657",
+                        "fullName" to "Bo Ta"
                     )
                 ),
                 claims = listOf("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6YzhkOWh1azduaG9tNG43emdybWE2cGp5Y3k2NzR1cmFhNHBvcDl1dXQ0MWdiOXd5OHNueSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiU2FuY3Rpb25DcmVkZW50aWFsIl0sImlkIjoidXJuOnV1aWQ6ZjBkYWNlZmItNDVlNy00YWEyLTkxNDctMTZmYTBiYzc3ZTVjIiwiaXNzdWVyIjoiZGlkOmRodDpjOGQ5aHVrN25ob200bjd6Z3JtYTZwanljeTY3NHVyYWE0cG9wOXV1dDQxZ2I5d3k4c255IiwiaXNzdWFuY2VEYXRlIjoiMjAyNC0wNi0yNFQxNDoxNTozNVoiLCJjcmVkZW50aWFsU3ViamVjdCI6eyJpZCI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsImJlZXAiOiJib29wIn19LCJuYmYiOjE3MTkyMzg1MzUsImp0aSI6InVybjp1dWlkOmYwZGFjZWZiLTQ1ZTctNGFhMi05MTQ3LTE2ZmEwYmM3N2U1YyIsImlzcyI6ImRpZDpkaHQ6YzhkOWh1azduaG9tNG43emdybWE2cGp5Y3k2NzR1cmFhNHBvcDl1dXQ0MWdiOXd5OHNueSIsInN1YiI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsImlhdCI6MTcxOTIzODUzNX0.DvDFIl8BTuHRk7VkB82OhYpX0WzBb3BucvAqfXiS92QCiRokXCgQAsOwbbSODoDaFWbHG0BJmWM-eDPcCoucCw")
@@ -68,6 +68,7 @@ class E2ePfiExemplarIntegrationTest {
         println("Successfully created exchange")
 
         // get quote
+        Thread.sleep(2000)
         var exchange = getExchange(pfiDidUri, bearerDid, rfq.metadata.exchangeId)
         val quote = exchange.quote ?: throw Exception("Quote should not be null")
         println("Successfully retrieved quote")

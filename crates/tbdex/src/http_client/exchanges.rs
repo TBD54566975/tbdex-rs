@@ -50,17 +50,34 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 
     let request_body = serde_json::to_string(&CreateExchangeRequestBody {
         rfq: rfq.clone(),
-        reply_to,
+        reply_to: reply_to.clone(),
     })?;
 
     // todo handle error responses response.status() and response.text()
-    let _response = Client::new()
+    let response = Client::new()
         .post(create_exchange_endpoint)
         .header("Content-Type", "application/json")
-        .body(request_body)
+        .body(request_body.clone())
         .send()?;
 
+    println!(
+        "createExchange request body {}",
+        serde_json::to_string_pretty(&CreateExchangeRequestBody {
+            rfq: rfq.clone(),
+            reply_to,
+        })?
+    );
+    println!("createExchange response status {}", response.status());
+    println!("createExchange response body {}", response.text().unwrap());
+
     Ok(())
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SubmitOrderRequestBody {
+    pub exchange_id: String,
+    pub message: Order,
 }
 
 pub fn submit_order(order: &Order) -> Result<()> {
@@ -72,13 +89,30 @@ pub fn submit_order(order: &Order) -> Result<()> {
 
     order.verify()?;
 
-    let request_body = serde_json::to_string(&order)?;
+    let submit_order_request_body = SubmitOrderRequestBody {
+        exchange_id: order.metadata.exchange_id.clone(),
+        message: order.clone(),
+    };
+
+    println!(
+        "submitOrder request body {}",
+        serde_json::to_string_pretty(&SubmitOrderRequestBody {
+            exchange_id: order.metadata.exchange_id.clone(),
+            message: order.clone(),
+        })?
+    );
+
+    let request_body = serde_json::to_string(&submit_order_request_body)?;
     // todo handle error responses response.status() and response.text()
-    let _response = Client::new()
+    let response = Client::new()
         .put(submit_order_endpoint)
         .header("Content-Type", "application/json")
-        .body(request_body)
+        .body(request_body.clone())
         .send()?;
+
+    println!("submitOrder request body {}", request_body);
+    println!("submitOrder response {}", response.status());
+    println!("submitOrder response body {}", response.text().unwrap());
 
     Ok(())
 }
@@ -114,6 +148,12 @@ pub fn get_exchange(
     let mut exchange = Exchange::default();
 
     let data = serde_json::from_str::<GetExchangeResponse>(&response)?.data;
+
+    println!(
+        "getExchange response body {}",
+        serde_json::to_string_pretty(&data)?
+    );
+
     for message in data {
         let kind = message
             .get("metadata")
