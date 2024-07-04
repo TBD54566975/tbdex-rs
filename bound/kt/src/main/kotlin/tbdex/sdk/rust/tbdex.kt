@@ -31,7 +31,6 @@ import java.nio.charset.CodingErrorAction
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
-import java.nio.file.Files
 
 // This is a helper for safely working with byte buffers returned from the Rust code.
 // A rust-owned buffer is represented by its capacity, its current length, and a
@@ -355,7 +354,7 @@ private fun findLibraryName(componentName: String): String {
     if (libOverride != null) {
         return libOverride
     }
-    return "tbdex_uniffi"
+    return "tbdex_uniffi_aarch64_apple_darwin"
 }
 
 private inline fun <reified Lib : Library> loadIndirect(
@@ -876,14 +875,9 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 internal interface UniffiLib : Library {
     companion object {
         internal val INSTANCE: UniffiLib by lazy {
-            val tempDir = Files.createTempDirectory("library")
-            val libraryPath = tempDir.resolve("libtbdex_uniffi.dylib")
-            Thread.currentThread().contextClassLoader.getResourceAsStream("natives/libtbdex_uniffi.dylib").use { input ->
-                Files.copy(input, libraryPath)
-            }
-            libraryPath.toFile().deleteOnExit()
-            val lib = Native.load(libraryPath.toString(), UniffiLib::class.java)
-            lib.also {                uniffiCheckContractApiVersion(lib)
+            loadIndirect<UniffiLib>(componentName = "tbdex")
+            .also { lib: UniffiLib ->
+                uniffiCheckContractApiVersion(lib)
                 uniffiCheckApiChecksums(lib)
                 uniffiCallbackInterfaceKeyManager.register(lib)
                 uniffiCallbackInterfaceSigner.register(lib)
