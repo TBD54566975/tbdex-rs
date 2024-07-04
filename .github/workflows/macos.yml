@@ -1,0 +1,37 @@
+name: Build Rust Crate for macOS
+
+on:
+  push:
+    branches:
+      - kendall/build-both-macs
+
+jobs:
+  build-intel:
+    runs-on: macos-latest
+    name: Build on Intel (x86) macOS
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        run: rustup toolchain install stable
+      - name: Build
+        run: cargo build -p tbdex_uniffi --release
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: intel-build
+          path: target/release/
+
+  build-apple-silicon:
+    runs-on: macos-12
+    name: Build on Apple Silicon (ARM) macOS
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        run: rustup toolchain install stable
+      - name: Build
+        run: cargo build -p tbdex_uniffi --release
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: apple-silicon-build
+          path: target/release/

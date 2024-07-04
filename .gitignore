@@ -18,3 +18,6 @@ Cargo.lock
 .hermit/
 build/
 .gradle/
+
+# remove for PR
+tmp/ 
