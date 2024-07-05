@@ -19,7 +19,8 @@ jobs:
         run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
       - name: Convert to Dynamic Library
         run: |
-          gcc -dynamiclib -o target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib -Wl,-all_load target/x86_64-apple-darwin/release/libtbdex_uniffi.a
+          gcc -dynamiclib -o target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib \
+            -Wl,-all_load target/x86_64-apple-darwin/release/libtbdex_uniffi.a
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
