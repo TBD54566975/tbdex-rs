@@ -18,7 +18,7 @@ web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "e
 uniffi = { version = "0.27.1", features = ["build"] }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["staticlib", "cdylib"]
 
 [[bin]]
 name = "uniffi-bindgen"

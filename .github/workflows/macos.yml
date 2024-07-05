@@ -3,7 +3,7 @@ name: Build Rust Crate for macOS
 on:
   push:
     branches:
-      - kendall/build-both-macs
+      - kendall/build-both-macs_staticlib
 
 jobs:
   build-intel:
@@ -17,11 +17,11 @@ jobs:
         run: rustup target add x86_64-apple-darwin
       - name: Build
         run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
-      - name: Upload .dylib
+      - name: Upload .a
         uses: actions/upload-artifact@v3
         with:
-          name: intel-build-dylib
-          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
+          name: intel-build-a
+          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.a
 
   build-apple-silicon:
     runs-on: macos-latest
