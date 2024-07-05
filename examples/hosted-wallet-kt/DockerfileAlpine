@@ -1,0 +1,28 @@
+FROM --platform=linux/amd64 alpine:latest
+
+# Install dependencies
+RUN apk update && apk add --no-cache \
+    openjdk17 \
+    gradle \
+    maven \
+    git \
+    bash
+
+# Copy application code
+COPY bound/kt /app/bound/kt
+COPY examples/hosted-wallet-kt /app/examples/hosted-wallet-kt
+
+# Build the bound/kt project
+WORKDIR /app/bound/kt
+RUN mvn install
+
+# Build the hosted-wallet-kt project
+WORKDIR /app/examples/hosted-wallet-kt
+RUN ./gradlew build
+
+# Expose ports
+EXPOSE 8081
+EXPOSE 8082
+
+# Set the default command
+CMD ["bash"]

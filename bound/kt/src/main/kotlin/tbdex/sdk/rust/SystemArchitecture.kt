@@ -26,10 +26,10 @@ object SystemArchitecture {
                                 val osReleaseContent = osRelease.readText().lowercase()
                                 when {
                                     osReleaseContent.contains("ubuntu") ->
-                                        throw Exception("Ubuntu amd64 not yet supported")
+                                        System.setProperty("uniffi.component.tbdex.libraryOverride", "tbdex_uniffi_x86_64_unknown_linux_gnu")
 
                                     osReleaseContent.contains("alpine") ->
-                                        throw Exception("Alpine amd64 not yet supported")
+                                        System.setProperty("uniffi.component.tbdex.libraryOverride", "tbdex_uniffi_x86_64_unknown_linux_musl")
 
                                     else -> throw Exception("Unsupported OS arch $osReleaseContent")
                                 }
