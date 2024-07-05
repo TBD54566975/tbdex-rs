@@ -1,4 +1,4 @@
-name: Build Rust Crate for macOS
+name: Build Rust Crate Shared Libraries
 
 on:
   push:
