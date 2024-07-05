@@ -17,11 +17,16 @@ jobs:
         run: rustup target add x86_64-apple-darwin
       - name: Build
         run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
-      - name: Upload .a
+      - name: Convert to Dynamic Library
+        run: |
+          gcc -dynamiclib -o target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib -Wl,-all_load target/x86_64-apple-darwin/release/libtbdex_uniffi.a
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: intel-build-a
-          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.a
+          name: intel-build-artifacts
+          path: |
+            target/x86_64-apple-darwin/release/libtbdex_uniffi.a
+            target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
 
   build-apple-silicon:
     runs-on: macos-latest
