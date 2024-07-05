@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          apk add --no-cache musl-dev build-base
+          apk add --no-cache musl-dev build-base curl
       - name: Install Rust
         run: |
           curl https://sh.rustup.rs -sSf | sh -s -- -y
