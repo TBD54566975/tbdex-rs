@@ -2,10 +2,15 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.Json
 import tbdex.sdk.resources.Offering
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Rfq as RustCoreRfq
 
 class Rfq {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: MessageMetadata
     val data: RfqData
     val privateData: RfqPrivateData

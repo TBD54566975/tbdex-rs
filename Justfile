@@ -34,4 +34,5 @@ bind-kotlin: setup
     --bin uniffi-bindgen \
     generate --library bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib \
     --language kotlin \
-    --out-dir bound/kt/src/main/kotlin/
+    --out-dir target/bindgen-kotlin
+  cp target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt bound/kt/src/main/kotlin/tbdex/sdk/rust/UniFFI.kt

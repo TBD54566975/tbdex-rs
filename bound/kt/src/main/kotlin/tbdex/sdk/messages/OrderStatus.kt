@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.OrderStatus as RustCoreOrderStatus
 import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
@@ -7,6 +8,10 @@ import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
 typealias OrderStatusData = RustCoreOrderStatusData
 
 class OrderStatus {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: MessageMetadata
     val data: OrderStatusData
     val signature: String

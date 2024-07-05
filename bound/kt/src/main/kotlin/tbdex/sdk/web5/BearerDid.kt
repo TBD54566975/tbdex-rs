@@ -1,5 +1,6 @@
 package tbdex.sdk.web5
 
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.DidData as RustCoreDid
 import tbdex.sdk.rust.DocumentData as RustCoreDocument
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
@@ -8,6 +9,10 @@ typealias Did = RustCoreDid
 typealias Document = RustCoreDocument
 
 class BearerDid {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val did: Did
     val document: Document
     val keyManager: KeyManager

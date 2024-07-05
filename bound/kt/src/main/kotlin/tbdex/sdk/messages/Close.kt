@@ -1,6 +1,6 @@
 package tbdex.sdk.messages
 
-import tbdex.sdk.rust.OrderStatus
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Close as RustCoreClose
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
@@ -8,6 +8,10 @@ import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
 typealias CloseData = RustCoreCloseData
 
 class Close {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: MessageMetadata
     val data: CloseData
     val signature: String

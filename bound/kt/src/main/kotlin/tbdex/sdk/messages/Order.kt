@@ -1,9 +1,14 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Order as RustCoreOrder
 
 class Order {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: MessageMetadata
     val signature: String
 

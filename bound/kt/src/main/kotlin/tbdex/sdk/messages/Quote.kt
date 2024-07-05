@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.PaymentInstructionsData as RustCorePaymentInstructions
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
@@ -11,6 +12,10 @@ typealias QuoteDetails = RustCoreQuoteDetails
 typealias PaymentInstructions = RustCorePaymentInstructions
 
 class Quote {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: MessageMetadata
     val data: QuoteData
     val signature: String
