@@ -28,6 +28,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private var exchangesToReplyTo: MutableMap<String, String> = mutableMapOf()
 
     private fun createExchange(req: Request, res: Response): String {
+        println("POST /exchanges")
+
         val requestBody = CreateExchangeRequestBody(req.body())
 
         val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
@@ -74,10 +76,14 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null for this example")
 
+        println("Replying with quote")
+
         this.replyRequest(replyTo, quote.toJson())
     }
 
     private fun completeOrder(req: Request, res: Response): String {
+        println("PUT /exchanges/:id")
+
         val order = Order(req.body())
 
         Thread {
@@ -104,6 +110,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
+        println("Replying with order status")
+
         this.replyRequest(replyTo, orderStatus.toJson())
     }
 
@@ -121,6 +129,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         )
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
+
+        println("Replying with close")
 
         this.replyRequest(replyTo, close.toJson())
     }
