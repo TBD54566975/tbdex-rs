@@ -7,6 +7,7 @@ repository.workspace = true
 license-file.workspace = true
 
 [dependencies]
+openssl = { version = "0.10", features = ["vendored"] } # this is necessary for dylib reasons, though not used directly
 serde_json = { workspace = true }
 tbdex = { path = "../../crates/tbdex" }
 thiserror = { workspace = true }
