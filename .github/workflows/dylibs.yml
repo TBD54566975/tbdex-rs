@@ -7,9 +7,9 @@ on:
   pull_request:
 
 jobs:
-  build-apple-silicon:
+  aarch64-apple-darwin:
     runs-on: macos-latest
-    name: Build on Apple Silicon (ARM) macOS
+    name: Build aarch64-apple-darwin target
     steps:
       - uses: actions/checkout@v2
       - name: Install Rust
@@ -24,80 +24,73 @@ jobs:
           name: apple-silicon-build-dylib
           path: target/release/libtbdex_uniffi.dylib
 
-  # build-intel:
-  #   runs-on: macos-13
-  #   name: Build on Intel (x86) macOS
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Install Rust
-  #       run: rustup toolchain install stable
-  #     - name: Set Target
-  #       run: rustup target add x86_64-apple-darwin
-  #     - name: Build
-  #       run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++ -C link-arg=-mmacosx-version-min=10.7
-  #     - name: Upload .dylib
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: intel-build-dylib
-  #         path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
+  x86_64-apple-darwin:
+    runs-on: macos-latest
+    name: Build x86_64-apple-darwin target
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        run: rustup toolchain install stable
+      - name: Set Target
+        run: rustup target add x86_64-apple-darwin
+      - name: Build
+        run: RUSTFLAGS="-C link-arg=-static-libgcc -C link-arg=-static-libstdc++ -C link-arg=-mmacosx-version-min=10.7" cargo build --target x86_64-apple-darwin --release --package tbdex_uniffi
+      - name: Upload .dylib
+        uses: actions/upload-artifact@v3
+        with:
+          name: intel-build-dylib
+          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
 
+  x86_64-unknown-linux-gnu:
+    runs-on: macos-latest
+    name: Build x86_64-unknown-linux-gnu target
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        run: rustup toolchain install stable
+      - name: Install Dependencies
+        run: |
+          brew tap messense/macos-cross-toolchains
+          brew install x86_64-unknown-linux-gnu
+          rustup target add x86_64-unknown-linux-gnu
+      - name: Build
+        run: |
+          export CC_x86_64_unknown_linux_gnu=x86_64-linux-gnu-gcc
+          export CXX_x86_64_unknown_linux_gnu=x86_64-linux-gnu-g++
+          export AR_x86_64_unknown_linux_gnu=x86_64-linux-gnu-ar
+          export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-linux-gnu-gcc
 
+          RUSTFLAGS="-C link-arg=-static-libgcc -C link-arg=-static-libstdc++" \
+            cargo build --target x86_64-unknown-linux-gnu --release --package tbdex_uniffi
+      - name: Upload .so
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu-build-so
+          path: target/x86_64-unknown-linux-gnu/release/libtbdex_uniffi.so
 
-  # build-ubuntu:
-  #   runs-on: ubuntu-latest
-  #   name: Build on Ubuntu (AMD64)
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Install Rust
-  #       run: rustup toolchain install stable
-  #     - name: Set Target
-  #       run: rustup target add x86_64-unknown-linux-gnu
-  #     - name: Install Dependencies
-  #       run: sudo apt-get update && sudo apt-get install -y build-essential
-  #     - name: Build
-  #       run: cargo build --target x86_64-unknown-linux-gnu -p tbdex_uniffi --release -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++
-  #     - name: Upload .so
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: ubuntu-build-so
-  #         path: target/x86_64-unknown-linux-gnu/release/libtbdex_uniffi.so
+  x86_64-unknown-linux-musl:
+    runs-on: macos-latest
+    name: Build x86_64-unknown-linux-musl target
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        run: rustup toolchain install stable
+      - name: Install Dependencies
+        run: |
+          brew tap messense/macos-cross-toolchains
+          brew install x86_64-unknown-linux-musl
+          rustup target add x86_64-unknown-linux-musl
+      - name: Build
+        run: |
+          export CC_x86_64_unknown_linux_musl=x86_64-linux-musl-gcc
+          export CXX_x86_64_unknown_linux_musl=x86_64-linux-musl-g++
+          export AR_x86_64_unknown_linux_musl=x86_64-linux-musl-ar
+          export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=x86_64-linux-musl-gcc
 
-  # build-alpine:
-  #   runs-on: ubuntu-latest
-  #   name: Build on Alpine (AMD64)
-  #   container: alpine:latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Install Dependencies
-  #       run: |
-  #         apk add --no-cache \
-  #           build-base \
-  #           cmake \
-  #           pkgconfig \
-  #           openssl-dev \
-  #           curl \
-  #           wget \
-  #           git \
-  #           ca-certificates \
-  #           linux-headers \
-  #           perl \
-  #           coreutils
-  #     - name: Install Rust
-  #       run: |
-  #         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-  #         export PATH="$HOME/.cargo/bin:$PATH"
-  #         rustup default 1.78.0
-  #         rustup target add x86_64-unknown-linux-musl
-  #     - name: Build
-  #       run: |
-  #         export PATH="$HOME/.cargo/bin:$PATH"
-  #         export OPENSSL_DIR=/usr
-  #         export OPENSSL_LIB_DIR=/usr/lib
-  #         export OPENSSL_INCLUDE_DIR=/usr/include
-  #         export PKG_CONFIG_PATH=/usr/lib/pkgconfig
-  #         RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target x86_64-unknown-linux-musl -p tbdex_uniffi -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++
-  #     - name: Upload .so
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: alpine-build-so
-  #         path: target/x86_64-unknown-linux-musl/release/libtbdex_uniffi.so
+          RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-static-libgcc -C link-arg=-static-libstdc++" \
+            cargo build --target x86_64-unknown-linux-musl --release --package tbdex_uniffi
+      - name: Upload .so
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu-build-so
+          path: target/x86_64-unknown-linux-musl/release/libtbdex_uniffi.so
