@@ -1,9 +1,9 @@
-name: Build Rust Crate for macOS
+name: Build Rust Crate for macOS and Linux
 
 on:
   push:
     branches:
-      - main
+      - kendall/build-both-macs_static-linking
   pull_request:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
       - name: Set Target
         run: rustup target add x86_64-apple-darwin
       - name: Build
-        run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
+        run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++ -C link-arg=-mmacosx-version-min=10.7
       - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
@@ -32,7 +32,7 @@ jobs:
       - name: Install Rust
         run: rustup toolchain install stable
       - name: Build
-        run: cargo build -p tbdex_uniffi --release
+        run: cargo build -p tbdex_uniffi --release -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++ -C link-arg=-mmacosx-version-min=10.7
       - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
@@ -51,7 +51,7 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Build
-        run: cargo build --target x86_64-unknown-linux-gnu -p tbdex_uniffi --release
+        run: cargo build --target x86_64-unknown-linux-gnu -p tbdex_uniffi --release -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++
       - name: Upload .so
         uses: actions/upload-artifact@v3
         with:
@@ -91,7 +91,7 @@ jobs:
           export OPENSSL_LIB_DIR=/usr/lib
           export OPENSSL_INCLUDE_DIR=/usr/include
           export PKG_CONFIG_PATH=/usr/lib/pkgconfig
-          RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target x86_64-unknown-linux-musl -p tbdex_uniffi
+          RUSTFLAGS="-C target-feature=-crt-static" cargo build --release --target x86_64-unknown-linux-musl -p tbdex_uniffi -- -C link-arg=-static-libgcc -C link-arg=-static-libstdc++
       - name: Upload .so
         uses: actions/upload-artifact@v3
         with:
