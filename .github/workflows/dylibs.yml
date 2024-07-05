@@ -21,7 +21,7 @@ jobs:
       - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
-          name: apple-silicon-build-dylib
+          name: aarch64-apple-darwin-dylib
           path: target/release/libtbdex_uniffi.dylib
 
   x86_64-apple-darwin:
@@ -38,7 +38,7 @@ jobs:
       - name: Upload .dylib
         uses: actions/upload-artifact@v3
         with:
-          name: intel-build-dylib
+          name: x86_64-apple-darwin-dylib
           path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
 
   x86_64-unknown-linux-gnu:
@@ -65,7 +65,7 @@ jobs:
       - name: Upload .so
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-build-so
+          name: x86_64-unknown-linux-gnu-so
           path: target/x86_64-unknown-linux-gnu/release/libtbdex_uniffi.so
 
   x86_64-unknown-linux-musl:
@@ -92,5 +92,5 @@ jobs:
       - name: Upload .so
         uses: actions/upload-artifact@v3
         with:
-          name: ubuntu-build-so
+          name: x86_64-unknown-linux-musl-so
           path: target/x86_64-unknown-linux-musl/release/libtbdex_uniffi.so
