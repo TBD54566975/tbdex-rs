@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.*
+import java.io.File
 
 class E2ePfiExemplarIntegrationTest {
     // this test is intended for early-development purposes
