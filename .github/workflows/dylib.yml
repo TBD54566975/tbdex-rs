@@ -6,56 +6,56 @@ on:
       - kendall/build-both-macs_linux
 
 jobs:
-  build-intel:
-    runs-on: macos-13
-    name: Build on Intel (x86) macOS
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Set Target
-        run: rustup target add x86_64-apple-darwin
-      - name: Build
-        run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v3
-        with:
-          name: intel-build-dylib
-          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
+  # build-intel:
+  #   runs-on: macos-13
+  #   name: Build on Intel (x86) macOS
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install Rust
+  #       run: rustup toolchain install stable
+  #     - name: Set Target
+  #       run: rustup target add x86_64-apple-darwin
+  #     - name: Build
+  #       run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
+  #     - name: Upload .dylib
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: intel-build-dylib
+  #         path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
 
-  build-apple-silicon:
-    runs-on: macos-latest
-    name: Build on Apple Silicon (ARM) macOS
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Build
-        run: cargo build -p tbdex_uniffi --release
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v3
-        with:
-          name: apple-silicon-build-dylib
-          path: target/release/libtbdex_uniffi.dylib
+  # build-apple-silicon:
+  #   runs-on: macos-latest
+  #   name: Build on Apple Silicon (ARM) macOS
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install Rust
+  #       run: rustup toolchain install stable
+  #     - name: Build
+  #       run: cargo build -p tbdex_uniffi --release
+  #     - name: Upload .dylib
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: apple-silicon-build-dylib
+  #         path: target/release/libtbdex_uniffi.dylib
 
-  build-ubuntu:
-    runs-on: ubuntu-latest
-    name: Build on Ubuntu (AMD64)
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Set Target
-        run: rustup target add x86_64-unknown-linux-gnu
-      - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential
-      - name: Build
-        run: cargo build --target x86_64-unknown-linux-gnu -p tbdex_uniffi --release
-      - name: Upload .so
-        uses: actions/upload-artifact@v3
-        with:
-          name: ubuntu-build-so
-          path: target/x86_64-unknown-linux-gnu/release/libtbdex_uniffi.so
+  # build-ubuntu:
+  #   runs-on: ubuntu-latest
+  #   name: Build on Ubuntu (AMD64)
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install Rust
+  #       run: rustup toolchain install stable
+  #     - name: Set Target
+  #       run: rustup target add x86_64-unknown-linux-gnu
+  #     - name: Install Dependencies
+  #       run: sudo apt-get update && sudo apt-get install -y build-essential
+  #     - name: Build
+  #       run: cargo build --target x86_64-unknown-linux-gnu -p tbdex_uniffi --release
+  #     - name: Upload .so
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ubuntu-build-so
+  #         path: target/x86_64-unknown-linux-gnu/release/libtbdex_uniffi.so
 
   build-alpine:
     runs-on: ubuntu-latest
@@ -72,7 +72,9 @@ jobs:
           source $HOME/.cargo/env
           rustup target add x86_64-unknown-linux-musl
       - name: Build
-        run: cargo build --target x86_64-unknown-linux-musl -p tbdex_uniffi --release
+        run: |
+          source $HOME/.cargo/env
+          cargo build --target x86_64-unknown-linux-musl -p tbdex_uniffi --release
       - name: Upload .so
         uses: actions/upload-artifact@v3
         with:
