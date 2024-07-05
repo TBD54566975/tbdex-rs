@@ -60,16 +60,17 @@ jobs:
   build-alpine:
     runs-on: ubuntu-latest
     name: Build on Alpine (AMD64)
+    container: alpine:latest
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y musl-tools
+          apk add --no-cache musl-dev build-base
       - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Set Target
-        run: rustup target add x86_64-unknown-linux-musl
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          source $HOME/.cargo/env
+          rustup target add x86_64-unknown-linux-musl
       - name: Build
         run: cargo build --target x86_64-unknown-linux-musl -p tbdex_uniffi --release
       - name: Upload .so
