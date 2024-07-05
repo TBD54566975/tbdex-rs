@@ -87,7 +87,7 @@ jobs:
           export AR_x86_64_unknown_linux_musl=x86_64-linux-musl-ar
           export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=x86_64-linux-musl-gcc
 
-          RUSTFLAGS="-C target-feature=+crt-static -C link-arg=-static-libgcc -C link-arg=-static-libstdc++" \
+          RUSTFLAGS="-C target-feature=-crt-static -C link-arg=-static-libgcc -C link-arg=-static-libstdc++" \
             cargo build --target x86_64-unknown-linux-musl --release --package tbdex_uniffi
       - name: Upload .so
         uses: actions/upload-artifact@v3
