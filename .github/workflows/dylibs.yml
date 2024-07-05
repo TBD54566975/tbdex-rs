@@ -3,7 +3,8 @@ name: Build Rust Crate for macOS
 on:
   push:
     branches:
-      - kendall/build-both-macs
+      - main
+  pull_request:
 
 jobs:
   build-intel:
