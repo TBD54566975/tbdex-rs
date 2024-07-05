@@ -19,7 +19,7 @@ openssl = { version = "0.10", features = ["vendored"] }
 uniffi = { version = "0.27.1", features = ["build"] }
 
 [lib]
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["cdylib"]
 
 [[bin]]
 name = "uniffi-bindgen"
