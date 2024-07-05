@@ -6,7 +6,8 @@ RUN apk update && apk add --no-cache \
     gradle \
     maven \
     git \
-    bash
+    bash \
+    libgcc
 
 # Copy application code
 COPY bound/kt /app/bound/kt

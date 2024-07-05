@@ -11,7 +11,7 @@ object SystemArchitecture {
 
         fun log(message: String) {
             if (logLevel == "debug") {
-                println(message)
+                println("tbdex sdk SystemArchitecture $message")
             }
         }
 
