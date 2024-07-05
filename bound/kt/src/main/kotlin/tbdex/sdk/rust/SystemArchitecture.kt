@@ -7,11 +7,22 @@ object SystemArchitecture {
     private var isSet = false
 
     fun set() {
+        val logLevel = System.getenv("TBDEX_SDK_LOG_LEVEL")?.lowercase()
+
+        fun log(message: String) {
+            if (logLevel == "debug") {
+                println(message)
+            }
+        }
+
         if (!isSet) {
             synchronized(this) {
                 if (!isSet) {
                     val arch = System.getProperty("os.arch")?.lowercase() ?: throw Exception("Unable to get OS arch")
                     val name = System.getProperty("os.name")?.lowercase() ?: throw Exception("Unable to get OS name")
+
+                    log("System architecture: $arch")
+                    log("Operating system name: $name")
 
                     when {
                         name.contains("mac") && arch.contains("aarch64") ->
@@ -24,6 +35,7 @@ object SystemArchitecture {
                             val osRelease = File("/etc/os-release")
                             if (osRelease.exists()) {
                                 val osReleaseContent = osRelease.readText().lowercase()
+                                log("OS release content: $osReleaseContent")
                                 when {
                                     osReleaseContent.contains("ubuntu") ->
                                         System.setProperty("uniffi.component.tbdex.libraryOverride", "tbdex_uniffi_x86_64_unknown_linux_gnu")
