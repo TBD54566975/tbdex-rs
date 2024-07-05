@@ -15,26 +15,13 @@ jobs:
         run: rustup toolchain install stable
       - name: Set Target
         run: rustup target add x86_64-apple-darwin
-      - name: Set macOS Deployment Target
-        run: echo "export MACOSX_DEPLOYMENT_TARGET=10.15" >> $GITHUB_ENV
-      - name: Build Static Library
-        env:
-          MACOSX_DEPLOYMENT_TARGET: 10.15
+      - name: Build
         run: cargo build --target x86_64-apple-darwin -p tbdex_uniffi --release
-      - name: Convert to Dynamic Library
-        env:
-          MACOSX_DEPLOYMENT_TARGET: 10.15
-        run: |
-          gcc -dynamiclib -o target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib \
-            -Wl,-all_load target/x86_64-apple-darwin/release/libtbdex_uniffi.a \
-            -mmacosx-version-min=10.15
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: intel-build-artifacts
-          path: |
-            target/x86_64-apple-darwin/release/libtbdex_uniffi.a
-            target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
+          path: target/x86_64-apple-darwin/release/libtbdex_uniffi.dylib
 
   build-apple-silicon:
     runs-on: macos-latest
