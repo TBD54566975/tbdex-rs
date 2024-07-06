@@ -60,7 +60,9 @@ jobs:
           ${{ runner.os }}-maven-
 
     - name: Install dependencies and run tests
-      run: mvn clean install
+      run: |
+        cd bound/kt
+        mvn clean install
 
   # x86_64-unknown-linux-musl:
   #   runs-on: ubuntu-latest
