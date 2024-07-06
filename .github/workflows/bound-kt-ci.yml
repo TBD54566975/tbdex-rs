@@ -43,17 +43,17 @@ jobs:
     name: Load shared library on x86_64-unknown-linux-gnu target
     steps:
       - uses: actions/checkout@v2
-      - name: Install Maven
-        run: sudo apt-get install -y maven
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk maven
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '11'
+        run: |
+          echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
       - name: Run tests
         run: |
           cd bound/kt
-          mvn -Dtest=SystemArchitectureTest#load test
+          mvn clean test -Dtest=SystemArchitectureTest#load
 
   # x86_64-unknown-linux-musl:
   #   runs-on: ubuntu-latest
