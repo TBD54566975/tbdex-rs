@@ -4,85 +4,83 @@ on:
   push:
     branches:
       - main
-      - kendall/build-both-macs_kt-ci
   pull_request:
 
 jobs:
-  # aarch64-apple-darwin:
-  #   runs-on: macos-latest
-  #   name: Load shared library on aarch64-apple-darwin target
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Set up JDK 11
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         distribution: 'adopt'
-  #         java-version: '11'
-  #     - name: Run tests
-  #       run: |
-  #         cd bound/kt
-  #         mvn '-Dtest=SystemArchitectureTest#can load shared library' test
-
-  # x86_64-apple-darwin:
-  #   runs-on: macos-12
-  #   name: Load shared library on x86_64-apple-darwin target
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Set up JDK 11
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         distribution: 'adopt'
-  #         java-version: '11'
-  #     - name: Run tests
-  #       run: |
-  #         cd bound/kt
-  #         mvn '-Dtest=SystemArchitectureTest#can load shared library' test
-
-  x86_64-unknown-linux-gnu:
-    runs-on: ubuntu-latest
-
+  aarch64-apple-darwin:
+    runs-on: macos-latest
+    name: Load shared library on aarch64-apple-darwin target
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: Run tests
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '11'
+  x86_64-apple-darwin:
+    runs-on: macos-12
+    name: Load shared library on x86_64-apple-darwin target
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: Run tests
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
 
-    - name: Cache Maven packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
-
-    - name: Install dependencies and run tests
-      run: |
-        cd bound/kt
-        mvn clean install
-
-  # x86_64-unknown-linux-musl:
+  # x86_64-unknown-linux-gnu:
   #   runs-on: ubuntu-latest
-  #   container:
-  #     image: alpine:latest
-  #   name: Load shared library on x86_64-unknown-linux-musl target
+
   #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Install dependencies
-  #       run: |
-  #         apk update
-  #         apk add openjdk11
-  #         apk add maven
-  #         apk add bash
-  #     - name: Set JAVA_HOME
-  #       run: |
-  #         export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
-  #         export PATH=$JAVA_HOME/bin:$PATH
-  #     - name: Change directory to bound/kt and run tests
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Set up JDK 11
+  #       uses: actions/setup-java@v2
+  #       with:
+  #         distribution: 'adopt'
+  #         java-version: '11'
+
+  #     - name: Cache Maven packages
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ~/.m2/repository
+  #         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-maven-
+
+  #     - name: Install dependencies and run tests
   #       run: |
   #         cd bound/kt
-  #         # mvn test -Dtest=SystemArchitectureTest#load
-  #         mvn -Dtest=SystemArchitectureTest#load test
+  #         mvn clean install
+
+  x86_64-unknown-linux-musl:
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:latest
+    name: Load shared library on x86_64-unknown-linux-musl target
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          apk update
+          apk add openjdk11
+          apk add maven
+          apk add bash
+      - name: Set JAVA_HOME
+        run: |
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+          export PATH=$JAVA_HOME/bin:$PATH
+      - name: Change directory to bound/kt and run tests
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
