@@ -6,7 +6,7 @@ import tbdex.sdk.rust.UniffiLib
 
 class SystemArchitectureTest {
     @Test
-    fun `can load shared library`() {
+    fun load() {
         System.setProperty("TBDEX_SDK_LOG_LEVEL", "debug")
         SystemArchitecture.set()
         UniffiLib.INSTANCE
