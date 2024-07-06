@@ -2,12 +2,9 @@ FROM --platform=linux/amd64 alpine:latest
 
 # Install dependencies
 RUN apk update && apk add --no-cache \
-    openjdk17 \
-    gradle \
+    openjdk11 \
     maven \
-    git \
-    bash \
-    libgcc
+    bash
 
 # Copy application code
 COPY bound/kt /app/bound/kt
