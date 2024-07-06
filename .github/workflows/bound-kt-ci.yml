@@ -18,7 +18,9 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
       - name: Run tests
-        run: mvn '-Dtest=SystemArchitectureTest#can load shared library' test
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
 
   x86_64-apple-darwin:
     runs-on: macos-12
@@ -31,7 +33,9 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
       - name: Run tests
-        run: mvn '-Dtest=SystemArchitectureTest#can load shared library' test
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
 
   x86_64-unknown-linux-gnu:
     runs-on: ubuntu-latest
@@ -44,7 +48,9 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
       - name: Run tests
-        run: mvn '-Dtest=SystemArchitectureTest#can load shared library' test
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
 
   x86_64-unknown-linux-musl:
     runs-on: ubuntu-latest
@@ -65,4 +71,6 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
       - name: Run tests
-        run: mvn '-Dtest=SystemArchitectureTest#can load shared library' test
+        run: |
+          cd bound/kt
+          mvn '-Dtest=SystemArchitectureTest#can load shared library' test
