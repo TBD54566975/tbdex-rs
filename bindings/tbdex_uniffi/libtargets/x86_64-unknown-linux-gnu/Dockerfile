@@ -14,7 +14,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Copy the source code to the container
 WORKDIR /usr/src/myapp
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml ./
 COPY bindings/tbdex_uniffi ./bindings/tbdex_uniffi
 COPY crates/pfi_exemplar_integration_test ./crates/pfi_exemplar_integration_test
 COPY crates/tbdex ./crates/tbdex
