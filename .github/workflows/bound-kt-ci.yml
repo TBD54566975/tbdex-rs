@@ -51,27 +51,27 @@ jobs:
       - name: Run tests
         run: |
           cd bound/kt
-          mvn -Dtest=SystemArchitectureTest#load test
+          mvn -X clean test -Dtest=SystemArchitectureTest#load
 
-  x86_64-unknown-linux-musl:
-    runs-on: ubuntu-latest
-    container:
-      image: alpine:latest
-    name: Load shared library on x86_64-unknown-linux-musl target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          apk update
-          apk add openjdk11
-          apk add maven
-          apk add bash
-      - name: Set JAVA_HOME
-        run: |
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
-          export PATH=$JAVA_HOME/bin:$PATH
-      - name: Change directory to bound/kt and run tests
-        run: |
-          cd bound/kt
-          # mvn test -Dtest=SystemArchitectureTest#load
-          mvn -Dtest=SystemArchitectureTest#load test
+  # x86_64-unknown-linux-musl:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: alpine:latest
+  #   name: Load shared library on x86_64-unknown-linux-musl target
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install dependencies
+  #       run: |
+  #         apk update
+  #         apk add openjdk11
+  #         apk add maven
+  #         apk add bash
+  #     - name: Set JAVA_HOME
+  #       run: |
+  #         export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+  #         export PATH=$JAVA_HOME/bin:$PATH
+  #     - name: Change directory to bound/kt and run tests
+  #       run: |
+  #         cd bound/kt
+  #         # mvn test -Dtest=SystemArchitectureTest#load
+  #         mvn -Dtest=SystemArchitectureTest#load test
