@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - kendall/build-both-macs_kt-ci
   pull_request:
 
 jobs:
