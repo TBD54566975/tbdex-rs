@@ -3,49 +3,57 @@ name: Build Rust Crate Shared Libraries
 on:
   push:
     branches:
-      - main
+      - kendall/build-both-macs_debug-docker-build-path
   pull_request:
 
 jobs:
-  aarch64-apple-darwin:
-    runs-on: macos-latest
-    name: Build aarch64-apple-darwin target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Run Build Script
-        run: |
-          cd bindings/tbdex_uniffi/libtargets/aarch64-apple-darwin
-          ./build
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v3
-        with:
-          name: aarch64-apple-darwin-dylib
-          path: bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib
+  # aarch64-apple-darwin:
+  #   runs-on: macos-latest
+  #   name: Build aarch64-apple-darwin target
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install Rust
+  #       run: rustup toolchain install stable
+  #     - name: Run Build Script
+  #       run: |
+  #         cd bindings/tbdex_uniffi/libtargets/aarch64-apple-darwin
+  #         ./build
+  #     - name: Upload .dylib
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: aarch64-apple-darwin-dylib
+  #         path: bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib
 
-  x86_64-apple-darwin:
-    runs-on: macos-latest
-    name: Build x86_64-apple-darwin target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Run Build Script
-        run: |
-          cd bindings/tbdex_uniffi/libtargets/x86_64-apple-darwin
-          ./build
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v3
-        with:
-          name: x86_64-apple-darwin-dylib
-          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_apple_darwin.dylib
+  # x86_64-apple-darwin:
+  #   runs-on: macos-latest
+  #   name: Build x86_64-apple-darwin target
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Install Rust
+  #       run: rustup toolchain install stable
+  #     - name: Run Build Script
+  #       run: |
+  #         cd bindings/tbdex_uniffi/libtargets/x86_64-apple-darwin
+  #         ./build
+  #     - name: Upload .dylib
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: x86_64-apple-darwin-dylib
+  #         path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_apple_darwin.dylib
 
   x86_64-unknown-linux-gnu:
     runs-on: ubuntu-latest
     name: Build x86_64-unknown-linux-gnu target
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: List Files for Debugging
+        run: |
+          cd bindings/tbdex_uniffi/libtargets/x86_64-unknown-linux-gnu
+          ls -al
+          cd ../../../../
+          ls -al
       - name: Run Build Script
         run: |
           cd bindings/tbdex_uniffi/libtargets/x86_64-unknown-linux-gnu
@@ -61,6 +69,14 @@ jobs:
     name: Build x86_64-unknown-linux-musl target
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: List Files for Debugging
+        run: |
+          cd bindings/tbdex_uniffi/libtargets/x86_64-unknown-linux-musl
+          ls -al
+          cd ../../../../
+          ls -al
       - name: Run Build Script
         run: |
           cd bindings/tbdex_uniffi/libtargets/x86_64-unknown-linux-musl
