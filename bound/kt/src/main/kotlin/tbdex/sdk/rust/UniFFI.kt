@@ -5790,7 +5790,7 @@ public object FfiConverterTypeExchangeData: FfiConverterRustBuffer<ExchangeData>
 
 
 data class JwkData (
-    var `alg`: kotlin.String, 
+    var `alg`: kotlin.String?, 
     var `kty`: kotlin.String, 
     var `crv`: kotlin.String, 
     var `d`: kotlin.String?, 
@@ -5804,7 +5804,7 @@ data class JwkData (
 public object FfiConverterTypeJwkData: FfiConverterRustBuffer<JwkData> {
     override fun read(buf: ByteBuffer): JwkData {
         return JwkData(
-            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
@@ -5814,7 +5814,7 @@ public object FfiConverterTypeJwkData: FfiConverterRustBuffer<JwkData> {
     }
 
     override fun allocationSize(value: JwkData) = (
-            FfiConverterString.allocationSize(value.`alg`) +
+            FfiConverterOptionalString.allocationSize(value.`alg`) +
             FfiConverterString.allocationSize(value.`kty`) +
             FfiConverterString.allocationSize(value.`crv`) +
             FfiConverterOptionalString.allocationSize(value.`d`) +
@@ -5823,7 +5823,7 @@ public object FfiConverterTypeJwkData: FfiConverterRustBuffer<JwkData> {
     )
 
     override fun write(value: JwkData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`alg`, buf)
+            FfiConverterOptionalString.write(value.`alg`, buf)
             FfiConverterString.write(value.`kty`, buf)
             FfiConverterString.write(value.`crv`, buf)
             FfiConverterOptionalString.write(value.`d`, buf)
