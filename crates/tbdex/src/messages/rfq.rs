@@ -20,6 +20,7 @@ use web5::{
 pub struct Rfq {
     pub metadata: MessageMetadata,
     pub data: RfqData,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub private_data: Option<RfqPrivateData>,
     pub signature: String,
 }
