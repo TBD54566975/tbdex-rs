@@ -1,9 +1,9 @@
 use super::{get_service_endpoint, Result};
 use crate::resources::offering::Offering;
 use reqwest::blocking::get;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 struct GetOfferingsResponse {
     data: Vec<Offering>,
 }
@@ -20,6 +20,11 @@ pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
     // for offering in &offerings_response.data {
     //     offering.verify()?;
     // }
+
+    println!(
+        "getOfferings response body {}",
+        serde_json::to_string_pretty(&offerings_response)?
+    );
 
     Ok(offerings_response.data)
 }
