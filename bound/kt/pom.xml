@@ -100,10 +100,7 @@
           <version>3.2.5</version>
           <configuration>
             <includes>
-              <include>Test*</include>
               <include>*Test</include>
-              <include>*TestCase</include>
-              <include>RandomName</include>
             </includes>
           </configuration>
         </plugin>
