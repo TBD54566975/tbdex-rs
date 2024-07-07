@@ -20,7 +20,7 @@ use web5::{
 pub struct Rfq {
     pub metadata: MessageMetadata,
     pub data: RfqData,
-    pub private_data: RfqPrivateData,
+    pub private_data: Option<RfqPrivateData>,
     pub signature: String,
 }
 
@@ -51,7 +51,7 @@ impl Rfq {
         let rfq = Self {
             metadata: metadata.clone(),
             data: data.clone(),
-            private_data,
+            private_data: Some(private_data),
             signature: crate::signature::sign(
                 bearer_did,
                 &serde_json::to_value(metadata)?,
@@ -161,6 +161,15 @@ impl Rfq {
             }
         }
 
+        let private_data = match &self.private_data {
+            None => {
+                return Err(MessageError::OfferingVerification(
+                    "cannot verify offering requirements without private data".to_string(),
+                ))
+            }
+            Some(pd) => pd,
+        };
+
         // verify payin json schema
         if let Some(payin_method) = offering
             .data
@@ -170,8 +179,7 @@ impl Rfq {
             .find(|m| m.kind == self.data.payin.kind)
         {
             if let Some(json_schema) = &payin_method.required_payment_details {
-                let payment_details = self
-                    .private_data
+                let payment_details = private_data
                     .payin
                     .as_ref()
                     .ok_or_else(|| {
@@ -201,8 +209,7 @@ impl Rfq {
             .find(|m| m.kind == self.data.payout.kind)
         {
             if let Some(json_schema) = &payout_method.required_payment_details {
-                let payment_details = self
-                    .private_data
+                let payment_details = private_data
                     .payout
                     .as_ref()
                     .ok_or_else(|| {
@@ -228,7 +235,7 @@ impl Rfq {
         // verify claims
         if let Some(required_claims) = &offering.data.required_claims {
             let vc_jwts = required_claims
-                .select_credentials(&self.private_data.claims.clone().unwrap_or_default())
+                .select_credentials(&private_data.claims.clone().unwrap_or_default())
                 .map_err(|_| {
                     MessageError::OfferingVerification("failed to select credentials".to_string())
                 })?;
@@ -253,22 +260,31 @@ impl Rfq {
     }
 
     pub fn verify_all_private_data(&self) -> Result<bool> {
+        let private_data = match &self.private_data {
+            None => {
+                return Err(MessageError::OfferingVerification(
+                    "cannot verify all private data without private data".to_string(),
+                ))
+            }
+            Some(pd) => pd,
+        };
+
         if let Some(hash) = &self.data.payin.payment_details_hash {
-            let digest = digest_private_data(&self.private_data.salt, &self.private_data.payin);
+            let digest = digest_private_data(&private_data.salt, &private_data.payin);
             if &digest != hash {
                 return Ok(false);
             }
         }
 
         if let Some(hash) = &self.data.payout.payment_details_hash {
-            let digest = digest_private_data(&self.private_data.salt, &self.private_data.payout);
+            let digest = digest_private_data(&private_data.salt, &private_data.payout);
             if &digest != hash {
                 return Ok(false);
             }
         }
 
         if let Some(hash) = &self.data.claims_hash {
-            let digest = digest_private_data(&self.private_data.salt, &self.private_data.claims);
+            let digest = digest_private_data(&private_data.salt, &private_data.claims);
             if &digest != hash {
                 return Ok(false);
             }
@@ -278,29 +294,44 @@ impl Rfq {
     }
 
     pub fn verify_present_private_data(&self) -> Result<bool> {
+        let salt = match &self.private_data {
+            None => {
+                return Err(MessageError::OfferingVerification(
+                    "cannot verify present private data without salt".to_string(),
+                ))
+            }
+            Some(pd) => pd.salt.clone(),
+        };
+
         if let Some(hash) = &self.data.payin.payment_details_hash {
-            if let Some(data) = &self.private_data.payin {
-                let digest = digest_private_data(&self.private_data.salt, &data);
-                if &digest != hash {
-                    return Ok(false);
+            if let Some(private_data) = &self.private_data {
+                if let Some(data) = &private_data.payin {
+                    let digest = digest_private_data(&salt, &data);
+                    if &digest != hash {
+                        return Ok(false);
+                    }
                 }
             }
         }
 
         if let Some(hash) = &self.data.payout.payment_details_hash {
-            if let Some(data) = &self.private_data.payout {
-                let digest = digest_private_data(&self.private_data.salt, &data);
-                if &digest != hash {
-                    return Ok(false);
+            if let Some(private_data) = &self.private_data {
+                if let Some(data) = &private_data.payout {
+                    let digest = digest_private_data(&salt, &data);
+                    if &digest != hash {
+                        return Ok(false);
+                    }
                 }
             }
         }
 
         if let Some(hash) = &self.data.claims_hash {
-            if let Some(data) = &self.private_data.claims {
-                let digest = digest_private_data(&self.private_data.salt, &data);
-                if &digest != hash {
-                    return Ok(false);
+            if let Some(private_data) = &self.private_data {
+                if let Some(data) = &private_data.claims {
+                    let digest = digest_private_data(&salt, &data);
+                    if &digest != hash {
+                        return Ok(false);
+                    }
                 }
             }
         }
