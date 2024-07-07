@@ -87,7 +87,9 @@ impl Rfq {
         crate::json_schemas::validate_from_str(RFQ_DATA_JSON_SCHEMA, &self.data)?;
 
         // verify private data json schema
-        crate::json_schemas::validate_from_str(RFQ_PRIVATE_DATA_JSON_SCHEMA, &self.private_data)?;
+        if let Some(private_data) = &self.private_data {
+            crate::json_schemas::validate_from_str(RFQ_PRIVATE_DATA_JSON_SCHEMA, private_data)?;
+        }
 
         // verify signature
         crate::signature::verify(

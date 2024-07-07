@@ -6249,7 +6249,7 @@ public object FfiConverterTypeResourceMetadataData: FfiConverterRustBuffer<Resou
 data class RfqData (
     var `metadata`: MessageMetadataData, 
     var `jsonSerializedData`: kotlin.String, 
-    var `jsonSerializedPrivateData`: kotlin.String, 
+    var `jsonSerializedPrivateData`: kotlin.String?, 
     var `signature`: kotlin.String
 ) {
     
@@ -6261,7 +6261,7 @@ public object FfiConverterTypeRfqData: FfiConverterRustBuffer<RfqData> {
         return RfqData(
             FfiConverterTypeMessageMetadataData.read(buf),
             FfiConverterString.read(buf),
-            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
             FfiConverterString.read(buf),
         )
     }
@@ -6269,14 +6269,14 @@ public object FfiConverterTypeRfqData: FfiConverterRustBuffer<RfqData> {
     override fun allocationSize(value: RfqData) = (
             FfiConverterTypeMessageMetadataData.allocationSize(value.`metadata`) +
             FfiConverterString.allocationSize(value.`jsonSerializedData`) +
-            FfiConverterString.allocationSize(value.`jsonSerializedPrivateData`) +
+            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPrivateData`) +
             FfiConverterString.allocationSize(value.`signature`)
     )
 
     override fun write(value: RfqData, buf: ByteBuffer) {
             FfiConverterTypeMessageMetadataData.write(value.`metadata`, buf)
             FfiConverterString.write(value.`jsonSerializedData`, buf)
-            FfiConverterString.write(value.`jsonSerializedPrivateData`, buf)
+            FfiConverterOptionalString.write(value.`jsonSerializedPrivateData`, buf)
             FfiConverterString.write(value.`signature`, buf)
     }
 }

@@ -13,7 +13,7 @@ class Rfq {
 
     val metadata: MessageMetadata
     val data: RfqData
-    val privateData: RfqPrivateData
+    val privateData: RfqPrivateData?
     val signature: String
 
     val rustCoreRfq: RustCoreRfq
@@ -34,7 +34,7 @@ class Rfq {
         val rfqData = rustCoreRfq.getData()
         this.metadata = rfqData.metadata
         this.data = Json.jsonMapper.readValue(rfqData.jsonSerializedData, RfqData::class.java)
-        this.privateData = Json.jsonMapper.readValue(rfqData.jsonSerializedPrivateData, RfqPrivateData::class.java)
+        this.privateData = rfqData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
         this.signature = rfqData.signature
     }
 
@@ -44,7 +44,7 @@ class Rfq {
         val rfqData = rustCoreRfq.getData()
         this.metadata = rfqData.metadata
         this.data = Json.jsonMapper.readValue(rfqData.jsonSerializedData, RfqData::class.java)
-        this.privateData = Json.jsonMapper.readValue(rfqData.jsonSerializedPrivateData, RfqPrivateData::class.java)
+        this.privateData = rfqData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
         this.signature = rfqData.signature
     }
 
@@ -54,7 +54,7 @@ class Rfq {
         val rfqData = this.rustCoreRfq.getData()
         this.metadata = rfqData.metadata
         this.data = Json.jsonMapper.readValue(rfqData.jsonSerializedData, RfqData::class.java)
-        this.privateData = Json.jsonMapper.readValue(rfqData.jsonSerializedPrivateData, RfqPrivateData::class.java)
+        this.privateData = rfqData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
         this.signature = rfqData.signature
     }
 
