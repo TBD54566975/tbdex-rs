@@ -6133,6 +6133,7 @@ public object FfiConverterTypeQuoteData: FfiConverterRustBuffer<QuoteData> {
 
 data class QuoteDataData (
     var `expiresAt`: kotlin.String, 
+    var `payoutUnitsPerPayinUnit`: kotlin.String, 
     var `payin`: QuoteDetailsData, 
     var `payout`: QuoteDetailsData
 ) {
@@ -6144,6 +6145,7 @@ public object FfiConverterTypeQuoteDataData: FfiConverterRustBuffer<QuoteDataDat
     override fun read(buf: ByteBuffer): QuoteDataData {
         return QuoteDataData(
             FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterTypeQuoteDetailsData.read(buf),
             FfiConverterTypeQuoteDetailsData.read(buf),
         )
@@ -6151,12 +6153,14 @@ public object FfiConverterTypeQuoteDataData: FfiConverterRustBuffer<QuoteDataDat
 
     override fun allocationSize(value: QuoteDataData) = (
             FfiConverterString.allocationSize(value.`expiresAt`) +
+            FfiConverterString.allocationSize(value.`payoutUnitsPerPayinUnit`) +
             FfiConverterTypeQuoteDetailsData.allocationSize(value.`payin`) +
             FfiConverterTypeQuoteDetailsData.allocationSize(value.`payout`)
     )
 
     override fun write(value: QuoteDataData, buf: ByteBuffer) {
             FfiConverterString.write(value.`expiresAt`, buf)
+            FfiConverterString.write(value.`payoutUnitsPerPayinUnit`, buf)
             FfiConverterTypeQuoteDetailsData.write(value.`payin`, buf)
             FfiConverterTypeQuoteDetailsData.write(value.`payout`, buf)
     }

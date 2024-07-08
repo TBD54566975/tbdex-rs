@@ -136,6 +136,7 @@ dictionary QuoteData {
 
 dictionary QuoteDataData {
   string expires_at;
+  string payout_units_per_payin_unit;
   QuoteDetailsData payin;
   QuoteDetailsData payout;
 };

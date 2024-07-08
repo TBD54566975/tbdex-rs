@@ -80,6 +80,7 @@ impl Quote {
 #[serde(rename_all = "camelCase")]
 pub struct QuoteData {
     pub expires_at: String,
+    pub payout_units_per_payin_unit: String,
     pub payin: QuoteDetails,
     pub payout: QuoteDetails,
 }
