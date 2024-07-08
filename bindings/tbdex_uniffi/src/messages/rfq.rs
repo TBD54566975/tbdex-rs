@@ -56,11 +56,7 @@ impl Rfq {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
         let json_serialized_data = serde_json::to_string(&inner_rfq.data.clone())?;
-        let json_serialized_private_data = if let Some(private_data) = &inner_rfq.private_data {
-            Some(serde_json::to_string(private_data)?)
-        } else {
-            None
-        };
+        let json_serialized_private_data = serde_json::to_string(&inner_rfq.private_data.clone())?;
         Ok(data::Rfq {
             metadata: inner_rfq.metadata.clone(),
             json_serialized_data,
@@ -112,7 +108,7 @@ pub mod data {
     pub struct Rfq {
         pub metadata: MessageMetadata,
         pub json_serialized_data: String,
-        pub json_serialized_private_data: Option<String>,
+        pub json_serialized_private_data: String,
         pub signature: String,
     }
 }

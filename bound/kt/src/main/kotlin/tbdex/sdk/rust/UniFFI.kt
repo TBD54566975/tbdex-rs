@@ -5790,7 +5790,7 @@ public object FfiConverterTypeExchangeData: FfiConverterRustBuffer<ExchangeData>
 
 
 data class JwkData (
-    var `alg`: kotlin.String?, 
+    var `alg`: kotlin.String, 
     var `kty`: kotlin.String, 
     var `crv`: kotlin.String, 
     var `d`: kotlin.String?, 
@@ -5804,7 +5804,7 @@ data class JwkData (
 public object FfiConverterTypeJwkData: FfiConverterRustBuffer<JwkData> {
     override fun read(buf: ByteBuffer): JwkData {
         return JwkData(
-            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
@@ -5814,7 +5814,7 @@ public object FfiConverterTypeJwkData: FfiConverterRustBuffer<JwkData> {
     }
 
     override fun allocationSize(value: JwkData) = (
-            FfiConverterOptionalString.allocationSize(value.`alg`) +
+            FfiConverterString.allocationSize(value.`alg`) +
             FfiConverterString.allocationSize(value.`kty`) +
             FfiConverterString.allocationSize(value.`crv`) +
             FfiConverterOptionalString.allocationSize(value.`d`) +
@@ -5823,7 +5823,7 @@ public object FfiConverterTypeJwkData: FfiConverterRustBuffer<JwkData> {
     )
 
     override fun write(value: JwkData, buf: ByteBuffer) {
-            FfiConverterOptionalString.write(value.`alg`, buf)
+            FfiConverterString.write(value.`alg`, buf)
             FfiConverterString.write(value.`kty`, buf)
             FfiConverterString.write(value.`crv`, buf)
             FfiConverterOptionalString.write(value.`d`, buf)
@@ -6249,7 +6249,7 @@ public object FfiConverterTypeResourceMetadataData: FfiConverterRustBuffer<Resou
 data class RfqData (
     var `metadata`: MessageMetadataData, 
     var `jsonSerializedData`: kotlin.String, 
-    var `jsonSerializedPrivateData`: kotlin.String?, 
+    var `jsonSerializedPrivateData`: kotlin.String, 
     var `signature`: kotlin.String
 ) {
     
@@ -6261,7 +6261,7 @@ public object FfiConverterTypeRfqData: FfiConverterRustBuffer<RfqData> {
         return RfqData(
             FfiConverterTypeMessageMetadataData.read(buf),
             FfiConverterString.read(buf),
-            FfiConverterOptionalString.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterString.read(buf),
         )
     }
@@ -6269,14 +6269,14 @@ public object FfiConverterTypeRfqData: FfiConverterRustBuffer<RfqData> {
     override fun allocationSize(value: RfqData) = (
             FfiConverterTypeMessageMetadataData.allocationSize(value.`metadata`) +
             FfiConverterString.allocationSize(value.`jsonSerializedData`) +
-            FfiConverterOptionalString.allocationSize(value.`jsonSerializedPrivateData`) +
+            FfiConverterString.allocationSize(value.`jsonSerializedPrivateData`) +
             FfiConverterString.allocationSize(value.`signature`)
     )
 
     override fun write(value: RfqData, buf: ByteBuffer) {
             FfiConverterTypeMessageMetadataData.write(value.`metadata`, buf)
             FfiConverterString.write(value.`jsonSerializedData`, buf)
-            FfiConverterOptionalString.write(value.`jsonSerializedPrivateData`, buf)
+            FfiConverterString.write(value.`jsonSerializedPrivateData`, buf)
             FfiConverterString.write(value.`signature`, buf)
     }
 }

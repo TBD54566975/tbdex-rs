@@ -22,7 +22,7 @@ fn main() {
     key_manager
         .import_private_jwk(Jwk {
             crv: "Ed25519".to_string(),
-            alg: Some("EdDSA".to_string()),
+            alg: "EdDSA".to_string(),
             kty: "OKP".to_string(),
             x: "kW2-CfY0XmGTVLurk7BJ14Mqc4L-oJpD3jH5ZmwxyUw".to_string(),
             y: None,

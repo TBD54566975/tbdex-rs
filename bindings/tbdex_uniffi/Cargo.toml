@@ -12,7 +12,7 @@ tbdex = { path = "../../crates/tbdex" }
 thiserror = { workspace = true }
 uniffi = { version = "0.27.1", features = ["cli"] }
 web5 = { workspace = true }
-web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "b0cc615ea8a710ecfa5dd7c104bf95592a993214" }
+web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "ede4a64286cfaa3c4b5fcad71445c319488b892a" }
 
 [dependencies.openssl]
 version = "0.10"
