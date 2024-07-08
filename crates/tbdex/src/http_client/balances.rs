@@ -24,6 +24,7 @@ pub fn get_balances(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<Vec<Bal
     .ok_or(HttpClientError::ReqwestError(
         "get balances response returned null".to_string(),
     ))?;
+
     for balance in &balances_response.data {
         balance.verify()?;
     }
