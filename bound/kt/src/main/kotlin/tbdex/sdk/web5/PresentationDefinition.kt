@@ -2,6 +2,7 @@ package tbdex.sdk.web5
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tbdex.sdk.Json
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.PresentationDefinition as RustCorePresentationDefinition
 
 data class PresentationDefinition(
@@ -11,6 +12,10 @@ data class PresentationDefinition(
     @JsonProperty("input_descriptors")
     val inputDescriptors: List<InputDescriptor>
 ) {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     internal val rustCorePresentationDefinition = RustCorePresentationDefinition(
         Json.stringify(this)
     )

@@ -1,5 +1,6 @@
 package tbdex.sdk.resources
 
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Balance as RustCoreBalance
 import tbdex.sdk.rust.BalanceDataData as RustCoreBalanceData
@@ -7,6 +8,10 @@ import tbdex.sdk.rust.BalanceDataData as RustCoreBalanceData
 typealias BalanceData = RustCoreBalanceData
 
 class Balance {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: ResourceMetadata
     val data: BalanceData
     val signature: String

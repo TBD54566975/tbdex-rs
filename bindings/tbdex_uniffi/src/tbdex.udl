@@ -113,7 +113,7 @@ interface Rfq {
 dictionary RfqData {
   MessageMetadataData metadata;
   string json_serialized_data;
-  string json_serialized_private_data;
+  string? json_serialized_private_data;
   string signature;
 };
 
@@ -248,7 +248,7 @@ interface CreateExchangeRequestBody {
 
 
 dictionary JwkData {
-  string alg;
+  string? alg;
   string kty;
   string crv;
   string? d;

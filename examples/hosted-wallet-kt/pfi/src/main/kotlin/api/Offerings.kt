@@ -9,6 +9,8 @@ class Offerings(private val offeringsRepository: data.Offerings) {
     }
 
     private fun getOfferings(res: Response): String {
+        println("GET /offerings")
+
         val offerings = offeringsRepository.getOfferings()
 
         res.type("application/json")

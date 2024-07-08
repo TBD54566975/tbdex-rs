@@ -1,11 +1,16 @@
 package tbdex.sdk.resources
 
 import tbdex.sdk.Json
+import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PresentationDefinition
 import tbdex.sdk.rust.Offering as RustCoreOffering
 
 class Offering {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
     val metadata: ResourceMetadata
     val data: OfferingData
     val signature: String
