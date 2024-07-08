@@ -67,7 +67,7 @@ fun getExchanges(pfiDidUri: String, bearerDid: BearerDid): List<String> {
 }
 
 class CreateExchangeRequestBody {
-    val rfq: Rfq
+    val message: Rfq
     val replyTo: String?
 
     constructor(json: String) {
@@ -75,7 +75,7 @@ class CreateExchangeRequestBody {
 
         val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
         val data = rustCoreCreateExchangeRequestBody.getData()
-        this.rfq = Rfq(data.rfq)
+        this.message = Rfq(data.message)
         this.replyTo = data.replyTo
     }
 }

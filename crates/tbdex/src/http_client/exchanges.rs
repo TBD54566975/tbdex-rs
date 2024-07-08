@@ -27,7 +27,7 @@ pub struct Exchange {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateExchangeRequestBody {
-    pub rfq: Rfq,
+    pub message: Rfq,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to: Option<String>,
 }
@@ -36,7 +36,7 @@ impl CreateExchangeRequestBody {
     pub fn from_json_string(json: &str) -> Result<Self> {
         let request_body = serde_json::from_str::<Self>(json)?;
 
-        request_body.rfq.verify()?;
+        request_body.message.verify()?;
 
         Ok(request_body)
     }
@@ -52,7 +52,7 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
         &create_exchange_endpoint,
         Method::POST,
         Some(&CreateExchangeRequestBody {
-            rfq: rfq.clone(),
+            message: rfq.clone(),
             reply_to,
         }),
         None,

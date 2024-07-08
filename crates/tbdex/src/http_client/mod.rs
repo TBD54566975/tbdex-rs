@@ -135,7 +135,7 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
 
     let response = request.send()?;
 
-    let response_status = response.status().clone();
+    let response_status = response.status();
     let response_text = response.text()?;
 
     crate::log_dbg!(|| {

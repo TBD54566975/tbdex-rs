@@ -5583,7 +5583,7 @@ public object FfiConverterTypeCloseDataData: FfiConverterRustBuffer<CloseDataDat
 
 
 data class CreateExchangeRequestBodyData (
-    var `rfq`: Rfq, 
+    var `message`: Rfq, 
     var `replyTo`: kotlin.String?
 ) : Disposable {
     
@@ -5591,7 +5591,7 @@ data class CreateExchangeRequestBodyData (
     override fun destroy() {
         
     Disposable.destroy(
-        this.`rfq`, 
+        this.`message`, 
         this.`replyTo`)
     }
     
@@ -5607,12 +5607,12 @@ public object FfiConverterTypeCreateExchangeRequestBodyData: FfiConverterRustBuf
     }
 
     override fun allocationSize(value: CreateExchangeRequestBodyData) = (
-            FfiConverterTypeRfq.allocationSize(value.`rfq`) +
+            FfiConverterTypeRfq.allocationSize(value.`message`) +
             FfiConverterOptionalString.allocationSize(value.`replyTo`)
     )
 
     override fun write(value: CreateExchangeRequestBodyData, buf: ByteBuffer) {
-            FfiConverterTypeRfq.write(value.`rfq`, buf)
+            FfiConverterTypeRfq.write(value.`message`, buf)
             FfiConverterOptionalString.write(value.`replyTo`, buf)
     }
 }

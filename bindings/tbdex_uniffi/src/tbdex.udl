@@ -225,7 +225,7 @@ dictionary ExchangeData {
 };
 
 dictionary CreateExchangeRequestBodyData {
-  Rfq rfq;
+  Rfq message;
   string? reply_to;
 };
 
