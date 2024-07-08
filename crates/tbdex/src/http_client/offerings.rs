@@ -1,6 +1,6 @@
-use super::{get_service_endpoint, Result};
+use super::{get_service_endpoint, send_request, HttpClientError, Result};
 use crate::resources::offering::Offering;
-use reqwest::blocking::get;
+use reqwest::Method;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -11,15 +11,16 @@ struct GetOfferingsResponse {
 pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
     let service_endpoint = get_service_endpoint(pfi_did_uri)?;
     let offerings_endpoint = format!("{}/offerings", service_endpoint);
-    let response = get(offerings_endpoint)?.text()?;
 
-    // TODO handle error response
+    let offerings_response =
+        send_request::<(), GetOfferingsResponse>(&offerings_endpoint, Method::GET, None, None)?
+            .ok_or(HttpClientError::ReqwestError(
+                "get offerings response returned null".to_string(),
+            ))?;
 
-    let offerings_response = serde_json::from_str::<GetOfferingsResponse>(&response)?;
-    // TODO pfi-exemplar's signature is failing verification
-    // for offering in &offerings_response.data {
-    //     offering.verify()?;
-    // }
+    for offering in &offerings_response.data {
+        offering.verify()?;
+    }
 
     Ok(offerings_response.data)
 }
