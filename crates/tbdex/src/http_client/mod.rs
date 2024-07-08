@@ -136,13 +136,12 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
     let response = request.send()?;
 
     let response_status = response.status().clone();
-    let response_content_length = response.content_length().unwrap_or_default();
     let response_text = response.text()?;
 
     crate::log_dbg!(|| {
         format!(
             "httpclient sent request {} {}, has access token {}, with body {}, \
-            response status {}, response content length {}, response text {}",
+            response status {}, response text {}",
             method,
             url,
             access_token.is_some(),
@@ -152,7 +151,6 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
                 None => String::default(),
             },
             response_status,
-            response_content_length,
             match serde_json::from_str::<serde_json::Value>(&response_text) {
                 Ok(json) =>
                     serde_json::to_string_pretty(&json).unwrap_or_else(|_| response_text.clone()),
@@ -168,7 +166,7 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
         )));
     }
 
-    if response_content_length == 0 || response_status == StatusCode::ACCEPTED {
+    if response_status == StatusCode::ACCEPTED {
         return Ok(None);
     }
 
