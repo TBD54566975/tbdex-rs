@@ -567,7 +567,8 @@ mod tbdex_test_vectors_protocol {
 
     #[test]
     fn parse_rfq_omit_private_data() {
-        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq-omit-private-data.json";
+        let path =
+            "../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq-omit-private-data.json";
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
