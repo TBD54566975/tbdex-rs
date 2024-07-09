@@ -44,6 +44,7 @@ class Quote {
         this.metadata = rustCoreQuote.getData().metadata
         this.data = QuoteData(
             this.rustCoreQuote.getData().data.expiresAt,
+            this.rustCoreQuote.getData().data.payoutUnitsPerPayinUnit,
             this.rustCoreQuote.getData().data.payin,
             this.rustCoreQuote.getData().data.payout,
         )

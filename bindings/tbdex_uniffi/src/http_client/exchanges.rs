@@ -78,7 +78,7 @@ pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<
 
 #[derive(Clone)]
 pub struct CreateExchangeRequestBodyData {
-    pub rfq: Arc<Rfq>,
+    pub message: Arc<Rfq>,
     pub reply_to: Option<String>,
 }
 
@@ -87,9 +87,9 @@ pub struct CreateExchangeRequestBody(pub CreateExchangeRequestBodyData);
 impl CreateExchangeRequestBody {
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerCreateExchangeRequestBody::from_json_string(json)?;
-        let rfq = Rfq::from_inner(inner.rfq);
+        let rfq = Rfq::from_inner(inner.message);
         Ok(Self(CreateExchangeRequestBodyData {
-            rfq: Arc::new(rfq),
+            message: Arc::new(rfq),
             reply_to: inner.reply_to,
         }))
     }

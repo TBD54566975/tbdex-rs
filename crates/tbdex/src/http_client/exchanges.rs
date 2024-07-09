@@ -1,11 +1,11 @@
-use super::{get_service_endpoint, Result};
+use super::{get_service_endpoint, send_request, Result};
 use crate::{
     http_client::{generate_access_token, HttpClientError},
     messages::{
         close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, MessageKind,
     },
 };
-use reqwest::blocking::Client;
+use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use web5::dids::bearer_did::BearerDid;
@@ -27,7 +27,7 @@ pub struct Exchange {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateExchangeRequestBody {
-    pub rfq: Rfq,
+    pub message: Rfq,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to: Option<String>,
 }
@@ -36,7 +36,7 @@ impl CreateExchangeRequestBody {
     pub fn from_json_string(json: &str) -> Result<Self> {
         let request_body = serde_json::from_str::<Self>(json)?;
 
-        request_body.rfq.verify()?;
+        request_body.message.verify()?;
 
         Ok(request_body)
     }
@@ -48,19 +48,22 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 
     rfq.verify()?;
 
-    let request_body = serde_json::to_string(&CreateExchangeRequestBody {
-        rfq: rfq.clone(),
-        reply_to,
-    })?;
-
-    // todo handle error responses response.status() and response.text()
-    let _response = Client::new()
-        .post(create_exchange_endpoint)
-        .header("Content-Type", "application/json")
-        .body(request_body)
-        .send()?;
+    send_request::<CreateExchangeRequestBody, ()>(
+        &create_exchange_endpoint,
+        Method::POST,
+        Some(&CreateExchangeRequestBody {
+            message: rfq.clone(),
+            reply_to,
+        }),
+        None,
+    )?;
 
     Ok(())
+}
+
+#[derive(Serialize)]
+pub struct SubmitOrderRequestBody {
+    pub message: Order,
 }
 
 pub fn submit_order(order: &Order) -> Result<()> {
@@ -72,13 +75,14 @@ pub fn submit_order(order: &Order) -> Result<()> {
 
     order.verify()?;
 
-    let request_body = serde_json::to_string(&order)?;
-    // todo handle error responses response.status() and response.text()
-    let _response = Client::new()
-        .put(submit_order_endpoint)
-        .header("Content-Type", "application/json")
-        .body(request_body)
-        .send()?;
+    send_request::<SubmitOrderRequestBody, ()>(
+        &submit_order_endpoint,
+        Method::PUT,
+        Some(&SubmitOrderRequestBody {
+            message: order.clone(),
+        }),
+        None,
+    )?;
 
     Ok(())
 }
@@ -103,18 +107,19 @@ pub fn get_exchange(
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
 
-    let response = Client::new()
-        .get(get_exchange_endpoint)
-        .bearer_auth(access_token)
-        .send()?
-        .text()?;
-
-    // TODO handle error response
+    let response = send_request::<(), GetExchangeResponse>(
+        &get_exchange_endpoint,
+        Method::GET,
+        None,
+        Some(access_token),
+    )?
+    .ok_or(HttpClientError::ReqwestError(
+        "get exchanges response cannot be null".to_string(),
+    ))?;
 
     let mut exchange = Exchange::default();
 
-    let data = serde_json::from_str::<GetExchangeResponse>(&response)?.data;
-    for message in data {
+    for message in response.data {
         let kind = message
             .get("metadata")
             .and_then(|m| m.get("kind"))
