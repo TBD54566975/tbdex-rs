@@ -124,7 +124,7 @@ pub struct PaymentInstructions {
 //         let test_vector_json: String = fs::read_to_string(path).unwrap();
 //
 //         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-//         let parsed_quote: Quote = serde_json::from_str(&test_vector.input).unwrap();
+//         let parsed_quote: Quote = Quote::from_json_string(&test_vector.input).unwrap();
 //
 //         assert_eq!(test_vector.output, parsed_quote);
 //     }

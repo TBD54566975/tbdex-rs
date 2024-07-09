@@ -159,6 +159,8 @@ mod tests {
         },
         dids::methods::did_jwk::DidJwk,
     };
+    use web5::crypto::key_managers::key_manager::KeyManager;
+    use web5::dids::methods::did_dht::DidDht;
 
     #[test]
     fn can_create_and_sign_and_verify() {
@@ -205,6 +207,56 @@ mod tests {
 
         assert_eq!(offering, parsed_offering);
     }
+
+    // #[test]
+    // fn can_create_and_sign_and_verify_with_did_dht() {
+    //     let identity_key = Ed25519Generator::generate();
+    //
+    //     let key_manager = InMemoryKeyManager::new();
+    //     let public_jwk = key_manager
+    //         .import_private_jwk(identity_key.clone())
+    //         .unwrap();
+    //
+    //     let did_dht = DidDht::from_identity_key(identity_key.clone()).unwrap();
+    //
+    //     did_dht.publish(key_manager.get_signer(identity_key).unwrap());
+    //
+    //     let bearer_did = BearerDid::new(&did_dht.did.uri, Arc::new(key_manager)).unwrap();
+    //
+    //     let offering = Offering::new(
+    //         &bearer_did,
+    //         &did_dht.did.uri,
+    //         &OfferingData {
+    //             description: "Selling BTC for USD".to_string(),
+    //             payout_units_per_payin_unit: "1.5".to_string(),
+    //             payin: PayinDetails {
+    //                 currency_code: "USD".to_string(),
+    //                 ..Default::default()
+    //             },
+    //             payout: PayoutDetails {
+    //                 currency_code: "BTC".to_string(),
+    //                 ..Default::default()
+    //             },
+    //             required_claims: Some(PresentationDefinition {
+    //                 id: "7ce4004c-3c38-4853-968b-e411bafcd945".to_string(),
+    //                 name: None,
+    //                 purpose: None,
+    //                 input_descriptors: vec![],
+    //             }),
+    //         },
+    //         "1.0",
+    //     ).unwrap();
+    //
+    //     assert_ne!(String::default(), offering.signature);
+    //
+    //     let offering_json_string = offering.to_json().unwrap();
+    //
+    //     assert_ne!(String::default(), offering_json_string);
+    //
+    //     let parsed_offering = Offering::from_json_string(&offering_json_string).unwrap();
+    //
+    //     assert_eq!(offering, parsed_offering);
+    // }
 }
 
 #[cfg(test)]
@@ -224,7 +276,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-        let parsed_offering: Offering = serde_json::from_str(&test_vector.input).unwrap();
+        let parsed_offering: Offering = Offering::from_json_string(&test_vector.input).unwrap();
 
         assert_eq!(test_vector.output, parsed_offering);
     }

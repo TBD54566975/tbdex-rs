@@ -27,6 +27,8 @@ pub enum MessageError {
     OfferingVerification(String),
     #[error(transparent)]
     JsonSchema(#[from] JsonSchemaError),
+    #[error("private data verification failure {0}")]
+    PrivateDataVerification(String),
 }
 
 impl From<SerdeJsonError> for MessageError {
