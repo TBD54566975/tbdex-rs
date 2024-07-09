@@ -79,3 +79,26 @@ impl Order {
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct OrderData {}
+
+#[cfg(test)]
+mod tbdex_test_vectors_protocol {
+    use super::*;
+    use std::fs;
+
+    #[derive(Debug, serde::Deserialize)]
+    pub struct TestVector {
+        pub input: String,
+        pub output: Order,
+    }
+
+    #[test]
+    fn parse_order() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_order: Order = serde_json::from_str(&test_vector.input).unwrap();
+
+        assert_eq!(test_vector.output, parsed_order);
+    }
+}

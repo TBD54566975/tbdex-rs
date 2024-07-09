@@ -206,3 +206,26 @@ mod tests {
         assert_eq!(offering, parsed_offering);
     }
 }
+
+#[cfg(test)]
+mod tbdex_test_vectors_protocol {
+    use super::*;
+    use std::fs;
+
+    #[derive(Debug, serde::Deserialize)]
+    pub struct TestVector {
+        pub input: String,
+        pub output: Offering,
+    }
+
+    #[test]
+    fn parse_offering() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_offering: Offering = serde_json::from_str(&test_vector.input).unwrap();
+
+        assert_eq!(test_vector.output, parsed_offering);
+    }
+}
