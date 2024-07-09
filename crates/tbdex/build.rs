@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn write_json_schemas() -> Result<(), Box<dyn std::error::Error>> {
-    let commit_hash = "96a1a7164e8e0a608befa31b6cf0c9a4e5cc0f07";
+    let commit_hash = "3c2f3b4083cea146a874a85337324b3ca0b3f6b0";
     let schemas = vec![
       ("DEFINITIONS_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/definitions.json", commit_hash)),
       ("RESOURCE_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/resource.schema.json", commit_hash)),

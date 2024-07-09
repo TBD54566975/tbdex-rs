@@ -136,13 +136,15 @@ dictionary QuoteData {
 
 dictionary QuoteDataData {
   string expires_at;
+  string payout_units_per_payin_unit;
   QuoteDetailsData payin;
   QuoteDetailsData payout;
 };
 
 dictionary QuoteDetailsData {
   string currency_code;
-  string amount;
+  string subtotal;
+  string total;
   string? fee;
   PaymentInstructionsData? payment_instructions;
 };
@@ -225,7 +227,7 @@ dictionary ExchangeData {
 };
 
 dictionary CreateExchangeRequestBodyData {
-  Rfq rfq;
+  Rfq message;
   string? reply_to;
 };
 

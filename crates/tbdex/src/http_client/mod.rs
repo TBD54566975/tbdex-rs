@@ -4,7 +4,8 @@ pub mod offerings;
 
 use crate::{jose::Signer, messages::MessageError, resources::ResourceError};
 use josekit::{jwt::JwtPayload, JoseError as JosekitError};
-use reqwest::Error as ReqwestError;
+use reqwest::{blocking::Client, Error as ReqwestError, Method, StatusCode};
+use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Error as SerdeJsonError;
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
@@ -113,4 +114,62 @@ pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
     };
 
     Ok(endpoint)
+}
+
+fn send_request<T: Serialize, U: DeserializeOwned>(
+    url: &str,
+    method: Method,
+    body: Option<&T>,
+    access_token: Option<String>,
+) -> Result<Option<U>> {
+    let client = Client::new();
+    let mut request = client.request(method.clone(), url);
+
+    if let Some(token) = &access_token {
+        request = request.bearer_auth(token);
+    }
+
+    if let Some(body) = &body {
+        request = request.json(body);
+    }
+
+    let response = request.send()?;
+
+    let response_status = response.status();
+    let response_text = response.text()?;
+
+    crate::log_dbg!(|| {
+        format!(
+            "httpclient sent request {} {}, has access token {}, with body {}, \
+            response status {}, response text {}",
+            method,
+            url,
+            access_token.is_some(),
+            match &body {
+                Some(b) => serde_json::to_string_pretty(b)
+                    .unwrap_or_else(|_| String::from("error serializing the body")),
+                None => String::default(),
+            },
+            response_status,
+            match serde_json::from_str::<serde_json::Value>(&response_text) {
+                Ok(json) =>
+                    serde_json::to_string_pretty(&json).unwrap_or_else(|_| response_text.clone()),
+                Err(_) => response_text.clone(),
+            }
+        )
+    });
+
+    if !response_status.is_success() {
+        return Err(HttpClientError::ReqwestError(format!(
+            "{} {}",
+            response_status, response_text
+        )));
+    }
+
+    if response_status == StatusCode::ACCEPTED {
+        return Ok(None);
+    }
+
+    let response_body = serde_json::from_str::<U>(&response_text)?;
+    Ok(Some(response_body))
 }

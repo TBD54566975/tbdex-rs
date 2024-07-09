@@ -5583,7 +5583,7 @@ public object FfiConverterTypeCloseDataData: FfiConverterRustBuffer<CloseDataDat
 
 
 data class CreateExchangeRequestBodyData (
-    var `rfq`: Rfq, 
+    var `message`: Rfq, 
     var `replyTo`: kotlin.String?
 ) : Disposable {
     
@@ -5591,7 +5591,7 @@ data class CreateExchangeRequestBodyData (
     override fun destroy() {
         
     Disposable.destroy(
-        this.`rfq`, 
+        this.`message`, 
         this.`replyTo`)
     }
     
@@ -5607,12 +5607,12 @@ public object FfiConverterTypeCreateExchangeRequestBodyData: FfiConverterRustBuf
     }
 
     override fun allocationSize(value: CreateExchangeRequestBodyData) = (
-            FfiConverterTypeRfq.allocationSize(value.`rfq`) +
+            FfiConverterTypeRfq.allocationSize(value.`message`) +
             FfiConverterOptionalString.allocationSize(value.`replyTo`)
     )
 
     override fun write(value: CreateExchangeRequestBodyData, buf: ByteBuffer) {
-            FfiConverterTypeRfq.write(value.`rfq`, buf)
+            FfiConverterTypeRfq.write(value.`message`, buf)
             FfiConverterOptionalString.write(value.`replyTo`, buf)
     }
 }
@@ -6133,6 +6133,7 @@ public object FfiConverterTypeQuoteData: FfiConverterRustBuffer<QuoteData> {
 
 data class QuoteDataData (
     var `expiresAt`: kotlin.String, 
+    var `payoutUnitsPerPayinUnit`: kotlin.String, 
     var `payin`: QuoteDetailsData, 
     var `payout`: QuoteDetailsData
 ) {
@@ -6144,6 +6145,7 @@ public object FfiConverterTypeQuoteDataData: FfiConverterRustBuffer<QuoteDataDat
     override fun read(buf: ByteBuffer): QuoteDataData {
         return QuoteDataData(
             FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterTypeQuoteDetailsData.read(buf),
             FfiConverterTypeQuoteDetailsData.read(buf),
         )
@@ -6151,12 +6153,14 @@ public object FfiConverterTypeQuoteDataData: FfiConverterRustBuffer<QuoteDataDat
 
     override fun allocationSize(value: QuoteDataData) = (
             FfiConverterString.allocationSize(value.`expiresAt`) +
+            FfiConverterString.allocationSize(value.`payoutUnitsPerPayinUnit`) +
             FfiConverterTypeQuoteDetailsData.allocationSize(value.`payin`) +
             FfiConverterTypeQuoteDetailsData.allocationSize(value.`payout`)
     )
 
     override fun write(value: QuoteDataData, buf: ByteBuffer) {
             FfiConverterString.write(value.`expiresAt`, buf)
+            FfiConverterString.write(value.`payoutUnitsPerPayinUnit`, buf)
             FfiConverterTypeQuoteDetailsData.write(value.`payin`, buf)
             FfiConverterTypeQuoteDetailsData.write(value.`payout`, buf)
     }
@@ -6166,7 +6170,8 @@ public object FfiConverterTypeQuoteDataData: FfiConverterRustBuffer<QuoteDataDat
 
 data class QuoteDetailsData (
     var `currencyCode`: kotlin.String, 
-    var `amount`: kotlin.String, 
+    var `subtotal`: kotlin.String, 
+    var `total`: kotlin.String, 
     var `fee`: kotlin.String?, 
     var `paymentInstructions`: PaymentInstructionsData?
 ) {
@@ -6179,6 +6184,7 @@ public object FfiConverterTypeQuoteDetailsData: FfiConverterRustBuffer<QuoteDeta
         return QuoteDetailsData(
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
+            FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
             FfiConverterOptionalTypePaymentInstructionsData.read(buf),
         )
@@ -6186,14 +6192,16 @@ public object FfiConverterTypeQuoteDetailsData: FfiConverterRustBuffer<QuoteDeta
 
     override fun allocationSize(value: QuoteDetailsData) = (
             FfiConverterString.allocationSize(value.`currencyCode`) +
-            FfiConverterString.allocationSize(value.`amount`) +
+            FfiConverterString.allocationSize(value.`subtotal`) +
+            FfiConverterString.allocationSize(value.`total`) +
             FfiConverterOptionalString.allocationSize(value.`fee`) +
             FfiConverterOptionalTypePaymentInstructionsData.allocationSize(value.`paymentInstructions`)
     )
 
     override fun write(value: QuoteDetailsData, buf: ByteBuffer) {
             FfiConverterString.write(value.`currencyCode`, buf)
-            FfiConverterString.write(value.`amount`, buf)
+            FfiConverterString.write(value.`subtotal`, buf)
+            FfiConverterString.write(value.`total`, buf)
             FfiConverterOptionalString.write(value.`fee`, buf)
             FfiConverterOptionalTypePaymentInstructionsData.write(value.`paymentInstructions`, buf)
     }

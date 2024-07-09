@@ -1,6 +1,6 @@
-use super::{generate_access_token, get_service_endpoint, Result};
+use super::{generate_access_token, get_service_endpoint, send_request, HttpClientError, Result};
 use crate::resources::balance::Balance;
-use reqwest::blocking::Client;
+use reqwest::Method;
 use serde::Deserialize;
 use web5::dids::bearer_did::BearerDid;
 
@@ -15,17 +15,19 @@ pub fn get_balances(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<Vec<Bal
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
 
-    let response = Client::new()
-        .get(balances_endpoint)
-        .bearer_auth(access_token)
-        .send()?
-        .text()?;
+    let balances_response = send_request::<(), GetBalancesResponse>(
+        &balances_endpoint,
+        Method::GET,
+        None,
+        Some(access_token),
+    )?
+    .ok_or(HttpClientError::ReqwestError(
+        "get balances response returned null".to_string(),
+    ))?;
 
-    let balances_response: GetBalancesResponse = serde_json::from_str(&response)?;
-    // TODO uncomment with did:dht resolution support
-    // for balance in &balances_response.data {
-    //     balance.verify()?;
-    // }
+    for balance in &balances_response.data {
+        balance.verify()?;
+    }
 
     Ok(balances_response.data)
 }
