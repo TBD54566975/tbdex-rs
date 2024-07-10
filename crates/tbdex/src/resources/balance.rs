@@ -4,7 +4,7 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Balance {
     pub metadata: ResourceMetadata,
     pub data: BalanceData,
@@ -73,9 +73,32 @@ impl Balance {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BalanceData {
     pub currency_code: String,
     pub available: String,
+}
+
+#[cfg(test)]
+mod tbdex_test_vectors_protocol {
+    use super::*;
+    use std::fs;
+
+    #[derive(Debug, serde::Deserialize)]
+    pub struct TestVector {
+        pub input: String,
+        pub output: Balance,
+    }
+
+    #[test]
+    fn parse_balance() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-balance.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_balance: Balance = Balance::from_json_string(&test_vector.input).unwrap();
+
+        assert_eq!(test_vector.output, parsed_balance);
+    }
 }

@@ -297,44 +297,65 @@ impl Rfq {
     }
 
     pub fn verify_present_private_data(&self) -> Result<bool> {
-        let salt = match &self.private_data {
-            None => {
-                return Err(MessageError::OfferingVerification(
-                    "cannot verify present private data without salt".to_string(),
-                ))
-            }
-            Some(pd) => pd.salt.clone(),
-        };
-
-        if let Some(hash) = &self.data.payin.payment_details_hash {
-            if let Some(private_data) = &self.private_data {
-                if let Some(data) = &private_data.payin {
-                    let digest = digest_private_data(&salt, &data);
-                    if &digest != hash {
-                        return Ok(false);
+        if let Some(private_data) = &self.private_data {
+            let salt = match &self.private_data {
+                None => {
+                    if private_data.payin.is_some()
+                        || private_data.payout.is_some()
+                        || private_data.claims.is_some()
+                    {
+                        return Err(MessageError::PrivateDataVerification(
+                            "private data defined but salt is not defined".to_string(),
+                        ));
+                    } else {
+                        return Ok(true);
                     }
                 }
-            }
-        }
+                Some(pd) => pd.salt.clone(),
+            };
 
-        if let Some(hash) = &self.data.payout.payment_details_hash {
-            if let Some(private_data) = &self.private_data {
-                if let Some(data) = &private_data.payout {
+            if let Some(data) = &private_data.payin {
+                if let Some(hash) = &self.data.payin.payment_details_hash {
                     let digest = digest_private_data(&salt, &data);
                     if &digest != hash {
-                        return Ok(false);
+                        return Err(MessageError::PrivateDataVerification(
+                            "private data payin hash mismatch".to_string(),
+                        ));
                     }
+                } else {
+                    return Err(MessageError::PrivateDataVerification(
+                        "private data payin defined but hash is not defined".to_string(),
+                    ));
                 }
             }
-        }
 
-        if let Some(hash) = &self.data.claims_hash {
-            if let Some(private_data) = &self.private_data {
-                if let Some(data) = &private_data.claims {
+            if let Some(data) = &private_data.payout {
+                if let Some(hash) = &self.data.payout.payment_details_hash {
                     let digest = digest_private_data(&salt, &data);
                     if &digest != hash {
-                        return Ok(false);
+                        return Err(MessageError::PrivateDataVerification(
+                            "private data payout hash mismatch".to_string(),
+                        ));
                     }
+                } else {
+                    return Err(MessageError::PrivateDataVerification(
+                        "private data payout defined but hash is not defined".to_string(),
+                    ));
+                }
+            }
+
+            if let Some(data) = &private_data.claims {
+                if let Some(hash) = &self.data.claims_hash {
+                    let digest = digest_private_data(&salt, &data);
+                    if &digest != hash {
+                        return Err(MessageError::PrivateDataVerification(
+                            "private data claims hash mismatch".to_string(),
+                        ));
+                    }
+                } else {
+                    return Err(MessageError::PrivateDataVerification(
+                        "private data claims defined but hash is not defined".to_string(),
+                    ));
                 }
             }
         }
@@ -540,5 +561,40 @@ mod tests {
         let parsed_rfq = Rfq::from_json_string(&rfq_json_string, true).unwrap();
 
         assert_eq!(rfq, parsed_rfq);
+    }
+}
+
+#[cfg(test)]
+mod tbdex_test_vectors_protocol {
+    use super::*;
+    use std::fs;
+
+    #[derive(Debug, serde::Deserialize)]
+    pub struct TestVector {
+        pub input: String,
+        pub output: Rfq,
+    }
+
+    #[test]
+    fn parse_rfq() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input, true).unwrap();
+
+        assert_eq!(test_vector.output, parsed_rfq);
+    }
+
+    #[test]
+    fn parse_rfq_omit_private_data() {
+        let path =
+            "../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq-omit-private-data.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input, false).unwrap();
+
+        assert_eq!(test_vector.output, parsed_rfq);
     }
 }
