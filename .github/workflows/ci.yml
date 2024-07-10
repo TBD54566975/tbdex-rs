@@ -24,6 +24,7 @@ jobs:
         run: just setup
       - name: Build
         run: just build
+
   test:
     strategy:
       matrix:
@@ -42,6 +43,7 @@ jobs:
         run: just setup
       - name: Test
         run: just test
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -54,3 +56,27 @@ jobs:
         run: just setup
       - name: Lint
         run: just lint
+
+  kt-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Setup
+        run: just setup
+      - name: Build and Test Kotlin Project
+        working-directory: bound/kt
+        run: ./gradlew test
+
+  confirm-successful-build-and-tests:
+    needs: [build, test, lint, kt-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log Success
+        run: |
+          echo "Builds for MacOS and Ubuntu succeeded."
