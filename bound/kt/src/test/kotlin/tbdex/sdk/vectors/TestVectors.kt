@@ -20,12 +20,7 @@ object TestVectors {
             "parse-rfq-omit-private-data.json",
             "parse-balance.json"
         )
-
-        // Print the current working directory
-        val currentWorkingDir = Paths.get(".").toAbsolutePath().normalize()
-        println("Current working directory for test vectors: $currentWorkingDir")
-
-        // Define the base path
+        
         val basePath = "../../tbdex/hosted/test-vectors/protocol/vectors/"
 
         for (vectorFile in vectorFiles) {
