@@ -7,7 +7,8 @@ import tbdex.sdk.Json
 import tbdex.sdk.messages.*
 import tbdex.sdk.resources.*
 
-class TbdexTestVectorsProtocol {
+class TbdexTestVectorsProtocolTest {
+
     /**
      * Tbdex Test Vectors Message Tests
      */

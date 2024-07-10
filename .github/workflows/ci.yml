@@ -71,7 +71,7 @@ jobs:
         run: just setup
       - name: Build and Test Kotlin Project
         working-directory: bound/kt
-        run: ./gradlew test
+        run: mvn test
 
   confirm-successful-build-and-tests:
     needs: [build, test, lint, kt-test]
