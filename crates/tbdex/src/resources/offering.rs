@@ -153,8 +153,6 @@ pub struct PayoutMethod {
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use web5::crypto::key_managers::key_manager::KeyManager;
-    use web5::dids::methods::did_dht::DidDht;
     use web5::{
         crypto::{
             dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
