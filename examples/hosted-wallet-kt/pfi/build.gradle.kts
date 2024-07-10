@@ -6,13 +6,16 @@ plugins {
 repositories {
     mavenCentral()
     mavenLocal()
+    maven {
+        setUrl("https://jitpack.io")
+    }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.sparkjava:spark-core:2.9.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("tbdex.sdk.core:tbdex-core-kt:1.0-SNAPSHOT")
+    implementation("com.github.TBD54566975:tbdex-rs:v1.0.10")
 }
 
 java {
