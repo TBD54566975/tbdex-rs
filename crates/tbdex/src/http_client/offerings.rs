@@ -18,10 +18,9 @@ pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
                 "get offerings response returned null".to_string(),
             ))?;
 
-    // TODO failing for some reason
-    // for offering in &offerings_response.data {
-    // offering.verify()?;
-    // }
+    for offering in &offerings_response.data {
+        offering.verify()?;
+    }
 
     Ok(offerings_response.data)
 }
