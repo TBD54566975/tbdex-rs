@@ -42,14 +42,13 @@ jobs:
         run: just setup
       - name: Run Rust Tests
         run: |
-          cargo test -- --nocapture --test-threads=1
-        continue-on-error: true
+          mkdir -p test-results
+          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/test-output.log
       - name: Upload Rust Test Results
-        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: rust-test-results
-          path: target/debug/deps/*.xml
+          path: test-results/test-output.log
 
   lint:
     runs-on: ubuntu-latest
@@ -78,7 +77,9 @@ jobs:
         run: just setup
       - name: Build and Test Kotlin Project
         working-directory: bound/kt
-        run: mvn test
+        run: |
+          mkdir -p test-results
+          mvn test
       - name: Upload Kotlin Test Results
         uses: actions/upload-artifact@v3
         with:
@@ -90,8 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Log Success
-        run: |
-          echo "Builds for MacOS and Ubuntu succeeded."
+        run: echo "Builds for MacOS and Ubuntu succeeded."
       - name: Download Rust Test Results
         uses: actions/download-artifact@v3
         with:
@@ -105,6 +105,6 @@ jobs:
       - name: Process and Log Test Results
         run: |
           echo "Rust Test Results:"
-          cat rust-results/*.xml
+          cat rust-results/test-output.log
           echo "Kotlin Test Results:"
           cat kotlin-results/*.xml
