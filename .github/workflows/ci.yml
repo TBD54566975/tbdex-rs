@@ -40,17 +40,16 @@ jobs:
           cache: true
       - name: Setup
         run: just setup
-      - name: Install cargo2junit
-        run: cargo install cargo2junit
+      - name: Install cargo-junit
+        run: cargo install cargo-junit
       - name: Run Rust Tests
         run: |
-          mkdir -p test-results
-          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/test-output.log | cargo2junit > test-results/test-output.xml
+          cargo junit --output-path test-results/test-results.xml -- --nocapture --test-threads=1
       - name: Upload Rust Test Results
         uses: actions/upload-artifact@v3
         with:
           name: rust-test-results
-          path: test-results/
+          path: test-results/test-results.xml
 
   lint:
     runs-on: ubuntu-latest
