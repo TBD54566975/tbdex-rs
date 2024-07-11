@@ -146,10 +146,10 @@ dictionary QuoteDetailsData {
   string subtotal;
   string total;
   string? fee;
-  PaymentInstructionsData? payment_instructions;
+  PaymentInstructionData? payment_instruction;
 };
 
-dictionary PaymentInstructionsData {
+dictionary PaymentInstructionData {
   string? link;
   string? instruction;
 };
@@ -235,6 +235,16 @@ interface CreateExchangeRequestBody {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   CreateExchangeRequestBodyData get_data();
+};
+
+dictionary SubmitOrderRequestBodyData {
+  Order message;
+};
+
+interface SubmitOrderRequestBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  SubmitOrderRequestBodyData get_data();
 };
 
 

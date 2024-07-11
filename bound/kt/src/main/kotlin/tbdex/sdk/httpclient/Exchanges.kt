@@ -10,6 +10,7 @@ import tbdex.sdk.rust.submitClose as rustCoreSubmitClose
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
+import tbdex.sdk.rust.SubmitOrderRequestBody as RustCoreSubmitOrderRequestBody
 
 data class Exchange(
     val rfq: Rfq,
@@ -77,5 +78,17 @@ class CreateExchangeRequestBody {
         val data = rustCoreCreateExchangeRequestBody.getData()
         this.message = Rfq(data.message)
         this.replyTo = data.replyTo
+    }
+}
+
+class SubmitOrderRequestBody {
+    val message: Order
+
+    constructor(json: String) {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+
+        val rustCoreCreateExchangeRequestBody = RustCoreSubmitOrderRequestBody.fromJsonString(json)
+        val data = rustCoreCreateExchangeRequestBody.getData()
+        this.message = Order(data.message)
     }
 }

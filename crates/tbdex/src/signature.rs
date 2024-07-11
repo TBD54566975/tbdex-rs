@@ -39,24 +39,8 @@ impl From<JosekitError> for SignatureError {
 
 type Result<T> = std::result::Result<T, SignatureError>;
 
-fn canonicalize_json(value: &Value) -> Value {
-    match value {
-        Value::Object(map) => {
-            let mut sorted_map = Map::new();
-            let mut keys: Vec<&String> = map.keys().collect();
-            keys.sort();
-            for key in keys {
-                sorted_map.insert(key.clone(), canonicalize_json(&map[key]));
-            }
-            Value::Object(sorted_map)
-        }
-        _ => value.clone(),
-    }
-}
-
 fn compute_digest(value: &Value) -> Result<Vec<u8>> {
-    let canonical_json = canonicalize_json(value);
-    let canonical_string = serde_json::to_string(&canonical_json)?;
+    let canonical_string = serde_jcs::to_string(value)?;
     let mut hasher = Sha256::new();
     hasher.update(canonical_string.as_bytes());
     Ok(hasher.finalize().to_vec())
