@@ -94,7 +94,7 @@ pub struct QuoteDetails {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub fee: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_instructions: Option<PaymentInstructions>,
+    pub payment_instruction: Option<PaymentInstructions>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]

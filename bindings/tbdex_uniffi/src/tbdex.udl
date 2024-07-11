@@ -146,7 +146,7 @@ dictionary QuoteDetailsData {
   string subtotal;
   string total;
   string? fee;
-  PaymentInstructionsData? payment_instructions;
+  PaymentInstructionsData? payment_instruction;
 };
 
 dictionary PaymentInstructionsData {
