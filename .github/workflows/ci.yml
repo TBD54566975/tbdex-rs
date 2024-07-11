@@ -103,6 +103,9 @@ jobs:
         run: |
           mkdir -p test-results
           cargo nextest run --profile ci --config-file ./nextest.toml
+      - name: Modify testsuite name in XML for test runner consumption
+        run: |
+          sed -i 's/<testsuite name="tbdex"/<testsuite name="TbdexTestVectors"/' target/nextest/ci/junit.xml
       - name: Move Test Results
         run: mv target/nextest/ci/junit.xml test-results/rust-test-results.xml
       - name: Upload Rust Test Results
