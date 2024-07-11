@@ -2,7 +2,8 @@ use super::{get_service_endpoint, send_request, Result};
 use crate::{
     http_client::{generate_access_token, HttpClientError},
     messages::{
-        close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, MessageKind,
+        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
+        rfq::Rfq, MessageKind,
     },
 };
 use reqwest::Method;
@@ -22,6 +23,8 @@ pub struct Exchange {
     pub order_statuses: Option<Vec<OrderStatus>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub close: Option<Close>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancel: Option<Cancel>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -164,6 +167,11 @@ pub fn get_exchange(
                 close.verify()?;
                 exchange.close = Some(close);
             }
+            MessageKind::Cancel => {
+                let cancel = serde_json::from_value::<Cancel>(message)?;
+                cancel.verify()?;
+                exchange.cancel = Some(cancel);
+            }
         }
     }
 
@@ -173,4 +181,39 @@ pub fn get_exchange(
 pub fn get_exchanges(_pfi_did: &str, _requestor_did: &BearerDid) -> Result<Vec<String>> {
     println!("TbdexHttpClient::get_exchanges() invoked");
     Ok(vec![])
+}
+
+// TODO how can we support multitype w/ serde for message
+#[derive(Serialize, Deserialize)]
+pub struct SubmitCancelRequestBody {
+    pub message: Cancel,
+}
+
+impl SubmitCancelRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let request_body = serde_json::from_str::<Self>(json)?;
+        request_body.message.verify()?;
+        Ok(request_body)
+    }
+}
+
+pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
+    let service_endpoint = get_service_endpoint(&cancel.metadata.to)?;
+    let submit_order_endpoint = format!(
+        "{}/exchanges/{}",
+        service_endpoint, cancel.metadata.exchange_id
+    );
+
+    cancel.verify()?;
+
+    send_request::<SubmitCancelRequestBody, ()>(
+        &submit_order_endpoint,
+        Method::PUT,
+        Some(&SubmitCancelRequestBody {
+            message: cancel.clone(),
+        }),
+        None,
+    )?;
+
+    Ok(())
 }
