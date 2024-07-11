@@ -92,11 +92,15 @@ jobs:
       - name: Setup
         run: just setup
       - name: Install cargo-junit
-        run: cargo install cargo-junit
+        run: cargo install cargo-junit --version 0.8.0
       - name: Run Rust Tests
         run: |
           mkdir -p test-results
-          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/test-output.log | cargo junit -n test-results/rust-test-results.xml
+          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/test-output.log
+          echo "Test output:"
+          cat test-results/test-output.log
+          echo "Attempting to generate JUnit XML..."
+          cargo junit -n test-results/rust-test-results.xml < test-results/test-output.log
       - name: Upload Rust Test Results
         uses: actions/upload-artifact@v3
         with:
