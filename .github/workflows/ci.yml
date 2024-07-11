@@ -44,12 +44,15 @@ jobs:
         run: cargo install cargo-junit
       - name: Run Rust Tests
         run: |
-          cargo junit --output-path test-results/test-results.xml -- --nocapture --test-threads=1
+#          cargo junit --output-path test-results/test-results.xml -- --nocapture --test-threads=1
+          cargo junit --name rust-test-results.xml
+      - name: Move JUnit report
+        run: mv rust-test-results.xml test-results/rust-test-results.xml
       - name: Upload Rust Test Results
         uses: actions/upload-artifact@v3
         with:
           name: rust-test-results
-          path: test-results/test-results.xml
+          path: test-results/rust-test-results.xml
 
   lint:
     runs-on: ubuntu-latest
