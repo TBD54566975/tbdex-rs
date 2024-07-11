@@ -11,6 +11,8 @@ import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 import tbdex.sdk.rust.SubmitOrderRequestBody as RustCoreSubmitOrderRequestBody
+import tbdex.sdk.rust.HttpBody as RustCoreHttpBody
+import tbdex.sdk.rust.HttpBodyMessageData as RustCoreHttpBodyMessage
 
 data class Exchange(
     val rfq: Rfq,
@@ -90,5 +92,36 @@ class SubmitOrderRequestBody {
         val rustCoreCreateExchangeRequestBody = RustCoreSubmitOrderRequestBody.fromJsonString(json)
         val data = rustCoreCreateExchangeRequestBody.getData()
         this.message = Order(data.message)
+    }
+}
+
+
+class HttpBodyMessage private constructor(
+    private val rustCoreHttpBodyMessage: RustCoreHttpBodyMessage,
+){
+    companion object {
+        internal fun fromRustCore(rustCoreHttpBodyMessage: RustCoreHttpBodyMessage): HttpBodyMessage {
+            SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+
+            return HttpBodyMessage(rustCoreHttpBodyMessage)
+        }
+    }
+
+    fun getRfq(): Rfq? = this.rustCoreHttpBodyMessage.rfq?.let { Rfq(it) }
+    fun getOrder(): Order? = this.rustCoreHttpBodyMessage.order?.let { Order(it) }
+}
+
+class HttpBody {
+    val message: HttpBodyMessage?
+    val replyTo: String?
+
+    private val rustCoreHttpBody: RustCoreHttpBody
+
+    constructor(json: String) {
+        this.rustCoreHttpBody = RustCoreHttpBody.fromJsonString(json)
+
+        val data = rustCoreHttpBody.getData()
+        this.message = data.message?.let { HttpBodyMessage.fromRustCore(it) }
+        this.replyTo = data.replyTo
     }
 }

@@ -4,8 +4,8 @@ use crate::{
 };
 use std::sync::{Arc, RwLock};
 use tbdex::http_client::exchanges::{
-    CreateExchangeRequestBody as InnerCreateExchangeRequestBody, Exchange as InnerExchange,
-    SubmitOrderRequestBody as InnerSubmitOrderRequestBody,
+    http_body::{HttpBody as InnerHttpBody, HttpBodyMessage as InnerHttpBodyMessage},
+    Exchange as InnerExchange,
 };
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
@@ -15,6 +15,7 @@ pub struct Exchange {
     pub order: Option<Arc<Order>>,
     pub order_statuses: Option<Vec<Arc<OrderStatus>>>,
     pub close: Option<Arc<Close>>,
+    // todo cancel
 }
 
 impl Exchange {
@@ -77,46 +78,59 @@ pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<
     Ok(exchange_ids)
 }
 
+#[derive(Default, Clone)]
+pub struct HttpBodyMessageData {
+    pub rfq: Option<Arc<Rfq>>,
+    pub quote: Option<Arc<Quote>>,
+    pub order: Option<Arc<Order>>,
+    pub order_statuses: Option<Vec<Arc<OrderStatus>>>,
+    pub close: Option<Arc<Close>>,
+    // todo cancel
+}
+
+impl HttpBodyMessageData {
+    fn from_inner(inner: Option<InnerHttpBodyMessage>) -> Option<Self> {
+        if let Some(inner_http_body_message) = inner {
+            Some(HttpBodyMessageData {
+                rfq: if let Some(inner_rfq) = inner_http_body_message.as_rfq() {
+                    Some(Arc::new(Rfq::from_inner(inner_rfq.clone())))
+                } else {
+                    None
+                },
+                quote: if let Some(inner_quote) = inner_http_body_message.as_quote() {
+                    Some(Arc::new(Quote::from_inner(inner_quote.clone())))
+                } else {
+                    None
+                },
+                order: None,
+                order_statuses: None,
+                close: None,
+            })
+        } else {
+            None
+        }
+    }
+}
+
 #[derive(Clone)]
-pub struct CreateExchangeRequestBodyData {
-    pub message: Arc<Rfq>,
+pub struct HttpBodyData {
+    pub message: Option<HttpBodyMessageData>,
     pub reply_to: Option<String>,
 }
 
-pub struct CreateExchangeRequestBody(pub CreateExchangeRequestBodyData);
+pub struct HttpBody(pub HttpBodyData);
 
-impl CreateExchangeRequestBody {
+impl HttpBody {
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner = InnerCreateExchangeRequestBody::from_json_string(json)?;
-        let rfq = Rfq::from_inner(inner.message);
-        Ok(Self(CreateExchangeRequestBodyData {
-            message: Arc::new(rfq),
+        let inner = InnerHttpBody::from_json_string(json)?;
+
+        Ok(Self(HttpBodyData {
+            message: HttpBodyMessageData::from_inner(inner.message),
             reply_to: inner.reply_to,
         }))
     }
 
-    pub fn get_data(&self) -> CreateExchangeRequestBodyData {
-        self.0.clone()
-    }
-}
-
-#[derive(Clone)]
-pub struct SubmitOrderRequestBodyData {
-    pub message: Arc<Order>,
-}
-
-pub struct SubmitOrderRequestBody(pub SubmitOrderRequestBodyData);
-
-impl SubmitOrderRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner = InnerSubmitOrderRequestBody::from_json_string(json)?;
-        let message = Order::from_inner(inner.message);
-        Ok(Self(SubmitOrderRequestBodyData {
-            message: Arc::new(message),
-        }))
-    }
-
-    pub fn get_data(&self) -> SubmitOrderRequestBodyData {
+    pub fn get_data(&self) -> HttpBodyData {
         self.0.clone()
     }
 }

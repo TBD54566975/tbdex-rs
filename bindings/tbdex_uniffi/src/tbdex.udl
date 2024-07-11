@@ -78,7 +78,8 @@ enum MessageKind {
   "Quote",
   "Order",
   "OrderStatus",
-  "Close"
+  "Close",
+  "Cancel"
 };
 
 dictionary MessageMetadataData {
@@ -248,6 +249,24 @@ interface SubmitOrderRequestBody {
 };
 
 
+dictionary HttpBodyMessageData {
+  Rfq? rfq;
+  Quote? quote;
+  Order? order;
+  sequence<OrderStatus>? order_statuses;
+  Close? close;
+};
+
+dictionary HttpBodyData {
+  HttpBodyMessageData? message;
+  string? reply_to;
+};
+
+interface HttpBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  HttpBodyData get_data();
+};
 
 
 
