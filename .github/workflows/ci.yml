@@ -44,8 +44,9 @@ jobs:
         run: cargo install cargo-junit
       - name: Run Rust Tests
         run: |
-#          cargo junit --output-path test-results/test-results.xml -- --nocapture --test-threads=1
-          cargo junit --name rust-test-results.xml
+          cargo test -- --nocapture --test-threads=1 | cargo junit --name rust-test-results
+      - name: Ensure test-results directory
+        run: mkdir -p test-results
       - name: Move JUnit report
         run: mv rust-test-results.xml test-results/rust-test-results.xml
       - name: Upload Rust Test Results
@@ -90,25 +91,25 @@ jobs:
           name: kotlin-test-results
           path: bound/kt/target/surefire-reports/*.xml
 
-#  confirm-successful-build-and-tests:
-#    needs: [build, test, lint, kt-test]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Log Success
-#        run: echo "Builds for MacOS and Ubuntu succeeded."
-#      - name: Download Rust Test Results
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: rust-test-results
-#          path: rust-results
-#      - name: Download Kotlin Test Results
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: kotlin-test-results
-#          path: kotlin-results
-#      - name: Process and Log Test Results
-#        run: |
-#          echo "Rust Test Results:"
-#          cat rust-results/test-output.log
-#          echo "Kotlin Test Results:"
-#          cat kotlin-results/*.xml
+# confirm-successful-build-and-tests:
+#   needs: [build, test, lint, kt-test]
+#   runs-on: ubuntu-latest
+#   steps:
+#     - name: Log Success
+#       run: echo "Builds for MacOS and Ubuntu succeeded."
+#     - name: Download Rust Test Results
+#       uses: actions/download-artifact@v3
+#       with:
+#         name: rust-test-results
+#         path: rust-results
+#     - name: Download Kotlin Test Results
+#       uses: actions/download-artifact@v3
+#       with:
+#         name: kotlin-test-results
+#         path: kotlin-results
+#     - name: Process and Log Test Results
+#       run: |
+#         echo "Rust Test Results:"
+#         cat rust-results/test-output.log
+#         echo "Kotlin Test Results:"
+#         cat kotlin-results/*.xml
