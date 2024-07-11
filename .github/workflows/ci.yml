@@ -93,10 +93,18 @@ jobs:
         run: just setup
       - name: Install Nextest
         run: cargo install cargo-nextest
+      - name: Create nextest.toml
+        run: |
+          echo '[profile.ci.junit]' > nextest.toml
+          echo 'path = "junit.xml"' >> nextest.toml
+          echo 'store-success-output = true' >> nextest.toml
+          echo 'store-failure-output = true' >> nextest.toml
       - name: Run Rust Tests
         run: |
           mkdir -p test-results
-          cargo nextest run --test-threads=1 --nocapture --output-file test-results/rust-test-results.xml
+          cargo nextest run --profile ci --config-file ./nextest.toml
+      - name: Move Test Results
+        run: mv target/nextest/ci/junit.xml test-results/rust-test-results.xml
       - name: Upload Rust Test Results
         uses: actions/upload-artifact@v3
         with:
