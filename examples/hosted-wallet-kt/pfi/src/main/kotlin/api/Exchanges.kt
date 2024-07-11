@@ -9,6 +9,7 @@ import spark.Response
 import spark.Spark.post
 import spark.Spark.put
 import tbdex.sdk.httpclient.CreateExchangeRequestBody
+import tbdex.sdk.httpclient.SubmitOrderRequestBody
 import tbdex.sdk.messages.Quote
 import tbdex.sdk.messages.QuoteData
 import tbdex.sdk.messages.QuoteDetails
@@ -33,7 +34,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         val requestBody = CreateExchangeRequestBody(req.body())
 
         val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
-        val rfq = requestBody.rfq
+        val rfq = requestBody.message
 
         rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
 
@@ -59,16 +60,19 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
                 expiresAt = "2024-08-02T04:26:08.239Z",
                 payin = QuoteDetails(
                     currencyCode = "BTC",
-                    amount = "1000.00",
+                    subtotal = "1000.00",
+                    total = "1001.00",
                     fee = null,
-                    paymentInstructions = null
+                    paymentInstruction = null
                 ),
                 payout = QuoteDetails(
                     currencyCode = "KES",
-                    amount = "123456789.00",
+                    subtotal = "1000.00",
+                    total = "1001.00",
                     fee = null,
-                    paymentInstructions = null
-                )
+                    paymentInstruction = null
+                ),
+                payoutUnitsPerPayinUnit = "1.0"
             ),
             "1.0",
             null
@@ -84,7 +88,9 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private fun completeOrder(req: Request, res: Response): String {
         println("PUT /exchanges/:id")
 
-        val order = Order(req.body())
+        val requestBody = SubmitOrderRequestBody(req.body())
+
+        val order = requestBody.message
 
         Thread {
             Thread.sleep(3000)

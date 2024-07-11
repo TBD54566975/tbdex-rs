@@ -31,7 +31,7 @@
   - [`Quote`](#quote)
     - [`QuoteData`](#quotedata)
     - [`QuoteDetails`](#quotedetails)
-    - [`PaymentInstructions`](#paymentinstructions)
+    - [`PaymentInstruction`](#paymentinstruction)
   - [`Order`](#order)
   - [`OrderStatus`](#orderstatus)
     - [`OrderStatusData`](#orderstatusdata)
@@ -326,13 +326,13 @@ CLASS QuoteDetails
   PUBLIC DATA currencyCode: string
   PUBLIC DATA amount: string
   PUBLIC DATA fee: string?
-  PUBLIC DATA paymentInstructions: PaymentInstructions?
+  PUBLIC DATA paymentInstruction: PaymentInstruction?
 ```
 
-### `PaymentInstructions`
+### `PaymentInstruction`
 
 ```pseudocode!
-CLASS PaymentInstructions
+CLASS PaymentInstruction
   PUBLIC DATA link: string?
   PUBLIC DATA instruction: string?
 ```

@@ -11,6 +11,7 @@ use crate::{
         exchanges::{
             create_exchange, get_exchange, get_exchanges, submit_close, submit_order,
             CreateExchangeRequestBody, CreateExchangeRequestBodyData, Exchange as ExchangeData,
+            SubmitOrderRequestBody, SubmitOrderRequestBodyData,
         },
         offerings::get_offerings,
     },
@@ -32,7 +33,7 @@ use tbdex::{
         order::{Order as OrderData, OrderData as OrderDataData},
         order_status::{OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData},
         quote::{
-            PaymentInstructions as PaymentInstructionsData, Quote as QuoteData,
+            PaymentInstruction as PaymentInstructionData, Quote as QuoteData,
             QuoteData as QuoteDataData, QuoteDetails as QuoteDetailsData,
         },
         MessageKind, MessageMetadata as MessageMetadataData,

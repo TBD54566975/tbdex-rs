@@ -5,6 +5,7 @@ use crate::{
 use std::sync::{Arc, RwLock};
 use tbdex::http_client::exchanges::{
     CreateExchangeRequestBody as InnerCreateExchangeRequestBody, Exchange as InnerExchange,
+    SubmitOrderRequestBody as InnerSubmitOrderRequestBody,
 };
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
@@ -95,6 +96,27 @@ impl CreateExchangeRequestBody {
     }
 
     pub fn get_data(&self) -> CreateExchangeRequestBodyData {
+        self.0.clone()
+    }
+}
+
+#[derive(Clone)]
+pub struct SubmitOrderRequestBodyData {
+    pub message: Arc<Order>,
+}
+
+pub struct SubmitOrderRequestBody(pub SubmitOrderRequestBodyData);
+
+impl SubmitOrderRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner = InnerSubmitOrderRequestBody::from_json_string(json)?;
+        let message = Order::from_inner(inner.message);
+        Ok(Self(SubmitOrderRequestBodyData {
+            message: Arc::new(message),
+        }))
+    }
+
+    pub fn get_data(&self) -> SubmitOrderRequestBodyData {
         self.0.clone()
     }
 }
