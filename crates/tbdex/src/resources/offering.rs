@@ -249,6 +249,14 @@ mod tests {
 
         offering.verify().unwrap();
     }
+
+    #[test]
+    fn test_test_vector() {
+        let offering_str = r###"{"metadata":{"from":"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6InhfeU1ZZ2RNODhPZ0pPZS1zMFN6aHN0UUwwQ0h4SGdFelRYblA4U3RNZnMifQ","kind":"offering","id":"offering_01j2fkvz7efqjt6k248trnsx6s","createdAt":"2024-07-11T00:42:38Z","updatedAt":"2024-07-11T00:42:38Z","protocol":"1.0"},"data":{"description":"USDC for USD","payoutUnitsPerPayinUnit":"1.0","payin":{"currencyCode":"USD","min":"0.1","max":"1000","methods":[{"kind":"DEBIT_CARD","requiredPaymentDetails":{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","properties":{"cardNumber":{"type":"string","description":"The 16-digit debit card number","minLength":16,"maxLength":16},"expiryDate":{"type":"string","description":"The expiry date of the card in MM/YY format","pattern":"^(0[1-9]|1[0-2])\\/([0-9]{2})$"},"cardHolderName":{"type":"string","description":"Name of the cardholder as it appears on the card"},"cvv":{"type":"string","description":"The 3-digit CVV code","minLength":3,"maxLength":3}},"required":["cardNumber","expiryDate","cardHolderName","cvv"],"additionalProperties":false}}]},"payout":{"currencyCode":"USDC","max":"5000","methods":[{"kind":"STORED_BALANCE","estimatedSettlementTime":1200}]},"requiredClaims":{"id":"foo","name":"kyccredential","purpose":"To verify the identity of the user","input_descriptors":[{"id":"1","name":"KYC Information","purpose":"To verify the identity of the user","constraints":{"fields":[{"path":["$.type[0]"],"filter":{"type":"string","pattern":"KYC"}}]}}]},"cancellation":{"enabled":false}},"signature":"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpqd2s6ZXlKcmRIa2lPaUpQUzFBaUxDSmpjbllpT2lKRlpESTFOVEU1SWl3aWVDSTZJbmhmZVUxWloyUk5PRGhQWjBwUFpTMXpNRk42YUhOMFVVd3dRMGg0U0dkRmVsUllibEE0VTNSTlpuTWlmUSMwIn0..4TtQVGurrHzk4_IJgH7zZmlDzn354M67YVVu-n21IAW52-AyPdz9W13efslj9k5y49zIFjkg76yoHFUfL-yeAg"}"###;
+        // let offering = Offering::from_json_string(&offering_str).unwrap();
+        let offering = serde_json::from_str::<Offering>(&offering_str).unwrap();
+        offering.verify().unwrap();
+    }
 }
 
 // TODO: Fix offering test vector - https://github.com/TBD54566975/tbdex/issues/346
