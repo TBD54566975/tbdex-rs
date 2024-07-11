@@ -27,7 +27,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest, macos-latest ] # TODO add back windows-latest https://github.com/TBD54566975/tbdex-rs/issues/44
         rust: [ stable, nightly ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -40,17 +40,8 @@ jobs:
           cache: true
       - name: Setup
         run: just setup
-      - name: Install cargo-junit
-        run: cargo install cargo-junit
-      - name: Run Rust Tests
-        run: |
-          mkdir -p test-results
-          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/test-output.log | cargo junit -n test-results/rust-test-results.xml
-      - name: Upload Rust Test Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: rust-test-results
-          path: test-results/rust-test-results.xml
+      - name: Test
+        run: just test
 
   lint:
     runs-on: ubuntu-latest
@@ -88,25 +79,26 @@ jobs:
           name: kotlin-test-results
           path: bound/kt/target/surefire-reports/*.xml
 
-#  confirm-successful-build-and-tests:
-#    needs: [build, test, lint, kt-test]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Log Success
-#        run: echo "Builds for MacOS and Ubuntu succeeded."
-#      - name: Download Rust Test Results
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: rust-test-results
-#          path: rust-results
-#      - name: Download Kotlin Test Results
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: kotlin-test-results
-#          path: kotlin-results
-#      - name: Process and Log Test Results
-#        run: |
-#          echo "Rust Test Results:"
-#          cat rust-results/test-output.log
-#          echo "Kotlin Test Results:"
-#          cat kotlin-results/*.xml
+  rust-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Setup
+        run: just setup
+      - name: Install cargo-junit
+        run: cargo install cargo-junit
+      - name: Run Rust Tests
+        run: |
+          mkdir -p test-results
+          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/test-output.log | cargo junit -n test-results/rust-test-results.xml
+      - name: Upload Rust Test Results
+        uses: actions/upload-artifact@v3
+        with:
+         name: rust-test-results
+         path: test-results/rust-test-results.xml
