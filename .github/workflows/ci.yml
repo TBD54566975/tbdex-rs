@@ -91,13 +91,12 @@ jobs:
           cache: true
       - name: Setup
         run: just setup
-      - name: Install cargo2junit
-        run: cargo install cargo2junit
+      - name: Install Nextest
+        run: cargo install cargo-nextest
       - name: Run Rust Tests
         run: |
           mkdir -p test-results
-          cargo test -- --nocapture --test-threads=1 2>&1 | tee test-results/rust-test-output.log
-          cargo2junit < test-results/rust-test-output.log > test-results/rust-test-results.xml
+          cargo nextest run --test-threads=1 --nocapture --output-file test-results/rust-test-results.xml
       - name: Upload Rust Test Results
         uses: actions/upload-artifact@v3
         with:
