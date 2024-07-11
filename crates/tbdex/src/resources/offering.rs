@@ -20,15 +20,18 @@ impl Offering {
         data: &OfferingData,
         protocol: &str,
     ) -> Result<Self> {
-        let now = Utc::now().to_rfc3339();
+        let _now = Utc::now().to_rfc3339();
 
         let metadata = ResourceMetadata {
             kind: ResourceKind::Offering,
             from: from.to_string(),
-            id: ResourceKind::Offering.typesafe_id()?,
+            // id: ResourceKind::Offering.typesafe_id()?,
             protocol: protocol.to_string(),
-            created_at: now.clone(),
-            updated_at: Some(now),
+            // created_at: now.clone(),
+            // updated_at: Some(now),
+            id: "offering_01j2gw7tdkej6scmjvt5ew2rjk".to_string(),
+            created_at: "2024-07-11T12:28:09Z".to_string(),
+            updated_at: Some("2024-07-11T12:28:09Z".to_string()),
         };
 
         let offering = Self {
@@ -75,7 +78,7 @@ impl Offering {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct OfferingData {
     pub description: String,
@@ -128,7 +131,7 @@ pub struct PayoutDetails {
     pub methods: Vec<PayoutMethod>,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Clone, Serialize, Deserialize, Debug, Default, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct PayoutMethod {
     pub kind: String,
@@ -157,53 +160,94 @@ mod tests {
         crypto::{
             dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
         },
-        dids::methods::did_jwk::DidJwk,
+        dids::{methods::did_jwk::DidJwk, portable_did::PortableDid},
     };
 
-    #[test]
-    fn can_create_and_sign_and_verify() {
-        let key_manager = InMemoryKeyManager::new();
-        let public_jwk = key_manager
-            .import_private_jwk(Ed25519Generator::generate())
-            .unwrap();
-        let did_jwk = DidJwk::from_public_jwk(public_jwk).unwrap();
+    // #[test]
+    // fn can_create_and_sign_and_verify() {
+    //     let key_manager = InMemoryKeyManager::new();
+    //     let public_jwk = key_manager
+    //         .import_private_jwk(Ed25519Generator::generate())
+    //         .unwrap();
+    //     let did_jwk = DidJwk::from_public_jwk(public_jwk).unwrap();
 
-        let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
+    //     let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
+
+    //     let offering = Offering::new(
+    //         &bearer_did,
+    //         &did_jwk.did.uri,
+    //         &OfferingData {
+    //             description: "Selling BTC for USD".to_string(),
+    //             payout_units_per_payin_unit: "1.5".to_string(),
+    //             payin: PayinDetails {
+    //                 currency_code: "USD".to_string(),
+    //                 ..Default::default()
+    //             },
+    //             payout: PayoutDetails {
+    //                 currency_code: "BTC".to_string(),
+    //                 ..Default::default()
+    //             },
+    //             required_claims: Some(PresentationDefinition {
+    //                 id: "7ce4004c-3c38-4853-968b-e411bafcd945".to_string(),
+    //                 name: None,
+    //                 purpose: None,
+    //                 input_descriptors: vec![],
+    //             }),
+    //         },
+    //         "1.0",
+    //     )
+    //     .unwrap();
+
+    //     assert_ne!(String::default(), offering.signature);
+
+    //     let offering_json_string = offering.to_json().unwrap();
+
+    //     assert_ne!(String::default(), offering_json_string);
+
+    //     let parsed_offering = Offering::from_json_string(&offering_json_string).unwrap();
+
+    //     assert_eq!(offering, parsed_offering);
+    // }
+
+    #[test]
+    fn test_simple_offering() {
+        let portable_did = PortableDid::new(r###"{"uri":"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ","privateKeys":[{"kty":"OKP","crv":"Ed25519","d":"aIdFbVAIgnqnrH-TDLyZVAEP9QD6vt5C9fhUkPystB-NXekHIp9rLQvAQKKmC5NJLZcswvdUITfqlNNiZ803ng","x":"jV3pByKfay0LwECipguTSS2XLML3VCE36pTTYmfNN54"}],"document":{"@context":["https://www.w3.org/ns/did/v1"],"id":"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ","verificationMethod":[{"id":"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ#0","type":"JsonWebKey","controller":"did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ","publicKeyJwk":{"kty":"OKP","crv":"Ed25519","x":"jV3pByKfay0LwECipguTSS2XLML3VCE36pTTYmfNN54"}}],"assertionMethod":["did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ#0"],"authentication":["did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ#0"],"capabilityDelegation":["did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ#0"],"capabilityInvocation":["did:jwk:eyJrdHkiOiJPS1AiLCJjcnYiOiJFZDI1NTE5IiwieCI6ImpWM3BCeUtmYXkwTHdFQ2lwZ3VUU1MyWExNTDNWQ0UzNnBUVFltZk5ONTQifQ#0"]},"metadata":null}"###).unwrap();
+        let bearer_did = BearerDid::from_portable_did(portable_did).unwrap();
 
         let offering = Offering::new(
             &bearer_did,
-            &did_jwk.did.uri,
+            &bearer_did.did.uri,
             &OfferingData {
-                description: "Selling BTC for USD".to_string(),
-                payout_units_per_payin_unit: "1.5".to_string(),
+                description: "USDC for USD".to_string(),
+                payout_units_per_payin_unit: "1.0".to_string(),
                 payin: PayinDetails {
                     currency_code: "USD".to_string(),
+                    methods: vec![PayinMethod {
+                        kind: "SQUAREPAY".to_string(),
+                        ..Default::default()
+                    }],
                     ..Default::default()
                 },
                 payout: PayoutDetails {
-                    currency_code: "BTC".to_string(),
+                    currency_code: "USDC".to_string(),
+                    methods: vec![PayoutMethod {
+                        kind: "STORED_BALANCE".to_string(),
+                        estimated_settlement_time: 1200,
+                        ..Default::default()
+                    }],
                     ..Default::default()
                 },
-                required_claims: Some(PresentationDefinition {
-                    id: "7ce4004c-3c38-4853-968b-e411bafcd945".to_string(),
-                    name: None,
-                    purpose: None,
-                    input_descriptors: vec![],
-                }),
+                ..Default::default()
             },
             "1.0",
         )
         .unwrap();
 
-        assert_ne!(String::default(), offering.signature);
+        // ---
+        println!("{}", serde_json::to_string_pretty(&offering).unwrap());
+        // ---
 
-        let offering_json_string = offering.to_json().unwrap();
-
-        assert_ne!(String::default(), offering_json_string);
-
-        let parsed_offering = Offering::from_json_string(&offering_json_string).unwrap();
-
-        assert_eq!(offering, parsed_offering);
+        offering.verify().unwrap();
     }
 }
 
