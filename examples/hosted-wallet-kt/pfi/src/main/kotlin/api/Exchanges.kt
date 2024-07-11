@@ -92,6 +92,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         val order = requestBody.message
 
+        res.status(202)
+
         Thread {
             Thread.sleep(3000)
             replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, "PENDING")
