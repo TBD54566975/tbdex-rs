@@ -41,6 +41,7 @@ type Result<T> = std::result::Result<T, SignatureError>;
 
 fn compute_digest(value: &Value) -> Result<Vec<u8>> {
     let canonical_string = serde_jcs::to_string(value)?;
+    println!("{}", canonical_string);
     let mut hasher = Sha256::new();
     hasher.update(canonical_string.as_bytes());
     Ok(hasher.finalize().to_vec())
@@ -76,6 +77,8 @@ pub fn verify(
     combined.insert("metadata".to_string(), metadata.clone());
     combined.insert("data".to_string(), data.clone());
     let digest = compute_digest(&Value::Object(combined))?;
+    println!("digest:");
+    println!("{}", hex::encode(digest.clone()));
     let payload = general_purpose::URL_SAFE_NO_PAD.encode(digest);
 
     let parts: Vec<&str> = detached_compact_jws.split('.').collect();
