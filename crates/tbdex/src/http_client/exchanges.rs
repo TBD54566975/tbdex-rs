@@ -61,9 +61,17 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
     Ok(())
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct SubmitOrderRequestBody {
     pub message: Order,
+}
+
+impl SubmitOrderRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let request_body = serde_json::from_str::<Self>(json)?;
+        request_body.message.verify()?;
+        Ok(request_body)
+    }
 }
 
 pub fn submit_order(order: &Order) -> Result<()> {

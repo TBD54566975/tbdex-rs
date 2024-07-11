@@ -2,14 +2,14 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
-import tbdex.sdk.rust.PaymentInstructionsData as RustCorePaymentInstructions
+import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
 import tbdex.sdk.rust.Quote as RustCoreQuote
 import tbdex.sdk.rust.QuoteDataData as RustCoreQuoteData
 
 typealias QuoteData = RustCoreQuoteData
 typealias QuoteDetails = RustCoreQuoteDetails
-typealias PaymentInstructions = RustCorePaymentInstructions
+typealias PaymentInstruction = RustCorePaymentInstruction
 
 class Quote {
     init {
