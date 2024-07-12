@@ -121,8 +121,6 @@ class Exchanges(
 
         println("Replying with order status")
 
-        val tmp = orderStatus.toJson()
-        println(tmp)
         val body = tbdex.sdk.httpclient.request.Body(
             tbdex.sdk.httpclient.request.Message.fromOrderStatus(orderStatus)
         )
@@ -155,16 +153,13 @@ class Exchanges(
     private fun replyRequest(replyTo: String, body: tbdex.sdk.httpclient.request.Body) {
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val tmp = body.toJson()
-        println(tmp)
-        val requestBody = tmp.toRequestBody(mediaType)
+        val requestBody = body.toJson().toRequestBody(mediaType)
 
         val request = OkHttpRequest.Builder()
             .url(replyTo)
             .post(requestBody)
             .build()
 
-        val response = client.newCall(request).execute()
-        println(response.code)
+        client.newCall(request).execute()
     }
 }
