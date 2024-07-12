@@ -175,14 +175,16 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
 }
 
 pub mod request {
+    use std::str::FromStr;
+
     use super::*;
     use crate::messages::{
         cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
-        rfq::Rfq,
+        rfq::Rfq, MessageKind,
     };
     use serde::{de::Visitor, Deserialize, Deserializer};
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Debug)]
     #[serde(untagged)]
     pub enum Message {
         Rfq(Rfq),
@@ -194,62 +196,177 @@ pub mod request {
         Text(String), // the error response case
     }
 
-    fn deserialize_message<'de, D>(deserializer: D) -> std::result::Result<Message, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        struct MessageVisitor;
+    // fn deserialize_message<'de, D>(deserializer: D) -> std::result::Result<Message, D::Error>
+    // where
+    //     D: Deserializer<'de>,
+    // {
+    //     struct MessageVisitor;
 
-        impl<'de> Visitor<'de> for MessageVisitor {
-            type Value = Message;
+    //     impl<'de> Visitor<'de> for MessageVisitor {
+    //         type Value = Message;
 
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("an Rfq, Order, OrderStatus, Close, Cancel, or String")
+    //         fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    //             formatter.write_str("an Rfq, Order, OrderStatus, Close, Cancel, or String")
+    //         }
+
+    //         fn visit_some<D>(self, deserializer: D) -> std::result::Result<Self::Value, D::Error>
+    //         where
+    //             D: Deserializer<'de>,
+    //         {
+    //             let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
+    //             println!("KW DBG");
+
+    //             if let Ok(rfq) = serde_json::from_value::<Rfq>(value.clone()) {
+    //                 return Ok(Message::Rfq(rfq));
+    //             }
+    //             if let Ok(quote) = serde_json::from_value::<Quote>(value.clone()) {
+    //                 return Ok(Message::Quote(quote));
+    //             }
+    //             if let Ok(order) = serde_json::from_value::<Order>(value.clone()) {
+    //                 return Ok(Message::Order(order));
+    //             }
+    //             if let Ok(order_status) = serde_json::from_value::<OrderStatus>(value.clone()) {
+    //                 return Ok(Message::OrderStatus(order_status));
+    //             }
+    //             if let Ok(close) = serde_json::from_value::<Close>(value.clone()) {
+    //                 return Ok(Message::Close(close));
+    //             }
+    //             if let Ok(cancel) = serde_json::from_value::<Cancel>(value.clone()) {
+    //                 return Ok(Message::Cancel(cancel));
+    //             }
+    //             if let Ok(text) = serde_json::from_value::<String>(value) {
+    //                 return Ok(Message::Text(text));
+    //             }
+
+    //             Err(serde::de::Error::custom("unexpected type"))
+    //         }
+
+    //         fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
+    //         where
+    //             E: serde::de::Error,
+    //         {
+    //             Err(serde::de::Error::custom("message is missing"))
+    //         }
+    //     }
+
+    //     deserializer.deserialize_option(MessageVisitor)
+    // }
+
+    impl<'de> Deserialize<'de> for Message {
+        fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            struct MessageVisitor;
+
+            impl<'de> Visitor<'de> for MessageVisitor {
+                type Value = Message;
+
+                fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                    formatter.write_str("an Rfq, Order, OrderStatus, Close, Cancel, or String")
+                }
+
+                fn visit_some<D>(
+                    self,
+                    deserializer: D,
+                ) -> std::result::Result<Self::Value, D::Error>
+                where
+                    D: Deserializer<'de>,
+                {
+                    let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
+
+                    let kind_str = value
+                        .get("metadata")
+                        .and_then(|m| m.get("kind"))
+                        .and_then(|k| k.as_str());
+
+                    match kind_str {
+                        Some(k) => match MessageKind::from_str(k) {
+                            Ok(kind) => match kind {
+                                MessageKind::Rfq => {
+                                    if let Ok(rfq) = serde_json::from_value::<Rfq>(value.clone()) {
+                                        Ok(Message::Rfq(rfq))
+                                    } else {
+                                        Err(serde::de::Error::custom("failed to deserialize rfq"))
+                                    }
+                                }
+                                MessageKind::Quote => {
+                                    if let Ok(quote) =
+                                        serde_json::from_value::<Quote>(value.clone())
+                                    {
+                                        Ok(Message::Quote(quote))
+                                    } else {
+                                        Err(serde::de::Error::custom("failed to deserialize quote"))
+                                    }
+                                }
+                                MessageKind::Order => {
+                                    if let Ok(order) =
+                                        serde_json::from_value::<Order>(value.clone())
+                                    {
+                                        Ok(Message::Order(order))
+                                    } else {
+                                        Err(serde::de::Error::custom("failed to deserialize order"))
+                                    }
+                                }
+                                MessageKind::Cancel => {
+                                    if let Ok(cancel) =
+                                        serde_json::from_value::<Cancel>(value.clone())
+                                    {
+                                        Ok(Message::Cancel(cancel))
+                                    } else {
+                                        Err(serde::de::Error::custom(
+                                            "failed to deserialize cancel",
+                                        ))
+                                    }
+                                }
+                                MessageKind::OrderStatus => {
+                                    if let Ok(order_status) =
+                                        serde_json::from_value::<OrderStatus>(value.clone())
+                                    {
+                                        Ok(Message::OrderStatus(order_status))
+                                    } else {
+                                        Err(serde::de::Error::custom(
+                                            "failed to deserialize order_status",
+                                        ))
+                                    }
+                                }
+                                MessageKind::Close => {
+                                    if let Ok(close) =
+                                        serde_json::from_value::<Close>(value.clone())
+                                    {
+                                        Ok(Message::Close(close))
+                                    } else {
+                                        Err(serde::de::Error::custom("failed to deserialize close"))
+                                    }
+                                }
+                            },
+                            Err(_) => Err(serde::de::Error::custom("unexpected message kind")),
+                        },
+                        None => {
+                            if let Ok(text) = serde_json::from_value::<String>(value) {
+                                Ok(Message::Text(text))
+                            } else {
+                                Err(serde::de::Error::custom("unexpected type"))
+                            }
+                        }
+                    }
+                }
+
+                fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
+                where
+                    E: serde::de::Error,
+                {
+                    Err(serde::de::Error::custom("message is missing"))
+                }
             }
 
-            fn visit_some<D>(self, deserializer: D) -> std::result::Result<Self::Value, D::Error>
-            where
-                D: Deserializer<'de>,
-            {
-                let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
-
-                if let Ok(rfq) = serde_json::from_value::<Rfq>(value.clone()) {
-                    return Ok(Message::Rfq(rfq));
-                }
-                if let Ok(order) = serde_json::from_value::<Order>(value.clone()) {
-                    return Ok(Message::Order(order));
-                }
-                if let Ok(order_status) = serde_json::from_value::<OrderStatus>(value.clone()) {
-                    return Ok(Message::OrderStatus(order_status));
-                }
-                if let Ok(close) = serde_json::from_value::<Close>(value.clone()) {
-                    return Ok(Message::Close(close));
-                }
-                if let Ok(cancel) = serde_json::from_value::<Cancel>(value.clone()) {
-                    return Ok(Message::Cancel(cancel));
-                }
-                if let Ok(text) = serde_json::from_value::<String>(value) {
-                    return Ok(Message::Text(text));
-                }
-
-                Err(serde::de::Error::custom("unexpected type"))
-            }
-
-            fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Err(serde::de::Error::custom("message is missing"))
-            }
+            deserializer.deserialize_option(MessageVisitor)
         }
-
-        deserializer.deserialize_option(MessageVisitor)
     }
 
     #[derive(Serialize, Deserialize, Debug)]
     #[serde(rename_all = "camelCase")]
     pub struct Body {
-        #[serde(deserialize_with = "deserialize_message")]
         pub message: Message,
         #[serde(skip_serializing_if = "Option::is_none")]
         pub reply_to: Option<String>,
@@ -257,7 +374,16 @@ pub mod request {
 
     impl Body {
         pub fn from_json_string(json: &str) -> Result<Self> {
-            let body = serde_json::from_str(json)?;
+            let body = serde_json::from_str::<Self>(json)?;
+            match &body.message {
+                Message::Rfq(rfq) => rfq.verify(false)?,
+                Message::Quote(quote) => quote.verify()?,
+                Message::Order(order) => order.verify()?,
+                Message::Cancel(cancel) => cancel.verify()?,
+                Message::OrderStatus(order_status) => order_status.verify()?,
+                Message::Close(close) => close.verify()?,
+                Message::Text(_txt) => (), // todo error responses
+            };
             Ok(body)
         }
 

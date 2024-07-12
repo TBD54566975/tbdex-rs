@@ -47,7 +47,7 @@ impl Rfq {
             created_at: Utc::now().to_rfc3339(),
         };
 
-        let (data, private_data) = hash_private_data(create_rfq_data);
+        let (data, private_data) = hash_private_data(create_rfq_data)?;
 
         let rfq = Self {
             metadata: metadata.clone(),
@@ -60,7 +60,7 @@ impl Rfq {
             )?,
         };
 
-        rfq.verify()?;
+        rfq.verify(true)?;
 
         Ok(rfq)
     }
@@ -68,18 +68,12 @@ impl Rfq {
     pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
         let rfq = serde_json::from_str::<Self>(json)?;
 
-        rfq.verify()?;
-
-        if require_all_private_data {
-            rfq.verify_all_private_data()?;
-        } else {
-            rfq.verify_present_private_data()?;
-        }
+        rfq.verify(require_all_private_data)?;
 
         Ok(rfq)
     }
 
-    pub fn verify(&self) -> Result<()> {
+    pub fn verify(&self, require_all_private_data: bool) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
@@ -98,6 +92,12 @@ impl Rfq {
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
         )?;
+
+        if require_all_private_data {
+            self.verify_all_private_data()?;
+        } else {
+            self.verify_present_private_data()?;
+        }
 
         Ok(())
     }
@@ -273,23 +273,41 @@ impl Rfq {
         };
 
         if let Some(hash) = &self.data.payin.payment_details_hash {
-            let digest = digest_private_data(&private_data.salt, &private_data.payin);
-            if &digest != hash {
-                return Ok(false);
+            if let Some(payin) = &private_data.payin {
+                let digest = digest_private_data(&private_data.salt, &payin.payment_details)?;
+                if &digest != hash {
+                    return Err(MessageError::PrivateDataVerification(
+                        "private data payin hash mismatch".to_string(),
+                    ));
+                }
+            } else {
+                return Err(MessageError::PrivateDataVerification(
+                    "private data missing payin".to_string(),
+                ));
             }
         }
 
         if let Some(hash) = &self.data.payout.payment_details_hash {
-            let digest = digest_private_data(&private_data.salt, &private_data.payout);
-            if &digest != hash {
-                return Ok(false);
+            if let Some(payout) = &private_data.payout {
+                let digest = digest_private_data(&private_data.salt, &payout.payment_details)?;
+                if &digest != hash {
+                    return Err(MessageError::PrivateDataVerification(
+                        "private data payout hash mismatch".to_string(),
+                    ));
+                }
+            } else {
+                return Err(MessageError::PrivateDataVerification(
+                    "private data missing payout".to_string(),
+                ));
             }
         }
 
         if let Some(hash) = &self.data.claims_hash {
-            let digest = digest_private_data(&private_data.salt, &private_data.claims);
+            let digest = digest_private_data(&private_data.salt, &private_data.claims)?;
             if &digest != hash {
-                return Ok(false);
+                return Err(MessageError::PrivateDataVerification(
+                    "private data claims hash mismatch".to_string(),
+                ));
             }
         }
 
@@ -314,9 +332,9 @@ impl Rfq {
                 Some(pd) => pd.salt.clone(),
             };
 
-            if let Some(data) = &private_data.payin {
+            if let Some(payin) = &private_data.payin {
                 if let Some(hash) = &self.data.payin.payment_details_hash {
-                    let digest = digest_private_data(&salt, &data);
+                    let digest = digest_private_data(&salt, &payin.payment_details)?;
                     if &digest != hash {
                         return Err(MessageError::PrivateDataVerification(
                             "private data payin hash mismatch".to_string(),
@@ -329,9 +347,9 @@ impl Rfq {
                 }
             }
 
-            if let Some(data) = &private_data.payout {
+            if let Some(payout) = &private_data.payout {
                 if let Some(hash) = &self.data.payout.payment_details_hash {
-                    let digest = digest_private_data(&salt, &data);
+                    let digest = digest_private_data(&salt, &payout.payment_details)?;
                     if &digest != hash {
                         return Err(MessageError::PrivateDataVerification(
                             "private data payout hash mismatch".to_string(),
@@ -344,9 +362,9 @@ impl Rfq {
                 }
             }
 
-            if let Some(data) = &private_data.claims {
+            if let Some(claims) = &private_data.claims {
                 if let Some(hash) = &self.data.claims_hash {
-                    let digest = digest_private_data(&salt, &data);
+                    let digest = digest_private_data(&salt, &claims)?;
                     if &digest != hash {
                         return Err(MessageError::PrivateDataVerification(
                             "private data claims hash mismatch".to_string(),
@@ -434,23 +452,25 @@ pub struct PrivatePaymentDetails {
     pub payment_details: Option<serde_json::Value>,
 }
 
-fn hash_private_data(create_rfq_data: &CreateRfqData) -> (RfqData, RfqPrivateData) {
+fn hash_private_data(create_rfq_data: &CreateRfqData) -> Result<(RfqData, RfqPrivateData)> {
     let salt = generate_random_salt();
 
     let payin_payment_details_hash = create_rfq_data
         .payin
         .payment_details
         .as_ref()
-        .map(|pd| digest_private_data(&salt, pd));
+        .map(|pd| digest_private_data(&salt, pd))
+        .transpose()?;
     let payout_payment_details_hash = create_rfq_data
         .payout
         .payment_details
         .as_ref()
-        .map(|pd| digest_private_data(&salt, pd));
+        .map(|pd| digest_private_data(&salt, pd))
+        .transpose()?;
     let claims_hash = if create_rfq_data.claims.is_empty() {
         None
     } else {
-        Some(digest_private_data(&salt, &create_rfq_data.claims))
+        Some(digest_private_data(&salt, &create_rfq_data.claims)?)
     };
 
     let hashed_rfq_data = RfqData {
@@ -489,7 +509,7 @@ fn hash_private_data(create_rfq_data: &CreateRfqData) -> (RfqData, RfqPrivateDat
             },
         };
 
-    (hashed_rfq_data, private_rfq_data)
+    Ok((hashed_rfq_data, private_rfq_data))
 }
 
 fn generate_random_salt() -> String {
@@ -498,15 +518,15 @@ fn generate_random_salt() -> String {
     general_purpose::URL_SAFE_NO_PAD.encode(salt)
 }
 
-fn digest_private_data<T: Serialize>(salt: &str, value: &T) -> String {
+fn digest_private_data<T: Serialize>(salt: &str, value: &T) -> Result<String> {
     let digestible = serde_json::json!([salt, value]);
-    let serialized = serde_json::to_string(&digestible).unwrap(); // 🚧 unwrap!
+    let serialized = serde_jcs::to_string(&digestible)?;
 
     let mut hasher = Sha256::new();
     hasher.update(serialized.as_bytes());
     let digest = hasher.finalize();
 
-    general_purpose::URL_SAFE_NO_PAD.encode(digest)
+    Ok(general_purpose::URL_SAFE_NO_PAD.encode(digest))
 }
 
 #[cfg(test)]

@@ -38,10 +38,10 @@ class Message private constructor(
     // todo all of the below
     fun asRfq(): Rfq? = this.rfq
     fun asQuote(): Quote? = this.quote
-    fun asOrder(): Order? = null
-    fun asOrderStatus(): OrderStatus? = null
+    fun asOrder(): Order? = this.order
+    fun asOrderStatus(): OrderStatus? = this.orderStatus
 //    fun asCancel(): Cancel? = null
-    fun asClose(): Close? = null
+    fun asClose(): Close? = this.close
 
     fun toJson(): String {
         return this.rfq?.toJson()

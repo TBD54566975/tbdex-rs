@@ -17,10 +17,13 @@ class Webhook {
             val body = tbdex.sdk.httpclient.request.Body(req.body())
 
             body.message.asQuote()?.let {
+                println("Quote received ${it.metadata.id}\n")
                 quote = it
             } ?: body.message.asOrderStatus()?.let {
+                println("OrderStatus received ${it.metadata.id}")
                 orderStatuses.add(it)
             } ?: body.message.asClose()?.let {
+                println("\nClose received ${it.metadata.id}\n")
                 close = it
             }
 

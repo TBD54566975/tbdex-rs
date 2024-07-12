@@ -57,7 +57,8 @@ data class OfferingData(
     val payoutUnitsPerPayinUnit: String,
     val payin: PayinDetails,
     val payout: PayoutDetails,
-    val requiredClaims: PresentationDefinition?
+    val requiredClaims: PresentationDefinition?,
+    val cancellation: CancellationDetails
 )
 
 data class PayinDetails(
@@ -95,4 +96,10 @@ data class PayoutMethod(
     val min: String? = null,
     val max: String? = null,
     val estimatedSettlementTime: Long
+)
+
+data class CancellationDetails(
+    val enabled: Boolean,
+    val termsUrl: String? = null,
+    val terms: String? = null,
 )

@@ -31,7 +31,7 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
     let service_endpoint = get_service_endpoint(&rfq.metadata.to)?;
     let create_exchange_endpoint = format!("{}/exchanges", service_endpoint);
 
-    rfq.verify()?;
+    rfq.verify(true)?;
 
     send_request::<request::Body, ()>(
         &create_exchange_endpoint,
@@ -110,7 +110,7 @@ pub fn get_exchange(
         match MessageKind::from_str(kind)? {
             MessageKind::Rfq => {
                 let rfq = serde_json::from_value::<Rfq>(message)?;
-                rfq.verify()?;
+                rfq.verify(false)?;
                 exchange.rfq = rfq;
             }
             MessageKind::Quote => {

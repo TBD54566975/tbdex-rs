@@ -71,7 +71,6 @@ fun main() {
     while (webhook.quote == null) {
         Thread.sleep(3000)
     }
-    println("Quote received to webhook ${webhook.quote!!.metadata.id}\n")
 
     // 4. submit order
     println("4. Submitting order...")
@@ -92,16 +91,12 @@ fun main() {
     while (webhook.orderStatuses.size < 2) {
         Thread.sleep(3000)
     }
-    println("OrderStatuses received to webhook ${
-        webhook.orderStatuses.map { listOf(it.metadata.id, it.data.orderStatus).joinToString(", ") 
-    }}\n")
 
     // 6. wait for Close to come into webhook
     println("6. Waiting for Close...")
     while (webhook.close == null) {
         Thread.sleep(3000)
     }
-    println("Close received to webhook ${webhook.close!!.metadata.id} ${webhook.close!!.data.success}\n")
 
     println("Exchange completed successfully!")
     webhook.stopServer()
