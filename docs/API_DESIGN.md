@@ -8,17 +8,20 @@
 - [Resources](#resources)
   - [`ResourceKind`](#resourcekind)
   - [`ResourceMetadata`](#resourcemetadata)
+  - [`Resource`](#resource)
   - [`Offering`](#offering)
     - [`OfferingData`](#offeringdata)
     - [`PayinDetails`](#payindetails)
     - [`PayinMethod`](#payinmethod)
     - [`PayoutDetails`](#payoutdetails)
     - [`PayoutMethod`](#payoutmethod)
+    - [`CancellationDetails`](#cancellationdetails)
   - [`Balance`](#balance)
     - [`BalanceData`](#balancedata)
 - [Messages](#messages)
   - [`MessageKind`](#messagekind)
   - [`MessageMetadata`](#messagemetadata)
+  - [`Message`](#message)
   - [`Rfq`](#rfq)
     - [`CreateRfqData`](#createrfqdata)
     - [`CreateSelectedPayinMethod`](#createselectedpayinmethod)
@@ -33,16 +36,24 @@
     - [`QuoteDetails`](#quotedetails)
     - [`PaymentInstruction`](#paymentinstruction)
   - [`Order`](#order)
+  - [`Cancel`](#cancel)
+    - [`CancelData`](#canceldata)
   - [`OrderStatus`](#orderstatus)
     - [`OrderStatusData`](#orderstatusdata)
   - [`Close`](#close)
     - [`CloseData`](#closedata)
-- [HTTP Client](#http-client)
+- [HTTP](#http)
+  - [`HttpRequestBody`](#httprequestbody)
+  - [`HttpResponseBody`](#httpresponsebody)
+    - [`SuccessfulResponseBody`](#successfulresponsebody)
+    - [`ErrorResponseBody`](#errorresponsebody)
+    - [`ErrorDetail`](#errordetail)
   - [`Exchange`](#exchange)
   - [`get_offerings()`](#get_offerings)
   - [`get_balances()`](#get_balances)
   - [`create_exchange()`](#create_exchange)
   - [`submit_order()`](#submit_order)
+  - [`submit_order()`](#submit_order-1)
   - [`submit_close()`](#submit_close)
   - [`get_exchange()`](#get_exchange)
   - [`get_exchanges()`](#get_exchanges)
@@ -91,20 +102,42 @@ CLASS ResourceMetadata
   PUBLIC DATA updatedAt: string?
 ```
 
+## `Resource`
+
+> [!NOTE]
+>
+> `Resource` is primarily useful for two use cases:
+> 
+> 1. Parsing a JSON stringified resource wherein the kind is unknown
+> 2. Instantiating an `HttpResponseBody` using an instance of an existing resource
+
+```pseudocode!
+CLASS Resource
+  CONSTRUCTOR from_json_string(json: string)
+
+  CONSTRUCTOR from_offering(offering: Offering)
+  CONSTRUCTOR from_balance(balance: Balance)
+
+  METHOD as_offering(): Offering?
+  METHOD as_balance(): Balance?
+```
+
 ## `Offering`
 
 > [!NOTE]
 >
-> All `CONSTRUCTOR(json: string)` instances in this APID perform cryptographic verification on the `signature` property.
+> All `CONSTRUCTOR from_json_string(json: string) ` instances in this APID perform cryptographic verification on the `signature` property.
 
 ```pseudocode!
 CLASS Offering IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: OfferingData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
-  CONSTRUCTOR(json: string) 
-  METHOD to_json(): string
+
+  CONSTRUCTOR create(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
+  CONSTRUCTOR from_json_string(json: string) 
+
+  METHOD to_json_string(): string
 ```
 
 ### `OfferingData`
@@ -113,9 +146,10 @@ CLASS Offering IMPLEMENTS Resource
 CLASS OfferingData
   PUBLIC DATA description: string
   PUBLIC DATA payoutUnitsPerPayinUnit: string
-  PUBLIC DATA payin PayinDetails
-  PUBLIC DATA payout PayoutDetails
-  PUBLIC DATA requiredClaims PresentationDefinition
+  PUBLIC DATA payin: PayinDetails
+  PUBLIC DATA payout: PayoutDetails
+  PUBLIC DATA requiredClaims PresentationDefinition?
+  PUBLIC DATA cancellation: CancellationDetails
 ```
 
 ### `PayinDetails`
@@ -167,6 +201,15 @@ CLASS PayinMethod
   PUBLIC DATA estimatedSettlementTime: int
 ```
 
+### `CancellationDetails`
+
+```pseudocode!
+CLASS PayinMethod
+  PUBLIC DATA enabled: bool
+  PUBLIC DATA termsUrl: string?
+  PUBLIC DATA terms: string?
+```
+
 ## `Balance`
 
 ```pseudocode!
@@ -174,9 +217,11 @@ CLASS Balance IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: BalanceData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+
+  CONSTRUCTOR create(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
 ```
 
 ### `BalanceData`
@@ -196,6 +241,7 @@ ENUM MessageKind
   rfq,
   quote,
   order,
+  cancel,
   orderstatus,
   close,
 ```
@@ -214,17 +260,57 @@ CLASS MessageMetadata
   PUBLIC DATA protocol: string
 ```
 
+## `Message`
+
+> [!NOTE]
+>
+> `Message` is primarily useful for two use cases:
+> 
+> 1. Parsing a JSON stringified message wherein the kind is unknown
+> 2. Instantiating an `HttpRequestBody` using an instance of an existing message
+
+```pseudocode!
+CLASS Message
+  CONSTRUCTOR from_json_string(json: string)
+
+  CONSTRUCTOR from_rfq(rfq: Rfq)
+  CONSTRUCTOR from_quote(quote: Quote)
+  CONSTRUCTOR from_order(order: Order)
+  CONSTRUCTOR from_cancel(cancel: Cancel)
+  CONSTRUCTOR from_order_status(order_status: OrderStatus)
+  CONSTRUCTOR from_close(close: Close)
+
+  METHOD as_rfq(): Rfq?
+  METHOD as_quote(): Quote?
+  METHOD as_order(): Order?
+  METHOD as_cancel(): Cancel?
+  METHOD as_order_status(): OrderStatus?
+  METHOD as_close(): Close?
+
+  METHOD to_json_string(): string
+```
+
 ## `Rfq`
 
 ```pseudocode!
 CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: RfqData
-  PUBLIC DATA privateData: RfqPrivateData
+  PUBLIC DATA privateData: RfqPrivateData?
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string, requireAllPrivateData: bool?)
-  METHOD to_json(): string
+
+  CONSTRUCTOR create( // this will verify all private data
+    bearer_did: BearerDid, 
+    to: string, 
+    from: string, 
+    rfqData: CreateRfqData, 
+    protocol: string, 
+    externalId: string?
+  )
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD verify_present_private_data(): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `CreateRfqData`
@@ -305,9 +391,19 @@ CLASS Quote IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: QuoteData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+
+  CONSTRUCTOR create(
+    bearer_did: BearerDid, 
+    to: string, 
+    from: string, 
+    exchangeId: string, 
+    quoteData: QuoteData, 
+    protocol: string, 
+    externalId: string?
+  )
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
 ```
 
 ### `QuoteData`
@@ -324,7 +420,8 @@ CLASS QuoteData
 ```pseudocode!
 CLASS QuoteDetails
   PUBLIC DATA currencyCode: string
-  PUBLIC DATA amount: string
+  PUBLIC DATA subtotal: string
+  PUBLIC DATA total: string
   PUBLIC DATA fee: string?
   PUBLIC DATA paymentInstruction: PaymentInstruction?
 ```
@@ -343,9 +440,47 @@ CLASS PaymentInstruction
 CLASS Order IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+
+  CONSTRUCTOR create(
+    bearer_did: BearerDid, 
+    to: string, 
+    from: string, 
+    exchangeId: string, 
+    protocol: string, 
+    externalId: string?
+  )
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
+```
+
+## `Cancel`
+
+```pseudocode!
+CLASS Cancel
+  PUBLIC DATA metadata: MessageMetadata
+  PUBLIC DATA data: CancelData
+  PUBLIC DATA signature: string
+
+  CONSTRUCTOR create(
+    bearer_did: BearerDid, 
+    to: string, 
+    from: string, 
+    exchangeId: string, 
+    cancelData: CancelData, 
+    protocol: string, 
+    externalId: string?
+  )
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
+```
+
+### `CancelData`
+
+```pseudocode!
+CLASS CancelData
+  PUBLIC DATA reason: string
 ```
 
 ## `OrderStatus`
@@ -355,9 +490,19 @@ CLASS OrderStatus IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: OrderStatusData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+
+  CONSTRUCTOR create(
+    bearer_did: BearerDid, 
+    to: string, 
+    from: string, 
+    exchangeId: string, 
+    orderStatusData: OrderStatusData, 
+    protocol: string, 
+    externalId: string?
+  )
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
 ```
 
 ### `OrderStatusData`
@@ -374,9 +519,19 @@ CLASS Close IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CloseData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+
+  CONSTRUCTOR create(
+    bearer_did: BearerDid, 
+    to: string, 
+    from: string, 
+    exchangeId: string, 
+    closeData: CloseData, 
+    protocol: string, 
+    externalId: string?
+  )
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
 ```
 
 ### `CloseData`
@@ -387,7 +542,69 @@ CLASS CloseData
   PUBLIC DATA success: bool?
 ```
 
-# HTTP Client
+# HTTP
+
+## `HttpRequestBody`
+
+```pseudocode!
+CLASS HttpRequestBody
+  PUBLIC DATA message: Message
+  PUBLIC DATA reply_to?: string // unique to `POST /exchanges` endpoint
+
+  CONSTRUCTOR(message: Message, reply_to: string?)
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
+```
+
+## `HttpResponseBody`
+
+```psuedocode!
+CLASS HttpResponseBody
+  CONSTRUCTOR from_json_string(json: string)
+
+  CONSTRUCTOR from_successful(successful_response_body: SuccessfulResponseBody)
+  CONSTRUCTOR from_error(error_response_body: ErrorResponseBody)
+
+  METHOD as_successful_response_body(): SuccessfulResponseBody?
+  METHOD as_error_response_body(): ErrorResponseBody?
+
+  METHOD to_json_string(): string
+```
+
+### `SuccessfulResponseBody`
+
+```pseudocode!
+CLASS SuccessfulResponseBody
+  PUBLIC DATA data: []Resource
+
+  CONSTRUCTOR(data: []Resource)
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string()
+```
+
+### `ErrorResponseBody`
+
+```pseudocode!
+CLASS ErrorResponseBody
+  PUBLIC DATA message: string
+  PUBLIC DATA details: []ErrorDetail?
+
+  CONSTRUCTOR(message: string, details: []ErrorDetail?)
+  CONSTRUCTOR from_json_string(json: string)
+
+  METHOD to_json_string(): string
+```
+
+### `ErrorDetail`
+
+```pseudocode!
+CLASS ErrorDetail
+  PUBLIC DATA id: string?
+  PUBLIC DATA message: string?
+  PUBLIC DATA path: string?
+```
 
 ## `Exchange`
 
@@ -422,6 +639,12 @@ FUNCTION create_exchange(rfq: Rfq, reply_to: string?)
 
 ```pseudocode!
 FUNCTION submit_order(order: Order)
+```
+
+## `submit_order()`
+
+```pseudocode!
+FUNCTION submit_cancel(cancel: Cancel)
 ```
 
 ## `submit_close()`
