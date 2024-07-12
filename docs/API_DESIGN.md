@@ -292,6 +292,12 @@ CLASS Message
 
 ## `Rfq`
 
+> [!WARNING]
+>
+> `CONSTRUCTOR from_json_string(json: string)` will only execute cryptographic verification on the `signature`.
+>
+> For PFI settings wherein the PFI must verify the private data RFQ, such as when first processing the `HttpRequestBody`, the PFI code must explicitly invoke either `verify_present_private_data()` or `verify_all_private_data()`.
+
 ```pseudocode!
 CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
