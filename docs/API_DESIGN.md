@@ -53,7 +53,7 @@
   - [`get_balances()`](#get_balances)
   - [`create_exchange()`](#create_exchange)
   - [`submit_order()`](#submit_order)
-  - [`submit_order()`](#submit_order-1)
+  - [`submit_cancel()`](#submit_cancel)
   - [`submit_close()`](#submit_close)
   - [`get_exchange()`](#get_exchange)
   - [`get_exchanges()`](#get_exchanges)
@@ -641,7 +641,7 @@ FUNCTION create_exchange(rfq: Rfq, reply_to: string?)
 FUNCTION submit_order(order: Order)
 ```
 
-## `submit_order()`
+## `submit_cancel()`
 
 ```pseudocode!
 FUNCTION submit_cancel(cancel: Cancel)
