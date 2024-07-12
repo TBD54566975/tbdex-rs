@@ -24,7 +24,8 @@ fun main() {
     val offeringsRepository = data.Offerings(bearerDid)
     api.Offerings(offeringsRepository)
 
-    api.Exchanges(bearerDid, offeringsRepository)
+    val exchangesRepository = data.Exchanges()
+    api.Exchanges(bearerDid, offeringsRepository, exchangesRepository)
 
     println("PFI server running...")
 }

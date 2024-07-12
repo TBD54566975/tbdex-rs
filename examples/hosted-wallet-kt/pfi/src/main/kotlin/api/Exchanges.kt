@@ -17,13 +17,15 @@ import tbdex.sdk.messages.Close
 import tbdex.sdk.messages.CloseData
 import tbdex.sdk.web5.BearerDid
 
-class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
+class Exchanges(
+    private val bearerDid: BearerDid,
+    private val offeringsRepository: data.Offerings,
+    private val exchangesRepository: data.Exchanges
+) {
     init {
         post("/exchanges") { req, res -> createExchange(req, res) }
         put("/exchanges/:id") { req, res -> updateExchange(req, res) }
     }
-
-    private var exchangesToReplyTo: MutableMap<String, String> = mutableMapOf()
 
     private fun createExchange(req: Request, res: Response): String {
         println("POST /exchanges")
@@ -35,7 +37,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
 
-        this.exchangesToReplyTo[rfq.metadata.exchangeId] = replyTo
+        this.exchangesRepository.addExchange(rfq.metadata.exchangeId, replyTo)
 
         res.status(202)
 
@@ -95,7 +97,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             null
         )
 
-        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null for this example")
+        val replyTo = this.exchangesRepository.getReplyTo(exchangeId)
 
         println("Replying with quote")
 
@@ -115,7 +117,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             "1.0"
         )
 
-        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
+        val replyTo = this.exchangesRepository.getReplyTo(exchangeId)
 
         println("Replying with order status")
 
@@ -138,7 +140,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             "1.0"
         )
 
-        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
+        val replyTo = this.exchangesRepository.getReplyTo(exchangeId)
 
         println("Replying with close")
 
