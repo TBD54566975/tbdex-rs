@@ -94,7 +94,7 @@ mod tbdex_test_vectors_protocol {
     }
 
     #[test]
-    fn parse_order_status() {
+    fn parse_orderstatus() {
         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json";
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
