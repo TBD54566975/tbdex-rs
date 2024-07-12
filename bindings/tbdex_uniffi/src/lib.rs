@@ -11,8 +11,7 @@ use crate::{
         exchanges::{
             create_exchange, get_exchange, get_exchanges,
             request::{Body as HttpRequestBody, BodyData as HttpRequestBodyData},
-            submit_close, submit_order, CreateExchangeRequestBody, CreateExchangeRequestBodyData,
-            Exchange as ExchangeData, SubmitOrderRequestBody, SubmitOrderRequestBodyData,
+            submit_close, submit_order, Exchange as ExchangeData,
         },
         offerings::get_offerings,
     },

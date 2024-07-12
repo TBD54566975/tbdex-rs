@@ -9,8 +9,6 @@ import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
 import tbdex.sdk.rust.submitClose as rustCoreSubmitClose
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
-import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
-import tbdex.sdk.rust.SubmitOrderRequestBody as RustCoreSubmitOrderRequestBody
 
 data class Exchange(
     val rfq: Rfq,

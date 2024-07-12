@@ -1,4 +1,4 @@
-use super::{get_service_endpoint, send_request, Result};
+use super::{get_service_endpoint, request, send_request, Result};
 use crate::{
     http_client::{generate_access_token, HttpClientError},
     messages::{
@@ -27,54 +27,23 @@ pub struct Exchange {
     pub cancel: Option<Cancel>,
 }
 
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateExchangeRequestBody {
-    pub message: Rfq,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_to: Option<String>,
-}
-
-impl CreateExchangeRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let request_body = serde_json::from_str::<Self>(json)?;
-
-        request_body.message.verify()?;
-
-        Ok(request_body)
-    }
-}
-
 pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
     let service_endpoint = get_service_endpoint(&rfq.metadata.to)?;
     let create_exchange_endpoint = format!("{}/exchanges", service_endpoint);
 
     rfq.verify()?;
 
-    send_request::<CreateExchangeRequestBody, ()>(
+    send_request::<request::Body, ()>(
         &create_exchange_endpoint,
         Method::POST,
-        Some(&CreateExchangeRequestBody {
-            message: rfq.clone(),
+        Some(&request::Body {
+            message: request::Message::Rfq(rfq.clone()),
             reply_to,
         }),
         None,
     )?;
 
     Ok(())
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct SubmitOrderRequestBody {
-    pub message: Order,
-}
-
-impl SubmitOrderRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let request_body = serde_json::from_str::<Self>(json)?;
-        request_body.message.verify()?;
-        Ok(request_body)
-    }
 }
 
 pub fn submit_order(order: &Order) -> Result<()> {
@@ -86,11 +55,12 @@ pub fn submit_order(order: &Order) -> Result<()> {
 
     order.verify()?;
 
-    send_request::<SubmitOrderRequestBody, ()>(
+    send_request::<request::Body, ()>(
         &submit_order_endpoint,
         Method::PUT,
-        Some(&SubmitOrderRequestBody {
-            message: order.clone(),
+        Some(&request::Body {
+            message: request::Message::Order(order.clone()),
+            reply_to: None,
         }),
         None,
     )?;
@@ -183,20 +153,6 @@ pub fn get_exchanges(_pfi_did: &str, _requestor_did: &BearerDid) -> Result<Vec<S
     Ok(vec![])
 }
 
-// TODO how can we support multitype w/ serde for message
-#[derive(Serialize, Deserialize)]
-pub struct SubmitCancelRequestBody {
-    pub message: Cancel,
-}
-
-impl SubmitCancelRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let request_body = serde_json::from_str::<Self>(json)?;
-        request_body.message.verify()?;
-        Ok(request_body)
-    }
-}
-
 pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
     let service_endpoint = get_service_endpoint(&cancel.metadata.to)?;
     let submit_order_endpoint = format!(
@@ -206,11 +162,12 @@ pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
 
     cancel.verify()?;
 
-    send_request::<SubmitCancelRequestBody, ()>(
+    send_request::<request::Body, ()>(
         &submit_order_endpoint,
         Method::PUT,
-        Some(&SubmitCancelRequestBody {
-            message: cancel.clone(),
+        Some(&request::Body {
+            message: request::Message::Cancel(cancel.clone()),
+            reply_to: None,
         }),
         None,
     )?;
