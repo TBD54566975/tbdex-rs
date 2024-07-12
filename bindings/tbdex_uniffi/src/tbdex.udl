@@ -77,6 +77,7 @@ enum MessageKind {
   "Rfq",
   "Quote",
   "Order",
+  "Cancel",
   "OrderStatus",
   "Close"
 };
@@ -247,7 +248,22 @@ interface SubmitOrderRequestBody {
   SubmitOrderRequestBodyData get_data();
 };
 
+dictionary HttpRequestBodyData {
+  MessageKind kind;
+  string json_serialized_message;
+  string? reply_to;
+};
 
+interface HttpRequestBody {
+  [Throws=RustCoreError]
+  constructor([ByRef] string json_serialized_message, string? reply_to);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  HttpRequestBodyData get_data();
+  [Throws=RustCoreError]
+  string to_json();
+};
 
 
 

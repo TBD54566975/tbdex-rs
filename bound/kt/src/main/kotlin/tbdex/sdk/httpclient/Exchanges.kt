@@ -66,29 +66,3 @@ fun getExchanges(pfiDidUri: String, bearerDid: BearerDid): List<String> {
 
     return rustCoreGetExchanges(pfiDidUri, bearerDid.rustCoreBearerDid)
 }
-
-class CreateExchangeRequestBody {
-    val message: Rfq
-    val replyTo: String?
-
-    constructor(json: String) {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
-        val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
-        val data = rustCoreCreateExchangeRequestBody.getData()
-        this.message = Rfq(data.message)
-        this.replyTo = data.replyTo
-    }
-}
-
-class SubmitOrderRequestBody {
-    val message: Order
-
-    constructor(json: String) {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
-        val rustCoreCreateExchangeRequestBody = RustCoreSubmitOrderRequestBody.fromJsonString(json)
-        val data = rustCoreCreateExchangeRequestBody.getData()
-        this.message = Order(data.message)
-    }
-}

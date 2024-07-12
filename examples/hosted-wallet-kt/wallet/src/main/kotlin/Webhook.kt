@@ -14,22 +14,14 @@ class Webhook {
         port(8081)
 
         post("/pfi-reply-to") { req, res ->
-            // todo we need parse support
+            val body = tbdex.sdk.httpclient.request.Body(req.body())
 
-            val requestBodyString = req.body()
-
-            try {
-                quote = Quote(requestBodyString)
-            } catch (ex: Exception) {
-                try {
-                    orderStatuses.add(OrderStatus(requestBodyString))
-                } catch (ex: Exception) {
-                    try {
-                        close = Close(requestBodyString)
-                    } catch (ex: Exception) {
-                        throw ex
-                    }
-                }
+            body.message.asQuote()?.let {
+                quote = it
+            } ?: body.message.asOrderStatus()?.let {
+                orderStatuses.add(it)
+            } ?: body.message.asClose()?.let {
+                close = it
             }
 
             res.status(202)

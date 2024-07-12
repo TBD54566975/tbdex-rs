@@ -8,12 +8,9 @@ import spark.Request
 import spark.Response
 import spark.Spark.post
 import spark.Spark.put
-import tbdex.sdk.httpclient.CreateExchangeRequestBody
-import tbdex.sdk.httpclient.SubmitOrderRequestBody
 import tbdex.sdk.messages.Quote
 import tbdex.sdk.messages.QuoteData
 import tbdex.sdk.messages.QuoteDetails
-import tbdex.sdk.messages.Order
 import tbdex.sdk.messages.OrderStatus
 import tbdex.sdk.messages.OrderStatusData
 import tbdex.sdk.messages.Close
@@ -23,7 +20,7 @@ import tbdex.sdk.web5.BearerDid
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
     init {
         post("/exchanges") { req, res -> createExchange(req, res) }
-        put("/exchanges/:id") { req, res -> completeOrder(req, res) }
+        put("/exchanges/:id") { req, res -> updateExchange(req, res) }
     }
 
     private var exchangesToReplyTo: MutableMap<String, String> = mutableMapOf()
@@ -31,10 +28,10 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private fun createExchange(req: Request, res: Response): String {
         println("POST /exchanges")
 
-        val requestBody = CreateExchangeRequestBody(req.body())
+        val body = tbdex.sdk.httpclient.request.Body(req.body())
 
-        val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
-        val rfq = requestBody.message
+        val replyTo = body.replyTo ?: throw Exception("replyTo cannot be null for this example")
+        val rfq = body.message.asRfq() ?: throw Exception("rfq cannot be null for this example")
 
         rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
 
@@ -45,6 +42,26 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         Thread {
             Thread.sleep(3000)
             replyWithQuote(rfq.metadata.from, rfq.metadata.exchangeId)
+        }.start()
+
+        return ""
+    }
+
+    private fun updateExchange(req: Request, res: Response): String {
+        println("PUT /exchanges/:id")
+
+        val body = tbdex.sdk.httpclient.request.Body(req.body())
+        val order = body.message.asOrder() ?: throw Exception("order cannot be null for this example")
+
+        res.status(202)
+
+        Thread {
+            Thread.sleep(3000)
+            replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, "PENDING")
+            Thread.sleep(3000)
+            replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,"COMPLETED")
+            Thread.sleep(3000)
+            replyWithClose(order.metadata.from, order.metadata.exchangeId)
         }.start()
 
         return ""
@@ -82,28 +99,10 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         println("Replying with quote")
 
-        this.replyRequest(replyTo, quote.toJson())
-    }
-
-    private fun completeOrder(req: Request, res: Response): String {
-        println("PUT /exchanges/:id")
-
-        val requestBody = SubmitOrderRequestBody(req.body())
-
-        val order = requestBody.message
-
-        res.status(202)
-
-        Thread {
-            Thread.sleep(3000)
-            replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, "PENDING")
-            Thread.sleep(3000)
-            replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,"COMPLETED")
-            Thread.sleep(3000)
-            replyWithClose(order.metadata.from, order.metadata.exchangeId)
-        }.start()
-
-        return ""
+        val body = tbdex.sdk.httpclient.request.Body(
+            tbdex.sdk.httpclient.request.Message.fromQuote(quote)
+        )
+        this.replyRequest(replyTo, body)
     }
 
     private fun replyWithOrderStatus(to: String, exchangeId: String, status: String) {
@@ -120,7 +119,10 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         println("Replying with order status")
 
-        this.replyRequest(replyTo, orderStatus.toJson())
+        val body = tbdex.sdk.httpclient.request.Body(
+            tbdex.sdk.httpclient.request.Message.fromOrderStatus(orderStatus)
+        )
+        this.replyRequest(replyTo, body)
     }
 
     private fun replyWithClose(to: String, exchangeId: String) {
@@ -140,13 +142,16 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         println("Replying with close")
 
-        this.replyRequest(replyTo, close.toJson())
+        val body = tbdex.sdk.httpclient.request.Body(
+            tbdex.sdk.httpclient.request.Message.fromClose(close)
+        )
+        this.replyRequest(replyTo, body)
     }
 
-    private fun replyRequest(replyTo: String, body: String) {
+    private fun replyRequest(replyTo: String, body: tbdex.sdk.httpclient.request.Body) {
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val requestBody = body.toRequestBody(mediaType)
+        val requestBody = body.toJson().toRequestBody(mediaType)
 
         val request = OkHttpRequest.Builder()
             .url(replyTo)
