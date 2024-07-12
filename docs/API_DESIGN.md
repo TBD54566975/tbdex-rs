@@ -299,7 +299,7 @@ CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA privateData: RfqPrivateData?
   PUBLIC DATA signature: string
 
-  CONSTRUCTOR create( // this will verify all private data
+  CONSTRUCTOR create(
     bearer_did: BearerDid, 
     to: string, 
     from: string, 
@@ -310,6 +310,7 @@ CLASS Rfq IMPLEMENTS Message
   CONSTRUCTOR from_json_string(json: string)
 
   METHOD verify_present_private_data(): Error?
+  METHOD verify_all_private_data(): Error?
   METHOD to_json_string(): string
 ```
 
