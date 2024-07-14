@@ -5,9 +5,12 @@
 **Custom DSL Version:** 0.1.0
 
 - [Web5 Dependencies](#web5-dependencies)
+- [`JsonString`](#jsonstring)
+- [`Signed`](#signed)
 - [Resources](#resources)
   - [`ResourceKind`](#resourcekind)
   - [`ResourceMetadata`](#resourcemetadata)
+  - [`Resource`](#resource)
   - [`Offering`](#offering)
     - [`OfferingData`](#offeringdata)
     - [`PayinDetails`](#payindetails)
@@ -20,6 +23,7 @@
 - [Messages](#messages)
   - [`MessageKind`](#messagekind)
   - [`MessageMetadata`](#messagemetadata)
+  - [`Message`](#message)
   - [`Rfq`](#rfq)
     - [`CreateRfqData`](#createrfqdata)
     - [`CreateSelectedPayinMethod`](#createselectedpayinmethod)
@@ -40,7 +44,7 @@
     - [`OrderStatusData`](#orderstatusdata)
   - [`Close`](#close)
     - [`CloseData`](#closedata)
-- [HTTP Client](#http-client)
+- [HTTP](#http)
   - [`Exchange`](#exchange)
   - [`get_offerings()`](#get_offerings)
   - [`get_balances()`](#get_balances)
@@ -71,6 +75,22 @@
 >
 > 🚧 Add links to Web5 APID
 
+# `JsonString`
+
+```pseudocode!
+INTERFACE JsonString
+  CONSTRUCTOR from_json_string(json: string): Self
+  METHOD to_json_string(): string
+```
+
+# `Signed`
+
+```pseudocode!
+INTERFACE Signed
+  PUBLIC DATA signature: string
+  METHOD verify_signature(): Error?
+```
+
 # Resources
 
 ## `ResourceKind`
@@ -94,20 +114,19 @@ CLASS ResourceMetadata
   PUBLIC DATA updatedAt: string?
 ```
 
-## `Offering`
-
-> [!NOTE]
->
-> All `CONSTRUCTOR(json: string)` instances in this APID perform cryptographic verification on the `signature` property.
+## `Resource`
 
 ```pseudocode!
-CLASS Offering IMPLEMENTS Resource
+INTERFACE Resource
   PUBLIC DATA metadata: ResourceMetadata
+```
+
+## `Offering`
+
+```pseudocode!
+CLASS Offering IMPLEMENTS JsonString, Signed, Resource
   PUBLIC DATA data: OfferingData
-  PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
-  CONSTRUCTOR(json: string) 
-  METHOD to_json(): string
+  CONSTRUCTOR create(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
 ```
 
 ### `OfferingData`
@@ -183,13 +202,9 @@ CLASS PayinMethod
 ## `Balance`
 
 ```pseudocode!
-CLASS Balance IMPLEMENTS Resource
-  PUBLIC DATA metadata: ResourceMetadata
+CLASS Balance IMPLEMENTS JsonString, Signed, Resource
   PUBLIC DATA data: BalanceData
-  PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
 ```
 
 ### `BalanceData`
@@ -228,17 +243,20 @@ CLASS MessageMetadata
   PUBLIC DATA protocol: string
 ```
 
+## `Message`
+
+```pseudocode!
+INTERFACE Message
+  PUBLIC DATA metadata: MessageMetadata
+```
+
 ## `Rfq`
 
 ```pseudocode!
-CLASS Rfq IMPLEMENTS Message
-  PUBLIC DATA metadata: MessageMetadata
+CLASS Rfq IMPLEMENTS JsonString, Signed, Message
   PUBLIC DATA data: RfqData
   PUBLIC DATA privateData: RfqPrivateData
-  PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string, requireAllPrivateData: bool?)
-  METHOD to_json(): string
 ```
 
 ### `CreateRfqData`
@@ -315,13 +333,9 @@ CLASS PrivatePaymentDetails
 ## `Quote`
 
 ```pseudocode!
-CLASS Quote IMPLEMENTS Message
-  PUBLIC DATA metadata: MessageMetadata
+CLASS Quote IMPLEMENTS JsonString, Signed, Message
   PUBLIC DATA data: QuoteData
-  PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
 ```
 
 ### `QuoteData`
@@ -355,24 +369,17 @@ CLASS PaymentInstruction
 ## `Order`
 
 ```pseudocode!
-CLASS Order IMPLEMENTS Message
-  PUBLIC DATA metadata: MessageMetadata
-  PUBLIC DATA signature: string
+CLASS Order IMPLEMENTS JsonString, Signed, Message
+  PUBLIC DATA data: Empty
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
 ```
 
 ## `Cancel`
 
 ```pseudocode!
-CLASS Cancel
-  PUBLIC DATA metadata: MessageMetadata
+CLASS Cancel IMPLEMENTS JsonString, Signed, Message
   PUBLIC DATA data: CancelData
-  PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
 ```
 
 ### `CancelData`
@@ -385,13 +392,9 @@ CLASS CancelData
 ## `OrderStatus`
 
 ```pseudocode!
-CLASS OrderStatus IMPLEMENTS Message
-  PUBLIC DATA metadata: MessageMetadata
+CLASS OrderStatus IMPLEMENTS JsonString, Signed, Message
   PUBLIC DATA data: OrderStatusData
-  PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
 ```
 
 ### `OrderStatusData`
@@ -404,13 +407,9 @@ CLASS OrderStatusData
 ## `Close`
 
 ```pseudocode!
-CLASS Close IMPLEMENTS Message
-  PUBLIC DATA metadata: MessageMetadata
+CLASS Close IMPLEMENTS JsonString, Signed, Message
   PUBLIC DATA data: CloseData
-  PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
 ```
 
 ### `CloseData`
@@ -421,7 +420,7 @@ CLASS CloseData
   PUBLIC DATA success: bool?
 ```
 
-# HTTP Client
+# HTTP
 
 ## `Exchange`
 
