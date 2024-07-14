@@ -1067,11 +1067,11 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_fn_method_rfq_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_all_private_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Byte
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_offering_requirements(`ptr`: Pointer,`offering`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Byte
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_present_private_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Byte
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_signer(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_signer(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1464,13 +1464,13 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_to_json() != 46345.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data() != 56842.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data() != 14947.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_offering_requirements() != 20586.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_offering_requirements() != 60520.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_present_private_data() != 31783.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_present_private_data() != 18644.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_signer_sign() != 42600.toShort()) {
@@ -5291,11 +5291,11 @@ public interface RfqInterface {
     
     fun `toJson`(): kotlin.String
     
-    fun `verifyAllPrivateData`(): kotlin.Boolean
+    fun `verifyAllPrivateData`()
     
-    fun `verifyOfferingRequirements`(`offering`: Offering): kotlin.Boolean
+    fun `verifyOfferingRequirements`(`offering`: Offering)
     
-    fun `verifyPresentPrivateData`(): kotlin.Boolean
+    fun `verifyPresentPrivateData`()
     
     companion object
 }
@@ -5415,42 +5415,39 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `verifyAllPrivateData`(): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
+    @Throws(RustCoreException::class)override fun `verifyAllPrivateData`()
+        = 
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify_all_private_data(
         it, _status)
 }
     }
-    )
-    }
+    
     
 
     
-    @Throws(RustCoreException::class)override fun `verifyOfferingRequirements`(`offering`: Offering): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
+    @Throws(RustCoreException::class)override fun `verifyOfferingRequirements`(`offering`: Offering)
+        = 
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify_offering_requirements(
         it, FfiConverterTypeOffering.lower(`offering`),_status)
 }
     }
-    )
-    }
+    
     
 
     
-    @Throws(RustCoreException::class)override fun `verifyPresentPrivateData`(): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
+    @Throws(RustCoreException::class)override fun `verifyPresentPrivateData`()
+        = 
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify_present_private_data(
         it, _status)
 }
     }
-    )
-    }
+    
     
 
     

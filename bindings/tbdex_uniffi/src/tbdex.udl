@@ -104,11 +104,11 @@ interface Rfq {
   RfqData get_data();
 
   [Throws=RustCoreError]
-  boolean verify_offering_requirements(Offering offering);
+  void verify_offering_requirements(Offering offering);
   [Throws=RustCoreError]
-  boolean verify_all_private_data();
+  void verify_all_private_data();
   [Throws=RustCoreError]
-  boolean verify_present_private_data();
+  void verify_present_private_data();
 };
 
 dictionary RfqData {
