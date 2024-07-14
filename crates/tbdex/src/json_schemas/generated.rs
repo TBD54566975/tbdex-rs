@@ -493,6 +493,17 @@ pub const ORDER_DATA_JSON_SCHEMA: &str = r#"{
   "additionalProperties": false,
   "properties": {}
 }"#;
+pub const CANCEL_DATA_JSON_SCHEMA: &str = r#"{
+    "$schema": "http://json-schema.org/draft-07/schema\#",
+    "$id": "https://tbdex.dev/cancel.schema.json",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "reason": {
+        "type": "string"
+      }
+    }
+  }"#;
 pub const ORDER_STATUS_DATA_JSON_SCHEMA: &str = r#"{
   "$schema": "http://json-schema.org/draft-07/schema\#",
   "$id": "https://tbdex.dev/orderstatus.schema.json",

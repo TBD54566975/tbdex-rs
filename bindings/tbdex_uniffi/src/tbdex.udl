@@ -77,6 +77,7 @@ enum MessageKind {
   "Rfq",
   "Quote",
   "Order",
+  "Cancel",
   "OrderStatus",
   "Close"
 };
@@ -173,6 +174,27 @@ dictionary OrderData {
 
 dictionary OrderDataData {
 
+};
+
+interface Cancel {
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, string exchange_id, CancelDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
+  CancelData get_data();
+};
+
+dictionary CancelData {
+  MessageMetadataData metadata;
+  CancelDataData data;
+  string signature;
+};
+
+dictionary CancelDataData {
+  string reason;
 };
 
 interface OrderStatus {

@@ -16,6 +16,7 @@ use crate::{
         offerings::get_offerings,
     },
     messages::{
+        cancel::Cancel,
         close::Close,
         order::Order,
         order_status::OrderStatus,
@@ -29,6 +30,7 @@ use crate::{
 };
 use tbdex::{
     messages::{
+        cancel::{Cancel as CancelData, CancelData as CancelDataData},
         close::{Close as CloseData, CloseData as CloseDataData},
         order::{Order as OrderData, OrderData as OrderDataData},
         order_status::{OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData},

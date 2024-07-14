@@ -14,6 +14,7 @@ fn write_json_schemas() -> Result<(), Box<dyn std::error::Error>> {
       ("RFQ_PRIVATE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/rfq-private.schema.json", commit_hash)),
       ("QUOTE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/quote.schema.json", commit_hash)),
       ("ORDER_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/order.schema.json", commit_hash)),
+      ("CANCEL_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/cancel.schema.json", commit_hash)),
       ("ORDER_STATUS_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/orderstatus.schema.json", commit_hash)),
       ("CLOSE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/close.schema.json", commit_hash)),
   ];
