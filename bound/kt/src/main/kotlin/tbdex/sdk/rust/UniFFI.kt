@@ -6917,7 +6917,8 @@ public object FfiConverterTypeOrderStatusData: FfiConverterRustBuffer<OrderStatu
 
 
 data class OrderStatusDataData (
-    var `orderStatus`: kotlin.String
+    var `status`: OrderStatusStatus, 
+    var `details`: kotlin.String?
 ) {
     
     companion object
@@ -6926,16 +6927,19 @@ data class OrderStatusDataData (
 public object FfiConverterTypeOrderStatusDataData: FfiConverterRustBuffer<OrderStatusDataData> {
     override fun read(buf: ByteBuffer): OrderStatusDataData {
         return OrderStatusDataData(
-            FfiConverterString.read(buf),
+            FfiConverterTypeOrderStatusStatus.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
     override fun allocationSize(value: OrderStatusDataData) = (
-            FfiConverterString.allocationSize(value.`orderStatus`)
+            FfiConverterTypeOrderStatusStatus.allocationSize(value.`status`) +
+            FfiConverterOptionalString.allocationSize(value.`details`)
     )
 
     override fun write(value: OrderStatusDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`orderStatus`, buf)
+            FfiConverterTypeOrderStatusStatus.write(value.`status`, buf)
+            FfiConverterOptionalString.write(value.`details`, buf)
     }
 }
 
@@ -7353,6 +7357,44 @@ public object FfiConverterTypeMessageKind: FfiConverterRustBuffer<MessageKind> {
     override fun allocationSize(value: MessageKind) = 4UL
 
     override fun write(value: MessageKind, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+enum class OrderStatusStatus {
+    
+    PAYIN_PENDING,
+    PAYIN_INITIATED,
+    PAYIN_SETTLED,
+    PAYIN_FAILED,
+    PAYIN_EXPIRED,
+    PAYOUT_PENDING,
+    PAYOUT_INITIATED,
+    PAYOUT_SETTLED,
+    PAYOUT_FAILED,
+    REFUND_PENDING,
+    REFUND_INITIATED,
+    REFUND_SETTLED,
+    REFUND_FAILED;
+    companion object
+}
+
+
+public object FfiConverterTypeOrderStatusStatus: FfiConverterRustBuffer<OrderStatusStatus> {
+    override fun read(buf: ByteBuffer) = try {
+        OrderStatusStatus.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: OrderStatusStatus) = 4UL
+
+    override fun write(value: OrderStatusStatus, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
     }
 }

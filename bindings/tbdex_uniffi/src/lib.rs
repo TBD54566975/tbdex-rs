@@ -34,7 +34,10 @@ use tbdex::{
         cancel::{Cancel as CancelData, CancelData as CancelDataData},
         close::{Close as CloseData, CloseData as CloseDataData},
         order::{Order as OrderData, OrderData as OrderDataData},
-        order_status::{OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData},
+        order_status::{
+            OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData,
+            Status as OrderStatusStatus,
+        },
         quote::{
             PaymentInstruction as PaymentInstructionData, Quote as QuoteData,
             QuoteData as QuoteDataData, QuoteDetails as QuoteDetailsData,

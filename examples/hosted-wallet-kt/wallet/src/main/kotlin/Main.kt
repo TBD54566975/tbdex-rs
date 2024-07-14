@@ -82,7 +82,7 @@ fun main() {
             "1.0", null
         )
         tbdex.sdk.httpclient.submitCancel(cancel)
-        println("Cancel submitted ${cancel.metadata.id}\n")
+        println("Cancel submitted ${cancel.metadata.id}")
     } else {
         // 4. submit order
         println("4. Submitting order...")
@@ -100,16 +100,15 @@ fun main() {
 
         // 5. wait for OrderStatus to come into webhook
         println("5. Waiting for OrderStatuses...")
-        while (webhook.orderStatuses.size < 2) {
-            Thread.sleep(3000)
+        var status: Status? = null
+        while (status != Status.PAYOUT_SETTLED) {
+            Thread.sleep(1500)
+            status = if (webhook.orderStatuses.size > 0) webhook.orderStatuses.last().data.status else null
         }
-        println("OrderStatuses received to webhook ${
-            webhook.orderStatuses.map { listOf(it.metadata.id, it.data.orderStatus).joinToString(", ")
-            }}\n")
     }
 
     // 6. wait for Close to come into webhook
-    println("6. Waiting for Close...")
+    println("\n6. Waiting for Close...")
     while (webhook.close == null) {
         Thread.sleep(3000)
     }
