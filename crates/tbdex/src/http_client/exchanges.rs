@@ -98,8 +98,37 @@ pub fn submit_order(order: &Order) -> Result<()> {
     Ok(())
 }
 
-pub fn submit_close(_close: &Close) -> Result<()> {
-    println!("TbdexHttpClient::submit_close() invoked");
+#[derive(Serialize, Deserialize)]
+pub struct SubmitCancelRequestBody {
+    pub message: Cancel,
+}
+
+impl SubmitCancelRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let request_body = serde_json::from_str::<Self>(json)?;
+        request_body.message.verify()?;
+        Ok(request_body)
+    }
+}
+
+pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
+    let service_endpoint = get_service_endpoint(&cancel.metadata.to)?;
+    let submit_cancel_endpoint = format!(
+        "{}/exchanges/{}",
+        service_endpoint, cancel.metadata.exchange_id
+    );
+
+    cancel.verify()?;
+
+    send_request::<SubmitCancelRequestBody, ()>(
+        &submit_cancel_endpoint,
+        Method::PUT,
+        Some(&SubmitCancelRequestBody {
+            message: cancel.clone(),
+        }),
+        None,
+    )?;
+
     Ok(())
 }
 

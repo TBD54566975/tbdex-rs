@@ -8,7 +8,7 @@ namespace tbdex {
   [Throws=RustCoreError]
   void submit_order(Order order);
   [Throws=RustCoreError]
-  void submit_close(Close close);
+  void submit_cancel(Cancel cancel);
   [Throws=RustCoreError]
   ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
   [Throws=RustCoreError]
@@ -244,6 +244,7 @@ dictionary ExchangeData {
   Rfq rfq;
   Quote? quote;
   Order? order;
+  Cancel? cancel;
   sequence<OrderStatus>? order_statuses;
   Close? close;
 };
@@ -267,6 +268,16 @@ interface SubmitOrderRequestBody {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   SubmitOrderRequestBodyData get_data();
+};
+
+dictionary SubmitCancelRequestBodyData {
+  Cancel message;
+};
+
+interface SubmitCancelRequestBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  SubmitCancelRequestBodyData get_data();
 };
 
 

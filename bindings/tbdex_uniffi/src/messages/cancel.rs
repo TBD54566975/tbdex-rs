@@ -28,6 +28,10 @@ impl Cancel {
         Ok(Self(Arc::new(RwLock::new(close))))
     }
 
+    pub fn from_inner(inner_cancel: InnerCancel) -> Self {
+        Self(Arc::new(RwLock::new(inner_cancel)))
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner_close = InnerCancel::from_json_string(json)?;
 
