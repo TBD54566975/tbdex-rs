@@ -9,21 +9,15 @@ import spark.Response
 import spark.Spark.post
 import spark.Spark.put
 import tbdex.sdk.httpclient.CreateExchangeRequestBody
+import tbdex.sdk.httpclient.SubmitCancelRequestBody
 import tbdex.sdk.httpclient.SubmitOrderRequestBody
-import tbdex.sdk.messages.Quote
-import tbdex.sdk.messages.QuoteData
-import tbdex.sdk.messages.QuoteDetails
-import tbdex.sdk.messages.Order
-import tbdex.sdk.messages.OrderStatus
-import tbdex.sdk.messages.OrderStatusData
-import tbdex.sdk.messages.Close
-import tbdex.sdk.messages.CloseData
+import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
     init {
         post("/exchanges") { req, res -> createExchange(req, res) }
-        put("/exchanges/:id") { req, res -> completeOrder(req, res) }
+        put("/exchanges/:id") { req, res -> updateExchange(req, res) }
     }
 
     private var exchangesToReplyTo: MutableMap<String, String> = mutableMapOf()
@@ -85,23 +79,39 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         this.replyRequest(replyTo, quote.toJson())
     }
 
-    private fun completeOrder(req: Request, res: Response): String {
+    private fun updateExchange(req: Request, res: Response): String {
         println("PUT /exchanges/:id")
 
-        val requestBody = SubmitOrderRequestBody(req.body())
+        var order: Order? = null
+        var cancel: Cancel? = null
 
-        val order = requestBody.message
+        // TODO we're going to implement a parser to alleviate this confusing DX
+        val reqBodyText = req.body()
+        try {
+            val submitOrderRequestBody = SubmitOrderRequestBody(reqBodyText)
+            order = submitOrderRequestBody.message
+        } catch (e: Exception) {
+            val submitCancelRequestBody = SubmitCancelRequestBody(reqBodyText)
+            cancel = submitCancelRequestBody.message
+        }
+
+        if (order != null) {
+            Thread {
+                Thread.sleep(3000)
+                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, "PENDING")
+                Thread.sleep(3000)
+                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,"COMPLETED")
+                Thread.sleep(3000)
+                replyWithClose(order.metadata.from, order.metadata.exchangeId)
+            }.start()
+        } else if (cancel != null) {
+            Thread {
+                Thread.sleep(3000)
+                replyWithClose(cancel.metadata.from, cancel.metadata.exchangeId, false)
+            }.start()
+        }
 
         res.status(202)
-
-        Thread {
-            Thread.sleep(3000)
-            replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, "PENDING")
-            Thread.sleep(3000)
-            replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,"COMPLETED")
-            Thread.sleep(3000)
-            replyWithClose(order.metadata.from, order.metadata.exchangeId)
-        }.start()
 
         return ""
     }
@@ -123,7 +133,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         this.replyRequest(replyTo, orderStatus.toJson())
     }
 
-    private fun replyWithClose(to: String, exchangeId: String) {
+    private fun replyWithClose(to: String, exchangeId: String, success: Boolean? = true) {
         val close = Close(
             bearerDid = this.bearerDid,
             to = to,
@@ -131,7 +141,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             exchangeId = exchangeId,
             data = CloseData(
                 reason = null,
-                success = true
+                success = success
             ),
             "1.0"
         )

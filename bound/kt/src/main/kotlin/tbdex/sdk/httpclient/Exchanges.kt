@@ -6,6 +6,7 @@ import tbdex.sdk.rust.ExchangeData as RustCoreExchange
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.createExchange as rustCoreCreateExchange
 import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
+import tbdex.sdk.rust.submitCancel as rustCoreSubmitCancel
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
@@ -48,6 +49,12 @@ fun submitOrder(order: Order) {
     SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
     rustCoreSubmitOrder(order.rustCoreOrder)
+}
+
+fun submitCancel(cancel: Cancel) {
+    SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+
+    rustCoreSubmitCancel(cancel.rustCoreCancel)
 }
 
 fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Exchange {
