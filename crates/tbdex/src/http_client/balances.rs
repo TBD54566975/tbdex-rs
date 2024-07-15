@@ -1,5 +1,5 @@
 use super::{generate_access_token, get_service_endpoint, send_request, HttpClientError, Result};
-use crate::{http::GetBalancesResponse, resources::balance::Balance};
+use crate::{http::balances::GetBalancesResponse, resources::balance::Balance};
 use reqwest::Method;
 use web5::dids::bearer_did::BearerDid;
 
