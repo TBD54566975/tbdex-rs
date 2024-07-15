@@ -18,7 +18,7 @@ use quote::Quote;
 use rfq::Rfq;
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 use serde_json::Error as SerdeJsonError;
-use std::str::FromStr;
+use std::{str::FromStr, sync::Arc};
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
 use web5::dids::bearer_did::BearerDidError;
 
@@ -109,12 +109,12 @@ pub struct MessageMetadata {
 #[derive(Serialize, Debug)]
 #[serde(untagged)]
 pub enum Message {
-    Rfq(Rfq),
-    Quote(Quote),
-    Order(Order),
-    Cancel(Cancel),
-    OrderStatus(OrderStatus),
-    Close(Close),
+    Rfq(Arc<Rfq>),
+    Quote(Arc<Quote>),
+    Order(Arc<Order>),
+    Cancel(Arc<Cancel>),
+    OrderStatus(Arc<OrderStatus>),
+    Close(Arc<Close>),
 }
 
 impl<'de> Deserialize<'de> for Message {
@@ -147,21 +147,21 @@ impl<'de> Deserialize<'de> for Message {
                         Ok(kind) => match kind {
                             MessageKind::Rfq => {
                                 if let Ok(rfq) = serde_json::from_value::<Rfq>(value.clone()) {
-                                    Ok(Message::Rfq(rfq))
+                                    Ok(Message::Rfq(Arc::new(rfq)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize rfq"))
                                 }
                             }
                             MessageKind::Quote => {
                                 if let Ok(quote) = serde_json::from_value::<Quote>(value.clone()) {
-                                    Ok(Message::Quote(quote))
+                                    Ok(Message::Quote(Arc::new(quote)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize quote"))
                                 }
                             }
                             MessageKind::Order => {
                                 if let Ok(order) = serde_json::from_value::<Order>(value.clone()) {
-                                    Ok(Message::Order(order))
+                                    Ok(Message::Order(Arc::new(order)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize order"))
                                 }
@@ -169,7 +169,7 @@ impl<'de> Deserialize<'de> for Message {
                             MessageKind::Cancel => {
                                 if let Ok(cancel) = serde_json::from_value::<Cancel>(value.clone())
                                 {
-                                    Ok(Message::Cancel(cancel))
+                                    Ok(Message::Cancel(Arc::new(cancel)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize cancel"))
                                 }
@@ -178,7 +178,7 @@ impl<'de> Deserialize<'de> for Message {
                                 if let Ok(order_status) =
                                     serde_json::from_value::<OrderStatus>(value.clone())
                                 {
-                                    Ok(Message::OrderStatus(order_status))
+                                    Ok(Message::OrderStatus(Arc::new(order_status)))
                                 } else {
                                     Err(serde::de::Error::custom(
                                         "failed to deserialize order_status",
@@ -187,7 +187,7 @@ impl<'de> Deserialize<'de> for Message {
                             }
                             MessageKind::Close => {
                                 if let Ok(close) = serde_json::from_value::<Close>(value.clone()) {
-                                    Ok(Message::Close(close))
+                                    Ok(Message::Close(Arc::new(close)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize close"))
                                 }

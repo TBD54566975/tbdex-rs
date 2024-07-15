@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::{get_service_endpoint, send_request, Result};
 use crate::{
     http::exchanges::{
@@ -17,17 +19,17 @@ use web5::dids::bearer_did::BearerDid;
 #[derive(Clone, Default, Deserialize, Serialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Exchange {
-    pub rfq: Rfq,
+    pub rfq: Arc<Rfq>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub quote: Option<Quote>,
+    pub quote: Option<Arc<Quote>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<Order>,
+    pub order: Option<Arc<Order>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cancel: Option<Cancel>,
+    pub cancel: Option<Arc<Cancel>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order_statuses: Option<Vec<OrderStatus>>,
+    pub order_statuses: Option<Vec<Arc<OrderStatus>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub close: Option<Close>,
+    pub close: Option<Arc<Close>>,
 }
 
 pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
@@ -62,7 +64,7 @@ pub fn submit_order(order: &Order) -> Result<()> {
         &submit_order_endpoint,
         Method::PUT,
         Some(&UpdateExchangeRequestBody {
-            message: WalletUpdateMessage::Order(order.clone()),
+            message: WalletUpdateMessage::Order(Arc::new(order.clone())),
         }),
         None,
     )?;
@@ -83,7 +85,7 @@ pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
         &submit_cancel_endpoint,
         Method::PUT,
         Some(&UpdateExchangeRequestBody {
-            message: WalletUpdateMessage::Cancel(cancel.clone()),
+            message: WalletUpdateMessage::Cancel(Arc::new(cancel.clone())),
         }),
         None,
     )?;

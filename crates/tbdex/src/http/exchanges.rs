@@ -4,7 +4,7 @@ use crate::messages::{
     Message, MessageKind,
 };
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
-use std::str::FromStr;
+use std::{str::FromStr, sync::Arc};
 
 #[derive(Serialize, Deserialize)]
 pub struct GetExchangeResponseBody {
@@ -33,8 +33,8 @@ impl JsonSerializer for CreateExchangeRequestBody {}
 #[derive(Serialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum WalletUpdateMessage {
-    Order(Order),
-    Cancel(Cancel),
+    Order(Arc<Order>),
+    Cancel(Arc<Cancel>),
 }
 impl JsonSerializer for WalletUpdateMessage {}
 
@@ -68,7 +68,7 @@ impl<'de> Deserialize<'de> for WalletUpdateMessage {
                         Ok(kind) => match kind {
                             MessageKind::Order => {
                                 if let Ok(order) = serde_json::from_value::<Order>(value.clone()) {
-                                    Ok(WalletUpdateMessage::Order(order))
+                                    Ok(WalletUpdateMessage::Order(Arc::new(order)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize order"))
                                 }
@@ -76,7 +76,7 @@ impl<'de> Deserialize<'de> for WalletUpdateMessage {
                             MessageKind::Cancel => {
                                 if let Ok(cancel) = serde_json::from_value::<Cancel>(value.clone())
                                 {
-                                    Ok(WalletUpdateMessage::Cancel(cancel))
+                                    Ok(WalletUpdateMessage::Cancel(Arc::new(cancel)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize cancel"))
                                 }
@@ -120,9 +120,9 @@ impl JsonSerializer for UpdateExchangeRequestBody {}
 #[derive(Serialize, Debug, PartialEq)]
 #[serde(untagged)]
 pub enum ReplyToMessage {
-    Quote(Quote),
-    OrderStatus(OrderStatus),
-    Close(Close),
+    Quote(Arc<Quote>),
+    OrderStatus(Arc<OrderStatus>),
+    Close(Arc<Close>),
 }
 impl JsonSerializer for ReplyToMessage {}
 
@@ -156,7 +156,7 @@ impl<'de> Deserialize<'de> for ReplyToMessage {
                         Ok(kind) => match kind {
                             MessageKind::Quote => {
                                 if let Ok(quote) = serde_json::from_value::<Quote>(value.clone()) {
-                                    Ok(ReplyToMessage::Quote(quote))
+                                    Ok(ReplyToMessage::Quote(Arc::new(quote)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize quote"))
                                 }
@@ -165,7 +165,7 @@ impl<'de> Deserialize<'de> for ReplyToMessage {
                                 if let Ok(order_status) =
                                     serde_json::from_value::<OrderStatus>(value.clone())
                                 {
-                                    Ok(ReplyToMessage::OrderStatus(order_status))
+                                    Ok(ReplyToMessage::OrderStatus(Arc::new(order_status)))
                                 } else {
                                     Err(serde::de::Error::custom(
                                         "failed to deserialize order_status",
@@ -174,7 +174,7 @@ impl<'de> Deserialize<'de> for ReplyToMessage {
                             }
                             MessageKind::Close => {
                                 if let Ok(close) = serde_json::from_value::<Close>(value.clone()) {
-                                    Ok(ReplyToMessage::Close(close))
+                                    Ok(ReplyToMessage::Close(Arc::new(close)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize close"))
                                 }
@@ -235,7 +235,7 @@ mod tests {
         let parsed_order = Order::from_json_string(&test_vector.input).unwrap();
 
         let update_exchange_request_body = UpdateExchangeRequestBody {
-            message: WalletUpdateMessage::Order(parsed_order),
+            message: WalletUpdateMessage::Order(Arc::new(parsed_order)),
         };
 
         let serialized = update_exchange_request_body.to_json_string().unwrap();
@@ -253,7 +253,7 @@ mod tests {
         let parsed_cancel = Cancel::from_json_string(&test_vector.input).unwrap();
 
         let update_exchange_request_body = UpdateExchangeRequestBody {
-            message: WalletUpdateMessage::Cancel(parsed_cancel),
+            message: WalletUpdateMessage::Cancel(Arc::new(parsed_cancel)),
         };
 
         let serialized = update_exchange_request_body.to_json_string().unwrap();
@@ -271,7 +271,7 @@ mod tests {
         let parsed_quote = Quote::from_json_string(&test_vector.input).unwrap();
 
         let reply_to_request_body = ReplyToRequestBody {
-            message: ReplyToMessage::Quote(parsed_quote),
+            message: ReplyToMessage::Quote(Arc::new(parsed_quote)),
         };
 
         let serialized = reply_to_request_body.to_json_string().unwrap();
@@ -290,7 +290,7 @@ mod tests {
         let parsed_order_status = OrderStatus::from_json_string(&test_vector.input).unwrap();
 
         let reply_to_request_body = ReplyToRequestBody {
-            message: ReplyToMessage::OrderStatus(parsed_order_status),
+            message: ReplyToMessage::OrderStatus(Arc::new(parsed_order_status)),
         };
 
         let serialized = reply_to_request_body.to_json_string().unwrap();
@@ -308,7 +308,7 @@ mod tests {
         let parsed_close = Close::from_json_string(&test_vector.input).unwrap();
 
         let reply_to_request_body = ReplyToRequestBody {
-            message: ReplyToMessage::Close(parsed_close),
+            message: ReplyToMessage::Close(Arc::new(parsed_close)),
         };
 
         let serialized = reply_to_request_body.to_json_string().unwrap();
