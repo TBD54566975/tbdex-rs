@@ -30,7 +30,7 @@ impl ToJson for Rfq {}
 impl FromJson for Rfq {}
 
 impl Rfq {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         to: &str,
         from: &str,
@@ -534,7 +534,7 @@ mod tests {
 
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
-        let rfq = Rfq::new(
+        let rfq = Rfq::create(
             &bearer_did,
             "did:test:pfi",
             &did_jwk.did.uri,

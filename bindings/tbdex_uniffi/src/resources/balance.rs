@@ -15,7 +15,7 @@ impl Balance {
         data: BalanceData,
         protocol: String,
     ) -> Result<Self> {
-        let inner_balance = InnerBalance::new(&bearer_did.0.clone(), &from, &data, &protocol)?;
+        let inner_balance = InnerBalance::create(&bearer_did.0.clone(), &from, &data, &protocol)?;
 
         Ok(Self(Arc::new(RwLock::new(inner_balance))))
     }

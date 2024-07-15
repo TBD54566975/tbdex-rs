@@ -22,7 +22,7 @@ impl Rfq {
     ) -> Result<Self> {
         let create_rfq_data =
             serde_json::from_str::<InnerCreateRfqData>(&json_serialized_create_rfq_data)?;
-        let rfq = InnerRfq::new(
+        let rfq = InnerRfq::create(
             &bearer_did.0.clone(),
             &to,
             &from,

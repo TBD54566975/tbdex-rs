@@ -18,7 +18,7 @@ impl ToJson for Quote {}
 impl FromJson for Quote {}
 
 impl Quote {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         to: &str,
         from: &str,

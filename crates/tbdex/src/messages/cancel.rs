@@ -18,7 +18,7 @@ impl ToJson for Cancel {}
 impl FromJson for Cancel {}
 
 impl Cancel {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         to: &str,
         from: &str,

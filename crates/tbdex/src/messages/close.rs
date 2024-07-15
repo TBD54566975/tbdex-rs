@@ -18,7 +18,7 @@ impl ToJson for Close {}
 impl FromJson for Close {}
 
 impl Close {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         to: &str,
         from: &str,

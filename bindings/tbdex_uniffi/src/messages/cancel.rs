@@ -18,7 +18,7 @@ impl Cancel {
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let close = InnerCancel::new(
+        let close = InnerCancel::create(
             &bearer_did.0.clone(),
             &to,
             &from,

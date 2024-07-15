@@ -18,7 +18,7 @@ impl Close {
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let close = InnerClose::new(
+        let close = InnerClose::create(
             &bearer_did.0.clone(),
             &to,
             &from,

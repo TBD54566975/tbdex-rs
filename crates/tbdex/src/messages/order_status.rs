@@ -18,7 +18,7 @@ impl ToJson for OrderStatus {}
 impl FromJson for OrderStatus {}
 
 impl OrderStatus {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         to: &str,
         from: &str,

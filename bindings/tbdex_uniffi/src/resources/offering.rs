@@ -16,7 +16,7 @@ impl Offering {
         protocol: String,
     ) -> Result<Self> {
         let data = serde_json::from_str::<InnerOfferingData>(&json_serialized_data)?;
-        let inner_offering = InnerOffering::new(&bearer_did.0.clone(), &from, &data, &protocol)?;
+        let inner_offering = InnerOffering::create(&bearer_did.0.clone(), &from, &data, &protocol)?;
         Ok(Self(Arc::new(RwLock::new(inner_offering))))
     }
 

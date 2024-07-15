@@ -18,7 +18,7 @@ impl ToJson for Balance {}
 impl FromJson for Balance {}
 
 impl Balance {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         from: &str,
         data: &BalanceData,

@@ -20,7 +20,7 @@ impl ToJson for Offering {}
 impl FromJson for Offering {}
 
 impl Offering {
-    pub fn new(
+    pub fn create(
         bearer_did: &BearerDid,
         from: &str,
         data: &OfferingData,
@@ -175,7 +175,7 @@ mod tests {
 
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
-        let offering = Offering::new(
+        let offering = Offering::create(
             &bearer_did,
             &did_jwk.did.uri,
             &OfferingData {

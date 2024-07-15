@@ -18,7 +18,7 @@ impl OrderStatus {
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let order_status = InnerOrderStatus::new(
+        let order_status = InnerOrderStatus::create(
             &bearer_did.0.clone(),
             &to,
             &from,

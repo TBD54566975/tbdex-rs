@@ -41,7 +41,7 @@ fn main() {
     // assert_ne!(0, balances.len());
 
     // create exchange
-    let rfq = Rfq::new(
+    let rfq = Rfq::create(
             &bearer_did,
             &pfi_did_uri,
             &bearer_did.did.uri,
@@ -74,7 +74,7 @@ fn main() {
 
     // submit order
     submit_order(
-        &Order::new(
+        &Order::create(
             &bearer_did,
             &pfi_did_uri,
             &bearer_did.did.uri,

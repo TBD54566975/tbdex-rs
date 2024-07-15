@@ -18,7 +18,7 @@ impl Quote {
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let quote = InnerQuote::new(
+        let quote = InnerQuote::create(
             &bearer_did.0.clone(),
             &to,
             &from,

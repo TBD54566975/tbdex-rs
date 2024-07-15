@@ -17,7 +17,7 @@ impl Order {
         protocol: String,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let order = InnerOrder::new(
+        let order = InnerOrder::create(
             &bearer_did.0.clone(),
             &to,
             &from,
