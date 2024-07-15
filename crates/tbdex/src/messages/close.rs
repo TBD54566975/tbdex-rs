@@ -48,8 +48,6 @@ impl Close {
             )?,
         };
 
-        close.verify()?;
-
         Ok(close)
     }
 

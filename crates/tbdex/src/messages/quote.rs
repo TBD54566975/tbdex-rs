@@ -48,8 +48,6 @@ impl Quote {
             )?,
         };
 
-        quote.verify()?;
-
         Ok(quote)
     }
 

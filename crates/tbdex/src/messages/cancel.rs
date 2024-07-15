@@ -48,8 +48,6 @@ impl Cancel {
             )?,
         };
 
-        cancel.verify()?;
-
         Ok(cancel)
     }
 

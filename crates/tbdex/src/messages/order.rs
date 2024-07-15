@@ -49,8 +49,6 @@ impl Order {
             )?,
         };
 
-        order.verify()?;
-
         Ok(order)
     }
 

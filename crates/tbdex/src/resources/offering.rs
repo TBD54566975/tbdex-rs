@@ -47,8 +47,6 @@ impl Offering {
             )?,
         };
 
-        offering.verify()?;
-
         Ok(offering)
     }
 
