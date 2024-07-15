@@ -6,7 +6,7 @@ pub mod quote;
 pub mod rfq;
 
 use crate::{
-    http::{JsonDeserializer, JsonSerializer},
+    json::{FromJson, ToJson},
     json_schemas::JsonSchemaError,
     signature::SignatureError,
 };

@@ -1,5 +1,6 @@
 use super::{MessageKind, MessageMetadata, Result};
 use crate::{
+    json::{FromJson, ToJson},
     json_schemas::generated::{
         MESSAGE_JSON_SCHEMA, RFQ_DATA_JSON_SCHEMA, RFQ_PRIVATE_DATA_JSON_SCHEMA,
     },
@@ -24,6 +25,9 @@ pub struct Rfq {
     pub private_data: Option<RfqPrivateData>,
     pub signature: String,
 }
+
+impl ToJson for Rfq {}
+impl FromJson for Rfq {}
 
 impl Rfq {
     pub fn new(
@@ -65,20 +69,6 @@ impl Rfq {
         Ok(rfq)
     }
 
-    pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
-        let rfq = serde_json::from_str::<Self>(json)?;
-
-        rfq.verify()?;
-
-        if require_all_private_data {
-            rfq.verify_all_private_data()?;
-        } else {
-            rfq.verify_present_private_data()?;
-        }
-
-        Ok(rfq)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -100,10 +90,6 @@ impl Rfq {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 
     pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<()> {
@@ -574,11 +560,11 @@ mod tests {
 
         assert_ne!(String::default(), rfq.signature);
 
-        let rfq_json_string = rfq.to_json().unwrap();
+        let rfq_json_string = rfq.to_json_string().unwrap();
 
         assert_ne!(String::default(), rfq_json_string);
 
-        let parsed_rfq = Rfq::from_json_string(&rfq_json_string, true).unwrap();
+        let parsed_rfq = Rfq::from_json_string(&rfq_json_string).unwrap();
 
         assert_eq!(rfq, parsed_rfq);
     }
@@ -601,7 +587,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input, true).unwrap();
+        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input).unwrap();
 
         parsed_rfq.verify_all_private_data().unwrap();
 
@@ -615,7 +601,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input, false).unwrap();
+        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input).unwrap();
 
         parsed_rfq.verify_present_private_data().unwrap();
 

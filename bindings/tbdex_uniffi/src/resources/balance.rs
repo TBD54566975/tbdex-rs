@@ -1,6 +1,9 @@
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::resources::balance::{Balance as InnerBalance, BalanceData};
+use tbdex::{
+    json::{FromJson, ToJson},
+    resources::balance::{Balance as InnerBalance, BalanceData},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Balance(pub Arc<RwLock<InnerBalance>>);
@@ -29,7 +32,7 @@ impl Balance {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_balance.to_json()?)
+        Ok(inner_balance.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerBalance> {

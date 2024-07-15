@@ -1,6 +1,9 @@
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::resources::offering::{Offering as InnerOffering, OfferingData as InnerOfferingData};
+use tbdex::{
+    json::{FromJson, ToJson},
+    resources::offering::{Offering as InnerOffering, OfferingData as InnerOfferingData},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Offering(pub Arc<RwLock<InnerOffering>>);
@@ -28,7 +31,7 @@ impl Offering {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_offering.to_json()?)
+        Ok(inner_offering.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<data::Offering> {

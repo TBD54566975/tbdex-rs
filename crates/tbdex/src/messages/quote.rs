@@ -1,5 +1,8 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::json_schemas::generated::{MESSAGE_JSON_SCHEMA, QUOTE_DATA_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{MESSAGE_JSON_SCHEMA, QUOTE_DATA_JSON_SCHEMA},
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -10,6 +13,9 @@ pub struct Quote {
     pub data: QuoteData,
     pub signature: String,
 }
+
+impl ToJson for Quote {}
+impl FromJson for Quote {}
 
 impl Quote {
     pub fn new(
@@ -47,12 +53,6 @@ impl Quote {
         Ok(quote)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let quote = serde_json::from_str::<Self>(json)?;
-        quote.verify()?;
-        Ok(quote)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -69,10 +69,6 @@ impl Quote {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 

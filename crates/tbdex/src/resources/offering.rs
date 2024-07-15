@@ -1,5 +1,8 @@
 use super::{ResourceKind, ResourceMetadata, Result};
-use crate::json_schemas::generated::{OFFERING_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{OFFERING_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA},
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::{
@@ -12,6 +15,9 @@ pub struct Offering {
     pub data: OfferingData,
     pub signature: String,
 }
+
+impl ToJson for Offering {}
+impl FromJson for Offering {}
 
 impl Offering {
     pub fn new(
@@ -46,12 +52,6 @@ impl Offering {
         Ok(offering)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let offering = serde_json::from_str::<Self>(json)?;
-        offering.verify()?;
-        Ok(offering)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(RESOURCE_JSON_SCHEMA, self)?;
@@ -68,10 +68,6 @@ impl Offering {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 
@@ -212,7 +208,7 @@ mod tests {
 
         assert_ne!(String::default(), offering.signature);
 
-        let offering_json_string = offering.to_json().unwrap();
+        let offering_json_string = offering.to_json_string().unwrap();
 
         assert_ne!(String::default(), offering_json_string);
 

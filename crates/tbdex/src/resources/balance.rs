@@ -1,5 +1,8 @@
 use super::{ResourceKind, ResourceMetadata, Result};
-use crate::json_schemas::generated::{BALANCE_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{BALANCE_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA},
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -10,6 +13,9 @@ pub struct Balance {
     pub data: BalanceData,
     pub signature: String,
 }
+
+impl ToJson for Balance {}
+impl FromJson for Balance {}
 
 impl Balance {
     pub fn new(
@@ -44,12 +50,6 @@ impl Balance {
         Ok(balance)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let balance = serde_json::from_str::<Self>(json)?;
-        balance.verify()?;
-        Ok(balance)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(RESOURCE_JSON_SCHEMA, self)?;
@@ -66,10 +66,6 @@ impl Balance {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 

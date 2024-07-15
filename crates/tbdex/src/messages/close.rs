@@ -1,5 +1,8 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::json_schemas::generated::{CLOSE_DATA_JSON_SCHEMA, MESSAGE_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{CLOSE_DATA_JSON_SCHEMA, MESSAGE_JSON_SCHEMA},
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -10,6 +13,9 @@ pub struct Close {
     pub data: CloseData,
     pub signature: String,
 }
+
+impl ToJson for Close {}
+impl FromJson for Close {}
 
 impl Close {
     pub fn new(
@@ -47,12 +53,6 @@ impl Close {
         Ok(close)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let close = serde_json::from_str::<Self>(json)?;
-        close.verify()?;
-        Ok(close)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -69,10 +69,6 @@ impl Close {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 
