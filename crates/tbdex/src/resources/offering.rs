@@ -41,14 +41,11 @@ impl Offering {
             )?,
         };
 
-        offering.verify()?;
-
         Ok(offering)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let offering = serde_json::from_str::<Self>(json)?;
-        offering.verify()?;
         Ok(offering)
     }
 
@@ -241,6 +238,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
         let parsed_offering: Offering = Offering::from_json_string(&test_vector.input).unwrap();
 
+        assert!(parsed_offering.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_offering);
     }
 }

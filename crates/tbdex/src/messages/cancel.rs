@@ -42,14 +42,11 @@ impl Cancel {
             )?,
         };
 
-        cancel.verify()?;
-
         Ok(cancel)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let cancel = serde_json::from_str::<Self>(json)?;
-        cancel.verify()?;
         Ok(cancel)
     }
 
@@ -100,6 +97,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
         let parsed_cancel: Cancel = Cancel::from_json_string(&test_vector.input).unwrap();
 
+        assert!(parsed_cancel.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_cancel);
     }
 }

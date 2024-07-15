@@ -60,15 +60,11 @@ impl Rfq {
             )?,
         };
 
-        rfq.verify()?;
-
         Ok(rfq)
     }
 
     pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
         let rfq = serde_json::from_str::<Self>(json)?;
-
-        rfq.verify()?;
 
         if require_all_private_data {
             rfq.verify_all_private_data()?;
@@ -605,6 +601,7 @@ mod tbdex_test_vectors_protocol {
 
         parsed_rfq.verify_all_private_data().unwrap();
 
+        assert!(parsed_rfq.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_rfq);
     }
 
@@ -619,6 +616,7 @@ mod tbdex_test_vectors_protocol {
 
         parsed_rfq.verify_present_private_data().unwrap();
 
+        assert!(parsed_rfq.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_rfq);
     }
 }

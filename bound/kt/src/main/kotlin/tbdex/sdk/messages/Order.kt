@@ -45,4 +45,8 @@ class Order {
     fun toJson(): String {
         return this.rustCoreOrder.toJson()
     }
+
+    fun verify() {
+//        this.rustCoreOrder.ver
+    }
 }

@@ -53,4 +53,13 @@ impl Order {
 
         Ok(order.clone())
     }
+
+    pub fn verify(&self) -> Result<()> {
+        let order = self
+        .0
+        .read()
+        .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(order.verify()?)
+    }
 }

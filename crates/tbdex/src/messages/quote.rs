@@ -42,14 +42,11 @@ impl Quote {
             )?,
         };
 
-        quote.verify()?;
-
         Ok(quote)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let quote = serde_json::from_str::<Self>(json)?;
-        quote.verify()?;
         Ok(quote)
     }
 
@@ -125,6 +122,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
         let parsed_quote: Quote = Quote::from_json_string(&test_vector.input).unwrap();
 
+        assert!(parsed_quote.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_quote);
     }
 }

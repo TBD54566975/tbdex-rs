@@ -43,14 +43,11 @@ impl Order {
             )?,
         };
 
-        order.verify()?;
-
         Ok(order)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let order = serde_json::from_str::<Self>(json)?;
-        order.verify()?;
         Ok(order)
     }
 
@@ -99,6 +96,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
         let parsed_order: Order = Order::from_json_string(&test_vector.input).unwrap();
 
+        assert!(parsed_order.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_order);
     }
 }

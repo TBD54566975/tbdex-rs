@@ -42,14 +42,11 @@ impl Close {
             )?,
         };
 
-        close.verify()?;
-
         Ok(close)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let close = serde_json::from_str::<Self>(json)?;
-        close.verify()?;
         Ok(close)
     }
 
@@ -103,6 +100,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
         let parsed_close: Close = Close::from_json_string(&test_vector.input).unwrap();
 
+        assert!(parsed_close.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_close);
     }
 }

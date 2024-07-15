@@ -42,14 +42,11 @@ impl OrderStatus {
             )?,
         };
 
-        order_status.verify()?;
-
         Ok(order_status)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
         let order_status = serde_json::from_str::<Self>(json)?;
-        order_status.verify()?;
         Ok(order_status)
     }
 
@@ -123,6 +120,7 @@ mod tbdex_test_vectors_protocol {
         let parsed_order_status: OrderStatus =
             OrderStatus::from_json_string(&test_vector.input).unwrap();
 
+        assert!(parsed_order_status.verify().is_ok(), "Verification failed");
         assert_eq!(test_vector.output, parsed_order_status);
     }
 }

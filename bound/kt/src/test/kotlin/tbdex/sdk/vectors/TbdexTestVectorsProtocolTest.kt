@@ -14,55 +14,62 @@ class TbdexTestVectorsProtocolTest {
      */
     @Test
     fun parse_order() {
-        testVector("parse-order.json", ::Order) { it.toJson() }
+        testVector("parse-order.json", ::Order, { it.toJson() }, { it.verify() })
     }
 
     @Test
     fun parse_orderstatus() {
-        testVector("parse-orderstatus.json", ::OrderStatus) { it.toJson() }
+        testVector("parse-orderstatus.json", ::OrderStatus, { it.toJson() })
     }
 
     @Test
     fun parse_rfq() {
-        testVector("parse-rfq.json", { input -> Rfq(input, true) }) { it.toJson() }
+        testVector("parse-rfq.json", { input -> Rfq(input, true) }, { it.toJson() })
     }
 
     @Test
     fun parse_rfq_omit_private_data() {
-        testVector("parse-rfq-omit-private-data.json", { input -> Rfq(input, false) }) { it.toJson() }
+        testVector("parse-rfq-omit-private-data.json", { input -> Rfq(input, false) }, { it.toJson() })
     }
 
     @Test
     fun parse_balance() {
-        testVector("parse-balance.json", ::Balance) { it.toJson() }
+        testVector("parse-balance.json", ::Balance, { it.toJson() })
     }
 
     @Test
     fun parse_offering() {
-        testVector("parse-offering.json", ::Offering) { it.toJson() }
+        testVector("parse-offering.json", ::Offering, { it.toJson() })
     }
 
     @Test
     fun parse_quote() {
-        testVector("parse-quote.json", ::Quote) { it.toJson() }
+        testVector("parse-quote.json", ::Quote, { it.toJson() })
     }
 
     @Test
     fun parse_close() {
-        testVector("parse-close.json", ::Close) { it.toJson() }
+        testVector("parse-close.json", ::Close, { it.toJson() })
     }
 
     @Test
     fun parse_cancel() {
-        testVector("parse-cancel.json", ::Cancel) { it.toJson() }
+        testVector("parse-cancel.json", ::Cancel, { it.toJson() })
     }
 
-    private fun <T> testVector(vectorFileName: String, objectCreation: (String) -> T, toJson: (T) -> String) {
+    private fun <T> testVector(
+        vectorFileName: String,
+        objectCreation: (String) -> T,
+        toJson: (T) -> String,
+        verify: ((T) -> Unit)? = null
+    ) {
         val vector = TestVectors.getVector(vectorFileName)
         assertNotNull(vector)
 
         val input = vector!!.get("input").textValue()
         val obj = objectCreation(input)
+
+        verify?.invoke(obj)
 
         assertEquals(vector["output"], Json.jsonMapper.readTree(toJson(obj)))
     }
