@@ -79,7 +79,28 @@ impl OrderStatus {
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderStatusData {
-    pub order_status: String,
+    pub status: Status,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub details: Option<String>,
+}
+
+#[derive(Debug, Default, Deserialize, PartialEq, Serialize, Clone)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum Status {
+    #[default]
+    PayinPending,
+    PayinInitiated,
+    PayinSettled,
+    PayinFailed,
+    PayinExpired,
+    PayoutPending,
+    PayoutInitiated,
+    PayoutSettled,
+    PayoutFailed,
+    RefundPending,
+    RefundInitiated,
+    RefundSettled,
+    RefundFailed,
 }
 
 #[cfg(test)]

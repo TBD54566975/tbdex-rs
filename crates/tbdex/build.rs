@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn write_json_schemas() -> Result<(), Box<dyn std::error::Error>> {
-    let commit_hash = "3c2f3b4083cea146a874a85337324b3ca0b3f6b0";
+    let commit_hash = "621f54f078401c1552fc18d6b5f69bc1ba697221";
     let schemas = vec![
       ("DEFINITIONS_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/definitions.json", commit_hash)),
       ("RESOURCE_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/resource.schema.json", commit_hash)),
@@ -14,6 +14,7 @@ fn write_json_schemas() -> Result<(), Box<dyn std::error::Error>> {
       ("RFQ_PRIVATE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/rfq-private.schema.json", commit_hash)),
       ("QUOTE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/quote.schema.json", commit_hash)),
       ("ORDER_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/order.schema.json", commit_hash)),
+      ("CANCEL_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/cancel.schema.json", commit_hash)),
       ("ORDER_STATUS_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/orderstatus.schema.json", commit_hash)),
       ("CLOSE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/close.schema.json", commit_hash)),
   ];

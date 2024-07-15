@@ -78,7 +78,7 @@ impl Rfq {
         Ok(inner_rfq.clone())
     }
 
-    pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<bool> {
+    pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<()> {
         let rfq = self
             .0
             .read()
@@ -87,7 +87,7 @@ impl Rfq {
         Ok(rfq.verify_offering_requirements(&offering.to_inner()?)?)
     }
 
-    pub fn verify_all_private_data(&self) -> Result<bool> {
+    pub fn verify_all_private_data(&self) -> Result<()> {
         let rfq = self
             .0
             .read()
@@ -96,7 +96,7 @@ impl Rfq {
         Ok(rfq.verify_all_private_data()?)
     }
 
-    pub fn verify_present_private_data(&self) -> Result<bool> {
+    pub fn verify_present_private_data(&self) -> Result<()> {
         let rfq = self
             .0
             .read()

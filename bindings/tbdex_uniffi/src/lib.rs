@@ -9,13 +9,15 @@ use crate::{
     http_client::{
         balances::get_balances,
         exchanges::{
-            create_exchange, get_exchange, get_exchanges, submit_close, submit_order,
+            create_exchange, get_exchange, get_exchanges, submit_cancel, submit_order,
             CreateExchangeRequestBody, CreateExchangeRequestBodyData, Exchange as ExchangeData,
-            SubmitOrderRequestBody, SubmitOrderRequestBodyData,
+            SubmitCancelRequestBody, SubmitCancelRequestBodyData, SubmitOrderRequestBody,
+            SubmitOrderRequestBodyData,
         },
         offerings::get_offerings,
     },
     messages::{
+        cancel::Cancel,
         close::Close,
         order::Order,
         order_status::OrderStatus,
@@ -29,9 +31,13 @@ use crate::{
 };
 use tbdex::{
     messages::{
+        cancel::{Cancel as CancelData, CancelData as CancelDataData},
         close::{Close as CloseData, CloseData as CloseDataData},
         order::{Order as OrderData, OrderData as OrderDataData},
-        order_status::{OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData},
+        order_status::{
+            OrderStatus as OrderStatusData, OrderStatusData as OrderStatusDataData,
+            Status as OrderStatusStatus,
+        },
         quote::{
             PaymentInstruction as PaymentInstructionData, Quote as QuoteData,
             QuoteData as QuoteDataData, QuoteDetails as QuoteDetailsData,

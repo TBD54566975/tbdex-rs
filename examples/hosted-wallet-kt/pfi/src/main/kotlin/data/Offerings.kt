@@ -1,11 +1,6 @@
 package data
 
-import tbdex.sdk.resources.Offering
-import tbdex.sdk.resources.OfferingData
-import tbdex.sdk.resources.PayinDetails
-import tbdex.sdk.resources.PayinMethod
-import tbdex.sdk.resources.PayoutDetails
-import tbdex.sdk.resources.PayoutMethod
+import tbdex.sdk.resources.*
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PresentationDefinition
 import tbdex.sdk.web5.InputDescriptor
@@ -83,6 +78,9 @@ class Offerings(private val bearerDid: BearerDid) {
                             )
                         )
                     )
+                ),
+                cancellation = CancellationDetails(
+                    enabled = false
                 )
             ),
             "1.0"
