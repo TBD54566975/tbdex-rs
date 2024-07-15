@@ -5,7 +5,11 @@ pub mod order_status;
 pub mod quote;
 pub mod rfq;
 
-use crate::{http::{JsonDeserializer, JsonSerializer}, json_schemas::JsonSchemaError, signature::SignatureError};
+use crate::{
+    http::{JsonDeserializer, JsonSerializer},
+    json_schemas::JsonSchemaError,
+    signature::SignatureError,
+};
 use cancel::Cancel;
 use close::Close;
 use order::Order;
