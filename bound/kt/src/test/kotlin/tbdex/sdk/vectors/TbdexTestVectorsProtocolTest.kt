@@ -47,6 +47,16 @@ class TbdexTestVectorsProtocolTest {
         testVector("parse-quote.json", ::Quote) { it.toJson() }
     }
 
+    @Test
+    fun parse_close() {
+        testVector("parse-close.json", ::Close) { it.toJson() }
+    }
+
+    @Test
+    fun parse_cancel() {
+        testVector("parse-cancel.json", ::Cancel) { it.toJson() }
+    }
+
     private fun <T> testVector(vectorFileName: String, objectCreation: (String) -> T, toJson: (T) -> String) {
         val vector = TestVectors.getVector(vectorFileName)
         assertNotNull(vector)
