@@ -306,6 +306,20 @@ interface CreateExchangeRequestBody {
   CreateExchangeRequestBodyData get_data();
 };
 
+dictionary UpdateExchangeRequestBodyData {
+  MessageKind kind;
+  string json_serialized_message;
+};
+
+interface UpdateExchangeRequestBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  UpdateExchangeRequestBodyData get_data();
+};
+
+
 dictionary SubmitOrderRequestBodyData {
   Order message;
 };

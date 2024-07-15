@@ -9,7 +9,10 @@ use crate::{
     errors::RustCoreError,
     http::{
         balances::{GetBalancesResponseBody, GetBalancesResponseBodyData},
-        exchanges::{CreateExchangeRequestBody, CreateExchangeRequestBodyData},
+        exchanges::{
+            CreateExchangeRequestBody, CreateExchangeRequestBodyData, UpdateExchangeRequestBody,
+            UpdateExchangeRequestBodyData,
+        },
         offerings::{GetOfferingsResponseBody, GetOfferingsResponseBodyData},
     },
     http_client::{
