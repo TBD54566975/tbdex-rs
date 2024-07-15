@@ -117,8 +117,8 @@ pub enum Message {
     Close(Arc<Close>),
 }
 
-impl JsonSerializer for Message {}
-impl JsonDeserializer for Message {}
+impl ToJson for Message {}
+impl FromJson for Message {}
 
 impl<'de> Deserialize<'de> for Message {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
