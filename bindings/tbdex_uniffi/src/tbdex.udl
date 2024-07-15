@@ -215,7 +215,24 @@ dictionary OrderStatusData {
 };
 
 dictionary OrderStatusDataData {
-  string order_status;
+  OrderStatusStatus status;
+  string? details;
+};
+
+enum OrderStatusStatus {
+  "PayinPending",
+  "PayinInitiated",
+  "PayinSettled",
+  "PayinFailed",
+  "PayinExpired",
+  "PayoutPending",
+  "PayoutInitiated",
+  "PayoutSettled",
+  "PayoutFailed",
+  "RefundPending",
+  "RefundInitiated",
+  "RefundSettled",
+  "RefundFailed"
 };
 
 interface Close {
