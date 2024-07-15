@@ -12,6 +12,7 @@ object TestVectors {
         val vectors = mutableMapOf<String, JsonNode>()
         val vectorFiles = arrayOf(
             "parse-close.json",
+            "parse-cancel.json",
             "parse-offering.json",
             "parse-order.json",
             "parse-orderstatus.json",
@@ -20,7 +21,7 @@ object TestVectors {
             "parse-rfq-omit-private-data.json",
             "parse-balance.json"
         )
-        
+
         val basePath = "../../tbdex/hosted/test-vectors/protocol/vectors/"
 
         for (vectorFile in vectorFiles) {
