@@ -26,7 +26,7 @@ impl Balance {
         Ok(Self(Arc::new(RwLock::new(inner_balance))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_balance = self
             .0
             .read()

@@ -52,6 +52,6 @@ class Cancel: Message, WalletUpdateMessage {
     }
 
     fun toJson(): String {
-        return this.rustCoreCancel.toJson()
+        return this.rustCoreCancel.toJsonString()
     }
 }

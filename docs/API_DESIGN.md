@@ -118,7 +118,7 @@ CLASS Offering IMPLEMENTS Resource
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
   CONSTRUCTOR(json: string) 
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `OfferingData`
@@ -200,7 +200,7 @@ CLASS Balance IMPLEMENTS Resource
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
   CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `BalanceData`
@@ -267,7 +267,7 @@ CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string, requireAllPrivateData: bool?)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `CreateRfqData`
@@ -350,7 +350,7 @@ CLASS Quote IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `QuoteData`
@@ -389,7 +389,7 @@ CLASS Order IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ## `Cancel`
@@ -401,7 +401,7 @@ CLASS Cancel IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `CancelData`
@@ -420,7 +420,7 @@ CLASS OrderStatus IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `OrderStatusData`
@@ -439,7 +439,7 @@ CLASS Close IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  METHOD to_json_string(): string
 ```
 
 ### `CloseData`

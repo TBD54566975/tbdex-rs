@@ -44,6 +44,6 @@ class Order: Message, WalletUpdateMessage {
     }
 
     fun toJson(): String {
-        return this.rustCoreOrder.toJson()
+        return this.rustCoreOrder.toJsonString()
     }
 }

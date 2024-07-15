@@ -38,13 +38,13 @@ impl Rfq {
         Self(Arc::new(RwLock::new(inner_rfq)))
     }
 
-    pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
+    pub fn from_json_string(json: &str) -> Result<Self> {
         let inner_rfq = InnerRfq::from_json_string(json)?;
 
         Ok(Self(Arc::new(RwLock::new(inner_rfq))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_rfq = self
             .0
             .read()

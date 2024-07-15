@@ -25,7 +25,7 @@ impl Offering {
         Ok(Self(Arc::new(RwLock::new(inner_offering))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_offering = self
             .0
             .read()

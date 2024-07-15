@@ -54,6 +54,6 @@ class OrderStatus: Message, ReplyToMessage {
     }
 
     fun toJson(): String {
-        return this.rustCoreOrderStatus.toJson()
+        return this.rustCoreOrderStatus.toJsonString()
     }
 }
