@@ -1,7 +1,14 @@
 use super::{JsonDeserializer, JsonSerializer};
-use crate::messages::{cancel::Cancel, order::Order, rfq::Rfq, MessageKind};
+use crate::messages::{cancel::Cancel, order::Order, rfq::Rfq, Message, MessageKind};
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 use std::str::FromStr;
+
+#[derive(Serialize, Deserialize)]
+pub struct GetExchangeResponseBody {
+    pub data: Vec<Message>,
+}
+impl JsonDeserializer for GetExchangeResponseBody {}
+impl JsonSerializer for GetExchangeResponseBody {}
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
