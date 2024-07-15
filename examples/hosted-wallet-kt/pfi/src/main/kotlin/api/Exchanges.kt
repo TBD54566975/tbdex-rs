@@ -8,6 +8,7 @@ import spark.Request
 import spark.Response
 import spark.Spark.post
 import spark.Spark.put
+import tbdex.sdk.http.UpdateExchangeRequestBody
 import tbdex.sdk.httpclient.CreateExchangeRequestBody
 import tbdex.sdk.httpclient.SubmitCancelRequestBody
 import tbdex.sdk.httpclient.SubmitOrderRequestBody
@@ -82,37 +83,30 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private fun updateExchange(req: Request, res: Response): String {
         println("PUT /exchanges/:id")
 
-        var order: Order? = null
-        var cancel: Cancel? = null
-
-        // TODO we're going to implement a parser to alleviate this confusing DX
-        val reqBodyText = req.body()
-        try {
-            val submitOrderRequestBody = SubmitOrderRequestBody(reqBodyText)
-            order = submitOrderRequestBody.message
-        } catch (e: Exception) {
-            val submitCancelRequestBody = SubmitCancelRequestBody(reqBodyText)
-            cancel = submitCancelRequestBody.message
-        }
-
-        if (order != null) {
-            Thread {
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, Status.PAYIN_INITIATED)
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYIN_SETTLED)
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYOUT_INITIATED)
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYOUT_SETTLED)
-                Thread.sleep(1000)
-                replyWithClose(order.metadata.from, order.metadata.exchangeId)
-            }.start()
-        } else if (cancel != null) {
-            Thread {
-                Thread.sleep(3000)
-                replyWithClose(cancel.metadata.from, cancel.metadata.exchangeId, false)
-            }.start()
+        val updateExchangeRequestBody = UpdateExchangeRequestBody.fromJsonString(req.body())
+        when (val message = updateExchangeRequestBody.message) {
+            is Order -> {
+                // simulate order execution
+                Thread {
+                    Thread.sleep(1000)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId, Status.PAYIN_INITIATED)
+                    Thread.sleep(1000)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYIN_SETTLED)
+                    Thread.sleep(1000)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYOUT_INITIATED)
+                    Thread.sleep(1000)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYOUT_SETTLED)
+                    Thread.sleep(1000)
+                    replyWithClose(message.metadata.from, message.metadata.exchangeId)
+                }.start()
+            }
+            is Cancel -> {
+                // simulate cancel
+                Thread {
+                    Thread.sleep(3000)
+                    replyWithClose(message.metadata.from, message.metadata.exchangeId, false)
+                }.start()
+            }
         }
 
         res.status(202)
