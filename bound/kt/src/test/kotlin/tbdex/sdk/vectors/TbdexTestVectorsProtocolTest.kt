@@ -37,24 +37,14 @@ class TbdexTestVectorsProtocolTest {
         testVector("parse-balance.json", ::Balance) { it.toJson() }
     }
 
-// TODO: Fix offering test vector - https://github.com/TBD54566975/tbdex/issues/346
 //    @Test
 //    fun parse_offering() {
-//        val vector = TestVectors.getVector("parse-offering.json")
-//        assertNotNull(vector)
-//        val input = vector!!.get("input").textValue()
-//        val offering = Offering(input)
-//        assertEquals(vector["output"], Json.jsonMapper.readTree(offering.toJson()))
+//        testVector("parse-offering.json", ::Offering) { it.toJson() }
 //    }
-
-// TODO: Fix quote test vector - https://github.com/TBD54566975/tbdex/issues/345
+//
 //    @Test
 //    fun parse_quote() {
-//        val vector = TestVectors.getVector("parse-quote.json")
-//        assertNotNull(vector)
-//        val input = vector!!.get("input").textValue()
-//        val quote = Quote(input)
-//        assertEquals(vector["output"], Json.jsonMapper.readTree(quote.toJson()))
+//        testVector("parse-quote.json", ::Quote) { it.toJson() }
 //    }
 
     private fun <T> testVector(vectorFileName: String, objectCreation: (String) -> T, toJson: (T) -> String) {
