@@ -1,7 +1,9 @@
-use super::{JsonDeserializer, JsonSerializer};
-use crate::messages::{
-    cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq,
-    Message, MessageKind,
+use crate::{
+    json::{FromJson, ToJson},
+    messages::{
+        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
+        rfq::Rfq, Message, MessageKind,
+    },
 };
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 use std::{str::FromStr, sync::Arc};
@@ -10,15 +12,15 @@ use std::{str::FromStr, sync::Arc};
 pub struct GetExchangeResponseBody {
     pub data: Vec<Message>,
 }
-impl JsonDeserializer for GetExchangeResponseBody {}
-impl JsonSerializer for GetExchangeResponseBody {}
+impl FromJson for GetExchangeResponseBody {}
+impl ToJson for GetExchangeResponseBody {}
 
 #[derive(Serialize, Deserialize)]
 pub struct GetExchangesResponseBody {
     pub data: Vec<String>,
 }
-impl JsonDeserializer for GetExchangesResponseBody {}
-impl JsonSerializer for GetExchangesResponseBody {}
+impl FromJson for GetExchangesResponseBody {}
+impl ToJson for GetExchangesResponseBody {}
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -27,8 +29,8 @@ pub struct CreateExchangeRequestBody {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_to: Option<String>,
 }
-impl JsonDeserializer for CreateExchangeRequestBody {}
-impl JsonSerializer for CreateExchangeRequestBody {}
+impl FromJson for CreateExchangeRequestBody {}
+impl ToJson for CreateExchangeRequestBody {}
 
 #[derive(Serialize, Debug, PartialEq)]
 #[serde(untagged)]
@@ -115,8 +117,8 @@ impl<'de> Deserialize<'de> for WalletUpdateMessage {
 pub struct UpdateExchangeRequestBody {
     pub message: WalletUpdateMessage,
 }
-impl JsonDeserializer for UpdateExchangeRequestBody {}
-impl JsonSerializer for UpdateExchangeRequestBody {}
+impl FromJson for UpdateExchangeRequestBody {}
+impl ToJson for UpdateExchangeRequestBody {}
 
 #[derive(Serialize, Debug, PartialEq)]
 #[serde(untagged)]
@@ -214,8 +216,8 @@ impl<'de> Deserialize<'de> for ReplyToMessage {
 pub struct ReplyToRequestBody {
     pub message: ReplyToMessage,
 }
-impl JsonDeserializer for ReplyToRequestBody {}
-impl JsonSerializer for ReplyToRequestBody {}
+impl FromJson for ReplyToRequestBody {}
+impl ToJson for ReplyToRequestBody {}
 
 #[cfg(test)]
 mod tests {

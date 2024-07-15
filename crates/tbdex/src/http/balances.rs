@@ -1,10 +1,12 @@
-use super::{JsonDeserializer, JsonSerializer};
-use crate::resources::balance::Balance;
+use crate::{
+    json::{FromJson, ToJson},
+    resources::balance::Balance,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct GetBalancesResponse {
     pub data: Vec<Balance>,
 }
-impl JsonDeserializer for GetBalancesResponse {}
-impl JsonSerializer for GetBalancesResponse {}
+impl FromJson for GetBalancesResponse {}
+impl ToJson for GetBalancesResponse {}

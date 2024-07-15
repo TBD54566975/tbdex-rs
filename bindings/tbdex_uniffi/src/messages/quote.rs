@@ -1,6 +1,9 @@
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::messages::quote::{Quote as InnerQuote, QuoteData};
+use tbdex::{
+    json::{FromJson, ToJson},
+    messages::quote::{Quote as InnerQuote, QuoteData},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Quote(pub Arc<RwLock<InnerQuote>>);
@@ -40,7 +43,7 @@ impl Quote {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_quote.to_json()?)
+        Ok(inner_quote.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerQuote> {

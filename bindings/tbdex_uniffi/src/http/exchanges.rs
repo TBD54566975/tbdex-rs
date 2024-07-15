@@ -4,16 +4,14 @@ use crate::{
 };
 use std::sync::Arc;
 use tbdex::{
-    http::{
-        exchanges::{
-            CreateExchangeRequestBody as InnerCreateExchangeRequestBody,
-            GetExchangeResponseBody as InnerGetExchangeResponseBody,
-            GetExchangesResponseBody as InnerGetExchangesResponseBody, ReplyToMessage,
-            ReplyToRequestBody as InnerReplyToRequestBody,
-            UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody, WalletUpdateMessage,
-        },
-        JsonDeserializer, JsonSerializer,
+    http::exchanges::{
+        CreateExchangeRequestBody as InnerCreateExchangeRequestBody,
+        GetExchangeResponseBody as InnerGetExchangeResponseBody,
+        GetExchangesResponseBody as InnerGetExchangesResponseBody, ReplyToMessage,
+        ReplyToRequestBody as InnerReplyToRequestBody,
+        UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody, WalletUpdateMessage,
     },
+    json::{FromJson, ToJson},
     messages::{Message, MessageKind},
 };
 

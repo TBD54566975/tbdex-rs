@@ -1,5 +1,8 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::json_schemas::generated::{CANCEL_DATA_JSON_SCHEMA, MESSAGE_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{CANCEL_DATA_JSON_SCHEMA, MESSAGE_JSON_SCHEMA},
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -10,6 +13,9 @@ pub struct Cancel {
     pub data: CancelData,
     pub signature: String,
 }
+
+impl ToJson for Cancel {}
+impl FromJson for Cancel {}
 
 impl Cancel {
     pub fn new(
@@ -47,12 +53,6 @@ impl Cancel {
         Ok(cancel)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let cancel = serde_json::from_str::<Self>(json)?;
-        cancel.verify()?;
-        Ok(cancel)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -69,10 +69,6 @@ impl Cancel {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 

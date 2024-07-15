@@ -3,7 +3,10 @@ use crate::{
     resources::offering::Offering,
 };
 use std::sync::{Arc, RwLock};
-use tbdex::messages::rfq::{CreateRfqData as InnerCreateRfqData, Rfq as InnerRfq};
+use tbdex::{
+    json::{FromJson, ToJson},
+    messages::rfq::{CreateRfqData as InnerCreateRfqData, Rfq as InnerRfq},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Rfq(pub Arc<RwLock<InnerRfq>>);
@@ -36,7 +39,7 @@ impl Rfq {
     }
 
     pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
-        let inner_rfq = InnerRfq::from_json_string(json, require_all_private_data)?;
+        let inner_rfq = InnerRfq::from_json_string(json)?;
 
         Ok(Self(Arc::new(RwLock::new(inner_rfq))))
     }
@@ -47,7 +50,7 @@ impl Rfq {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_rfq.to_json()?)
+        Ok(inner_rfq.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<data::Rfq> {

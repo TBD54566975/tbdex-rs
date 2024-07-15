@@ -1,5 +1,8 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA},
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -10,6 +13,9 @@ pub struct Order {
     pub data: OrderData,
     pub signature: String,
 }
+
+impl ToJson for Order {}
+impl FromJson for Order {}
 
 impl Order {
     pub fn new(
@@ -48,12 +54,6 @@ impl Order {
         Ok(order)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let order = serde_json::from_str::<Self>(json)?;
-        order.verify()?;
-        Ok(order)
-    }
-
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -70,10 +70,6 @@ impl Order {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 

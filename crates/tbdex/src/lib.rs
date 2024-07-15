@@ -4,6 +4,7 @@ pub mod messages;
 pub mod resources;
 
 mod jose;
+pub mod json;
 mod json_schemas;
 mod signature;
 

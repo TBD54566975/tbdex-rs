@@ -1,6 +1,9 @@
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::messages::order::Order as InnerOrder;
+use tbdex::{
+    json::{FromJson, ToJson},
+    messages::order::Order as InnerOrder,
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Order(pub Arc<RwLock<InnerOrder>>);
@@ -38,7 +41,7 @@ impl Order {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_order.to_json()?)
+        Ok(inner_order.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerOrder> {

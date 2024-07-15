@@ -1,6 +1,9 @@
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::messages::cancel::{Cancel as InnerCancel, CancelData};
+use tbdex::{
+    json::{FromJson, ToJson},
+    messages::cancel::{Cancel as InnerCancel, CancelData},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Cancel(pub Arc<RwLock<InnerCancel>>);
@@ -40,7 +43,7 @@ impl Cancel {
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_close.to_json()?)
+        Ok(inner_close.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerCancel> {
