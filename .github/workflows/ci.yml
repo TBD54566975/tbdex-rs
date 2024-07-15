@@ -8,7 +8,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  # Make sure CI fails on all warnings, including Clippy lints
   RUSTFLAGS: "-Dwarnings"
 
 jobs:
@@ -24,6 +23,7 @@ jobs:
         run: just setup
       - name: Build
         run: just build
+
   test:
     strategy:
       matrix:
@@ -42,6 +42,7 @@ jobs:
         run: just setup
       - name: Test
         run: just test
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -54,3 +55,61 @@ jobs:
         run: just setup
       - name: Lint
         run: just lint
+
+  kt-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Setup
+        run: just setup
+      - name: Build and Test Kotlin Project
+        working-directory: bound/kt
+        run: |
+          mkdir -p test-results
+          mvn test
+      - name: Upload Kotlin Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: kotlin-test-results
+          path: bound/kt/target/surefire-reports/*.xml
+
+  rust-test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Setup
+        run: just setup
+      - name: Install Nextest
+        run: cargo install cargo-nextest
+      - name: Create nextest.toml
+        run: |
+          echo '[profile.ci.junit]' > nextest.toml
+          echo 'path = "junit.xml"' >> nextest.toml
+          echo 'store-success-output = true' >> nextest.toml
+          echo 'store-failure-output = true' >> nextest.toml
+      - name: Run Rust Tests
+        run: |
+          mkdir -p test-results
+          cargo nextest run --profile ci --config-file ./nextest.toml
+      - name: Modify testsuite name in XML for test runner consumption
+        run: |
+          sed -i '' 's/<testsuite name="tbdex"/<testsuite name="TbdexTestVectorsProtocolTest"/' target/nextest/ci/junit.xml
+      - name: Move Test Results
+        run: mv target/nextest/ci/junit.xml test-results/rust-test-results.xml
+      - name: Upload Rust Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: rust-test-results
+          path: test-results/rust-test-results.xml
