@@ -1,5 +1,8 @@
 use super::{JsonDeserializer, JsonSerializer};
-use crate::messages::{cancel::Cancel, order::Order, rfq::Rfq, Message, MessageKind};
+use crate::messages::{
+    cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq,
+    Message, MessageKind,
+};
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 use std::str::FromStr;
 
@@ -114,15 +117,113 @@ pub struct UpdateExchangeRequestBody {
 impl JsonDeserializer for UpdateExchangeRequestBody {}
 impl JsonSerializer for UpdateExchangeRequestBody {}
 
+#[derive(Serialize, Debug, PartialEq)]
+#[serde(untagged)]
+pub enum ReplyToMessage {
+    Quote(Quote),
+    OrderStatus(OrderStatus),
+    Close(Close),
+}
+impl JsonSerializer for ReplyToMessage {}
+
+impl<'de> Deserialize<'de> for ReplyToMessage {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct MessageVisitor;
+
+        impl<'de> Visitor<'de> for MessageVisitor {
+            type Value = ReplyToMessage;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("an Order or Cancel")
+            }
+
+            fn visit_some<D>(self, deserializer: D) -> std::result::Result<Self::Value, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
+
+                let kind_str = value
+                    .get("metadata")
+                    .and_then(|m| m.get("kind"))
+                    .and_then(|k| k.as_str());
+
+                match kind_str {
+                    Some(k) => match MessageKind::from_str(k) {
+                        Ok(kind) => match kind {
+                            MessageKind::Quote => {
+                                if let Ok(quote) = serde_json::from_value::<Quote>(value.clone()) {
+                                    Ok(ReplyToMessage::Quote(quote))
+                                } else {
+                                    Err(serde::de::Error::custom("failed to deserialize quote"))
+                                }
+                            }
+                            MessageKind::OrderStatus => {
+                                if let Ok(order_status) =
+                                    serde_json::from_value::<OrderStatus>(value.clone())
+                                {
+                                    Ok(ReplyToMessage::OrderStatus(order_status))
+                                } else {
+                                    Err(serde::de::Error::custom(
+                                        "failed to deserialize order_status",
+                                    ))
+                                }
+                            }
+                            MessageKind::Close => {
+                                if let Ok(close) = serde_json::from_value::<Close>(value.clone()) {
+                                    Ok(ReplyToMessage::Close(close))
+                                } else {
+                                    Err(serde::de::Error::custom("failed to deserialize close"))
+                                }
+                            }
+                            _ => Err(serde::de::Error::custom(format!(
+                                "unexpected message kind {:?}",
+                                kind
+                            ))),
+                        },
+                        Err(_) => Err(serde::de::Error::custom(format!(
+                            "unexpected message kind {}",
+                            k
+                        ))),
+                    },
+                    None => Err(serde::de::Error::custom(format!(
+                        "unexpected message kind {:?}",
+                        kind_str
+                    ))),
+                }
+            }
+
+            fn visit_none<E>(self) -> std::result::Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                Err(serde::de::Error::custom("message is missing"))
+            }
+        }
+
+        deserializer.deserialize_option(MessageVisitor)
+    }
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct ReplyToRequestBody {
+    pub message: ReplyToMessage,
+}
+impl JsonDeserializer for ReplyToRequestBody {}
+impl JsonSerializer for ReplyToRequestBody {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::fs;
 
     #[derive(Debug, serde::Deserialize)]
-    pub struct TestVector {
+    pub struct TestVector<T> {
         pub input: String,
-        pub output: Order,
+        pub output: T,
     }
 
     #[test]
@@ -130,7 +231,7 @@ mod tests {
         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json";
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
-        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let test_vector = serde_json::from_str::<TestVector<Order>>(&test_vector_json).unwrap();
         let parsed_order = Order::from_json_string(&test_vector.input).unwrap();
 
         let update_exchange_request_body = UpdateExchangeRequestBody {
@@ -148,7 +249,7 @@ mod tests {
         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json";
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
-        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let test_vector = serde_json::from_str::<TestVector<Cancel>>(&test_vector_json).unwrap();
         let parsed_cancel = Cancel::from_json_string(&test_vector.input).unwrap();
 
         let update_exchange_request_body = UpdateExchangeRequestBody {
@@ -159,5 +260,59 @@ mod tests {
         let deserialized = UpdateExchangeRequestBody::from_json_string(&serialized).unwrap();
 
         assert_eq!(update_exchange_request_body, deserialized);
+    }
+
+    #[test]
+    fn quote_reply_to_request_body() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector = serde_json::from_str::<TestVector<Quote>>(&test_vector_json).unwrap();
+        let parsed_quote = Quote::from_json_string(&test_vector.input).unwrap();
+
+        let reply_to_request_body = ReplyToRequestBody {
+            message: ReplyToMessage::Quote(parsed_quote),
+        };
+
+        let serialized = reply_to_request_body.to_json_string().unwrap();
+        let deserialized = ReplyToRequestBody::from_json_string(&serialized).unwrap();
+
+        assert_eq!(reply_to_request_body, deserialized);
+    }
+
+    #[test]
+    fn order_status_reply_to_request_body() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector = serde_json::from_str::<TestVector<OrderStatus>>(&test_vector_json).unwrap();
+        let parsed_order_status = OrderStatus::from_json_string(&test_vector.input).unwrap();
+
+        let reply_to_request_body = ReplyToRequestBody {
+            message: ReplyToMessage::OrderStatus(parsed_order_status),
+        };
+
+        let serialized = reply_to_request_body.to_json_string().unwrap();
+        let deserialized = ReplyToRequestBody::from_json_string(&serialized).unwrap();
+
+        assert_eq!(reply_to_request_body, deserialized);
+    }
+
+    #[test]
+    fn close_reply_to_request_body() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-close.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector = serde_json::from_str::<TestVector<Close>>(&test_vector_json).unwrap();
+        let parsed_close = Close::from_json_string(&test_vector.input).unwrap();
+
+        let reply_to_request_body = ReplyToRequestBody {
+            message: ReplyToMessage::Close(parsed_close),
+        };
+
+        let serialized = reply_to_request_body.to_json_string().unwrap();
+        let deserialized = ReplyToRequestBody::from_json_string(&serialized).unwrap();
+
+        assert_eq!(reply_to_request_body, deserialized);
     }
 }

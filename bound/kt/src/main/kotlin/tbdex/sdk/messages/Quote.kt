@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
@@ -11,7 +12,7 @@ typealias QuoteData = RustCoreQuoteData
 typealias QuoteDetails = RustCoreQuoteDetails
 typealias PaymentInstruction = RustCorePaymentInstruction
 
-class Quote: Message {
+class Quote: Message, ReplyToMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
