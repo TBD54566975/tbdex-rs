@@ -34,7 +34,7 @@ fun main() {
 
     // 2. create exchange
     println("2. Creating exchange...")
-    val rfq = Rfq(
+    val rfq = Rfq.create(
         bearerDid,
         pfiDidUri,
         bearerDid.did.uri,
@@ -73,7 +73,7 @@ fun main() {
     if (showcaseCancelFlow) {
         // 4. submit cancel
         println("4. Submitting cancel...")
-        val cancel = Cancel(
+        val cancel = Cancel.create(
             bearerDid,
             pfiDidUri,
             bearerDid.did.uri,
@@ -86,7 +86,7 @@ fun main() {
     } else {
         // 4. submit order
         println("4. Submitting order...")
-        val order = Order(
+        val order = Order.create(
             bearerDid,
             pfiDidUri,
             bearerDid.did.uri,

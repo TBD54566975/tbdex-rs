@@ -45,7 +45,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     }
 
     private fun replyWithQuote(to: String, exchangeId: String) {
-        val quote = Quote(
+        val quote = Quote.create(
             bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,
@@ -114,7 +114,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     }
 
     private fun replyWithOrderStatus(to: String, exchangeId: String, status: Status) {
-        val orderStatus = OrderStatus(
+        val orderStatus = OrderStatus.create(
             bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,
@@ -131,7 +131,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     }
 
     private fun replyWithClose(to: String, exchangeId: String, success: Boolean? = true) {
-        val close = Close(
+        val close = Close.create(
             bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,

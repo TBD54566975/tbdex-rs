@@ -18,7 +18,10 @@ class Webhook {
             val requestBody = ReplyToRequestBody.fromJsonString(req.body())
             when (val message = requestBody.message) {
                 is Quote -> quote = message
-                is OrderStatus -> orderStatuses.add(message)
+                is OrderStatus -> {
+                    orderStatuses.add(message)
+                    println("Received order status ${message.metadata.id} ${message.data.status}")
+                }
                 is Close -> close = message
             }
 
