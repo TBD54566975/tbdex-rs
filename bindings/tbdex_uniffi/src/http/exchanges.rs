@@ -8,7 +8,8 @@ use tbdex::{
         exchanges::{
             CreateExchangeRequestBody as InnerCreateExchangeRequestBody,
             GetExchangeResponseBody as InnerGetExchangeResponseBody,
-            GetExchangesResponseBody as InnerGetExchangesResponseBody,
+            GetExchangesResponseBody as InnerGetExchangesResponseBody, ReplyToMessage,
+            ReplyToRequestBody as InnerReplyToRequestBody,
             UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody, WalletUpdateMessage,
         },
         JsonDeserializer, JsonSerializer,
@@ -177,6 +178,45 @@ impl UpdateExchangeRequestBody {
     }
 
     pub fn get_data(&self) -> UpdateExchangeRequestBodyData {
+        self.0.clone()
+    }
+}
+
+#[derive(Clone)]
+pub struct ReplyToRequestBodyData {
+    pub kind: MessageKind, // not in APID but useful for bound code to deserialize json_serialized_message
+    pub json_serialized_message: String,
+}
+
+pub struct ReplyToRequestBody(pub ReplyToRequestBodyData);
+
+impl ReplyToRequestBody {
+    pub fn new(kind: MessageKind, json_serialized_message: String) -> Self {
+        Self(ReplyToRequestBodyData {
+            kind,
+            json_serialized_message,
+        })
+    }
+
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner = InnerReplyToRequestBody::from_json_string(json)?;
+        let kind = match inner.message {
+            ReplyToMessage::Quote(_) => MessageKind::Quote,
+            ReplyToMessage::OrderStatus(_) => MessageKind::OrderStatus,
+            ReplyToMessage::Close(_) => MessageKind::Close,
+        };
+        Ok(Self(ReplyToRequestBodyData {
+            kind,
+            json_serialized_message: inner.message.to_json_string()?,
+        }))
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        let inner = InnerReplyToRequestBody::from_json_string(&self.0.json_serialized_message)?;
+        Ok(inner.to_json_string()?)
+    }
+
+    pub fn get_data(&self) -> ReplyToRequestBodyData {
         self.0.clone()
     }
 }

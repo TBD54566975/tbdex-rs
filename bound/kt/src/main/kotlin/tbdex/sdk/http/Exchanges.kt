@@ -8,6 +8,7 @@ import tbdex.sdk.rust.GetExchangeResponseBody as RustCoreGetExchangeResponseBody
 import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponseBodyData
 import tbdex.sdk.rust.GetExchangesResponseBody as RustCoreGetExchangesResponseBody
 import tbdex.sdk.rust.UpdateExchangeRequestBody as RustCoreUpdateExchangeRequestBody
+import tbdex.sdk.rust.ReplyToRequestBody as RustCoreReplyToRequestBody
 import tbdex.sdk.rust.SystemArchitecture
 
 class GetExchangeResponseBody private constructor(
@@ -158,5 +159,46 @@ class UpdateExchangeRequestBody private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreUpdateExchangeRequestBody.toJsonString()
+    }
+}
+
+interface ReplyToMessage {}
+
+class ReplyToRequestBody private constructor(
+    val message: ReplyToMessage,
+    private val rustCoreReplyToRequestBody: RustCoreReplyToRequestBody
+) {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
+    constructor(message: ReplyToMessage) : this(
+        message,
+        when (message) {
+            is Quote -> RustCoreReplyToRequestBody(MessageKind.QUOTE, message.toJson())
+            is OrderStatus -> RustCoreReplyToRequestBody(MessageKind.ORDER_STATUS, message.toJson())
+            is Close -> RustCoreReplyToRequestBody(MessageKind.CLOSE, message.toJson())
+            else -> throw Exception("unknown type")
+        }
+    )
+
+    companion object {
+        fun fromJsonString(json: String): ReplyToRequestBody {
+            val rustCoreReplyToRequestBody = RustCoreReplyToRequestBody.fromJsonString(json)
+            val data = rustCoreReplyToRequestBody.getData()
+
+            val message = when (data.kind) {
+                MessageKind.QUOTE -> Quote(data.jsonSerializedMessage)
+                MessageKind.ORDER_STATUS -> OrderStatus(data.jsonSerializedMessage)
+                MessageKind.CLOSE -> Close(data.jsonSerializedMessage)
+                else -> throw Exception("Unsupported message kind ${data.kind}")
+            }
+
+            return ReplyToRequestBody(message, rustCoreReplyToRequestBody)
+        }
+    }
+
+    fun toJsonString(): String {
+        return this.rustCoreReplyToRequestBody.toJsonString()
     }
 }
