@@ -285,7 +285,8 @@ mod tests {
         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json";
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
-        let test_vector = serde_json::from_str::<TestVector<OrderStatus>>(&test_vector_json).unwrap();
+        let test_vector =
+            serde_json::from_str::<TestVector<OrderStatus>>(&test_vector_json).unwrap();
         let parsed_order_status = OrderStatus::from_json_string(&test_vector.input).unwrap();
 
         let reply_to_request_body = ReplyToRequestBody {
