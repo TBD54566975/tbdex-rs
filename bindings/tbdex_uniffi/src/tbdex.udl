@@ -266,6 +266,33 @@ dictionary ExchangeData {
   Close? close;
 };
 
+
+
+
+dictionary GetOfferingsResponseBodyData {
+  sequence<Offering> data;
+};
+
+interface GetOfferingsResponseBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  GetOfferingsResponseBodyData get_data();
+};
+
+dictionary GetBalancesResponseBodyData {
+  sequence<Balance> data;
+};
+
+interface GetBalancesResponseBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  GetBalancesResponseBodyData get_data();
+};
+
 dictionary CreateExchangeRequestBodyData {
   Rfq message;
   string? reply_to;
@@ -274,6 +301,8 @@ dictionary CreateExchangeRequestBodyData {
 interface CreateExchangeRequestBody {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
   CreateExchangeRequestBodyData get_data();
 };
 

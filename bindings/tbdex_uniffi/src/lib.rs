@@ -1,3 +1,4 @@
+mod http;
 mod http_client;
 mod messages;
 mod resources;
@@ -6,13 +7,17 @@ mod errors;
 
 use crate::{
     errors::RustCoreError,
+    http::{
+        balances::{GetBalancesResponseBody, GetBalancesResponseBodyData},
+        exchanges::{CreateExchangeRequestBody, CreateExchangeRequestBodyData},
+        offerings::{GetOfferingsResponseBody, GetOfferingsResponseBodyData},
+    },
     http_client::{
         balances::get_balances,
         exchanges::{
             create_exchange, get_exchange, get_exchanges, submit_cancel, submit_order,
-            CreateExchangeRequestBody, CreateExchangeRequestBodyData, Exchange as ExchangeData,
-            SubmitCancelRequestBody, SubmitCancelRequestBodyData, SubmitOrderRequestBody,
-            SubmitOrderRequestBodyData,
+            Exchange as ExchangeData, SubmitCancelRequestBody, SubmitCancelRequestBodyData,
+            SubmitOrderRequestBody, SubmitOrderRequestBodyData,
         },
         offerings::get_offerings,
     },
