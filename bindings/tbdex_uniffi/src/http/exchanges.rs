@@ -8,6 +8,7 @@ use tbdex::{
         exchanges::{
             CreateExchangeRequestBody as InnerCreateExchangeRequestBody,
             GetExchangeResponseBody as InnerGetExchangeResponseBody,
+            GetExchangesResponseBody as InnerGetExchangesResponseBody,
             UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody, WalletUpdateMessage,
         },
         JsonDeserializer, JsonSerializer,
@@ -69,6 +70,31 @@ impl GetExchangeResponseBody {
     }
 
     pub fn get_data(&self) -> GetExchangeResponseBodyData {
+        self.0.clone()
+    }
+}
+
+#[derive(Clone)]
+pub struct GetExchangesResponseBodyData {
+    pub data: Vec<String>,
+}
+
+pub struct GetExchangesResponseBody(pub GetExchangesResponseBodyData);
+
+impl GetExchangesResponseBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner = InnerGetExchangesResponseBody::from_json_string(json)?;
+        Ok(Self(GetExchangesResponseBodyData { data: inner.data }))
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        let inner = InnerGetExchangesResponseBody {
+            data: self.0.data.clone(),
+        };
+        Ok(inner.to_json_string()?)
+    }
+
+    pub fn get_data(&self) -> GetExchangesResponseBodyData {
         self.0.clone()
     }
 }

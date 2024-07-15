@@ -4,10 +4,11 @@ import tbdex.sdk.messages.*
 import tbdex.sdk.rust.MessageKind
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 import tbdex.sdk.rust.GetExchangeResponseBody as RustCoreGetExchangeResponseBody
+import tbdex.sdk.rust.GetExchangesResponseBody as RustCoreGetExchangesResponseBody
 import tbdex.sdk.rust.UpdateExchangeRequestBody as RustCoreUpdateExchangeRequestBody
 import tbdex.sdk.rust.SystemArchitecture
 
-class GetExchangeResponseBody(
+class GetExchangeResponseBody private constructor(
     val data: List<Message>,
     private val rustCoreGetExchangeResponseBody: RustCoreGetExchangeResponseBody
 ) {
@@ -38,7 +39,30 @@ class GetExchangeResponseBody(
     }
 }
 
-class CreateExchangeRequestBody(
+class GetExchangesResponseBody private constructor(
+    val data: List<String>,
+    private val rustCoreGetExchangesResponseBody: RustCoreGetExchangesResponseBody
+) {
+    init {
+        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
+    }
+
+    companion object {
+        fun fromJsonString(json: String): GetExchangesResponseBody {
+            val rustCoreGetExchangesResponseBody = RustCoreGetExchangesResponseBody.fromJsonString(json)
+            return GetExchangesResponseBody(
+                rustCoreGetExchangesResponseBody.getData().data,
+                rustCoreGetExchangesResponseBody
+            )
+        }
+    }
+
+    fun toJsonString(): String {
+        return this.rustCoreGetExchangesResponseBody.toJsonString()
+    }
+}
+
+class CreateExchangeRequestBody private constructor(
     val message: Rfq,
     val replyTo: String? = null,
     private val rustCoreCreateExchangeRequestBody: RustCoreCreateExchangeRequestBody
@@ -66,7 +90,7 @@ class CreateExchangeRequestBody(
 
 interface WalletUpdateMessage {}
 
-class UpdateExchangeRequestBody(
+class UpdateExchangeRequestBody private constructor(
     val message: WalletUpdateMessage,
     private val rustCoreUpdateExchangeRequestBody: RustCoreUpdateExchangeRequestBody
 ) {
