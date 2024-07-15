@@ -22,7 +22,9 @@ class Webhook {
                 quote = Quote(requestBodyString)
             } catch (ex: Exception) {
                 try {
-                    orderStatuses.add(OrderStatus(requestBodyString))
+                    val orderStatus = OrderStatus(requestBodyString)
+                    orderStatuses.add(orderStatus)
+                    println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}")
                 } catch (ex: Exception) {
                     try {
                         close = Close(requestBodyString)

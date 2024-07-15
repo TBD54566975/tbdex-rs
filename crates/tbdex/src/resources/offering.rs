@@ -84,6 +84,7 @@ pub struct OfferingData {
     pub payout: PayoutDetails,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub required_claims: Option<PresentationDefinition>,
+    pub cancellation: CancellationDetails,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
@@ -149,6 +150,16 @@ pub struct PayoutMethod {
     pub estimated_settlement_time: i64,
 }
 
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct CancellationDetails {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub terms_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub terms: Option<String>,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -190,6 +201,10 @@ mod tests {
                     purpose: None,
                     input_descriptors: vec![],
                 }),
+                cancellation: CancellationDetails {
+                    enabled: false,
+                    ..Default::default()
+                },
             },
             "1.0",
         )
@@ -207,26 +222,25 @@ mod tests {
     }
 }
 
-// TODO: Fix offering test vector - https://github.com/TBD54566975/tbdex/issues/346
-// #[cfg(test)]
-// mod tbdex_test_vectors_protocol {
-//     use super::*;
-//     use std::fs;
-//
-//     #[derive(Debug, serde::Deserialize)]
-//     pub struct TestVector {
-//         pub input: String,
-//         pub output: Offering,
-//     }
-//
-//     #[test]
-//     fn parse_offering() {
-//         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json";
-//         let test_vector_json: String = fs::read_to_string(path).unwrap();
-//
-//         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-//         let parsed_offering: Offering = Offering::from_json_string(&test_vector.input).unwrap();
-//
-//         // assert_eq!(test_vector.output, parsed_offering);
-//     }
-// }
+#[cfg(test)]
+mod tbdex_test_vectors_protocol {
+    use super::*;
+    use std::fs;
+
+    #[derive(Debug, serde::Deserialize)]
+    pub struct TestVector {
+        pub input: String,
+        pub output: Offering,
+    }
+
+    #[test]
+    fn parse_offering() {
+        let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json";
+        let test_vector_json: String = fs::read_to_string(path).unwrap();
+
+        let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_offering: Offering = Offering::from_json_string(&test_vector.input).unwrap();
+
+        assert_eq!(test_vector.output, parsed_offering);
+    }
+}

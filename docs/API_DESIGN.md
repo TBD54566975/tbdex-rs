@@ -14,6 +14,7 @@
     - [`PayinMethod`](#payinmethod)
     - [`PayoutDetails`](#payoutdetails)
     - [`PayoutMethod`](#payoutmethod)
+    - [`CancellationDetails`](#cancellationdetails)
   - [`Balance`](#balance)
     - [`BalanceData`](#balancedata)
 - [Messages](#messages)
@@ -33,6 +34,8 @@
     - [`QuoteDetails`](#quotedetails)
     - [`PaymentInstruction`](#paymentinstruction)
   - [`Order`](#order)
+  - [`Cancel`](#cancel)
+    - [`CancelData`](#canceldata)
   - [`OrderStatus`](#orderstatus)
     - [`OrderStatusData`](#orderstatusdata)
   - [`Close`](#close)
@@ -113,9 +116,10 @@ CLASS Offering IMPLEMENTS Resource
 CLASS OfferingData
   PUBLIC DATA description: string
   PUBLIC DATA payoutUnitsPerPayinUnit: string
-  PUBLIC DATA payin PayinDetails
-  PUBLIC DATA payout PayoutDetails
-  PUBLIC DATA requiredClaims PresentationDefinition
+  PUBLIC DATA payin: PayinDetails
+  PUBLIC DATA payout: PayoutDetails
+  PUBLIC DATA requiredClaims: PresentationDefinition?
+  PUBLIC DATA cancellation: CancellationDetails
 ```
 
 ### `PayinDetails`
@@ -167,6 +171,15 @@ CLASS PayinMethod
   PUBLIC DATA estimatedSettlementTime: int
 ```
 
+### `CancellationDetails`
+
+```pseudocode!
+CLASS PayinMethod
+  PUBLIC DATA enabled: bool
+  PUBLIC DATA termsUrl: string?
+  PUBLIC DATA terms: string?
+```
+
 ## `Balance`
 
 ```pseudocode!
@@ -196,6 +209,7 @@ ENUM MessageKind
   rfq,
   quote,
   order,
+  cancel,
   orderstatus,
   close,
 ```
@@ -324,7 +338,8 @@ CLASS QuoteData
 ```pseudocode!
 CLASS QuoteDetails
   PUBLIC DATA currencyCode: string
-  PUBLIC DATA amount: string
+  PUBLIC DATA subtotal: string
+  PUBLIC DATA total: string
   PUBLIC DATA fee: string?
   PUBLIC DATA paymentInstruction: PaymentInstruction?
 ```
@@ -346,6 +361,25 @@ CLASS Order IMPLEMENTS Message
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
   CONSTRUCTOR(json: string)
   METHOD to_json(): string
+```
+
+## `Cancel`
+
+```pseudocode!
+CLASS Cancel
+  PUBLIC DATA metadata: MessageMetadata
+  PUBLIC DATA data: CancelData
+  PUBLIC DATA signature: string
+  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string, externalId: string?)
+  CONSTRUCTOR(json: string)
+  METHOD to_json(): string
+```
+
+### `CancelData`
+
+```pseudocode!
+CLASS CancelData
+  PUBLIC DATA reason: string
 ```
 
 ## `OrderStatus`

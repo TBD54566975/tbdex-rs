@@ -1,10 +1,14 @@
 use crate::{
     errors::Result,
-    messages::{close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq},
+    messages::{
+        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
+        rfq::Rfq,
+    },
 };
 use std::sync::{Arc, RwLock};
 use tbdex::http_client::exchanges::{
     CreateExchangeRequestBody as InnerCreateExchangeRequestBody, Exchange as InnerExchange,
+    SubmitCancelRequestBody as InnerSubmitCancelRequestBody,
     SubmitOrderRequestBody as InnerSubmitOrderRequestBody,
 };
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
@@ -13,6 +17,7 @@ pub struct Exchange {
     pub rfq: Arc<Rfq>,
     pub quote: Option<Arc<Quote>>,
     pub order: Option<Arc<Order>>,
+    pub cancel: Option<Arc<Cancel>>,
     pub order_statuses: Option<Vec<Arc<OrderStatus>>>,
     pub close: Option<Arc<Close>>,
 }
@@ -29,6 +34,10 @@ impl Exchange {
                 .order
                 .as_ref()
                 .map(|o| Arc::new(Order(Arc::new(RwLock::new(o.clone()))))),
+            cancel: inner
+                .cancel
+                .as_ref()
+                .map(|o| Arc::new(Cancel(Arc::new(RwLock::new(o.clone()))))),
             order_statuses: inner.order_statuses.as_ref().map(|os| {
                 os.iter()
                     .map(|o| Arc::new(OrderStatus(Arc::new(RwLock::new(o.clone())))))
@@ -52,8 +61,8 @@ pub fn submit_order(order: Arc<Order>) -> Result<()> {
     Ok(())
 }
 
-pub fn submit_close(close: Arc<Close>) -> Result<()> {
-    tbdex::http_client::exchanges::submit_close(&close.get_data()?)?;
+pub fn submit_cancel(cancel: Arc<Cancel>) -> Result<()> {
+    tbdex::http_client::exchanges::submit_cancel(&cancel.get_data()?)?;
     Ok(())
 }
 
@@ -117,6 +126,27 @@ impl SubmitOrderRequestBody {
     }
 
     pub fn get_data(&self) -> SubmitOrderRequestBodyData {
+        self.0.clone()
+    }
+}
+
+#[derive(Clone)]
+pub struct SubmitCancelRequestBodyData {
+    pub message: Arc<Cancel>,
+}
+
+pub struct SubmitCancelRequestBody(pub SubmitCancelRequestBodyData);
+
+impl SubmitCancelRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner = InnerSubmitCancelRequestBody::from_json_string(json)?;
+        let message = Cancel::from_inner(inner.message);
+        Ok(Self(SubmitCancelRequestBodyData {
+            message: Arc::new(message),
+        }))
+    }
+
+    pub fn get_data(&self) -> SubmitCancelRequestBodyData {
         self.0.clone()
     }
 }

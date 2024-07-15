@@ -1,11 +1,13 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.rust.OrderStatusStatus as RustCoreStatus
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.OrderStatus as RustCoreOrderStatus
 import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
 
 typealias OrderStatusData = RustCoreOrderStatusData
+typealias Status = RustCoreStatus
 
 class OrderStatus {
     init {

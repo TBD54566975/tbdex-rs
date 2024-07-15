@@ -37,15 +37,15 @@ class TbdexTestVectorsProtocolTest {
         testVector("parse-balance.json", ::Balance) { it.toJson() }
     }
 
-//    @Test
-//    fun parse_offering() {
-//        testVector("parse-offering.json", ::Offering) { it.toJson() }
-//    }
-//
-//    @Test
-//    fun parse_quote() {
-//        testVector("parse-quote.json", ::Quote) { it.toJson() }
-//    }
+    @Test
+    fun parse_offering() {
+        testVector("parse-offering.json", ::Offering) { it.toJson() }
+    }
+
+    @Test
+    fun parse_quote() {
+        testVector("parse-quote.json", ::Quote) { it.toJson() }
+    }
 
     private fun <T> testVector(vectorFileName: String, objectCreation: (String) -> T, toJson: (T) -> String) {
         val vector = TestVectors.getVector(vectorFileName)

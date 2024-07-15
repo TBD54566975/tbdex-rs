@@ -8,7 +8,7 @@ namespace tbdex {
   [Throws=RustCoreError]
   void submit_order(Order order);
   [Throws=RustCoreError]
-  void submit_close(Close close);
+  void submit_cancel(Cancel cancel);
   [Throws=RustCoreError]
   ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
   [Throws=RustCoreError]
@@ -77,6 +77,7 @@ enum MessageKind {
   "Rfq",
   "Quote",
   "Order",
+  "Cancel",
   "OrderStatus",
   "Close"
 };
@@ -103,11 +104,11 @@ interface Rfq {
   RfqData get_data();
 
   [Throws=RustCoreError]
-  boolean verify_offering_requirements(Offering offering);
+  void verify_offering_requirements(Offering offering);
   [Throws=RustCoreError]
-  boolean verify_all_private_data();
+  void verify_all_private_data();
   [Throws=RustCoreError]
-  boolean verify_present_private_data();
+  void verify_present_private_data();
 };
 
 dictionary RfqData {
@@ -175,6 +176,27 @@ dictionary OrderDataData {
 
 };
 
+interface Cancel {
+  [Throws=RustCoreError]
+  constructor(BearerDid bearer_did, string to, string from, string exchange_id, CancelDataData data, string protocol, string? external_id);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json();
+  [Throws=RustCoreError]
+  CancelData get_data();
+};
+
+dictionary CancelData {
+  MessageMetadataData metadata;
+  CancelDataData data;
+  string signature;
+};
+
+dictionary CancelDataData {
+  string reason;
+};
+
 interface OrderStatus {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
@@ -193,7 +215,24 @@ dictionary OrderStatusData {
 };
 
 dictionary OrderStatusDataData {
-  string order_status;
+  OrderStatusStatus status;
+  string? details;
+};
+
+enum OrderStatusStatus {
+  "PayinPending",
+  "PayinInitiated",
+  "PayinSettled",
+  "PayinFailed",
+  "PayinExpired",
+  "PayoutPending",
+  "PayoutInitiated",
+  "PayoutSettled",
+  "PayoutFailed",
+  "RefundPending",
+  "RefundInitiated",
+  "RefundSettled",
+  "RefundFailed"
 };
 
 interface Close {
@@ -222,6 +261,7 @@ dictionary ExchangeData {
   Rfq rfq;
   Quote? quote;
   Order? order;
+  Cancel? cancel;
   sequence<OrderStatus>? order_statuses;
   Close? close;
 };
@@ -245,6 +285,16 @@ interface SubmitOrderRequestBody {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   SubmitOrderRequestBodyData get_data();
+};
+
+dictionary SubmitCancelRequestBodyData {
+  Cancel message;
+};
+
+interface SubmitCancelRequestBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  SubmitCancelRequestBodyData get_data();
 };
 
 

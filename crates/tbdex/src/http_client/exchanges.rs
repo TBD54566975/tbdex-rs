@@ -2,7 +2,8 @@ use super::{get_service_endpoint, send_request, Result};
 use crate::{
     http_client::{generate_access_token, HttpClientError},
     messages::{
-        close::Close, order::Order, order_status::OrderStatus, quote::Quote, rfq::Rfq, MessageKind,
+        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
+        rfq::Rfq, MessageKind,
     },
 };
 use reqwest::Method;
@@ -18,6 +19,8 @@ pub struct Exchange {
     pub quote: Option<Quote>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<Order>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancel: Option<Cancel>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order_statuses: Option<Vec<OrderStatus>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -95,8 +98,37 @@ pub fn submit_order(order: &Order) -> Result<()> {
     Ok(())
 }
 
-pub fn submit_close(_close: &Close) -> Result<()> {
-    println!("TbdexHttpClient::submit_close() invoked");
+#[derive(Serialize, Deserialize)]
+pub struct SubmitCancelRequestBody {
+    pub message: Cancel,
+}
+
+impl SubmitCancelRequestBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let request_body = serde_json::from_str::<Self>(json)?;
+        request_body.message.verify()?;
+        Ok(request_body)
+    }
+}
+
+pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
+    let service_endpoint = get_service_endpoint(&cancel.metadata.to)?;
+    let submit_cancel_endpoint = format!(
+        "{}/exchanges/{}",
+        service_endpoint, cancel.metadata.exchange_id
+    );
+
+    cancel.verify()?;
+
+    send_request::<SubmitCancelRequestBody, ()>(
+        &submit_cancel_endpoint,
+        Method::PUT,
+        Some(&SubmitCancelRequestBody {
+            message: cancel.clone(),
+        }),
+        None,
+    )?;
+
     Ok(())
 }
 
@@ -149,6 +181,11 @@ pub fn get_exchange(
                 let order = serde_json::from_value::<Order>(message)?;
                 order.verify()?;
                 exchange.order = Some(order);
+            }
+            MessageKind::Cancel => {
+                let cancel = serde_json::from_value::<Cancel>(message)?;
+                cancel.verify()?;
+                exchange.cancel = Some(cancel);
             }
             MessageKind::OrderStatus => {
                 let order_status = serde_json::from_value::<OrderStatus>(message)?;
