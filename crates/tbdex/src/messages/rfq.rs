@@ -64,8 +64,6 @@ impl Rfq {
             )?,
         };
 
-        rfq.verify()?;
-
         Ok(rfq)
     }
 

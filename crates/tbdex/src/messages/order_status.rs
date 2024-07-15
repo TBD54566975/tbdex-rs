@@ -48,8 +48,6 @@ impl OrderStatus {
             )?,
         };
 
-        order_status.verify()?;
-
         Ok(order_status)
     }
 

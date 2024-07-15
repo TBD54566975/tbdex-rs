@@ -45,8 +45,6 @@ impl Balance {
             )?,
         };
 
-        balance.verify()?;
-
         Ok(balance)
     }
 
