@@ -6,10 +6,7 @@ use crate::{
     },
 };
 use std::sync::{Arc, RwLock};
-use tbdex::http_client::exchanges::{
-    Exchange as InnerExchange, SubmitCancelRequestBody as InnerSubmitCancelRequestBody,
-    SubmitOrderRequestBody as InnerSubmitOrderRequestBody,
-};
+use tbdex::http_client::exchanges::Exchange as InnerExchange;
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Exchange {
@@ -83,46 +80,4 @@ pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<
     let exchange_ids =
         tbdex::http_client::exchanges::get_exchanges(&pfi_did_uri, &bearer_did.0.clone())?;
     Ok(exchange_ids)
-}
-
-#[derive(Clone)]
-pub struct SubmitOrderRequestBodyData {
-    pub message: Arc<Order>,
-}
-
-pub struct SubmitOrderRequestBody(pub SubmitOrderRequestBodyData);
-
-impl SubmitOrderRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner = InnerSubmitOrderRequestBody::from_json_string(json)?;
-        let message = Order::from_inner(inner.message);
-        Ok(Self(SubmitOrderRequestBodyData {
-            message: Arc::new(message),
-        }))
-    }
-
-    pub fn get_data(&self) -> SubmitOrderRequestBodyData {
-        self.0.clone()
-    }
-}
-
-#[derive(Clone)]
-pub struct SubmitCancelRequestBodyData {
-    pub message: Arc<Cancel>,
-}
-
-pub struct SubmitCancelRequestBody(pub SubmitCancelRequestBodyData);
-
-impl SubmitCancelRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner = InnerSubmitCancelRequestBody::from_json_string(json)?;
-        let message = Cancel::from_inner(inner.message);
-        Ok(Self(SubmitCancelRequestBodyData {
-            message: Arc::new(message),
-        }))
-    }
-
-    pub fn get_data(&self) -> SubmitCancelRequestBodyData {
-        self.0.clone()
-    }
 }

@@ -1,6 +1,6 @@
 use super::{get_service_endpoint, send_request, Result};
 use crate::{
-    http::CreateExchangeRequestBody,
+    http::exchanges::{CreateExchangeRequestBody, UpdateExchangeRequestBody, WalletUpdateMessage},
     http_client::{generate_access_token, HttpClientError},
     messages::{
         cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
@@ -47,19 +47,6 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
     Ok(())
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct SubmitOrderRequestBody {
-    pub message: Order,
-}
-
-impl SubmitOrderRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let request_body = serde_json::from_str::<Self>(json)?;
-        request_body.message.verify()?;
-        Ok(request_body)
-    }
-}
-
 pub fn submit_order(order: &Order) -> Result<()> {
     let service_endpoint = get_service_endpoint(&order.metadata.to)?;
     let submit_order_endpoint = format!(
@@ -69,29 +56,16 @@ pub fn submit_order(order: &Order) -> Result<()> {
 
     order.verify()?;
 
-    send_request::<SubmitOrderRequestBody, ()>(
+    send_request::<UpdateExchangeRequestBody, ()>(
         &submit_order_endpoint,
         Method::PUT,
-        Some(&SubmitOrderRequestBody {
-            message: order.clone(),
+        Some(&UpdateExchangeRequestBody {
+            message: WalletUpdateMessage::Order(order.clone()),
         }),
         None,
     )?;
 
     Ok(())
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct SubmitCancelRequestBody {
-    pub message: Cancel,
-}
-
-impl SubmitCancelRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let request_body = serde_json::from_str::<Self>(json)?;
-        request_body.message.verify()?;
-        Ok(request_body)
-    }
 }
 
 pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
@@ -103,11 +77,11 @@ pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
 
     cancel.verify()?;
 
-    send_request::<SubmitCancelRequestBody, ()>(
+    send_request::<UpdateExchangeRequestBody, ()>(
         &submit_cancel_endpoint,
         Method::PUT,
-        Some(&SubmitCancelRequestBody {
-            message: cancel.clone(),
+        Some(&UpdateExchangeRequestBody {
+            message: WalletUpdateMessage::Cancel(cancel.clone()),
         }),
         None,
     )?;

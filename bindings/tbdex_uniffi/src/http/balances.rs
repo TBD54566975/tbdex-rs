@@ -1,7 +1,9 @@
 use crate::{errors::Result, resources::balance::Balance};
 use std::sync::Arc;
 use tbdex::{
-    http::{GetBalancesResponse as InnerGetBalancesResponse, JsonDeserializer, JsonSerializer},
+    http::{
+        balances::GetBalancesResponse as InnerGetBalancesResponse, JsonDeserializer, JsonSerializer,
+    },
     resources::balance::Balance as InnerBalance,
 };
 

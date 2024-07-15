@@ -320,26 +320,6 @@ interface UpdateExchangeRequestBody {
 };
 
 
-dictionary SubmitOrderRequestBodyData {
-  Order message;
-};
-
-interface SubmitOrderRequestBody {
-  [Name=from_json_string, Throws=RustCoreError]
-  constructor([ByRef] string json);
-  SubmitOrderRequestBodyData get_data();
-};
-
-dictionary SubmitCancelRequestBodyData {
-  Cancel message;
-};
-
-interface SubmitCancelRequestBody {
-  [Name=from_json_string, Throws=RustCoreError]
-  constructor([ByRef] string json);
-  SubmitCancelRequestBodyData get_data();
-};
-
 
 
 

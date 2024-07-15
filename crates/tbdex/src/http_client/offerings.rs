@@ -1,5 +1,5 @@
 use super::{get_service_endpoint, send_request, HttpClientError, Result};
-use crate::{http::GetOfferingsResponse, resources::offering::Offering};
+use crate::{http::offerings::GetOfferingsResponse, resources::offering::Offering};
 use reqwest::Method;
 
 pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
