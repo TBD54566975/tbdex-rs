@@ -1,13 +1,7 @@
 use super::{generate_access_token, get_service_endpoint, send_request, HttpClientError, Result};
-use crate::resources::balance::Balance;
+use crate::{http::GetBalancesResponse, resources::balance::Balance};
 use reqwest::Method;
-use serde::Deserialize;
 use web5::dids::bearer_did::BearerDid;
-
-#[derive(Deserialize)]
-struct GetBalancesResponse {
-    data: Vec<Balance>,
-}
 
 pub fn get_balances(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<Vec<Balance>> {
     let service_endpoint = get_service_endpoint(pfi_did_uri)?;

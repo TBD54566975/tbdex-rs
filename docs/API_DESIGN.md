@@ -457,6 +457,8 @@ CLASS CloseData
 ```pseudocode!
 CLASS GetOfferingsResponseBody
   PUBLIC DATA data: []Offering
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 ## `GetBalancesResponseBody`
@@ -464,6 +466,8 @@ CLASS GetOfferingsResponseBody
 ```pseudocode!
 CLASS GetBalancesResponseBody
   PUBLIC DATA data: []Balance
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 ## `GetExchangeResponseBody`
@@ -471,6 +475,8 @@ CLASS GetBalancesResponseBody
 ```pseudocode!
 CLASS GetExchangeResponseBody
   PUBLIC DATA data: []Message
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 ## `GetExchangesResponseBody`
@@ -478,6 +484,8 @@ CLASS GetExchangeResponseBody
 ```pseudocode!
 CLASS GetExchangeResponseBody
   PUBLIC DATA data: []string
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 ## `CreateExchangeRequestBody`
@@ -486,6 +494,8 @@ CLASS GetExchangeResponseBody
 CLASS CreateExchangeRequestBody
   PUBLIC DATA message: Rfq
   PUBLIC DATA replyTo: string?
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 ## `UpdateExchangeRequestBody`
@@ -493,6 +503,8 @@ CLASS CreateExchangeRequestBody
 ```pseudocode!
 CLASS UpdateExchangeRequestBody
   PUBLIC DATA message: WalletUpdateMessage // Order or Cancel
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 ## `ReplyToRequestBody`
@@ -500,6 +512,8 @@ CLASS UpdateExchangeRequestBody
 ```pseudocode!
 CLASS ReplyToRequestBody
   PUBLIC DATA message: ReplyToMessage // Quote, OrderStatus or Close
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
 ```
 
 # HTTP Client
