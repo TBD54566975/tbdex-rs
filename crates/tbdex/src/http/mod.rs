@@ -69,6 +69,7 @@ pub enum WalletUpdateMessage {
     Order(Order),
     Cancel(Cancel),
 }
+impl JsonSerializer for WalletUpdateMessage {}
 
 impl<'de> Deserialize<'de> for WalletUpdateMessage {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
