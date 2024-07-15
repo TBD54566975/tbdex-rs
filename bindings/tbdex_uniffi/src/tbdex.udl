@@ -164,6 +164,8 @@ interface Order {
   string to_json();
   [Throws=RustCoreError]
   OrderData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary OrderData {

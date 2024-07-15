@@ -891,6 +891,8 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -1012,6 +1014,8 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_order_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_order_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1270,6 +1274,8 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_order_to_json(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_order_verify(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json(
@@ -1435,6 +1441,9 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_order_to_json() != 53626.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_order_verify() != 19062.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data() != 64681.toShort()) {
@@ -3996,6 +4005,8 @@ public interface OrderInterface {
     
     fun `toJson`(): kotlin.String
     
+    fun `verify`()
+    
     companion object
 }
 
@@ -4111,6 +4122,18 @@ open class Order: Disposable, AutoCloseable, OrderInterface {
     }
     )
     }
+    
+
+    
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_verify(
+        it, _status)
+}
+    }
+    
     
 
     

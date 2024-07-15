@@ -47,6 +47,6 @@ class Order {
     }
 
     fun verify() {
-//        this.rustCoreOrder.ver
+        this.rustCoreOrder.verify()
     }
 }
