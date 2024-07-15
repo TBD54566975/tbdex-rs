@@ -51,6 +51,6 @@ class Balance {
     }
 
     fun toJson(): String {
-        return this.rustCoreBalance.toJson()
+        return this.rustCoreBalance.toJsonString()
     }
 }

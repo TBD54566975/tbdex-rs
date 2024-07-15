@@ -37,7 +37,7 @@ impl OrderStatus {
         Ok(Self(Arc::new(RwLock::new(inner_order_status))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_order_status = self
             .0
             .read()

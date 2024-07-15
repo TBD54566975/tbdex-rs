@@ -61,6 +61,6 @@ class Quote: Message, ReplyToMessage {
     }
 
     fun toJson(): String {
-        return this.rustCoreQuote.toJson()
+        return this.rustCoreQuote.toJsonString()
     }
 }

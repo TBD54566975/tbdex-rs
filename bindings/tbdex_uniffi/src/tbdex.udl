@@ -40,7 +40,7 @@ interface Offering {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   OfferingData get_data();
 };
@@ -68,7 +68,7 @@ interface Balance {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   BalanceData get_data();
 };
@@ -97,9 +97,9 @@ interface Rfq {
   [Throws=RustCoreError]
   constructor(BearerDid bearer_did, string to, string from, string json_serialized_create_rfq_data, string protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
-  constructor([ByRef] string json, boolean require_all_private_data);
+  constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   RfqData get_data();
 
@@ -124,7 +124,7 @@ interface Quote {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   QuoteData get_data();
 };
@@ -161,7 +161,7 @@ interface Order {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   OrderData get_data();
 };
@@ -182,7 +182,7 @@ interface Cancel {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   CancelData get_data();
 };
@@ -203,7 +203,7 @@ interface OrderStatus {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   OrderStatusData get_data();
 };
@@ -241,7 +241,7 @@ interface Close {
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
-  string to_json();
+  string to_json_string();
   [Throws=RustCoreError]
   CloseData get_data();
 };

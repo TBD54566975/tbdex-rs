@@ -37,7 +37,7 @@ impl Close {
         Ok(Self(Arc::new(RwLock::new(inner_close))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_close = self
             .0
             .read()

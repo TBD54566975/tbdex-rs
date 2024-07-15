@@ -39,7 +39,7 @@ class Rfq: Message {
     }
 
     constructor(json: String, requireAllPrivateData: Boolean = false) {
-        this.rustCoreRfq = RustCoreRfq.fromJsonString(json, requireAllPrivateData)
+        this.rustCoreRfq = RustCoreRfq.fromJsonString(json)
 
         val rfqData = rustCoreRfq.getData()
         this.metadata = rfqData.metadata
@@ -59,7 +59,7 @@ class Rfq: Message {
     }
 
     fun toJson(): String {
-        return this.rustCoreRfq.toJson()
+        return this.rustCoreRfq.toJsonString()
     }
 
     fun verifyOfferingRequirements(offering: Offering) {

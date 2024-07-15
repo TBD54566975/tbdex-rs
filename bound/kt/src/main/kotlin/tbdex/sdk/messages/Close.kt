@@ -52,6 +52,6 @@ class Close: Message, ReplyToMessage {
     }
 
     fun toJson(): String {
-        return this.rustCoreClose.toJson()
+        return this.rustCoreClose.toJsonString()
     }
 }

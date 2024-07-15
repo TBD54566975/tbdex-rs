@@ -48,7 +48,7 @@ class Offering {
     }
 
     fun toJson(): String {
-        return this.rustCoreOffering.toJson()
+        return this.rustCoreOffering.toJsonString()
     }
 }
 
