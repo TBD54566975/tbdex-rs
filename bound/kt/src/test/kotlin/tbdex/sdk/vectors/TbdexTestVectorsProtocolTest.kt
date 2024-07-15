@@ -14,47 +14,47 @@ class TbdexTestVectorsProtocolTest {
      */
     @Test
     fun parse_order() {
-        testVector("parse-order.json", ::Order) { it.toJsonString() }
+        testVector("parse-order.json", Order.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_orderstatus() {
-        testVector("parse-orderstatus.json", ::OrderStatus) { it.toJsonString() }
+        testVector("parse-orderstatus.json", OrderStatus.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_rfq() {
-        testVector("parse-rfq.json", { input -> Rfq(input, true) }) { it.toJsonString() }
+        testVector("parse-rfq.json", Rfq.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_rfq_omit_private_data() {
-        testVector("parse-rfq-omit-private-data.json", { input -> Rfq(input, false) }) { it.toJsonString() }
+        testVector("parse-rfq-omit-private-data.json", Rfq.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_balance() {
-        testVector("parse-balance.json", ::Balance) { it.toJsonString() }
+        testVector("parse-balance.json", Balance.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_offering() {
-        testVector("parse-offering.json", ::Offering) { it.toJsonString() }
+        testVector("parse-offering.json", Offering.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_quote() {
-        testVector("parse-quote.json", ::Quote) { it.toJsonString() }
+        testVector("parse-quote.json", Quote.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_close() {
-        testVector("parse-close.json", ::Close) { it.toJsonString() }
+        testVector("parse-close.json", Close.Companion::fromJsonString) { it.toJsonString() }
     }
 
     @Test
     fun parse_cancel() {
-        testVector("parse-cancel.json", ::Cancel) { it.toJsonString() }
+        testVector("parse-cancel.json", Cancel.Companion::fromJsonString) { it.toJsonString() }
     }
 
     private fun <T> testVector(vectorFileName: String, objectCreation: (String) -> T, toJsonString: (T) -> String) {
