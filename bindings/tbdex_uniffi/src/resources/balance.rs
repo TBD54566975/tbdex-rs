@@ -40,4 +40,16 @@ impl Balance {
 
         Ok(balance.clone())
     }
+
+    pub fn from_inner(inner_balance: InnerBalance) -> Self {
+        Self(Arc::new(RwLock::new(inner_balance)))
+    }
+
+    pub fn to_inner(&self) -> Result<InnerBalance> {
+        let inner_balance = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+        Ok(inner_balance.clone())
+    }
 }

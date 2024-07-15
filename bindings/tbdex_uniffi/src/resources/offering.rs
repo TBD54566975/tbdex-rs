@@ -44,6 +44,10 @@ impl Offering {
         })
     }
 
+    pub fn from_inner(inner_offering: InnerOffering) -> Self {
+        Self(Arc::new(RwLock::new(inner_offering)))
+    }
+    
     pub fn to_inner(&self) -> Result<InnerOffering> {
         let inner_offering = self
             .0

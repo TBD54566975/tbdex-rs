@@ -1,5 +1,6 @@
 use super::{get_service_endpoint, send_request, Result};
 use crate::{
+    http::CreateExchangeRequestBody,
     http_client::{generate_access_token, HttpClientError},
     messages::{
         cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
@@ -25,24 +26,6 @@ pub struct Exchange {
     pub order_statuses: Option<Vec<OrderStatus>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub close: Option<Close>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateExchangeRequestBody {
-    pub message: Rfq,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub reply_to: Option<String>,
-}
-
-impl CreateExchangeRequestBody {
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let request_body = serde_json::from_str::<Self>(json)?;
-
-        request_body.message.verify()?;
-
-        Ok(request_body)
-    }
 }
 
 pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
