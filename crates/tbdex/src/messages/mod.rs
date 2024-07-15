@@ -117,6 +117,9 @@ pub enum Message {
     Close(Arc<Close>),
 }
 
+impl JsonSerializer for Message {}
+impl JsonDeserializer for Message {}
+
 impl<'de> Deserialize<'de> for Message {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
@@ -216,6 +219,3 @@ impl<'de> Deserialize<'de> for Message {
         deserializer.deserialize_option(MessageVisitor)
     }
 }
-
-impl JsonSerializer for Message {}
-impl JsonDeserializer for Message {}

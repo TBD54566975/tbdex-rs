@@ -37,6 +37,7 @@ pub enum WalletUpdateMessage {
     Cancel(Arc<Cancel>),
 }
 impl JsonSerializer for WalletUpdateMessage {}
+impl JsonDeserializer for WalletUpdateMessage {}
 
 impl<'de> Deserialize<'de> for WalletUpdateMessage {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
@@ -125,6 +126,7 @@ pub enum ReplyToMessage {
     Close(Arc<Close>),
 }
 impl JsonSerializer for ReplyToMessage {}
+impl JsonDeserializer for ReplyToMessage {}
 
 impl<'de> Deserialize<'de> for ReplyToMessage {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
