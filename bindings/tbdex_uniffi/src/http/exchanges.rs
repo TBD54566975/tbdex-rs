@@ -169,8 +169,8 @@ impl UpdateExchangeRequestBody {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner =
-            InnerUpdateExchangeRequestBody::from_json_string(&self.0.json_serialized_message)?;
+        let message = WalletUpdateMessage::from_json_string(&self.0.json_serialized_message)?;
+        let inner = InnerUpdateExchangeRequestBody { message };
         Ok(inner.to_json_string()?)
     }
 
@@ -209,7 +209,8 @@ impl ReplyToRequestBody {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner = InnerReplyToRequestBody::from_json_string(&self.0.json_serialized_message)?;
+        let message = ReplyToMessage::from_json_string(&self.0.json_serialized_message)?;
+        let inner = InnerReplyToRequestBody { message };
         Ok(inner.to_json_string()?)
     }
 

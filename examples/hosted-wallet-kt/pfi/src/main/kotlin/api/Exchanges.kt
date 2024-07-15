@@ -10,6 +10,7 @@ import spark.Spark.post
 import spark.Spark.put
 import tbdex.sdk.http.UpdateExchangeRequestBody
 import tbdex.sdk.http.CreateExchangeRequestBody
+import tbdex.sdk.http.ReplyToRequestBody
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
@@ -75,7 +76,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         println("Replying with quote")
 
-        this.replyRequest(replyTo, quote.toJson())
+        this.replyRequest(replyTo, ReplyToRequestBody(quote))
     }
 
     private fun updateExchange(req: Request, res: Response): String {
@@ -126,7 +127,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         println("Replying with order status $status")
 
-        this.replyRequest(replyTo, orderStatus.toJson())
+        this.replyRequest(replyTo, ReplyToRequestBody(orderStatus))
     }
 
     private fun replyWithClose(to: String, exchangeId: String, success: Boolean? = true) {
@@ -146,13 +147,13 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         println("Replying with close")
 
-        this.replyRequest(replyTo, close.toJson())
+        this.replyRequest(replyTo, ReplyToRequestBody(close))
     }
 
-    private fun replyRequest(replyTo: String, body: String) {
+    private fun replyRequest(replyTo: String, body: ReplyToRequestBody) {
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val requestBody = body.toRequestBody(mediaType)
+        val requestBody = body.toJsonString().toRequestBody(mediaType)
 
         val request = OkHttpRequest.Builder()
             .url(replyTo)
