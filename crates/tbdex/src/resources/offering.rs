@@ -222,8 +222,6 @@ mod tests {
     }
 }
 
-// TODO link this ticket in PR
-// TODO: Fix offering test vector - https://github.com/TBD54566975/tbdex/issues/346
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {
     use super::*;
