@@ -74,6 +74,7 @@ impl FromStr for MessageKind {
             "rfq" => Ok(MessageKind::Rfq),
             "quote" => Ok(MessageKind::Quote),
             "order" => Ok(MessageKind::Order),
+            "cancel" => Ok(MessageKind::Cancel),
             "orderstatus" => Ok(MessageKind::OrderStatus),
             "close" => Ok(MessageKind::Close),
             _ => Err(MessageError::UnknownKind(s.to_string())),

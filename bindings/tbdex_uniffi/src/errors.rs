@@ -1,7 +1,7 @@
 use serde_json::Error as SerdeJsonError;
-use tbdex::http::HttpError;
 use std::sync::PoisonError;
 use std::{any::type_name, fmt::Debug};
+use tbdex::http::HttpError;
 use tbdex::http_client::HttpClientError;
 use tbdex::messages::MessageError;
 use tbdex::resources::ResourceError;
