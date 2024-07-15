@@ -9,9 +9,7 @@ import spark.Response
 import spark.Spark.post
 import spark.Spark.put
 import tbdex.sdk.http.UpdateExchangeRequestBody
-import tbdex.sdk.httpclient.CreateExchangeRequestBody
-import tbdex.sdk.httpclient.SubmitCancelRequestBody
-import tbdex.sdk.httpclient.SubmitOrderRequestBody
+import tbdex.sdk.http.CreateExchangeRequestBody
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
@@ -26,7 +24,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private fun createExchange(req: Request, res: Response): String {
         println("POST /exchanges")
 
-        val requestBody = CreateExchangeRequestBody(req.body())
+        val requestBody = CreateExchangeRequestBody.fromJsonString(req.body())
 
         val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
         val rfq = requestBody.message

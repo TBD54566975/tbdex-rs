@@ -1,9 +1,11 @@
 package tbdex.sdk.http
 
 import tbdex.sdk.messages.*
+import tbdex.sdk.rust.GetExchangeResponseBodyDataSerializedMessage
 import tbdex.sdk.rust.MessageKind
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 import tbdex.sdk.rust.GetExchangeResponseBody as RustCoreGetExchangeResponseBody
+import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponseBodyData
 import tbdex.sdk.rust.GetExchangesResponseBody as RustCoreGetExchangesResponseBody
 import tbdex.sdk.rust.UpdateExchangeRequestBody as RustCoreUpdateExchangeRequestBody
 import tbdex.sdk.rust.SystemArchitecture
@@ -15,6 +17,27 @@ class GetExchangeResponseBody private constructor(
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
+
+    constructor(data: List<Message>) : this(
+        data,
+        RustCoreGetExchangeResponseBody(
+            RustCoreGetExchangeResponseBodyData(
+                data.map {
+                    val (kind, jsonSerialized) = when (it) {
+                        is Rfq -> Pair(MessageKind.RFQ, it.toJson())
+                        is Quote -> Pair(MessageKind.QUOTE, it.toJson())
+                        is Order -> Pair(MessageKind.ORDER, it.toJson())
+                        is Cancel -> Pair(MessageKind.CANCEL, it.toJson())
+                        is OrderStatus -> Pair(MessageKind.ORDER_STATUS, it.toJson())
+                        is Close -> Pair(MessageKind.CLOSE, it.toJson())
+                        else -> throw Exception("unknown type $it")
+                    }
+
+                    GetExchangeResponseBodyDataSerializedMessage(kind, jsonSerialized)
+                }
+            )
+        )
+    )
 
     companion object {
         fun fromJsonString(json: String): GetExchangeResponseBody {
@@ -47,6 +70,11 @@ class GetExchangesResponseBody private constructor(
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
+    constructor(data: List<String>) : this(
+        data,
+        RustCoreGetExchangesResponseBody(data)
+    )
+
     companion object {
         fun fromJsonString(json: String): GetExchangesResponseBody {
             val rustCoreGetExchangesResponseBody = RustCoreGetExchangesResponseBody.fromJsonString(json)
@@ -70,6 +98,12 @@ class CreateExchangeRequestBody private constructor(
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
+
+    constructor(message: Rfq, replyTo: String? = null) : this(
+        message,
+        replyTo,
+        RustCoreCreateExchangeRequestBody(message.rustCoreRfq, replyTo)
+    )
 
     companion object {
         fun fromJsonString(json: String): CreateExchangeRequestBody {
@@ -97,6 +131,15 @@ class UpdateExchangeRequestBody private constructor(
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
+
+    constructor(message: WalletUpdateMessage) : this(
+        message,
+        when (message) {
+            is Order -> RustCoreUpdateExchangeRequestBody(MessageKind.ORDER_STATUS, message.toJson())
+            is Cancel -> RustCoreUpdateExchangeRequestBody(MessageKind.CANCEL, message.toJson())
+            else -> throw Exception("unknown type")
+        }
+    )
 
     companion object {
         fun fromJsonString(json: String): UpdateExchangeRequestBody {

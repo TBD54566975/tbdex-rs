@@ -15,6 +15,10 @@ pub struct GetBalancesResponseBodyData {
 pub struct GetBalancesResponseBody(pub GetBalancesResponseBodyData);
 
 impl GetBalancesResponseBody {
+    pub fn new(balances: Vec<Arc<Balance>>) -> Self {
+        Self(GetBalancesResponseBodyData { data: balances })
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerGetBalancesResponse::from_json_string(json)?;
         let data = inner

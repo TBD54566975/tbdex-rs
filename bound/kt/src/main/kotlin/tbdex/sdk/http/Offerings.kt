@@ -12,6 +12,13 @@ class GetOfferingsResponseBody private constructor(
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
+    constructor(offerings: List<Offering>) : this(
+        data = offerings,
+        rustCoreGetOfferingsResponseBody = RustCoreGetOfferingsResponseBody(
+            offerings.map { it.rustCoreOffering }
+        )
+    )
+
     companion object {
         fun fromJsonString(json: String): GetOfferingsResponseBody {
             val rustCoreGetOfferingsResponseBody = RustCoreGetOfferingsResponseBody.fromJsonString(json)
