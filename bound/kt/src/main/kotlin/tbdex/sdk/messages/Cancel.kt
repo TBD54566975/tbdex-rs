@@ -51,7 +51,7 @@ class Cancel: Message, WalletUpdateMessage {
         this.signature = rustCoreCancel.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreCancel.toJsonString()
     }
 }

@@ -43,7 +43,7 @@ class Order: Message, WalletUpdateMessage {
         this.signature = this.rustCoreOrder.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreOrder.toJsonString()
     }
 }

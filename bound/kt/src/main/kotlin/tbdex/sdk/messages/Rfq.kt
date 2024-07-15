@@ -58,7 +58,7 @@ class Rfq: Message {
         this.signature = rfqData.signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreRfq.toJsonString()
     }
 

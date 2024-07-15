@@ -60,7 +60,7 @@ class Quote: Message, ReplyToMessage {
         this.signature = this.rustCoreQuote.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreQuote.toJsonString()
     }
 }

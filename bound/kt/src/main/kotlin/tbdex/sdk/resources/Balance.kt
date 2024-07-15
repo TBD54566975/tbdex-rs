@@ -50,7 +50,7 @@ class Balance {
         this.signature = this.rustCoreBalance.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreBalance.toJsonString()
     }
 }

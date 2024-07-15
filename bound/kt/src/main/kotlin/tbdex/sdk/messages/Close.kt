@@ -51,7 +51,7 @@ class Close: Message, ReplyToMessage {
         this.signature = rustCoreClose.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreClose.toJsonString()
     }
 }

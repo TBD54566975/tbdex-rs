@@ -25,12 +25,12 @@ class GetExchangeResponseBody private constructor(
             RustCoreGetExchangeResponseBodyData(
                 data.map {
                     val (kind, jsonSerialized) = when (it) {
-                        is Rfq -> Pair(MessageKind.RFQ, it.toJson())
-                        is Quote -> Pair(MessageKind.QUOTE, it.toJson())
-                        is Order -> Pair(MessageKind.ORDER, it.toJson())
-                        is Cancel -> Pair(MessageKind.CANCEL, it.toJson())
-                        is OrderStatus -> Pair(MessageKind.ORDER_STATUS, it.toJson())
-                        is Close -> Pair(MessageKind.CLOSE, it.toJson())
+                        is Rfq -> Pair(MessageKind.RFQ, it.toJsonString())
+                        is Quote -> Pair(MessageKind.QUOTE, it.toJsonString())
+                        is Order -> Pair(MessageKind.ORDER, it.toJsonString())
+                        is Cancel -> Pair(MessageKind.CANCEL, it.toJsonString())
+                        is OrderStatus -> Pair(MessageKind.ORDER_STATUS, it.toJsonString())
+                        is Close -> Pair(MessageKind.CLOSE, it.toJsonString())
                         else -> throw Exception("unknown type $it")
                     }
 
@@ -136,8 +136,8 @@ class UpdateExchangeRequestBody private constructor(
     constructor(message: WalletUpdateMessage) : this(
         message,
         when (message) {
-            is Order -> RustCoreUpdateExchangeRequestBody(MessageKind.ORDER_STATUS, message.toJson())
-            is Cancel -> RustCoreUpdateExchangeRequestBody(MessageKind.CANCEL, message.toJson())
+            is Order -> RustCoreUpdateExchangeRequestBody(MessageKind.ORDER_STATUS, message.toJsonString())
+            is Cancel -> RustCoreUpdateExchangeRequestBody(MessageKind.CANCEL, message.toJsonString())
             else -> throw Exception("unknown type")
         }
     )
@@ -175,9 +175,9 @@ class ReplyToRequestBody private constructor(
     constructor(message: ReplyToMessage) : this(
         message,
         when (message) {
-            is Quote -> RustCoreReplyToRequestBody(MessageKind.QUOTE, message.toJson())
-            is OrderStatus -> RustCoreReplyToRequestBody(MessageKind.ORDER_STATUS, message.toJson())
-            is Close -> RustCoreReplyToRequestBody(MessageKind.CLOSE, message.toJson())
+            is Quote -> RustCoreReplyToRequestBody(MessageKind.QUOTE, message.toJsonString())
+            is OrderStatus -> RustCoreReplyToRequestBody(MessageKind.ORDER_STATUS, message.toJsonString())
+            is Close -> RustCoreReplyToRequestBody(MessageKind.CLOSE, message.toJsonString())
             else -> throw Exception("unknown type")
         }
     )

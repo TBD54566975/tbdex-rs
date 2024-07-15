@@ -47,7 +47,7 @@ class Offering {
         this.signature = this.rustCoreOffering.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreOffering.toJsonString()
     }
 }

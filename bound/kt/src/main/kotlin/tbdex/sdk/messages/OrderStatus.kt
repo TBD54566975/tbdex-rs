@@ -53,7 +53,7 @@ class OrderStatus: Message, ReplyToMessage {
         this.signature = this.rustCoreOrderStatus.getData().signature
     }
 
-    fun toJson(): String {
+    fun toJsonString(): String {
         return this.rustCoreOrderStatus.toJsonString()
     }
 }
