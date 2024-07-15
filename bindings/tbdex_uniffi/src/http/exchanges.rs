@@ -31,6 +31,10 @@ pub struct GetExchangeResponseBodyData {
 pub struct GetExchangeResponseBody(pub GetExchangeResponseBodyData);
 
 impl GetExchangeResponseBody {
+    pub fn new(response_body: GetExchangeResponseBodyData) -> Self {
+        Self(response_body)
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerGetExchangeResponseBody::from_json_string(json)?;
         let data = inner
@@ -82,6 +86,10 @@ pub struct GetExchangesResponseBodyData {
 pub struct GetExchangesResponseBody(pub GetExchangesResponseBodyData);
 
 impl GetExchangesResponseBody {
+    pub fn new(data: Vec<String>) -> Self {
+        Self(GetExchangesResponseBodyData { data })
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerGetExchangesResponseBody::from_json_string(json)?;
         Ok(Self(GetExchangesResponseBodyData { data: inner.data }))
@@ -108,6 +116,10 @@ pub struct CreateExchangeRequestBodyData {
 pub struct CreateExchangeRequestBody(pub CreateExchangeRequestBodyData);
 
 impl CreateExchangeRequestBody {
+    pub fn new(message: Arc<Rfq>, reply_to: Option<String>) -> Self {
+        Self(CreateExchangeRequestBodyData { message, reply_to })
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerCreateExchangeRequestBody::from_json_string(json)?;
         let rfq = Rfq::from_inner(inner.message);
@@ -139,6 +151,13 @@ pub struct UpdateExchangeRequestBodyData {
 pub struct UpdateExchangeRequestBody(pub UpdateExchangeRequestBodyData);
 
 impl UpdateExchangeRequestBody {
+    pub fn new(kind: MessageKind, json_serialized_message: String) -> Self {
+        Self(UpdateExchangeRequestBodyData {
+            kind,
+            json_serialized_message,
+        })
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerUpdateExchangeRequestBody::from_json_string(json)?;
         let kind = match inner.message {

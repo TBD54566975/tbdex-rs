@@ -16,6 +16,10 @@ pub struct GetOfferingsResponseBodyData {
 pub struct GetOfferingsResponseBody(pub GetOfferingsResponseBodyData);
 
 impl GetOfferingsResponseBody {
+    pub fn new(offerings: Vec<Arc<Offering>>) -> Self {
+        Self(GetOfferingsResponseBodyData { data: offerings })
+    }
+
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner = InnerGetOfferingsResponse::from_json_string(json)?;
         let data = inner

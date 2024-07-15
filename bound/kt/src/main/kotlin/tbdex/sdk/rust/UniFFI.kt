@@ -921,6 +921,18 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -996,6 +1008,8 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_createexchangerequestbody_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_createexchangerequestbody_new(`message`: Pointer,`replyTo`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_createexchangerequestbody_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_createexchangerequestbody_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1005,6 +1019,8 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_fn_free_getbalancesresponsebody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_getbalancesresponsebody_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_getbalancesresponsebody_new(`balances`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_getbalancesresponsebody_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1016,6 +1032,8 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_getexchangeresponsebody_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_getexchangeresponsebody_new(`responseBodyData`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_getexchangeresponsebody_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_getexchangeresponsebody_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1026,6 +1044,8 @@ internal interface UniffiLib : Library {
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_getexchangesresponsebody_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_getexchangesresponsebody_new(`data`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_getexchangesresponsebody_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_getexchangesresponsebody_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1035,6 +1055,8 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_fn_free_getofferingsresponsebody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_getofferingsresponsebody_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_getofferingsresponsebody_new(`offerings`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_getofferingsresponsebody_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1157,6 +1179,8 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_fn_free_updateexchangerequestbody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_constructor_updateexchangerequestbody_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_updateexchangerequestbody_new(`kind`: RustBuffer.ByValue,`jsonSerializedMessage`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_updateexchangerequestbody_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1402,13 +1426,23 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_createexchangerequestbody_from_json_string(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_createexchangerequestbody_new(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_getbalancesresponsebody_from_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_getbalancesresponsebody_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_getexchangeresponsebody_from_json_string(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_getexchangeresponsebody_new(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_getexchangesresponsebody_from_json_string(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_getexchangesresponsebody_new(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_getofferingsresponsebody_from_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_getofferingsresponsebody_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_inmemorykeymanager_new(
     ): Short
@@ -1437,6 +1471,8 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_checksum_constructor_rfq_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_updateexchangerequestbody_from_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_updateexchangerequestbody_new(
     ): Short
     fun ffi_tbdex_uniffi_uniffi_contract_version(
     ): Int
@@ -1626,16 +1662,31 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_createexchangerequestbody_from_json_string() != 26546.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_createexchangerequestbody_new() != 52537.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_getbalancesresponsebody_from_json_string() != 41824.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_getbalancesresponsebody_new() != 51658.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_getexchangeresponsebody_from_json_string() != 33484.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_getexchangeresponsebody_new() != 13829.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_getexchangesresponsebody_from_json_string() != 57391.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_getexchangesresponsebody_new() != 34532.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_getofferingsresponsebody_from_json_string() != 9901.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_getofferingsresponsebody_new() != 63306.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_inmemorykeymanager_new() != 52263.toShort()) {
@@ -1678,6 +1729,9 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_updateexchangerequestbody_from_json_string() != 7721.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_updateexchangerequestbody_new() != 28121.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -3061,6 +3115,13 @@ open class CreateExchangeRequestBody: Disposable, AutoCloseable, CreateExchangeR
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
+    constructor(`message`: Rfq, `replyTo`: kotlin.String?) :
+        this(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_createexchangerequestbody_new(
+        FfiConverterTypeRfq.lower(`message`),FfiConverterOptionalString.lower(`replyTo`),_status)
+}
+    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -3320,6 +3381,13 @@ open class GetBalancesResponseBody: Disposable, AutoCloseable, GetBalancesRespon
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
+    constructor(`balances`: List<Balance>) :
+        this(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_getbalancesresponsebody_new(
+        FfiConverterSequenceTypeBalance.lower(`balances`),_status)
+}
+    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -3579,6 +3647,13 @@ open class GetExchangeResponseBody: Disposable, AutoCloseable, GetExchangeRespon
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
+    constructor(`responseBodyData`: GetExchangeResponseBodyData) :
+        this(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_getexchangeresponsebody_new(
+        FfiConverterTypeGetExchangeResponseBodyData.lower(`responseBodyData`),_status)
+}
+    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -3838,6 +3913,13 @@ open class GetExchangesResponseBody: Disposable, AutoCloseable, GetExchangesResp
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
+    constructor(`data`: List<kotlin.String>) :
+        this(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_getexchangesresponsebody_new(
+        FfiConverterSequenceString.lower(`data`),_status)
+}
+    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -4097,6 +4179,13 @@ open class GetOfferingsResponseBody: Disposable, AutoCloseable, GetOfferingsResp
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
+    constructor(`offerings`: List<Offering>) :
+        this(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_getofferingsresponsebody_new(
+        FfiConverterSequenceTypeOffering.lower(`offerings`),_status)
+}
+    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -7070,6 +7159,13 @@ open class UpdateExchangeRequestBody: Disposable, AutoCloseable, UpdateExchangeR
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
+    constructor(`kind`: MessageKind, `jsonSerializedMessage`: kotlin.String) :
+        this(
+    uniffiRustCall() { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_updateexchangerequestbody_new(
+        FfiConverterTypeMessageKind.lower(`kind`),FfiConverterString.lower(`jsonSerializedMessage`),_status)
+}
+    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
