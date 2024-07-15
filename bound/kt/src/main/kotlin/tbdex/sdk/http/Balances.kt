@@ -12,6 +12,13 @@ class GetBalancesResponseBody private constructor(
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
+    constructor(balances: List<Balance>) : this(
+        data = balances,
+        rustCoreGetBalancesResponseBody = RustCoreGetBalancesResponseBody(
+            balances.map { it.rustCoreBalance }
+        )
+    )
+
     companion object {
         fun fromJsonString(json: String): GetBalancesResponseBody {
             val rustCoreGetBalancesResponseBody = RustCoreGetBalancesResponseBody.fromJsonString(json)

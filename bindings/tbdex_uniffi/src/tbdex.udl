@@ -274,6 +274,7 @@ dictionary GetOfferingsResponseBodyData {
 };
 
 interface GetOfferingsResponseBody {
+  constructor(sequence<Offering> offerings);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -286,6 +287,7 @@ dictionary GetBalancesResponseBodyData {
 };
 
 interface GetBalancesResponseBody {
+  constructor(sequence<Balance> balances);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -303,6 +305,7 @@ dictionary GetExchangeResponseBodyData {
 };
 
 interface GetExchangeResponseBody {
+  constructor(GetExchangeResponseBodyData response_body_data);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -315,6 +318,7 @@ dictionary GetExchangesResponseBodyData {
 };
 
 interface GetExchangesResponseBody {
+  constructor(sequence<string> data);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -328,6 +332,7 @@ dictionary CreateExchangeRequestBodyData {
 };
 
 interface CreateExchangeRequestBody {
+  constructor(Rfq message, string? reply_to);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -341,6 +346,7 @@ dictionary UpdateExchangeRequestBodyData {
 };
 
 interface UpdateExchangeRequestBody {
+  constructor(MessageKind kind, string json_serialized_message);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
