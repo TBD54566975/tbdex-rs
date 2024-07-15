@@ -2,9 +2,11 @@ use crate::{errors::Result, messages::rfq::Rfq};
 use std::sync::Arc;
 use tbdex::{
     http::{
-        CreateExchangeRequestBody as InnerCreateExchangeRequestBody, JsonDeserializer,
-        JsonSerializer, UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody,
-        WalletUpdateMessage,
+        exchanges::{
+            CreateExchangeRequestBody as InnerCreateExchangeRequestBody,
+            UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody, WalletUpdateMessage,
+        },
+        JsonDeserializer, JsonSerializer,
     },
     messages::MessageKind,
 };

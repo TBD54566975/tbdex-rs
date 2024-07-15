@@ -19,8 +19,7 @@ use crate::{
         balances::get_balances,
         exchanges::{
             create_exchange, get_exchange, get_exchanges, submit_cancel, submit_order,
-            Exchange as ExchangeData, SubmitCancelRequestBody, SubmitCancelRequestBodyData,
-            SubmitOrderRequestBody, SubmitOrderRequestBodyData,
+            Exchange as ExchangeData,
         },
         offerings::get_offerings,
     },

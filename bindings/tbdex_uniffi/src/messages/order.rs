@@ -26,10 +26,6 @@ impl Order {
         Ok(Self(Arc::new(RwLock::new(order))))
     }
 
-    pub fn from_inner(inner_order: InnerOrder) -> Self {
-        Self(Arc::new(RwLock::new(inner_order)))
-    }
-
     pub fn from_json_string(json: &str) -> Result<Self> {
         let inner_order = InnerOrder::from_json_string(json)?;
 
