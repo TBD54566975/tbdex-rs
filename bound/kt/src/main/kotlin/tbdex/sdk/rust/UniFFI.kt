@@ -1067,11 +1067,11 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_fn_method_rfq_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_all_private_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Byte
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_offering_requirements(`ptr`: Pointer,`offering`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Byte
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_present_private_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
-    ): Byte
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_signer(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_signer(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1464,13 +1464,13 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_to_json() != 46345.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data() != 56842.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data() != 14947.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_offering_requirements() != 20586.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_offering_requirements() != 60520.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_present_private_data() != 31783.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_present_private_data() != 18644.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_signer_sign() != 42600.toShort()) {
@@ -5291,11 +5291,11 @@ public interface RfqInterface {
     
     fun `toJson`(): kotlin.String
     
-    fun `verifyAllPrivateData`(): kotlin.Boolean
+    fun `verifyAllPrivateData`()
     
-    fun `verifyOfferingRequirements`(`offering`: Offering): kotlin.Boolean
+    fun `verifyOfferingRequirements`(`offering`: Offering)
     
-    fun `verifyPresentPrivateData`(): kotlin.Boolean
+    fun `verifyPresentPrivateData`()
     
     companion object
 }
@@ -5415,42 +5415,39 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `verifyAllPrivateData`(): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
+    @Throws(RustCoreException::class)override fun `verifyAllPrivateData`()
+        = 
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify_all_private_data(
         it, _status)
 }
     }
-    )
-    }
+    
     
 
     
-    @Throws(RustCoreException::class)override fun `verifyOfferingRequirements`(`offering`: Offering): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
+    @Throws(RustCoreException::class)override fun `verifyOfferingRequirements`(`offering`: Offering)
+        = 
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify_offering_requirements(
         it, FfiConverterTypeOffering.lower(`offering`),_status)
 }
     }
-    )
-    }
+    
     
 
     
-    @Throws(RustCoreException::class)override fun `verifyPresentPrivateData`(): kotlin.Boolean {
-            return FfiConverterBoolean.lift(
+    @Throws(RustCoreException::class)override fun `verifyPresentPrivateData`()
+        = 
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify_present_private_data(
         it, _status)
 }
     }
-    )
-    }
+    
     
 
     
@@ -6920,7 +6917,8 @@ public object FfiConverterTypeOrderStatusData: FfiConverterRustBuffer<OrderStatu
 
 
 data class OrderStatusDataData (
-    var `orderStatus`: kotlin.String
+    var `status`: OrderStatusStatus, 
+    var `details`: kotlin.String?
 ) {
     
     companion object
@@ -6929,16 +6927,19 @@ data class OrderStatusDataData (
 public object FfiConverterTypeOrderStatusDataData: FfiConverterRustBuffer<OrderStatusDataData> {
     override fun read(buf: ByteBuffer): OrderStatusDataData {
         return OrderStatusDataData(
-            FfiConverterString.read(buf),
+            FfiConverterTypeOrderStatusStatus.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
     override fun allocationSize(value: OrderStatusDataData) = (
-            FfiConverterString.allocationSize(value.`orderStatus`)
+            FfiConverterTypeOrderStatusStatus.allocationSize(value.`status`) +
+            FfiConverterOptionalString.allocationSize(value.`details`)
     )
 
     override fun write(value: OrderStatusDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`orderStatus`, buf)
+            FfiConverterTypeOrderStatusStatus.write(value.`status`, buf)
+            FfiConverterOptionalString.write(value.`details`, buf)
     }
 }
 
@@ -7356,6 +7357,44 @@ public object FfiConverterTypeMessageKind: FfiConverterRustBuffer<MessageKind> {
     override fun allocationSize(value: MessageKind) = 4UL
 
     override fun write(value: MessageKind, buf: ByteBuffer) {
+        buf.putInt(value.ordinal + 1)
+    }
+}
+
+
+
+
+
+
+enum class OrderStatusStatus {
+    
+    PAYIN_PENDING,
+    PAYIN_INITIATED,
+    PAYIN_SETTLED,
+    PAYIN_FAILED,
+    PAYIN_EXPIRED,
+    PAYOUT_PENDING,
+    PAYOUT_INITIATED,
+    PAYOUT_SETTLED,
+    PAYOUT_FAILED,
+    REFUND_PENDING,
+    REFUND_INITIATED,
+    REFUND_SETTLED,
+    REFUND_FAILED;
+    companion object
+}
+
+
+public object FfiConverterTypeOrderStatusStatus: FfiConverterRustBuffer<OrderStatusStatus> {
+    override fun read(buf: ByteBuffer) = try {
+        OrderStatusStatus.values()[buf.getInt() - 1]
+    } catch (e: IndexOutOfBoundsException) {
+        throw RuntimeException("invalid enum value, something is very wrong!!", e)
+    }
+
+    override fun allocationSize(value: OrderStatusStatus) = 4UL
+
+    override fun write(value: OrderStatusStatus, buf: ByteBuffer) {
         buf.putInt(value.ordinal + 1)
     }
 }

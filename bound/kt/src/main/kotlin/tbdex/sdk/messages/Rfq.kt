@@ -62,16 +62,16 @@ class Rfq {
         return this.rustCoreRfq.toJson()
     }
 
-    fun verifyOfferingRequirements(offering: Offering): Boolean {
-        return this.rustCoreRfq.verifyOfferingRequirements(offering.rustCoreOffering)
+    fun verifyOfferingRequirements(offering: Offering) {
+        this.rustCoreRfq.verifyOfferingRequirements(offering.rustCoreOffering)
     }
 
-    fun verifyAllPrivateData(): Boolean {
-        return this.rustCoreRfq.verifyAllPrivateData()
+    fun verifyAllPrivateData() {
+        this.rustCoreRfq.verifyAllPrivateData()
     }
 
-    fun verifyPresentPrivateData(): Boolean {
-        return this.rustCoreRfq.verifyPresentPrivateData()
+    fun verifyPresentPrivateData() {
+        this.rustCoreRfq.verifyPresentPrivateData()
     }
 }
 

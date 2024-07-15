@@ -97,11 +97,15 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         if (order != null) {
             Thread {
-                Thread.sleep(3000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, "PENDING")
-                Thread.sleep(3000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,"COMPLETED")
-                Thread.sleep(3000)
+                Thread.sleep(1000)
+                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, Status.PAYIN_INITIATED)
+                Thread.sleep(1000)
+                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYIN_SETTLED)
+                Thread.sleep(1000)
+                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYOUT_INITIATED)
+                Thread.sleep(1000)
+                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYOUT_SETTLED)
+                Thread.sleep(1000)
                 replyWithClose(order.metadata.from, order.metadata.exchangeId)
             }.start()
         } else if (cancel != null) {
@@ -116,19 +120,19 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         return ""
     }
 
-    private fun replyWithOrderStatus(to: String, exchangeId: String, status: String) {
+    private fun replyWithOrderStatus(to: String, exchangeId: String, status: Status) {
         val orderStatus = OrderStatus(
             bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
-            data = OrderStatusData(status),
+            data = OrderStatusData(status, null),
             "1.0"
         )
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
-        println("Replying with order status")
+        println("Replying with order status $status")
 
         this.replyRequest(replyTo, orderStatus.toJson())
     }
