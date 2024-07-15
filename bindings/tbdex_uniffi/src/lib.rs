@@ -12,7 +12,8 @@ use crate::{
         exchanges::{
             CreateExchangeRequestBody, CreateExchangeRequestBodyData, GetExchangeResponseBody,
             GetExchangeResponseBodyData, GetExchangeResponseBodyDataSerializedMessage,
-            UpdateExchangeRequestBody, UpdateExchangeRequestBodyData,
+            GetExchangesResponseBody, GetExchangesResponseBodyData, UpdateExchangeRequestBody,
+            UpdateExchangeRequestBodyData,
         },
         offerings::{GetOfferingsResponseBody, GetOfferingsResponseBodyData},
     },

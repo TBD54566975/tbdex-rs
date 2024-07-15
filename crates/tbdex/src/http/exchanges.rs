@@ -11,6 +11,13 @@ impl JsonDeserializer for GetExchangeResponseBody {}
 impl JsonSerializer for GetExchangeResponseBody {}
 
 #[derive(Serialize, Deserialize)]
+pub struct GetExchangesResponseBody {
+    pub data: Vec<String>,
+}
+impl JsonDeserializer for GetExchangesResponseBody {}
+impl JsonSerializer for GetExchangesResponseBody {}
+
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateExchangeRequestBody {
     pub message: Rfq,

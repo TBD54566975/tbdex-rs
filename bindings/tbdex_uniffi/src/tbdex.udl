@@ -310,6 +310,18 @@ interface GetExchangeResponseBody {
   GetExchangeResponseBodyData get_data();
 };
 
+dictionary GetExchangesResponseBodyData {
+  sequence<string> data;
+};
+
+interface GetExchangesResponseBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  GetExchangesResponseBodyData get_data();
+};
+
 dictionary CreateExchangeRequestBodyData {
   Rfq message;
   string? reply_to;
