@@ -8,7 +8,7 @@ import tbdex.sdk.rust.CancelDataData as RustCoreCancelData
 
 typealias CancelData = RustCoreCancelData
 
-class Cancel: WalletUpdateMessage {
+class Cancel: Message, WalletUpdateMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }

@@ -11,7 +11,7 @@ typealias QuoteData = RustCoreQuoteData
 typealias QuoteDetails = RustCoreQuoteDetails
 typealias PaymentInstruction = RustCorePaymentInstruction
 
-class Quote {
+class Quote: Message {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }

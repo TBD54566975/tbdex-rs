@@ -10,8 +10,9 @@ use crate::{
     http::{
         balances::{GetBalancesResponseBody, GetBalancesResponseBodyData},
         exchanges::{
-            CreateExchangeRequestBody, CreateExchangeRequestBodyData, UpdateExchangeRequestBody,
-            UpdateExchangeRequestBodyData,
+            CreateExchangeRequestBody, CreateExchangeRequestBodyData, GetExchangeResponseBody,
+            GetExchangeResponseBodyData, GetExchangeResponseBodyDataSerializedMessage,
+            UpdateExchangeRequestBody, UpdateExchangeRequestBodyData,
         },
         offerings::{GetOfferingsResponseBody, GetOfferingsResponseBodyData},
     },

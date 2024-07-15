@@ -293,6 +293,23 @@ interface GetBalancesResponseBody {
   GetBalancesResponseBodyData get_data();
 };
 
+dictionary GetExchangeResponseBodyDataSerializedMessage {
+  MessageKind kind;
+  string json_serialized;
+};
+
+dictionary GetExchangeResponseBodyData {
+  sequence<GetExchangeResponseBodyDataSerializedMessage> data;
+};
+
+interface GetExchangeResponseBody {
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  GetExchangeResponseBodyData get_data();
+};
+
 dictionary CreateExchangeRequestBodyData {
   Rfq message;
   string? reply_to;
