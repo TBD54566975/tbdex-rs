@@ -6,45 +6,46 @@ import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.web5.PresentationDefinition
 import tbdex.sdk.rust.Offering as RustCoreOffering
 
-class Offering {
+class Offering private constructor(
+    val metadata: ResourceMetadata,
+    val data: OfferingData,
+    val signature: String,
+    internal val rustCoreOffering: RustCoreOffering
+) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: ResourceMetadata
-    val data: OfferingData
-    val signature: String
+    companion object {
+        fun create(
+            bearerDid: BearerDid,
+            from: String,
+            data: OfferingData,
+            protocol: String
+        ): Offering {
+            val jsonSerializedData = Json.stringify(data)
+            val rustCoreOffering = RustCoreOffering(bearerDid.rustCoreBearerDid, from, jsonSerializedData, protocol)
+            val rustCoreData = rustCoreOffering.getData()
+            return Offering(
+                rustCoreData.metadata,
+                Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, OfferingData::class.java),
+                rustCoreData.signature,
+                rustCoreOffering
+            )
+        }
 
-    val rustCoreOffering: RustCoreOffering
+        fun fromJsonString(json: String): Offering {
+            val rustCoreOffering = RustCoreOffering.fromJsonString(json)
+            val rustCoreData = rustCoreOffering.getData()
+            val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
+            return Offering(rustCoreData.metadata, data, rustCoreData.signature, rustCoreOffering)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        from: String,
-        data: OfferingData,
-        protocol: String
-    ) {
-        val jsonSerializedData = Json.stringify(data)
-        this.rustCoreOffering = RustCoreOffering(bearerDid.rustCoreBearerDid, from, jsonSerializedData, protocol)
-
-        this.metadata = rustCoreOffering.getData().metadata
-        this.data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
-        this.signature = rustCoreOffering.getData().signature
-    }
-
-    constructor(json: String) {
-        this.rustCoreOffering = RustCoreOffering.fromJsonString(json)
-
-        this.metadata = rustCoreOffering.getData().metadata
-        this.data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
-        this.signature = rustCoreOffering.getData().signature
-    }
-
-    constructor(rustCoreOffering: RustCoreOffering) {
-        this.rustCoreOffering = rustCoreOffering
-
-        this.metadata = this.rustCoreOffering.getData().metadata
-        this.data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
-        this.signature = this.rustCoreOffering.getData().signature
+        internal fun fromRustCoreOffering(rustCoreOffering: RustCoreOffering): Offering {
+            val rustCoreData = rustCoreOffering.getData()
+            val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
+            return Offering(rustCoreData.metadata, data, rustCoreData.signature, rustCoreOffering)
+        }
     }
 
     fun toJsonString(): String {

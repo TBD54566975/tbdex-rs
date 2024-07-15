@@ -6,7 +6,7 @@ import tbdex.sdk.rust.GetOfferingsResponseBody as RustCoreGetOfferingsResponseBo
 
 class GetOfferingsResponseBody private constructor(
     val data: List<Offering>,
-    private val rustCoreGetOfferingsResponseBody: RustCoreGetOfferingsResponseBody
+    internal val rustCoreGetOfferingsResponseBody: RustCoreGetOfferingsResponseBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -23,7 +23,7 @@ class GetOfferingsResponseBody private constructor(
         fun fromJsonString(json: String): GetOfferingsResponseBody {
             val rustCoreGetOfferingsResponseBody = RustCoreGetOfferingsResponseBody.fromJsonString(json)
             val offerings = rustCoreGetOfferingsResponseBody.getData().data.map {
-                Offering(it)
+                Offering.fromRustCoreOffering(it)
             }
             return GetOfferingsResponseBody(offerings, rustCoreGetOfferingsResponseBody)
         }

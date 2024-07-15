@@ -23,14 +23,14 @@ data class Exchange(
     }
 
     companion object {
-        fun fromRustCore(rustCoreExchange: RustCoreExchange): Exchange {
+        internal fun fromRustCore(rustCoreExchange: RustCoreExchange): Exchange {
             return Exchange(
-                Rfq(rustCoreExchange.rfq),
-                rustCoreExchange.quote?.let { Quote(it) },
-                rustCoreExchange.order?.let { Order(it) },
-                rustCoreExchange.cancel?.let { Cancel(it) },
-                rustCoreExchange.orderStatuses?.let { it -> it.map { OrderStatus(it) } },
-                rustCoreExchange.close?.let { Close(it) },
+                Rfq.fromRustCoreRfq(rustCoreExchange.rfq),
+                rustCoreExchange.quote?.let { Quote.fromRustCoreQuote(it) },
+                rustCoreExchange.order?.let { Order.fromRustCoreOrder(it) },
+                rustCoreExchange.cancel?.let { Cancel.fromRustCoreCancel(it) },
+                rustCoreExchange.orderStatuses?.let { it -> it.map { OrderStatus.fromRustCoreOrderStatus(it) } },
+                rustCoreExchange.close?.let { Close.fromRustCoreClose(it) },
             )
         }
     }

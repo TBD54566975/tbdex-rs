@@ -6,56 +6,50 @@ import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Rfq as RustCoreRfq
 
-class Rfq: Message {
+class Rfq private constructor(
+    val metadata: MessageMetadata,
+    val data: RfqData,
+    val privateData: RfqPrivateData? = null,
+    val signature: String,
+    internal val rustCoreRfq: RustCoreRfq
+): Message {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: MessageMetadata
-    val data: RfqData
-    val privateData: RfqPrivateData?
-    val signature: String
+    companion object {
+        fun create(
+            bearerDid: BearerDid,
+            to: String,
+            from: String,
+            createRfqData: CreateRfqData,
+            protocol: String,
+            externalId: String?
+        ): Rfq {
+            val jsonSerializedCreateRfqData = Json.stringify(createRfqData)
+            val rustCoreRfq = RustCoreRfq(
+                bearerDid.rustCoreBearerDid, to, from, jsonSerializedCreateRfqData, protocol, externalId
+            )
+            val rustCoreData = rustCoreRfq.getData()
+            val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
+            val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
+            return Rfq(rustCoreData.metadata, data, privateData, rustCoreData.signature, rustCoreRfq)
+        }
 
-    val rustCoreRfq: RustCoreRfq
+        fun fromJsonString(json: String): Rfq {
+            val rustCoreRfq = RustCoreRfq.fromJsonString(json)
+            val rustCoreData = rustCoreRfq.getData()
+            val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
+            val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
+            return Rfq(rustCoreData.metadata, data, privateData, rustCoreData.signature, rustCoreRfq)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        to: String,
-        from: String,
-        createRfqData: CreateRfqData,
-        protocol: String,
-        externalId: String?
-    ) {
-        val jsonSerializedCreateRfqData = Json.stringify(createRfqData)
-        this.rustCoreRfq = RustCoreRfq(
-            bearerDid.rustCoreBearerDid, to, from, jsonSerializedCreateRfqData, protocol, externalId
-        )
-
-        val rfqData = rustCoreRfq.getData()
-        this.metadata = rfqData.metadata
-        this.data = Json.jsonMapper.readValue(rfqData.jsonSerializedData, RfqData::class.java)
-        this.privateData = rfqData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-        this.signature = rfqData.signature
-    }
-
-    constructor(json: String, requireAllPrivateData: Boolean = false) {
-        this.rustCoreRfq = RustCoreRfq.fromJsonString(json)
-
-        val rfqData = rustCoreRfq.getData()
-        this.metadata = rfqData.metadata
-        this.data = Json.jsonMapper.readValue(rfqData.jsonSerializedData, RfqData::class.java)
-        this.privateData = rfqData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-        this.signature = rfqData.signature
-    }
-
-    constructor(rustCoreRfq: RustCoreRfq) {
-        this.rustCoreRfq = rustCoreRfq
-
-        val rfqData = this.rustCoreRfq.getData()
-        this.metadata = rfqData.metadata
-        this.data = Json.jsonMapper.readValue(rfqData.jsonSerializedData, RfqData::class.java)
-        this.privateData = rfqData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-        this.signature = rfqData.signature
+        internal fun fromRustCoreRfq(rustCoreRfq: RustCoreRfq): Rfq {
+            val rustCoreData = rustCoreRfq.getData()
+            val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
+            val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
+            return Rfq(rustCoreData.metadata, data, privateData, rustCoreData.signature, rustCoreRfq)
+        }
     }
 
     fun toJsonString(): String {

@@ -5,42 +5,39 @@ import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Order as RustCoreOrder
 
-class Order: Message, WalletUpdateMessage {
+class Order private constructor(
+    val metadata: MessageMetadata,
+    val signature: String,
+    internal val rustCoreOrder: RustCoreOrder
+): Message, WalletUpdateMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: MessageMetadata
-    val signature: String
+    companion object {
+        fun create(
+            bearerDid: BearerDid,
+            to: String,
+            from: String,
+            exchangeId: String,
+            protocol: String,
+            externalId: String? = null
+        ): Order {
+            val rustCoreOrder = RustCoreOrder(bearerDid.rustCoreBearerDid, to, from, exchangeId, protocol, externalId)
+            val rustCoreData = rustCoreOrder.getData()
+            return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
+        }
 
-    val rustCoreOrder: RustCoreOrder
+        fun fromJsonString(json: String): Order {
+            val rustCoreOrder = RustCoreOrder.fromJsonString(json)
+            val rustCoreData = rustCoreOrder.getData()
+            return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        to: String,
-        from: String,
-        exchangeId: String,
-        protocol: String,
-        externalId: String? = null
-    ) {
-        this.rustCoreOrder = RustCoreOrder(bearerDid.rustCoreBearerDid, to, from, exchangeId, protocol, externalId)
-
-        this.metadata = rustCoreOrder.getData().metadata
-        this.signature = rustCoreOrder.getData().signature
-    }
-
-    constructor(json: String) {
-        this.rustCoreOrder = RustCoreOrder.fromJsonString(json)
-
-        this.metadata = rustCoreOrder.getData().metadata
-        this.signature = rustCoreOrder.getData().signature
-    }
-
-    constructor(rustCoreOrder: RustCoreOrder) {
-        this.rustCoreOrder = rustCoreOrder
-
-        this.metadata = this.rustCoreOrder.getData().metadata
-        this.signature = this.rustCoreOrder.getData().signature
+        internal fun fromRustCoreOrder(rustCoreOrder: RustCoreOrder): Order {
+            val rustCoreData = rustCoreOrder.getData()
+            return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
+        }
     }
 
     fun toJsonString(): String {

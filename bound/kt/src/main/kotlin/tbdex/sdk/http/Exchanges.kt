@@ -13,7 +13,7 @@ import tbdex.sdk.rust.SystemArchitecture
 
 class GetExchangeResponseBody private constructor(
     val data: List<Message>,
-    private val rustCoreGetExchangeResponseBody: RustCoreGetExchangeResponseBody
+    internal val rustCoreGetExchangeResponseBody: RustCoreGetExchangeResponseBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -45,12 +45,12 @@ class GetExchangeResponseBody private constructor(
             val rustCoreGetExchangeResponseBody = RustCoreGetExchangeResponseBody.fromJsonString(json)
             val data = rustCoreGetExchangeResponseBody.getData().data.map {
                 when (it.kind) {
-                    MessageKind.RFQ -> Rfq(it.jsonSerialized)
-                    MessageKind.QUOTE -> Quote(it.jsonSerialized)
-                    MessageKind.ORDER -> Order(it.jsonSerialized)
-                    MessageKind.CANCEL -> Cancel(it.jsonSerialized)
-                    MessageKind.ORDER_STATUS -> OrderStatus(it.jsonSerialized)
-                    MessageKind.CLOSE -> Close(it.jsonSerialized)
+                    MessageKind.RFQ -> Rfq.fromJsonString(it.jsonSerialized)
+                    MessageKind.QUOTE -> Quote.fromJsonString(it.jsonSerialized)
+                    MessageKind.ORDER -> Order.fromJsonString(it.jsonSerialized)
+                    MessageKind.CANCEL -> Cancel.fromJsonString(it.jsonSerialized)
+                    MessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(it.jsonSerialized)
+                    MessageKind.CLOSE -> Close.fromJsonString(it.jsonSerialized)
                 }
             }
 
@@ -65,7 +65,7 @@ class GetExchangeResponseBody private constructor(
 
 class GetExchangesResponseBody private constructor(
     val data: List<String>,
-    private val rustCoreGetExchangesResponseBody: RustCoreGetExchangesResponseBody
+    internal val rustCoreGetExchangesResponseBody: RustCoreGetExchangesResponseBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -94,7 +94,7 @@ class GetExchangesResponseBody private constructor(
 class CreateExchangeRequestBody private constructor(
     val message: Rfq,
     val replyTo: String? = null,
-    private val rustCoreCreateExchangeRequestBody: RustCoreCreateExchangeRequestBody
+    internal val rustCoreCreateExchangeRequestBody: RustCoreCreateExchangeRequestBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -111,7 +111,7 @@ class CreateExchangeRequestBody private constructor(
             val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
             val data = rustCoreCreateExchangeRequestBody.getData()
             return CreateExchangeRequestBody(
-                Rfq(data.message),
+                Rfq.fromRustCoreRfq(data.message),
                 data.replyTo,
                 rustCoreCreateExchangeRequestBody
             )
@@ -127,7 +127,7 @@ interface WalletUpdateMessage {}
 
 class UpdateExchangeRequestBody private constructor(
     val message: WalletUpdateMessage,
-    private val rustCoreUpdateExchangeRequestBody: RustCoreUpdateExchangeRequestBody
+    internal val rustCoreUpdateExchangeRequestBody: RustCoreUpdateExchangeRequestBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -148,8 +148,8 @@ class UpdateExchangeRequestBody private constructor(
             val data = rustCoreUpdateExchangeRequestBody.getData()
 
             val message = when (data.kind) {
-                MessageKind.ORDER -> Order(data.jsonSerializedMessage)
-                MessageKind.CANCEL -> Cancel(data.jsonSerializedMessage)
+                MessageKind.ORDER -> Order.fromJsonString(data.jsonSerializedMessage)
+                MessageKind.CANCEL -> Cancel.fromJsonString(data.jsonSerializedMessage)
                 else -> throw Exception("Unsupported message kind ${data.kind}")
             }
 
@@ -166,7 +166,7 @@ interface ReplyToMessage {}
 
 class ReplyToRequestBody private constructor(
     val message: ReplyToMessage,
-    private val rustCoreReplyToRequestBody: RustCoreReplyToRequestBody
+    internal val rustCoreReplyToRequestBody: RustCoreReplyToRequestBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -188,9 +188,9 @@ class ReplyToRequestBody private constructor(
             val data = rustCoreReplyToRequestBody.getData()
 
             val message = when (data.kind) {
-                MessageKind.QUOTE -> Quote(data.jsonSerializedMessage)
-                MessageKind.ORDER_STATUS -> OrderStatus(data.jsonSerializedMessage)
-                MessageKind.CLOSE -> Close(data.jsonSerializedMessage)
+                MessageKind.QUOTE -> Quote.fromJsonString(data.jsonSerializedMessage)
+                MessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(data.jsonSerializedMessage)
+                MessageKind.CLOSE -> Close.fromJsonString(data.jsonSerializedMessage)
                 else -> throw Exception("Unsupported message kind ${data.kind}")
             }
 
