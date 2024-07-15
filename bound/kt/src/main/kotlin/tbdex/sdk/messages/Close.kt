@@ -7,7 +7,7 @@ import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
 
 typealias CloseData = RustCoreCloseData
 
-class Close {
+class Close: Message {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }

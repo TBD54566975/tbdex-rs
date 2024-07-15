@@ -9,7 +9,7 @@ import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
 typealias OrderStatusData = RustCoreOrderStatusData
 typealias Status = RustCoreStatus
 
-class OrderStatus {
+class OrderStatus: Message {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }

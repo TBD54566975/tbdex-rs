@@ -1,15 +1,77 @@
-use crate::{errors::Result, messages::rfq::Rfq};
+use crate::{
+    errors::{Result, RustCoreError},
+    messages::rfq::Rfq,
+};
 use std::sync::Arc;
 use tbdex::{
     http::{
         exchanges::{
             CreateExchangeRequestBody as InnerCreateExchangeRequestBody,
+            GetExchangeResponseBody as InnerGetExchangeResponseBody,
             UpdateExchangeRequestBody as InnerUpdateExchangeRequestBody, WalletUpdateMessage,
         },
         JsonDeserializer, JsonSerializer,
     },
-    messages::MessageKind,
+    messages::{Message, MessageKind},
 };
+
+#[derive(Clone)]
+pub struct GetExchangeResponseBodyDataSerializedMessage {
+    // not in APID but needed on bound side to deserialize the json_serialized
+    pub kind: MessageKind,
+    pub json_serialized: String,
+}
+
+#[derive(Clone)]
+pub struct GetExchangeResponseBodyData {
+    pub data: Vec<GetExchangeResponseBodyDataSerializedMessage>,
+}
+
+pub struct GetExchangeResponseBody(pub GetExchangeResponseBodyData);
+
+impl GetExchangeResponseBody {
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner = InnerGetExchangeResponseBody::from_json_string(json)?;
+        let data = inner
+            .data
+            .iter()
+            .map(|i| {
+                let json_serialized = i.to_json_string()?;
+                Ok(GetExchangeResponseBodyDataSerializedMessage {
+                    kind: match i {
+                        Message::Rfq(_) => MessageKind::Rfq,
+                        Message::Quote(_) => MessageKind::Quote,
+                        Message::Order(_) => MessageKind::Order,
+                        Message::Cancel(_) => MessageKind::Cancel,
+                        Message::OrderStatus(_) => MessageKind::OrderStatus,
+                        Message::Close(_) => MessageKind::Close,
+                    },
+                    json_serialized,
+                })
+            })
+            .collect::<Result<Vec<GetExchangeResponseBodyDataSerializedMessage>>>()?;
+        Ok(Self(GetExchangeResponseBodyData { data }))
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        let inner = InnerGetExchangeResponseBody {
+            data: self
+                .0
+                .data
+                .iter()
+                .map(|i| {
+                    Message::from_json_string(&i.json_serialized)
+                        .map_err(|e| RustCoreError::from(e))
+                })
+                .collect::<Result<Vec<Message>>>()?,
+        };
+        Ok(inner.to_json_string()?)
+    }
+
+    pub fn get_data(&self) -> GetExchangeResponseBodyData {
+        self.0.clone()
+    }
+}
 
 #[derive(Clone)]
 pub struct CreateExchangeRequestBodyData {

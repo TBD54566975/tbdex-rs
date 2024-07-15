@@ -6,7 +6,7 @@ import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Rfq as RustCoreRfq
 
-class Rfq {
+class Rfq: Message {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
