@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.OrderStatusStatus as RustCoreStatus
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.web5.BearerDid
@@ -9,7 +10,7 @@ import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
 typealias OrderStatusData = RustCoreOrderStatusData
 typealias Status = RustCoreStatus
 
-class OrderStatus: Message {
+class OrderStatus: Message, ReplyToMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }

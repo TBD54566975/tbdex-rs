@@ -354,6 +354,19 @@ interface UpdateExchangeRequestBody {
   UpdateExchangeRequestBodyData get_data();
 };
 
+dictionary ReplyToRequestBodyData {
+  MessageKind kind;
+  string json_serialized_message;
+};
+
+interface ReplyToRequestBody {
+  constructor(MessageKind kind, string json_serialized_message);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  ReplyToRequestBodyData get_data();
+};
 
 
 
