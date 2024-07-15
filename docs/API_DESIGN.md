@@ -20,6 +20,9 @@
 - [Messages](#messages)
   - [`MessageKind`](#messagekind)
   - [`MessageMetadata`](#messagemetadata)
+  - [`Message`](#message)
+  - [`WalletUpdateMessage`](#walletupdatemessage)
+  - [`ReplyToMessage`](#replytomessage)
   - [`Rfq`](#rfq)
     - [`CreateRfqData`](#createrfqdata)
     - [`CreateSelectedPayinMethod`](#createselectedpayinmethod)
@@ -40,14 +43,22 @@
     - [`OrderStatusData`](#orderstatusdata)
   - [`Close`](#close)
     - [`CloseData`](#closedata)
+- [HTTP](#http)
+  - [`GetOfferingsResponseBody`](#getofferingsresponsebody)
+  - [`GetBalancesResponseBody`](#getbalancesresponsebody)
+  - [`GetExchangeResponseBody`](#getexchangeresponsebody)
+  - [`GetExchangesResponseBody`](#getexchangesresponsebody)
+  - [`CreateExchangeRequestBody`](#createexchangerequestbody)
+  - [`UpdateExchangeRequestBody`](#updateexchangerequestbody)
+  - [`ReplyToRequestBody`](#replytorequestbody)
 - [HTTP Client](#http-client)
-  - [`Exchange`](#exchange)
   - [`get_offerings()`](#get_offerings)
   - [`get_balances()`](#get_balances)
   - [`create_exchange()`](#create_exchange)
   - [`submit_order()`](#submit_order)
   - [`submit_close()`](#submit_close)
   - [`get_exchange()`](#get_exchange)
+  - [`Exchange`](#exchange)
   - [`get_exchanges()`](#get_exchanges)
 
 > [!WARNING]
@@ -228,6 +239,24 @@ CLASS MessageMetadata
   PUBLIC DATA protocol: string
 ```
 
+## `Message`
+
+```pseudocode!
+INTERFACE Message
+```
+
+## `WalletUpdateMessage`
+
+```pseudocode!
+INTERFACE WalletUpdateMessage
+```
+
+## `ReplyToMessage`
+
+```pseudocode!
+INTERFACE ReplyToMessage
+```
+
 ## `Rfq`
 
 ```pseudocode!
@@ -315,7 +344,7 @@ CLASS PrivatePaymentDetails
 ## `Quote`
 
 ```pseudocode!
-CLASS Quote IMPLEMENTS Message
+CLASS Quote IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: QuoteData
   PUBLIC DATA signature: string
@@ -355,7 +384,7 @@ CLASS PaymentInstruction
 ## `Order`
 
 ```pseudocode!
-CLASS Order IMPLEMENTS Message
+CLASS Order IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA signature: string
   CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
@@ -366,7 +395,7 @@ CLASS Order IMPLEMENTS Message
 ## `Cancel`
 
 ```pseudocode!
-CLASS Cancel
+CLASS Cancel IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CancelData
   PUBLIC DATA signature: string
@@ -385,7 +414,7 @@ CLASS CancelData
 ## `OrderStatus`
 
 ```pseudocode!
-CLASS OrderStatus IMPLEMENTS Message
+CLASS OrderStatus IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: OrderStatusData
   PUBLIC DATA signature: string
@@ -404,7 +433,7 @@ CLASS OrderStatusData
 ## `Close`
 
 ```pseudocode!
-CLASS Close IMPLEMENTS Message
+CLASS Close IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CloseData
   PUBLIC DATA signature: string
@@ -421,18 +450,59 @@ CLASS CloseData
   PUBLIC DATA success: bool?
 ```
 
-# HTTP Client
+# HTTP
 
-## `Exchange`
+## `GetOfferingsResponseBody`
 
 ```pseudocode!
-CLASS Exchange
-  PUBLIC DATA rfq: Rfq
-  PUBLIC DATA quote: Quote
-  PUBLIC DATA order: Order
-  PUBLIC DATA order_statuses: []OrderStatus
-  PUBLIC DATA close: Close
+CLASS GetOfferingsResponseBody
+  PUBLIC DATA data: []Offering
 ```
+
+## `GetBalancesResponseBody`
+
+```pseudocode!
+CLASS GetBalancesResponseBody
+  PUBLIC DATA data: []Balance
+```
+
+## `GetExchangeResponseBody`
+
+```pseudocode!
+CLASS GetExchangeResponseBody
+  PUBLIC DATA data: []Message
+```
+
+## `GetExchangesResponseBody`
+
+```pseudocode!
+CLASS GetExchangeResponseBody
+  PUBLIC DATA data: []string
+```
+
+## `CreateExchangeRequestBody`
+
+```pseudocode!
+CLASS CreateExchangeRequestBody
+  PUBLIC DATA message: Rfq
+  PUBLIC DATA replyTo: string?
+```
+
+## `UpdateExchangeRequestBody`
+
+```pseudocode!
+CLASS UpdateExchangeRequestBody
+  PUBLIC DATA message: WalletUpdateMessage // Order or Cancel
+```
+
+## `ReplyToRequestBody`
+
+```pseudocode!
+CLASS ReplyToRequestBody
+  PUBLIC DATA message: ReplyToMessage // Quote, OrderStatus or Close
+```
+
+# HTTP Client
 
 ## `get_offerings()`
 
@@ -468,6 +538,17 @@ FUNCTION submit_close(order: Order)
 
 ```pseudocode!
 FUNCTION get_exchange(pfi_did_uri: string, bearer_did: BearerDid, exchange_id: string): Exchange
+```
+
+## `Exchange`
+
+```pseudocode!
+CLASS Exchange
+  PUBLIC DATA rfq: Rfq
+  PUBLIC DATA quote: Quote
+  PUBLIC DATA order: Order
+  PUBLIC DATA order_statuses: []OrderStatus
+  PUBLIC DATA close: Close
 ```
 
 ## `get_exchanges()`
