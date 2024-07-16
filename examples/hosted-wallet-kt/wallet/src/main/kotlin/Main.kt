@@ -35,7 +35,6 @@ fun main() {
     // 2. create exchange
     println("2. Creating exchange...")
     val rfq = Rfq.create(
-        bearerDid,
         pfiDidUri,
         bearerDid.did.uri,
         CreateRfqData(
@@ -53,9 +52,9 @@ fun main() {
                 )
             ),
             claims = listOf(verifiableCredential)
-        ),
-        "1.0", null
+        )
     )
+    rfq.sign(bearerDid)
     rfq.verify()
     tbdex.sdk.httpclient.createExchange(
         rfq = rfq,
@@ -75,13 +74,12 @@ fun main() {
         // 4. submit cancel
         println("4. Submitting cancel...")
         val cancel = Cancel.create(
-            bearerDid,
             pfiDidUri,
             bearerDid.did.uri,
             rfq.metadata.exchangeId,
-            CancelData("showcasing an example"),
-            "1.0", null
+            CancelData("showcasing an example")
         )
+        cancel.sign(bearerDid)
         cancel.verify()
         tbdex.sdk.httpclient.submitCancel(cancel)
         println("Cancel submitted ${cancel.metadata.id}")
@@ -89,12 +87,11 @@ fun main() {
         // 4. submit order
         println("4. Submitting order...")
         val order = Order.create(
-            bearerDid,
             pfiDidUri,
             bearerDid.did.uri,
-            rfq.metadata.exchangeId,
-            "1.0", null
+            rfq.metadata.exchangeId
         )
+        order.sign(bearerDid)
         order.verify()
         tbdex.sdk.httpclient.submitOrder(
             order = order

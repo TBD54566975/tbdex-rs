@@ -16,14 +16,13 @@ class Order private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             to: String,
             from: String,
             exchangeId: String,
-            protocol: String,
+            protocol: String? = null,
             externalId: String? = null
         ): Order {
-            val rustCoreOrder = RustCoreOrder(bearerDid.rustCoreBearerDid, to, from, exchangeId, protocol, externalId)
+            val rustCoreOrder = RustCoreOrder.create(to, from, exchangeId, protocol, externalId)
             val rustCoreData = rustCoreOrder.getData()
             return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
         }
@@ -42,6 +41,10 @@ class Order private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreOrder.toJsonString()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreOrder.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

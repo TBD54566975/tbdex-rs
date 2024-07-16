@@ -47,7 +47,6 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
     private fun replyWithQuote(to: String, exchangeId: String) {
         val quote = Quote.create(
-            bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
@@ -68,11 +67,10 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
                     paymentInstruction = null
                 ),
                 payoutUnitsPerPayinUnit = "1.0"
-            ),
-            "1.0",
-            null
+            )
         )
 
+        quote.sign(bearerDid)
         quote.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null for this example")
@@ -122,14 +120,13 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
     private fun replyWithOrderStatus(to: String, exchangeId: String, status: Status) {
         val orderStatus = OrderStatus.create(
-            bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
-            data = OrderStatusData(status, null),
-            "1.0"
+            data = OrderStatusData(status, null)
         )
 
+        orderStatus.sign(bearerDid)
         orderStatus.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
@@ -141,17 +138,16 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
     private fun replyWithClose(to: String, exchangeId: String, success: Boolean? = true) {
         val close = Close.create(
-            bearerDid = this.bearerDid,
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
             data = CloseData(
                 reason = null,
                 success = success
-            ),
-            "1.0"
+            )
         )
 
+        close.sign(bearerDid)
         close.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")

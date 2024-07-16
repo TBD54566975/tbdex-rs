@@ -67,14 +67,16 @@ dictionary BalanceDataData {
 };
 
 interface Balance {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string from, BalanceDataData data, string protocol);
+  [Name=create, Throws=RustCoreError]
+  constructor(string from, BalanceDataData data, string? protocol);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
   string to_json_string();
   [Throws=RustCoreError]
   BalanceData get_data();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
   [Throws=RustCoreError]
   void verify();
 };
@@ -100,8 +102,8 @@ dictionary MessageMetadataData {
 };
 
 interface Rfq {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, string json_serialized_create_rfq_data, string protocol, string? external_id);
+  [Name=create, Throws=RustCoreError]
+  constructor(string to, string from, string json_serialized_create_rfq_data, string? protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -117,6 +119,8 @@ interface Rfq {
   void verify_present_private_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary RfqData {
@@ -127,8 +131,8 @@ dictionary RfqData {
 };
 
 interface Quote {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, string exchange_id, QuoteDataData data, string protocol, string? external_id);
+  [Name=create, Throws=RustCoreError]
+  constructor(string to, string from, string exchange_id, QuoteDataData data, string? protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -137,6 +141,8 @@ interface Quote {
   QuoteData get_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary QuoteData {
@@ -166,8 +172,8 @@ dictionary PaymentInstructionData {
 };
 
 interface Order {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, string exchange_id, string protocol, string? external_id);
+  [Name=create, Throws=RustCoreError]
+  constructor(string to, string from, string exchange_id, string? protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -176,6 +182,8 @@ interface Order {
   OrderData get_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary OrderData {
@@ -189,8 +197,8 @@ dictionary OrderDataData {
 };
 
 interface Cancel {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, string exchange_id, CancelDataData data, string protocol, string? external_id);
+  [Name=create, Throws=RustCoreError]
+  constructor(string to, string from, string exchange_id, CancelDataData data, string? protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -199,6 +207,8 @@ interface Cancel {
   CancelData get_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary CancelData {
@@ -212,8 +222,8 @@ dictionary CancelDataData {
 };
 
 interface OrderStatus {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, string exchange_id, OrderStatusDataData data, string protocol, string? external_id);
+  [Name=create, Throws=RustCoreError]
+  constructor(string to, string from, string exchange_id, OrderStatusDataData data, string? protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -222,6 +232,8 @@ interface OrderStatus {
   OrderStatusData get_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary OrderStatusData {
@@ -252,8 +264,8 @@ enum OrderStatusStatus {
 };
 
 interface Close {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string to, string from, string exchange_id, CloseDataData data, string protocol, string? external_id);
+  [Name=create, Throws=RustCoreError]
+  constructor(string to, string from, string exchange_id, CloseDataData data, string? protocol, string? external_id);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -262,6 +274,8 @@ interface Close {
   CloseData get_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary CloseData {

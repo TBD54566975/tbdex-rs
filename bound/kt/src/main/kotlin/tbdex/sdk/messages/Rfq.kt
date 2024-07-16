@@ -19,17 +19,14 @@ class Rfq private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             to: String,
             from: String,
             createRfqData: CreateRfqData,
-            protocol: String,
-            externalId: String?
+            protocol: String? = null,
+            externalId: String? = null
         ): Rfq {
             val jsonSerializedCreateRfqData = Json.stringify(createRfqData)
-            val rustCoreRfq = RustCoreRfq(
-                bearerDid.rustCoreBearerDid, to, from, jsonSerializedCreateRfqData, protocol, externalId
-            )
+            val rustCoreRfq = RustCoreRfq.create(to, from, jsonSerializedCreateRfqData, protocol, externalId)
             val rustCoreData = rustCoreRfq.getData()
             val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
             val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
@@ -66,6 +63,10 @@ class Rfq private constructor(
 
     fun verifyPresentPrivateData() {
         this.rustCoreRfq.verifyPresentPrivateData()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreRfq.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

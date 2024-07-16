@@ -20,15 +20,14 @@ class Cancel private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             to: String,
             from: String,
             exchangeId: String,
             data: RustCoreCancelData,
-            protocol: String,
+            protocol: String? = null,
             externalId: String? = null
         ): Cancel {
-            val rustCoreCancel = RustCoreCancel(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
+            val rustCoreCancel = RustCoreCancel.create(to, from, exchangeId, data, protocol, externalId)
             val rustCoreData = rustCoreCancel.getData()
             return Cancel(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreCancel)
         }
@@ -47,6 +46,10 @@ class Cancel private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreCancel.toJsonString()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreCancel.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

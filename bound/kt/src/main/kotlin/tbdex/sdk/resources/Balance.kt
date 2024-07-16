@@ -19,12 +19,11 @@ class Balance private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             from: String,
             data: BalanceData,
-            signature: String
+            protocol: String? = null
         ): Balance {
-            val rustCoreBalance = RustCoreBalance(bearerDid.rustCoreBearerDid, from, data, signature)
+            val rustCoreBalance = RustCoreBalance.create(from, data, protocol)
             val rustCoreData = rustCoreBalance.getData()
             return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
         }
@@ -43,6 +42,10 @@ class Balance private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreBalance.toJsonString()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreBalance.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

@@ -12,26 +12,27 @@ use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 pub struct Rfq(pub Arc<RwLock<InnerRfq>>);
 
 impl Rfq {
-    pub fn new(
-        bearer_did: Arc<BearerDid>,
+    pub fn create(
         to: String,
         from: String,
         json_serialized_create_rfq_data: String,
-        protocol: String,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
         let create_rfq_data =
             serde_json::from_str::<InnerCreateRfqData>(&json_serialized_create_rfq_data)?;
-        let rfq = InnerRfq::create(
-            &bearer_did.0.clone(),
-            &to,
-            &from,
-            &create_rfq_data,
-            &protocol,
-            external_id,
-        )?;
+        let rfq = InnerRfq::create(&to, &from, &create_rfq_data, protocol, external_id)?;
 
         Ok(Self(Arc::new(RwLock::new(rfq))))
+    }
+
+    pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
+        let mut inner_rfq = self
+            .0
+            .write()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+        inner_rfq.sign(&bearer_did.0.clone())?;
+        Ok(())
     }
 
     pub fn from_inner(inner_rfq: InnerRfq) -> Self {

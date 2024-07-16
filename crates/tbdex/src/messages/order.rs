@@ -2,6 +2,7 @@ use super::{MessageKind, MessageMetadata, Result};
 use crate::{
     json::{FromJson, ToJson},
     json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA},
+    DEFAULT_PROTOCOL_VERSION,
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -19,11 +20,10 @@ impl FromJson for Order {}
 
 impl Order {
     pub fn create(
-        bearer_did: &BearerDid,
         to: &str,
         from: &str,
         exchange_id: &str,
-        protocol: &str,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
         let metadata = MessageMetadata {
@@ -33,7 +33,7 @@ impl Order {
             id: MessageKind::Order.typesafe_id()?,
             exchange_id: exchange_id.to_string(),
             external_id,
-            protocol: protocol.to_string(),
+            protocol: protocol.unwrap_or_else(|| DEFAULT_PROTOCOL_VERSION.to_string()),
             created_at: Utc::now().to_rfc3339(),
         };
 
@@ -42,14 +42,19 @@ impl Order {
         let order = Self {
             metadata: metadata.clone(),
             data: data.clone(),
-            signature: crate::signature::sign(
-                bearer_did,
-                &serde_json::to_value(metadata)?,
-                &serde_json::to_value(&data)?,
-            )?,
+            signature: String::default(),
         };
 
         Ok(order)
+    }
+
+    pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
+        self.signature = crate::signature::sign(
+            bearer_did,
+            &serde_json::to_value(&self.metadata)?,
+            &serde_json::to_value(&self.data)?,
+        )?;
+        Ok(())
     }
 
     pub fn verify(&self) -> Result<()> {

@@ -2,6 +2,7 @@ use super::{ResourceKind, ResourceMetadata, Result};
 use crate::{
     json::{FromJson, ToJson},
     json_schemas::generated::{OFFERING_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA},
+    DEFAULT_PROTOCOL_VERSION,
 };
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
@@ -27,7 +28,7 @@ impl Offering {
             kind: ResourceKind::Offering,
             from: from.to_string(),
             id: ResourceKind::Offering.typesafe_id()?,
-            protocol: protocol.unwrap_or_else(|| "1.0".to_string()),
+            protocol: protocol.unwrap_or_else(|| DEFAULT_PROTOCOL_VERSION.to_string()),
             created_at: now.clone(),
             updated_at: Some(now),
         };

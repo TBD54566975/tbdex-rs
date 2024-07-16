@@ -6,6 +6,7 @@ use crate::{
     },
     messages::MessageError,
     resources::offering::Offering,
+    DEFAULT_PROTOCOL_VERSION,
 };
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
@@ -31,11 +32,10 @@ impl FromJson for Rfq {}
 
 impl Rfq {
     pub fn create(
-        bearer_did: &BearerDid,
         to: &str,
         from: &str,
         create_rfq_data: &CreateRfqData,
-        protocol: &str,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
         let id = MessageKind::Rfq.typesafe_id()?;
@@ -47,7 +47,7 @@ impl Rfq {
             id: id.clone(),
             exchange_id: id.clone(),
             external_id,
-            protocol: protocol.to_string(),
+            protocol: protocol.unwrap_or_else(|| DEFAULT_PROTOCOL_VERSION.to_string()),
             created_at: Utc::now().to_rfc3339(),
         };
 
@@ -57,14 +57,19 @@ impl Rfq {
             metadata: metadata.clone(),
             data: data.clone(),
             private_data: Some(private_data),
-            signature: crate::signature::sign(
-                bearer_did,
-                &serde_json::to_value(metadata)?,
-                &serde_json::to_value(data)?,
-            )?,
+            signature: String::default(),
         };
 
         Ok(rfq)
+    }
+
+    pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
+        self.signature = crate::signature::sign(
+            bearer_did,
+            &serde_json::to_value(&self.metadata)?,
+            &serde_json::to_value(&self.data)?,
+        )?;
+        Ok(())
     }
 
     pub fn verify(&self) -> Result<()> {
@@ -534,8 +539,7 @@ mod tests {
 
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
-        let rfq = Rfq::create(
-            &bearer_did,
+        let mut rfq = Rfq::create(
             "did:test:pfi",
             &did_jwk.did.uri,
             &CreateRfqData {
@@ -551,10 +555,12 @@ mod tests {
                 },
                 claims: vec!["some-claim".to_string()],
             },
-            "1.0",
+            None,
             None,
         )
         .unwrap();
+
+        rfq.sign(&bearer_did).unwrap();
 
         assert_ne!(String::default(), rfq.signature);
 

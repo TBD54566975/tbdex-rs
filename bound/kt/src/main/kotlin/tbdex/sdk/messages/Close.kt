@@ -20,15 +20,14 @@ class Close private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             to: String,
             from: String,
             exchangeId: String,
             data: CloseData,
-            protocol: String,
+            protocol: String? = null,
             externalId: String? = null
         ): Close {
-            val rustCoreClose = RustCoreClose(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
+            val rustCoreClose = RustCoreClose.create(to, from, exchangeId, data, protocol, externalId)
             val rustCoreData = rustCoreClose.getData()
             return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
         }
@@ -47,6 +46,10 @@ class Close private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreClose.toJsonString()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreClose.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

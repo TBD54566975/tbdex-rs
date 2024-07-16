@@ -9,15 +9,18 @@ use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 pub struct Balance(pub Arc<RwLock<InnerBalance>>);
 
 impl Balance {
-    pub fn new(
-        bearer_did: Arc<BearerDid>,
-        from: String,
-        data: BalanceData,
-        protocol: String,
-    ) -> Result<Self> {
-        let inner_balance = InnerBalance::create(&bearer_did.0.clone(), &from, &data, &protocol)?;
-
+    pub fn create(from: String, data: BalanceData, protocol: Option<String>) -> Result<Self> {
+        let inner_balance = InnerBalance::create(&from, &data, protocol)?;
         Ok(Self(Arc::new(RwLock::new(inner_balance))))
+    }
+
+    pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
+        let mut inner_balance = self
+            .0
+            .write()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+        inner_balance.sign(&bearer_did.0.clone())?;
+        Ok(())
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {

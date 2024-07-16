@@ -26,11 +26,6 @@ impl Offering {
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
         inner_offering.sign(&bearer_did.0.clone())?;
         Ok(())
-        // let mut inner_offering = self
-        //     .0
-        //     .read()
-        //     .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
-        // Ok(inner_offering.sign(&bearer_did.0.clone())?)
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {

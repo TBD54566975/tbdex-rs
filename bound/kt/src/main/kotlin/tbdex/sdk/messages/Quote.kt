@@ -24,15 +24,14 @@ class Quote private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             to: String,
             from: String,
             exchangeId: String,
             data: QuoteData,
-            protocol: String,
+            protocol: String? = null,
             externalId: String? = null
         ): Quote {
-            val rustCoreQuote = RustCoreQuote(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
+            val rustCoreQuote = RustCoreQuote.create(to, from, exchangeId, data, protocol, externalId)
             val rustCoreData = rustCoreQuote.getData()
             return Quote(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreQuote)
         }
@@ -51,6 +50,10 @@ class Quote private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreQuote.toJsonString()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreQuote.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

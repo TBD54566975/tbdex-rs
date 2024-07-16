@@ -9,24 +9,25 @@ use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 pub struct Order(pub Arc<RwLock<InnerOrder>>);
 
 impl Order {
-    pub fn new(
-        bearer_did: Arc<BearerDid>,
+    pub fn create(
         to: String,
         from: String,
         exchange_id: String,
-        protocol: String,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let order = InnerOrder::create(
-            &bearer_did.0.clone(),
-            &to,
-            &from,
-            &exchange_id,
-            &protocol,
-            external_id,
-        )?;
+        let order = InnerOrder::create(&to, &from, &exchange_id, protocol, external_id)?;
 
         Ok(Self(Arc::new(RwLock::new(order))))
+    }
+
+    pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
+        let mut inner_order = self
+            .0
+            .write()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+        inner_order.sign(&bearer_did.0.clone())?;
+        Ok(())
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {

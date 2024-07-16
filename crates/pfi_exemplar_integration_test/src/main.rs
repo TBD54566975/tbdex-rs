@@ -41,8 +41,7 @@ fn main() {
     // assert_ne!(0, balances.len());
 
     // create exchange
-    let rfq = Rfq::create(
-            &bearer_did,
+    let mut rfq = Rfq::create(
             &pfi_did_uri,
             &bearer_did.did.uri,
             &CreateRfqData {
@@ -60,10 +59,11 @@ fn main() {
                 },
                 claims: vec!["eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6YzhkOWh1azduaG9tNG43emdybWE2cGp5Y3k2NzR1cmFhNHBvcDl1dXQ0MWdiOXd5OHNueSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiU2FuY3Rpb25DcmVkZW50aWFsIl0sImlkIjoidXJuOnV1aWQ6ZjBkYWNlZmItNDVlNy00YWEyLTkxNDctMTZmYTBiYzc3ZTVjIiwiaXNzdWVyIjoiZGlkOmRodDpjOGQ5aHVrN25ob200bjd6Z3JtYTZwanljeTY3NHVyYWE0cG9wOXV1dDQxZ2I5d3k4c255IiwiaXNzdWFuY2VEYXRlIjoiMjAyNC0wNi0yNFQxNDoxNTozNVoiLCJjcmVkZW50aWFsU3ViamVjdCI6eyJpZCI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsImJlZXAiOiJib29wIn19LCJuYmYiOjE3MTkyMzg1MzUsImp0aSI6InVybjp1dWlkOmYwZGFjZWZiLTQ1ZTctNGFhMi05MTQ3LTE2ZmEwYmM3N2U1YyIsImlzcyI6ImRpZDpkaHQ6YzhkOWh1azduaG9tNG43emdybWE2cGp5Y3k2NzR1cmFhNHBvcDl1dXQ0MWdiOXd5OHNueSIsInN1YiI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsImlhdCI6MTcxOTIzODUzNX0.DvDFIl8BTuHRk7VkB82OhYpX0WzBb3BucvAqfXiS92QCiRokXCgQAsOwbbSODoDaFWbHG0BJmWM-eDPcCoucCw".to_string()],
             },
-            "1.0",
+            None,
             None,
         )
         .unwrap();
+    rfq.sign(&bearer_did).unwrap();
 
     create_exchange(&rfq, None).unwrap();
 
@@ -73,18 +73,16 @@ fn main() {
     let quote = exchange.quote.unwrap();
 
     // submit order
-    submit_order(
-        &Order::create(
-            &bearer_did,
-            &pfi_did_uri,
-            &bearer_did.did.uri,
-            &quote.metadata.exchange_id,
-            "1.0",
-            None,
-        )
-        .unwrap(),
+    let mut order = Order::create(
+        &pfi_did_uri,
+        &bearer_did.did.uri,
+        &quote.metadata.exchange_id,
+        None,
+        None,
     )
     .unwrap();
+    order.sign(&bearer_did).unwrap();
+    submit_order(&order).unwrap();
 
     // get order status and close
     let mut exchange = Exchange::default();
