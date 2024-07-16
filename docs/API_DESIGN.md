@@ -573,6 +573,7 @@ CLASS Exchange
   PUBLIC DATA rfq: Rfq
   PUBLIC DATA quote: Quote
   PUBLIC DATA order: Order
+  PUBLIC DATA cancel: Cancel
   PUBLIC DATA order_statuses: []OrderStatus
   PUBLIC DATA close: Close
 ```
