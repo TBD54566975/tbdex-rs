@@ -44,4 +44,8 @@ class Balance private constructor(
     fun toJsonString(): String {
         return this.rustCoreBalance.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreBalance.verify()
+    }
 }

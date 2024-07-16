@@ -43,4 +43,8 @@ class Order private constructor(
     fun toJsonString(): String {
         return this.rustCoreOrder.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreOrder.verify()
+    }
 }

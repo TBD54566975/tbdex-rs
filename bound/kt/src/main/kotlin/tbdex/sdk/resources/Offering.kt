@@ -51,6 +51,10 @@ class Offering private constructor(
     fun toJsonString(): String {
         return this.rustCoreOffering.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreOffering.verify()
+    }
 }
 
 data class OfferingData(

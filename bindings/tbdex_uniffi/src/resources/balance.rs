@@ -55,4 +55,13 @@ impl Balance {
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
         Ok(inner_balance.clone())
     }
+
+    pub fn verify(&self) -> Result<()> {
+        let inner_balance = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+        inner_balance.verify()?;
+        Ok(())
+    }
 }

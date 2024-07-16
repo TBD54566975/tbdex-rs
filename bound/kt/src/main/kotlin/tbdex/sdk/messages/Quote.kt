@@ -52,4 +52,8 @@ class Quote private constructor(
     fun toJsonString(): String {
         return this.rustCoreQuote.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreQuote.verify()
+    }
 }

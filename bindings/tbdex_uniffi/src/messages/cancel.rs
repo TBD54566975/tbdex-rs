@@ -54,4 +54,13 @@ impl Cancel {
 
         Ok(close.clone())
     }
+
+    pub fn verify(&self) -> Result<()> {
+        let cancel = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(cancel.verify()?)
+    }
 }

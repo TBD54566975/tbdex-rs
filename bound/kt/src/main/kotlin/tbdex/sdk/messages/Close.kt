@@ -48,4 +48,8 @@ class Close private constructor(
     fun toJsonString(): String {
         return this.rustCoreClose.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreClose.verify()
+    }
 }

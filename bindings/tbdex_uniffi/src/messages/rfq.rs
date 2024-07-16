@@ -81,6 +81,15 @@ impl Rfq {
         Ok(inner_rfq.clone())
     }
 
+    pub fn verify(&self) -> Result<()> {
+        let rfq = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(rfq.verify()?)
+    }
+
     pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<()> {
         let rfq = self
             .0

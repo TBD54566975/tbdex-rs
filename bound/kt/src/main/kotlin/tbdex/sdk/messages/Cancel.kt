@@ -48,4 +48,8 @@ class Cancel private constructor(
     fun toJsonString(): String {
         return this.rustCoreCancel.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreCancel.verify()
+    }
 }

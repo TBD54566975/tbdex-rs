@@ -54,4 +54,13 @@ impl Quote {
 
         Ok(quote.clone())
     }
+
+    pub fn verify(&self) -> Result<()> {
+        let quote = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(quote.verify()?)
+    }
 }

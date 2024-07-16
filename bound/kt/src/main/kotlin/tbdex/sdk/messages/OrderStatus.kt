@@ -50,4 +50,8 @@ class OrderStatus private constructor(
     fun toJsonString(): String {
         return this.rustCoreOrderStatus.toJsonString()
     }
+
+    fun verify() {
+        this.rustCoreOrderStatus.verify()
+    }
 }

@@ -67,6 +67,10 @@ class Rfq private constructor(
     fun verifyPresentPrivateData() {
         this.rustCoreRfq.verifyPresentPrivateData()
     }
+
+    fun verify() {
+        this.rustCoreRfq.verify()
+    }
 }
 
 data class CreateRfqData(

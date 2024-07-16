@@ -43,6 +43,8 @@ interface Offering {
   string to_json_string();
   [Throws=RustCoreError]
   OfferingData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary OfferingData {
@@ -71,6 +73,8 @@ interface Balance {
   string to_json_string();
   [Throws=RustCoreError]
   BalanceData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 enum MessageKind {
@@ -109,6 +113,8 @@ interface Rfq {
   void verify_all_private_data();
   [Throws=RustCoreError]
   void verify_present_private_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary RfqData {
@@ -127,6 +133,8 @@ interface Quote {
   string to_json_string();
   [Throws=RustCoreError]
   QuoteData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary QuoteData {
@@ -164,6 +172,8 @@ interface Order {
   string to_json_string();
   [Throws=RustCoreError]
   OrderData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary OrderData {
@@ -185,6 +195,8 @@ interface Cancel {
   string to_json_string();
   [Throws=RustCoreError]
   CancelData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary CancelData {
@@ -206,6 +218,8 @@ interface OrderStatus {
   string to_json_string();
   [Throws=RustCoreError]
   OrderStatusData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary OrderStatusData {
@@ -244,6 +258,8 @@ interface Close {
   string to_json_string();
   [Throws=RustCoreError]
   CloseData get_data();
+  [Throws=RustCoreError]
+  void verify();
 };
 
 dictionary CloseData {
