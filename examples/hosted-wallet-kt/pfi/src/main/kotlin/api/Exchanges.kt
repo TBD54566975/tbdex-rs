@@ -30,6 +30,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
         val rfq = requestBody.message
 
+        rfq.verify()
         rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
 
         this.exchangesToReplyTo[rfq.metadata.exchangeId] = replyTo
@@ -37,7 +38,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         res.status(202)
 
         Thread {
-            Thread.sleep(3000)
+            Thread.sleep(500)
             replyWithQuote(rfq.metadata.from, rfq.metadata.exchangeId)
         }.start()
 
@@ -72,6 +73,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             null
         )
 
+        quote.verify()
+
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null for this example")
 
         println("Replying with quote")
@@ -86,23 +89,27 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         when (val message = updateExchangeRequestBody.message) {
             is Order -> {
                 // simulate order execution
+                message.verify()
+
                 Thread {
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId, Status.PAYIN_INITIATED)
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYIN_SETTLED)
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYOUT_INITIATED)
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYOUT_SETTLED)
-                    Thread.sleep(1000)
+                    Thread.sleep(500)
                     replyWithClose(message.metadata.from, message.metadata.exchangeId)
                 }.start()
             }
             is Cancel -> {
                 // simulate cancel
+                message.verify()
+
                 Thread {
-                    Thread.sleep(3000)
+                    Thread.sleep(500)
                     replyWithClose(message.metadata.from, message.metadata.exchangeId, false)
                 }.start()
             }
@@ -123,6 +130,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             "1.0"
         )
 
+        orderStatus.verify()
+
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
         println("Replying with order status $status")
@@ -142,6 +151,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             ),
             "1.0"
         )
+
+        close.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 

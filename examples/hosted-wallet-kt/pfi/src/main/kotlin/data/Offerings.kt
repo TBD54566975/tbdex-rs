@@ -15,7 +15,7 @@ class Offerings(private val bearerDid: BearerDid) {
         // this app currently always seeds the fake data
         // and doesn't support the ability for developers to dynamically add/remove offerings
 
-        offerings.add(Offering.create(
+        val offering = Offering.create(
             bearerDid,
             bearerDid.did.uri,
             OfferingData(
@@ -84,7 +84,11 @@ class Offerings(private val bearerDid: BearerDid) {
                 )
             ),
             "1.0"
-        ))
+        )
+
+        offering.verify()
+
+        offerings.add(offering)
     }
 
     fun getOffering(offeringId: String): Offering {

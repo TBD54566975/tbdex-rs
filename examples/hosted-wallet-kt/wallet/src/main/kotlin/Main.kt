@@ -56,6 +56,7 @@ fun main() {
         ),
         "1.0", null
     )
+    rfq.verify()
     tbdex.sdk.httpclient.createExchange(
         rfq = rfq,
         replyTo = replyToUrl
@@ -65,7 +66,7 @@ fun main() {
     // 3. wait for Quote to come into webhook
     println("3. Waiting for Quote...")
     while (webhook.quote == null) {
-        Thread.sleep(3000)
+        Thread.sleep(500)
     }
     println("Quote received to webhook ${webhook.quote!!.metadata.id}\n")
 
@@ -81,6 +82,7 @@ fun main() {
             CancelData("showcasing an example"),
             "1.0", null
         )
+        cancel.verify()
         tbdex.sdk.httpclient.submitCancel(cancel)
         println("Cancel submitted ${cancel.metadata.id}")
     } else {
@@ -93,6 +95,7 @@ fun main() {
             rfq.metadata.exchangeId,
             "1.0", null
         )
+        order.verify()
         tbdex.sdk.httpclient.submitOrder(
             order = order
         )
@@ -102,7 +105,7 @@ fun main() {
         println("5. Waiting for OrderStatuses...")
         var status: Status? = null
         while (status != Status.PAYOUT_SETTLED) {
-            Thread.sleep(1500)
+            Thread.sleep(500)
             status = if (webhook.orderStatuses.size > 0) webhook.orderStatuses.last().data.status else null
         }
     }
@@ -110,7 +113,7 @@ fun main() {
     // 6. wait for Close to come into webhook
     println("\n6. Waiting for Close...")
     while (webhook.close == null) {
-        Thread.sleep(3000)
+        Thread.sleep(500)
     }
     println("Close received to webhook ${webhook.close!!.metadata.id} ${webhook.close!!.data.success}\n")
 
