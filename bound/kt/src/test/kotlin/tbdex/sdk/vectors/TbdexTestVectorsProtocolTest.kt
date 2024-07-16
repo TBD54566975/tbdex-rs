@@ -24,12 +24,20 @@ class TbdexTestVectorsProtocolTest {
 
     @Test
     fun parse_rfq() {
-        testVector("parse-rfq.json", Rfq.Companion::fromJsonString) { it.toJsonString() }
+        testVector("parse-rfq.json", { input ->
+            val rfq = Rfq.fromJsonString(input)
+            rfq.verifyAllPrivateData()
+            rfq
+        }, { it.toJsonString() })
     }
 
     @Test
     fun parse_rfq_omit_private_data() {
-        testVector("parse-rfq-omit-private-data.json", Rfq.Companion::fromJsonString) { it.toJsonString() }
+        testVector("parse-rfq-omit-private-data.json", { input ->
+            val rfq = Rfq.fromJsonString(input)
+            rfq.verifyPresentPrivateData()
+            rfq
+        }, { it.toJsonString() })
     }
 
     @Test
