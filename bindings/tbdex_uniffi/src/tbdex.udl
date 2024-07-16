@@ -35,8 +35,8 @@ dictionary ResourceMetadataData {
 };
 
 interface Offering {
-  [Throws=RustCoreError]
-  constructor(BearerDid bearer_did, string from, string json_serialized_data, string protocol);
+  [Name=create, Throws=RustCoreError]
+  constructor(string from, string json_serialized_data, string? protocol);
   [Name=from_json_string, Throws=RustCoreError]
   constructor([ByRef] string json);
   [Throws=RustCoreError]
@@ -45,6 +45,8 @@ interface Offering {
   OfferingData get_data();
   [Throws=RustCoreError]
   void verify();
+  [Throws=RustCoreError]
+  void sign(BearerDid bearer_did);
 };
 
 dictionary OfferingData {

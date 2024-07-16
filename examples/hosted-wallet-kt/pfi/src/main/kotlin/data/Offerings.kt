@@ -16,7 +16,6 @@ class Offerings(private val bearerDid: BearerDid) {
         // and doesn't support the ability for developers to dynamically add/remove offerings
 
         val offering = Offering.create(
-            bearerDid,
             bearerDid.did.uri,
             OfferingData(
                 description = "fake offering 1",
@@ -82,10 +81,10 @@ class Offerings(private val bearerDid: BearerDid) {
                 cancellation = CancellationDetails(
                     enabled = false
                 )
-            ),
-            "1.0"
+            )
         )
 
+        offering.sign(bearerDid)
         offering.verify()
 
         offerings.add(offering)

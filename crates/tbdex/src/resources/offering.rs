@@ -20,19 +20,14 @@ impl ToJson for Offering {}
 impl FromJson for Offering {}
 
 impl Offering {
-    pub fn create(
-        bearer_did: &BearerDid,
-        from: &str,
-        data: &OfferingData,
-        protocol: &str,
-    ) -> Result<Self> {
+    pub fn create(from: &str, data: &OfferingData, protocol: Option<String>) -> Result<Self> {
         let now = Utc::now().to_rfc3339();
 
         let metadata = ResourceMetadata {
             kind: ResourceKind::Offering,
             from: from.to_string(),
             id: ResourceKind::Offering.typesafe_id()?,
-            protocol: protocol.to_string(),
+            protocol: protocol.unwrap_or_else(|| "1.0".to_string()),
             created_at: now.clone(),
             updated_at: Some(now),
         };
@@ -40,14 +35,19 @@ impl Offering {
         let offering = Self {
             metadata: metadata.clone(),
             data: data.clone(),
-            signature: crate::signature::sign(
-                bearer_did,
-                &serde_json::to_value(metadata)?,
-                &serde_json::to_value(data)?,
-            )?,
+            signature: String::default(),
         };
 
         Ok(offering)
+    }
+
+    pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
+        self.signature = crate::signature::sign(
+            bearer_did,
+            &serde_json::to_value(&self.metadata)?,
+            &serde_json::to_value(&self.data)?,
+        )?;
+        Ok(())
     }
 
     pub fn verify(&self) -> Result<()> {
@@ -175,8 +175,7 @@ mod tests {
 
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
-        let offering = Offering::create(
-            &bearer_did,
+        let mut offering = Offering::create(
             &did_jwk.did.uri,
             &OfferingData {
                 description: "Selling BTC for USD".to_string(),
@@ -200,9 +199,11 @@ mod tests {
                     ..Default::default()
                 },
             },
-            "1.0",
+            None,
         )
         .unwrap();
+
+        offering.sign(&bearer_did).unwrap();
 
         assert_ne!(String::default(), offering.signature);
 

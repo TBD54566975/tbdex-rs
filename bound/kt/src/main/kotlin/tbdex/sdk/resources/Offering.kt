@@ -18,13 +18,12 @@ class Offering private constructor(
 
     companion object {
         fun create(
-            bearerDid: BearerDid,
             from: String,
             data: OfferingData,
-            protocol: String
+            protocol: String? = null
         ): Offering {
             val jsonSerializedData = Json.stringify(data)
-            val rustCoreOffering = RustCoreOffering(bearerDid.rustCoreBearerDid, from, jsonSerializedData, protocol)
+            val rustCoreOffering = RustCoreOffering.create(from, jsonSerializedData, protocol)
             val rustCoreData = rustCoreOffering.getData()
             return Offering(
                 rustCoreData.metadata,
@@ -50,6 +49,10 @@ class Offering private constructor(
 
     fun toJsonString(): String {
         return this.rustCoreOffering.toJsonString()
+    }
+
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreOffering.sign(bearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

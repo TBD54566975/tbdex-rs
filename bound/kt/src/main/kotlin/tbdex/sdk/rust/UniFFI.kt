@@ -959,6 +959,8 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -1118,12 +1120,14 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_offering(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_create(`from`: RustBuffer.ByValue,`jsonSerializedData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_offering_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`jsonSerializedData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_offering_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_offering_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_method_offering_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_offering_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1432,6 +1436,8 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_offering_get_data(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_offering_sign(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_method_offering_to_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_offering_verify(
@@ -1520,9 +1526,9 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_inmemorykeymanager_new(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string(
+    fun uniffi_tbdex_uniffi_checksum_constructor_offering_create(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_offering_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string(
     ): Short
@@ -1668,6 +1674,9 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_offering_get_data() != 51981.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_sign() != 20256.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_method_offering_to_json_string() != 46041.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1800,10 +1809,10 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_inmemorykeymanager_new() != 52263.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string() != 61646.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_create() != 65508.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_new() != 60046.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string() != 61646.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string() != 60642.toShort()) {
@@ -5149,6 +5158,8 @@ public interface OfferingInterface {
     
     fun `getData`(): OfferingData
     
+    fun `sign`(`bearerDid`: BearerDid)
+    
     fun `toJsonString`(): kotlin.String
     
     fun `verify`()
@@ -5173,13 +5184,6 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `jsonSerializedData`: kotlin.String, `protocol`: kotlin.String) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedData`),FfiConverterString.lower(`protocol`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -5258,6 +5262,18 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
     @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
@@ -5286,6 +5302,17 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`from`: kotlin.String, `jsonSerializedData`: kotlin.String, `protocol`: kotlin.String?): Offering {
+            return FfiConverterTypeOffering.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_create(
+        FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedData`),FfiConverterOptionalString.lower(`protocol`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Offering {
             return FfiConverterTypeOffering.lift(
