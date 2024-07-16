@@ -1,10 +1,12 @@
 use super::{MessageKind, MessageMetadata, Result};
 use crate::{
+    json::{FromJson, ToJson},
     json_schemas::generated::{
         MESSAGE_JSON_SCHEMA, RFQ_DATA_JSON_SCHEMA, RFQ_PRIVATE_DATA_JSON_SCHEMA,
     },
     messages::MessageError,
     resources::offering::Offering,
+    DEFAULT_PROTOCOL_VERSION,
 };
 use base64::{engine::general_purpose, Engine as _};
 use chrono::Utc;
@@ -25,13 +27,15 @@ pub struct Rfq {
     pub signature: String,
 }
 
+impl ToJson for Rfq {}
+impl FromJson for Rfq {}
+
 impl Rfq {
-    pub fn new(
-        bearer_did: &BearerDid,
+    pub fn create(
         to: &str,
         from: &str,
         create_rfq_data: &CreateRfqData,
-        protocol: &str,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
         let id = MessageKind::Rfq.typesafe_id()?;
@@ -43,7 +47,7 @@ impl Rfq {
             id: id.clone(),
             exchange_id: id.clone(),
             external_id,
-            protocol: protocol.to_string(),
+            protocol: protocol.unwrap_or_else(|| DEFAULT_PROTOCOL_VERSION.to_string()),
             created_at: Utc::now().to_rfc3339(),
         };
 
@@ -53,30 +57,19 @@ impl Rfq {
             metadata: metadata.clone(),
             data: data.clone(),
             private_data: Some(private_data),
-            signature: crate::signature::sign(
-                bearer_did,
-                &serde_json::to_value(metadata)?,
-                &serde_json::to_value(data)?,
-            )?,
+            signature: String::default(),
         };
-
-        rfq.verify()?;
 
         Ok(rfq)
     }
 
-    pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
-        let rfq = serde_json::from_str::<Self>(json)?;
-
-        rfq.verify()?;
-
-        if require_all_private_data {
-            rfq.verify_all_private_data()?;
-        } else {
-            rfq.verify_present_private_data()?;
-        }
-
-        Ok(rfq)
+    pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
+        self.signature = crate::signature::sign(
+            bearer_did,
+            &serde_json::to_value(&self.metadata)?,
+            &serde_json::to_value(&self.data)?,
+        )?;
+        Ok(())
     }
 
     pub fn verify(&self) -> Result<()> {
@@ -100,10 +93,6 @@ impl Rfq {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 
     pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<()> {
@@ -550,8 +539,7 @@ mod tests {
 
         let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
 
-        let rfq = Rfq::new(
-            &bearer_did,
+        let mut rfq = Rfq::create(
             "did:test:pfi",
             &did_jwk.did.uri,
             &CreateRfqData {
@@ -567,18 +555,20 @@ mod tests {
                 },
                 claims: vec!["some-claim".to_string()],
             },
-            "1.0",
+            None,
             None,
         )
         .unwrap();
 
+        rfq.sign(&bearer_did).unwrap();
+
         assert_ne!(String::default(), rfq.signature);
 
-        let rfq_json_string = rfq.to_json().unwrap();
+        let rfq_json_string = rfq.to_json_string().unwrap();
 
         assert_ne!(String::default(), rfq_json_string);
 
-        let parsed_rfq = Rfq::from_json_string(&rfq_json_string, true).unwrap();
+        let parsed_rfq = Rfq::from_json_string(&rfq_json_string).unwrap();
 
         assert_eq!(rfq, parsed_rfq);
     }
@@ -601,7 +591,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input, true).unwrap();
+        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input).unwrap();
 
         parsed_rfq.verify_all_private_data().unwrap();
 
@@ -615,7 +605,7 @@ mod tbdex_test_vectors_protocol {
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
         let test_vector: TestVector = serde_json::from_str(&test_vector_json).unwrap();
-        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input, false).unwrap();
+        let parsed_rfq: Rfq = Rfq::from_json_string(&test_vector.input).unwrap();
 
         parsed_rfq.verify_present_private_data().unwrap();
 

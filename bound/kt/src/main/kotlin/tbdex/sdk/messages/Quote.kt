@@ -12,55 +12,51 @@ typealias QuoteData = RustCoreQuoteData
 typealias QuoteDetails = RustCoreQuoteDetails
 typealias PaymentInstruction = RustCorePaymentInstruction
 
-class Quote: Message, ReplyToMessage {
+class Quote private constructor(
+    val metadata: MessageMetadata,
+    val data: QuoteData,
+    val signature: String,
+    internal val rustCoreQuote: RustCoreQuote
+): Message, ReplyToMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: MessageMetadata
-    val data: QuoteData
-    val signature: String
+    companion object {
+        fun create(
+            to: String,
+            from: String,
+            exchangeId: String,
+            data: QuoteData,
+            protocol: String? = null,
+            externalId: String? = null
+        ): Quote {
+            val rustCoreQuote = RustCoreQuote.create(to, from, exchangeId, data, protocol, externalId)
+            val rustCoreData = rustCoreQuote.getData()
+            return Quote(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreQuote)
+        }
 
-    val rustCoreQuote: RustCoreQuote
+        fun fromJsonString(json: String): Quote {
+            val rustCoreQuote = RustCoreQuote.fromJsonString(json)
+            val rustCoreData = rustCoreQuote.getData()
+            return Quote(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreQuote)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        to: String,
-        from: String,
-        exchangeId: String,
-        data: QuoteData,
-        protocol: String,
-        externalId: String? = null
-    ) {
-        this.rustCoreQuote = RustCoreQuote(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
-
-        this.metadata = rustCoreQuote.getData().metadata
-        this.data = rustCoreQuote.getData().data
-        this.signature = rustCoreQuote.getData().signature
+        internal fun fromRustCoreQuote(rustCoreQuote: RustCoreQuote): Quote {
+            val rustCoreData = rustCoreQuote.getData()
+            return Quote(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreQuote)
+        }
     }
 
-    constructor(json: String) {
-        this.rustCoreQuote = RustCoreQuote.fromJsonString(json)
-
-        this.metadata = rustCoreQuote.getData().metadata
-        this.data = QuoteData(
-            this.rustCoreQuote.getData().data.expiresAt,
-            this.rustCoreQuote.getData().data.payoutUnitsPerPayinUnit,
-            this.rustCoreQuote.getData().data.payin,
-            this.rustCoreQuote.getData().data.payout,
-        )
-        this.signature = rustCoreQuote.getData().signature
+    fun toJsonString(): String {
+        return this.rustCoreQuote.toJsonString()
     }
 
-    constructor(rustCoreQuote: RustCoreQuote) {
-        this.rustCoreQuote = rustCoreQuote
-
-        this.metadata = this.rustCoreQuote.getData().metadata
-        this.data = this.rustCoreQuote.getData().data
-        this.signature = this.rustCoreQuote.getData().signature
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreQuote.sign(bearerDid.rustCoreBearerDid)
     }
 
-    fun toJson(): String {
-        return this.rustCoreQuote.toJson()
+    fun verify() {
+        this.rustCoreQuote.verify()
     }
 }

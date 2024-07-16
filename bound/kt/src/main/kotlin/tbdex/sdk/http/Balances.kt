@@ -6,7 +6,7 @@ import tbdex.sdk.rust.GetBalancesResponseBody as RustCoreGetBalancesResponseBody
 
 class GetBalancesResponseBody private constructor(
     val data: List<Balance>,
-    private val rustCoreGetBalancesResponseBody: RustCoreGetBalancesResponseBody
+    internal val rustCoreGetBalancesResponseBody: RustCoreGetBalancesResponseBody
 ) {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
@@ -23,7 +23,7 @@ class GetBalancesResponseBody private constructor(
         fun fromJsonString(json: String): GetBalancesResponseBody {
             val rustCoreGetBalancesResponseBody = RustCoreGetBalancesResponseBody.fromJsonString(json)
             val balances = rustCoreGetBalancesResponseBody.getData().data.map {
-                Balance(it)
+                Balance.fromRustCoreBalance(it)
             }
             return GetBalancesResponseBody(balances, rustCoreGetBalancesResponseBody)
         }

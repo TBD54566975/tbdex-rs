@@ -1,10 +1,8 @@
 use crate::{errors::Result, resources::offering::Offering};
 use std::sync::Arc;
 use tbdex::{
-    http::{
-        offerings::GetOfferingsResponse as InnerGetOfferingsResponse, JsonDeserializer,
-        JsonSerializer,
-    },
+    http::offerings::GetOfferingsResponse as InnerGetOfferingsResponse,
+    json::{FromJson, ToJson},
     resources::offering::Offering as InnerOffering,
 };
 

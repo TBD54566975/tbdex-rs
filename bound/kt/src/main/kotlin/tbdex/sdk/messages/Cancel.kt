@@ -8,50 +8,51 @@ import tbdex.sdk.rust.CancelDataData as RustCoreCancelData
 
 typealias CancelData = RustCoreCancelData
 
-class Cancel: Message, WalletUpdateMessage {
+class Cancel private constructor(
+    val metadata: MessageMetadata,
+    val data: RustCoreCancelData,
+    val signature: String,
+    internal val rustCoreCancel: RustCoreCancel
+): Message, WalletUpdateMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: MessageMetadata
-    val data: RustCoreCancelData
-    val signature: String
+    companion object {
+        fun create(
+            to: String,
+            from: String,
+            exchangeId: String,
+            data: RustCoreCancelData,
+            protocol: String? = null,
+            externalId: String? = null
+        ): Cancel {
+            val rustCoreCancel = RustCoreCancel.create(to, from, exchangeId, data, protocol, externalId)
+            val rustCoreData = rustCoreCancel.getData()
+            return Cancel(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreCancel)
+        }
 
-    val rustCoreCancel: RustCoreCancel
+        fun fromJsonString(json: String): Cancel {
+            val rustCoreCancel = RustCoreCancel.fromJsonString(json)
+            val rustCoreData = rustCoreCancel.getData()
+            return Cancel(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreCancel)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        to: String,
-        from: String,
-        exchangeId: String,
-        data: RustCoreCancelData,
-        protocol: String,
-        externalId: String? = null
-    ) {
-        this.rustCoreCancel = RustCoreCancel(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
-
-        this.metadata = rustCoreCancel.getData().metadata
-        this.data = rustCoreCancel.getData().data
-        this.signature = rustCoreCancel.getData().signature
+        internal fun fromRustCoreCancel(rustCoreCancel: RustCoreCancel): Cancel {
+            val rustCoreData = rustCoreCancel.getData()
+            return Cancel(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreCancel)
+        }
     }
 
-    constructor(json: String) {
-        this.rustCoreCancel = RustCoreCancel.fromJsonString(json)
-
-        this.metadata = rustCoreCancel.getData().metadata
-        this.data = rustCoreCancel.getData().data
-        this.signature = rustCoreCancel.getData().signature
+    fun toJsonString(): String {
+        return this.rustCoreCancel.toJsonString()
     }
 
-    constructor(rustCoreCancel: RustCoreCancel) {
-        this.rustCoreCancel = rustCoreCancel
-
-        this.metadata = rustCoreCancel.getData().metadata
-        this.data = rustCoreCancel.getData().data
-        this.signature = rustCoreCancel.getData().signature
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreCancel.sign(bearerDid.rustCoreBearerDid)
     }
 
-    fun toJson(): String {
-        return this.rustCoreCancel.toJson()
+    fun verify() {
+        this.rustCoreCancel.verify()
     }
 }

@@ -7,50 +7,48 @@ import tbdex.sdk.rust.BalanceDataData as RustCoreBalanceData
 
 typealias BalanceData = RustCoreBalanceData
 
-class Balance {
+class Balance private constructor(
+    val metadata: ResourceMetadata,
+    val data: BalanceData,
+    val signature: String,
+    internal val rustCoreBalance: RustCoreBalance
+){
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: ResourceMetadata
-    val data: BalanceData
-    val signature: String
+    companion object {
+        fun create(
+            from: String,
+            data: BalanceData,
+            protocol: String? = null
+        ): Balance {
+            val rustCoreBalance = RustCoreBalance.create(from, data, protocol)
+            val rustCoreData = rustCoreBalance.getData()
+            return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
+        }
 
-    val rustCoreBalance: RustCoreBalance
+        fun fromJsonString(json: String): Balance {
+            val rustCoreBalance = RustCoreBalance.fromJsonString(json)
+            val rustCoreData = rustCoreBalance.getData()
+            return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        from: String,
-        data: BalanceData,
-        signature: String
-    ) {
-        this.rustCoreBalance = RustCoreBalance(bearerDid.rustCoreBearerDid, from, data, signature)
-
-        this.metadata = rustCoreBalance.getData().metadata
-        this.data = rustCoreBalance.getData().data
-        this.signature = rustCoreBalance.getData().signature
+        internal fun fromRustCoreBalance(rustCoreBalance: RustCoreBalance): Balance {
+            val rustCoreData = rustCoreBalance.getData()
+            return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
+        }
     }
 
-    constructor(json: String) {
-        this.rustCoreBalance = RustCoreBalance.fromJsonString(json)
-
-        this.metadata = rustCoreBalance.getData().metadata
-        this.data = BalanceData(
-            this.rustCoreBalance.getData().data.currencyCode,
-            this.rustCoreBalance.getData().data.available
-        )
-        this.signature = rustCoreBalance.getData().signature
+    fun toJsonString(): String {
+        return this.rustCoreBalance.toJsonString()
     }
 
-    constructor(rustCoreBalance: RustCoreBalance) {
-        this.rustCoreBalance = rustCoreBalance
-
-        this.metadata = this.rustCoreBalance.getData().metadata
-        this.data = this.rustCoreBalance.getData().data
-        this.signature = this.rustCoreBalance.getData().signature
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreBalance.sign(bearerDid.rustCoreBearerDid)
     }
 
-    fun toJson(): String {
-        return this.rustCoreBalance.toJson()
+    fun verify() {
+        this.rustCoreBalance.verify()
     }
 }

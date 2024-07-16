@@ -17,9 +17,19 @@ class Webhook {
         post("/pfi-reply-to") { req, res ->
             val requestBody = ReplyToRequestBody.fromJsonString(req.body())
             when (val message = requestBody.message) {
-                is Quote -> quote = message
-                is OrderStatus -> orderStatuses.add(message)
-                is Close -> close = message
+                is Quote -> {
+                    message.verify()
+                    quote = message
+                }
+                is OrderStatus -> {
+                    message.verify()
+                    orderStatuses.add(message)
+                    println("Received order status ${message.metadata.id} ${message.data.status}")
+                }
+                is Close -> {
+                    message.verify()
+                    close = message
+                }
             }
 
             res.status(202)

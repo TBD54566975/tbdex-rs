@@ -1,5 +1,9 @@
 use super::{ResourceKind, ResourceMetadata, Result};
-use crate::json_schemas::generated::{BALANCE_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{BALANCE_DATA_JSON_SCHEMA, RESOURCE_JSON_SCHEMA},
+    DEFAULT_PROTOCOL_VERSION,
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -11,20 +15,18 @@ pub struct Balance {
     pub signature: String,
 }
 
+impl ToJson for Balance {}
+impl FromJson for Balance {}
+
 impl Balance {
-    pub fn new(
-        bearer_did: &BearerDid,
-        from: &str,
-        data: &BalanceData,
-        protocol: &str,
-    ) -> Result<Self> {
+    pub fn create(from: &str, data: &BalanceData, protocol: Option<String>) -> Result<Self> {
         let now = Utc::now().to_rfc3339();
 
         let metadata = ResourceMetadata {
             kind: ResourceKind::Balance,
             from: from.to_string(),
             id: ResourceKind::Balance.typesafe_id()?,
-            protocol: protocol.to_string(),
+            protocol: protocol.unwrap_or_else(|| DEFAULT_PROTOCOL_VERSION.to_string()),
             created_at: now.clone(),
             updated_at: Some(now),
         };
@@ -32,22 +34,19 @@ impl Balance {
         let balance = Self {
             metadata: metadata.clone(),
             data: data.clone(),
-            signature: crate::signature::sign(
-                bearer_did,
-                &serde_json::to_value(metadata)?,
-                &serde_json::to_value(data)?,
-            )?,
+            signature: String::default(),
         };
-
-        balance.verify()?;
 
         Ok(balance)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let balance = serde_json::from_str::<Self>(json)?;
-        balance.verify()?;
-        Ok(balance)
+    pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
+        self.signature = crate::signature::sign(
+            bearer_did,
+            &serde_json::to_value(&self.metadata)?,
+            &serde_json::to_value(&self.data)?,
+        )?;
+        Ok(())
     }
 
     pub fn verify(&self) -> Result<()> {
@@ -66,10 +65,6 @@ impl Balance {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 

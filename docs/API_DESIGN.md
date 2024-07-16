@@ -107,18 +107,16 @@ CLASS ResourceMetadata
 
 ## `Offering`
 
-> [!NOTE]
->
-> All `CONSTRUCTOR(json: string)` instances in this APID perform cryptographic verification on the `signature` property.
-
 ```pseudocode!
 CLASS Offering IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: OfferingData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
-  CONSTRUCTOR(json: string) 
-  METHOD to_json(): string
+  CONSTRUCTOR create(from: string, data: OfferingData, protocol: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD verify(): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `OfferingData`
@@ -198,9 +196,11 @@ CLASS Balance IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: BalanceData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(from: string, data: BalanceData, protocol: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD verify(): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `BalanceData`
@@ -265,9 +265,11 @@ CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA data: RfqData
   PUBLIC DATA privateData: RfqPrivateData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string, requireAllPrivateData: bool?)
-  METHOD to_json(): string
+  CONSTRUCTOR create(to: string, from: string, rfqData: CreateRfqData, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string, requireAllPrivateData: bool?)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `CreateRfqData`
@@ -348,9 +350,11 @@ CLASS Quote IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: QuoteData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `QuoteData`
@@ -387,9 +391,11 @@ CLASS PaymentInstruction
 CLASS Order IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
 ```
 
 ## `Cancel`
@@ -399,9 +405,11 @@ CLASS Cancel IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CancelData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `CancelData`
@@ -418,9 +426,11 @@ CLASS OrderStatus IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: OrderStatusData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `OrderStatusData`
@@ -437,9 +447,11 @@ CLASS Close IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CloseData
   PUBLIC DATA signature: string
-  CONSTRUCTOR(bearer_did: BearerDid, to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
-  CONSTRUCTOR(json: string)
-  METHOD to_json(): string
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
 ```
 
 ### `CloseData`
@@ -561,6 +573,7 @@ CLASS Exchange
   PUBLIC DATA rfq: Rfq
   PUBLIC DATA quote: Quote
   PUBLIC DATA order: Order
+  PUBLIC DATA cancel: Cancel
   PUBLIC DATA order_statuses: []OrderStatus
   PUBLIC DATA close: Close
 ```

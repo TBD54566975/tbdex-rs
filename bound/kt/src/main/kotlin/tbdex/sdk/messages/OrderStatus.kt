@@ -10,50 +10,51 @@ import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
 typealias OrderStatusData = RustCoreOrderStatusData
 typealias Status = RustCoreStatus
 
-class OrderStatus: Message, ReplyToMessage {
+class OrderStatus private constructor(
+    val metadata: MessageMetadata,
+    val data: OrderStatusData,
+    val signature: String,
+    internal val rustCoreOrderStatus: RustCoreOrderStatus
+): Message, ReplyToMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: MessageMetadata
-    val data: OrderStatusData
-    val signature: String
+    companion object {
+        fun create(
+            to: String,
+            from: String,
+            exchangeId: String,
+            data: OrderStatusData,
+            protocol: String? = null,
+            externalId: String? = null
+        ): OrderStatus {
+            val rustCoreOrderStatus = RustCoreOrderStatus.create(to, from, exchangeId, data, protocol, externalId)
+            val rustCoreData = rustCoreOrderStatus.getData()
+            return OrderStatus(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreOrderStatus)
+        }
 
-    val rustCoreOrderStatus: RustCoreOrderStatus
+        fun fromJsonString(json: String): OrderStatus {
+            val rustCoreOrderStatus = RustCoreOrderStatus.fromJsonString(json)
+            val rustCoreData = rustCoreOrderStatus.getData()
+            return OrderStatus(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreOrderStatus)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        to: String,
-        from: String,
-        exchangeId: String,
-        data: OrderStatusData,
-        protocol: String,
-        externalId: String? = null
-    ) {
-        this.rustCoreOrderStatus = RustCoreOrderStatus(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
-
-        this.metadata = rustCoreOrderStatus.getData().metadata
-        this.data = rustCoreOrderStatus.getData().data
-        this.signature = rustCoreOrderStatus.getData().signature
+        internal fun fromRustCoreOrderStatus(rustCoreOrderStatus: RustCoreOrderStatus): OrderStatus {
+            val rustCoreData = rustCoreOrderStatus.getData()
+            return OrderStatus(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreOrderStatus)
+        }
     }
 
-    constructor(json: String) {
-        this.rustCoreOrderStatus = RustCoreOrderStatus.fromJsonString(json)
-
-        this.metadata = rustCoreOrderStatus.getData().metadata
-        this.data = rustCoreOrderStatus.getData().data
-        this.signature = rustCoreOrderStatus.getData().signature
+    fun toJsonString(): String {
+        return this.rustCoreOrderStatus.toJsonString()
     }
 
-    constructor(rustCoreOrderStatus: RustCoreOrderStatus) {
-        this.rustCoreOrderStatus = rustCoreOrderStatus
-
-        this.metadata = this.rustCoreOrderStatus.getData().metadata
-        this.data = this.rustCoreOrderStatus.getData().data
-        this.signature = this.rustCoreOrderStatus.getData().signature
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreOrderStatus.sign(bearerDid.rustCoreBearerDid)
     }
 
-    fun toJson(): String {
-        return this.rustCoreOrderStatus.toJson()
+    fun verify() {
+        this.rustCoreOrderStatus.verify()
     }
 }

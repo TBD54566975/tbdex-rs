@@ -943,6 +943,38 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -968,14 +1000,18 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_balance(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_balance_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_balance_create(`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_balance_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_balance_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_balance_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_balance_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_balance_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_balance_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_balance_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_bearerdid(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_bearerdid(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -992,26 +1028,34 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_cancel(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_cancel_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_cancel_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_cancel_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_cancel_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_cancel_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_cancel_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_cancel_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_cancel_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_cancel_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_close(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_close(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_close_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_close_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_close_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_close_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_close_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_close_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_close_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_close_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_close_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_createexchangerequestbody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_createexchangerequestbody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1096,38 +1140,50 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_offering(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_create(`from`: RustBuffer.ByValue,`jsonSerializedData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_offering_new(`bearerDid`: Pointer,`from`: RustBuffer.ByValue,`jsonSerializedData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_offering_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_offering_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_offering_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_offering_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_offering_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_offering_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_order(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_order(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_order_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_order_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_order_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_order_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_order_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_order_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_order_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_order_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_order_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_orderstatus_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_orderstatus_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_orderstatus_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_orderstatus_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_orderstatus_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_orderstatus_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_portabledid(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_portabledid(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1150,14 +1206,18 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_quote(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_quote_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_quote_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_quote_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_quote_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_quote_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_quote_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_quote_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_quote_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_quote_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_replytorequestbody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_replytorequestbody(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1174,14 +1234,18 @@ internal interface UniffiLib : Library {
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_free_rfq(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
-    fun uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(`json`: RustBuffer.ByValue,`requireAllPrivateData`: Byte,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_rfq_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`jsonSerializedCreateRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
-    fun uniffi_tbdex_uniffi_fn_constructor_rfq_new(`bearerDid`: Pointer,`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`jsonSerializedCreateRfqData`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
     fun uniffi_tbdex_uniffi_fn_method_rfq_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_method_rfq_to_json(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_method_rfq_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_rfq_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_rfq_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_all_private_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_method_rfq_verify_offering_requirements(`ptr`: Pointer,`offering`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
@@ -1350,7 +1414,11 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_balance_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_balance_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_balance_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_balance_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_balance_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_bearerdid_get_data(
     ): Short
@@ -1358,11 +1426,19 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_cancel_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_cancel_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_cancel_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_cancel_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_cancel_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_close_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_close_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_close_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_close_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_close_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_createexchangerequestbody_get_data(
     ): Short
@@ -1394,15 +1470,27 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_offering_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_offering_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_offering_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_offering_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_offering_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_order_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_order_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_order_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_order_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_order_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_orderstatus_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_portabledid_get_data(
     ): Short
@@ -1412,7 +1500,11 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_quote_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_quote_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_quote_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_quote_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_quote_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_replytorequestbody_get_data(
     ): Short
@@ -1420,7 +1512,11 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_rfq_get_data(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_method_rfq_to_json(
+    fun uniffi_tbdex_uniffi_checksum_method_rfq_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_rfq_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_rfq_verify(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data(
     ): Short
@@ -1434,21 +1530,21 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_updateexchangerequestbody_to_json_string(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_balance_from_json_string(
+    fun uniffi_tbdex_uniffi_checksum_constructor_balance_create(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_balance_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_balance_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_bearerdid_from_portable_did(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_bearerdid_new(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_cancel_create(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_cancel_from_json_string(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_cancel_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_close_create(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_close_from_json_string(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_close_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_createexchangerequestbody_from_json_string(
     ): Short
@@ -1472,33 +1568,33 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_inmemorykeymanager_new(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_offering_create(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_offering_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_order_create(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_order_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_orderstatus_create(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_orderstatus_from_json_string(
-    ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_orderstatus_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_portabledid_new(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_presentationdefinition_new(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_quote_from_json_string(
+    fun uniffi_tbdex_uniffi_checksum_constructor_quote_create(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_quote_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_quote_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_replytorequestbody_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_replytorequestbody_new(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string(
+    fun uniffi_tbdex_uniffi_checksum_constructor_rfq_create(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_constructor_rfq_new(
+    fun uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_updateexchangerequestbody_from_json_string(
     ): Short
@@ -1545,7 +1641,13 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_balance_get_data() != 62619.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_to_json() != 58786.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_sign() != 59448.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_to_json_string() != 4133.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_balance_verify() != 11983.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_bearerdid_get_data() != 7101.toShort()) {
@@ -1557,13 +1659,25 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_cancel_get_data() != 14738.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_cancel_to_json() != 25222.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_cancel_sign() != 23747.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_cancel_to_json_string() != 10660.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_cancel_verify() != 48140.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_close_get_data() != 28213.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_close_to_json() != 19365.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_close_sign() != 56621.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_close_to_json_string() != 40873.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_close_verify() != 22957.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_createexchangerequestbody_get_data() != 33862.toShort()) {
@@ -1611,19 +1725,37 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_offering_get_data() != 51981.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_to_json() != 6629.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_sign() != 20256.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_to_json_string() != 46041.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_offering_verify() != 28417.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_order_get_data() != 22510.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_order_to_json() != 53626.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_order_sign() != 52769.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_order_to_json_string() != 12992.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_order_verify() != 19062.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data() != 64681.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json() != 35902.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_sign() != 12737.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_to_json_string() != 26604.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_verify() != 21296.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_portabledid_get_data() != 16147.toShort()) {
@@ -1638,7 +1770,13 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_quote_get_data() != 16879.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_to_json() != 37615.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_sign() != 23816.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_to_json_string() != 49908.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_quote_verify() != 11242.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_replytorequestbody_get_data() != 11854.toShort()) {
@@ -1650,7 +1788,13 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_get_data() != 47828.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_to_json() != 46345.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_sign() != 64438.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_to_json_string() != 42450.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify() != 56871.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_method_rfq_verify_all_private_data() != 14947.toShort()) {
@@ -1671,10 +1815,10 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_updateexchangerequestbody_to_json_string() != 10957.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_from_json_string() != 58225.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_create() != 11176.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_new() != 21130.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_balance_from_json_string() != 58225.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_bearerdid_from_portable_did() != 56314.toShort()) {
@@ -1683,16 +1827,16 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_bearerdid_new() != 33593.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_cancel_create() != 19733.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_cancel_from_json_string() != 24188.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_cancel_new() != 3292.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_close_create() != 47199.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_close_from_json_string() != 31628.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_close_new() != 39292.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_createexchangerequestbody_from_json_string() != 26546.toShort()) {
@@ -1728,22 +1872,22 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_inmemorykeymanager_new() != 52263.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_create() != 65508.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_from_json_string() != 61646.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_offering_new() != 60046.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_create() != 268.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string() != 60642.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_new() != 12888.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_create() != 39650.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_from_json_string() != 3049.toShort()) {
-        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
-    }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_new() != 34207.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_portabledid_new() != 39125.toShort()) {
@@ -1752,10 +1896,10 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_presentationdefinition_new() != 62739.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_from_json_string() != 8299.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_create() != 37531.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_new() != 62621.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_quote_from_json_string() != 8299.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_replytorequestbody_from_json_string() != 43860.toShort()) {
@@ -1764,10 +1908,10 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_replytorequestbody_new() != 7836.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string() != 4210.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_create() != 55145.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_new() != 42025.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_rfq_from_json_string() != 5112.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_updateexchangerequestbody_from_json_string() != 7721.toShort()) {
@@ -2068,7 +2212,11 @@ public interface BalanceInterface {
     
     fun `getData`(): BalanceData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -2090,13 +2238,6 @@ open class Balance: Disposable, AutoCloseable, BalanceInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `data`: BalanceDataData, `protocol`: kotlin.String) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_balance_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterTypeBalanceDataData.lower(`data`),FfiConverterString.lower(`protocol`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -2175,11 +2316,23 @@ open class Balance: Disposable, AutoCloseable, BalanceInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_to_json_string(
         it, _status)
 }
     }
@@ -2188,9 +2341,32 @@ open class Balance: Disposable, AutoCloseable, BalanceInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_balance_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`from`: kotlin.String, `data`: BalanceDataData, `protocol`: kotlin.String?): Balance {
+            return FfiConverterTypeBalance.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_balance_create(
+        FfiConverterString.lower(`from`),FfiConverterTypeBalanceDataData.lower(`data`),FfiConverterOptionalString.lower(`protocol`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Balance {
             return FfiConverterTypeBalance.lift(
@@ -2601,7 +2777,11 @@ public interface CancelInterface {
     
     fun `getData`(): CancelData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -2623,13 +2803,6 @@ open class Cancel: Disposable, AutoCloseable, CancelInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: CancelDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_cancel_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeCancelDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -2708,11 +2881,23 @@ open class Cancel: Disposable, AutoCloseable, CancelInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_cancel_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_cancel_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_cancel_to_json_string(
         it, _status)
 }
     }
@@ -2721,9 +2906,32 @@ open class Cancel: Disposable, AutoCloseable, CancelInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_cancel_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: CancelDataData, `protocol`: kotlin.String?, `externalId`: kotlin.String?): Cancel {
+            return FfiConverterTypeCancel.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_cancel_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeCancelDataData.lower(`data`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Cancel {
             return FfiConverterTypeCancel.lift(
@@ -2868,7 +3076,11 @@ public interface CloseInterface {
     
     fun `getData`(): CloseData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -2890,13 +3102,6 @@ open class Close: Disposable, AutoCloseable, CloseInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: CloseDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_close_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeCloseDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -2975,11 +3180,23 @@ open class Close: Disposable, AutoCloseable, CloseInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_to_json_string(
         it, _status)
 }
     }
@@ -2988,9 +3205,32 @@ open class Close: Disposable, AutoCloseable, CloseInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_close_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: CloseDataData, `protocol`: kotlin.String?, `externalId`: kotlin.String?): Close {
+            return FfiConverterTypeClose.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_close_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeCloseDataData.lower(`data`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Close {
             return FfiConverterTypeClose.lift(
@@ -5035,7 +5275,11 @@ public interface OfferingInterface {
     
     fun `getData`(): OfferingData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -5057,13 +5301,6 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `from`: kotlin.String, `jsonSerializedData`: kotlin.String, `protocol`: kotlin.String) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedData`),FfiConverterString.lower(`protocol`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -5142,11 +5379,23 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_to_json_string(
         it, _status)
 }
     }
@@ -5155,9 +5404,32 @@ open class Offering: Disposable, AutoCloseable, OfferingInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_offering_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`from`: kotlin.String, `jsonSerializedData`: kotlin.String, `protocol`: kotlin.String?): Offering {
+            return FfiConverterTypeOffering.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_offering_create(
+        FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedData`),FfiConverterOptionalString.lower(`protocol`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Offering {
             return FfiConverterTypeOffering.lift(
@@ -5302,7 +5574,11 @@ public interface OrderInterface {
     
     fun `getData`(): OrderData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -5324,13 +5600,6 @@ open class Order: Disposable, AutoCloseable, OrderInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_order_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -5409,11 +5678,23 @@ open class Order: Disposable, AutoCloseable, OrderInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_to_json_string(
         it, _status)
 }
     }
@@ -5422,9 +5703,32 @@ open class Order: Disposable, AutoCloseable, OrderInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_order_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `protocol`: kotlin.String?, `externalId`: kotlin.String?): Order {
+            return FfiConverterTypeOrder.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_order_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Order {
             return FfiConverterTypeOrder.lift(
@@ -5569,7 +5873,11 @@ public interface OrderStatusInterface {
     
     fun `getData`(): OrderStatusData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -5591,13 +5899,6 @@ open class OrderStatus: Disposable, AutoCloseable, OrderStatusInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: OrderStatusDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_orderstatus_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeOrderStatusDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -5676,11 +5977,23 @@ open class OrderStatus: Disposable, AutoCloseable, OrderStatusInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_to_json_string(
         it, _status)
 }
     }
@@ -5689,9 +6002,32 @@ open class OrderStatus: Disposable, AutoCloseable, OrderStatusInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderstatus_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: OrderStatusDataData, `protocol`: kotlin.String?, `externalId`: kotlin.String?): OrderStatus {
+            return FfiConverterTypeOrderStatus.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_orderstatus_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeOrderStatusDataData.lower(`data`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): OrderStatus {
             return FfiConverterTypeOrderStatus.lift(
@@ -6330,7 +6666,11 @@ public interface QuoteInterface {
     
     fun `getData`(): QuoteData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     companion object
 }
@@ -6352,13 +6692,6 @@ open class Quote: Disposable, AutoCloseable, QuoteInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: QuoteDataData, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_quote_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeQuoteDataData.lower(`data`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -6437,11 +6770,23 @@ open class Quote: Disposable, AutoCloseable, QuoteInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_to_json_string(
         it, _status)
 }
     }
@@ -6450,9 +6795,32 @@ open class Quote: Disposable, AutoCloseable, QuoteInterface {
     
 
     
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_quote_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
 
     
     companion object {
+        
+    @Throws(RustCoreException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: QuoteDataData, `protocol`: kotlin.String?, `externalId`: kotlin.String?): Quote {
+            return FfiConverterTypeQuote.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_quote_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeQuoteDataData.lower(`data`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
         
     @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Quote {
             return FfiConverterTypeQuote.lift(
@@ -6863,7 +7231,11 @@ public interface RfqInterface {
     
     fun `getData`(): RfqData
     
-    fun `toJson`(): kotlin.String
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
     
     fun `verifyAllPrivateData`()
     
@@ -6891,13 +7263,6 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
         this.pointer = null
         this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
     }
-    constructor(`bearerDid`: BearerDid, `to`: kotlin.String, `from`: kotlin.String, `jsonSerializedCreateRfqData`: kotlin.String, `protocol`: kotlin.String, `externalId`: kotlin.String?) :
-        this(
-    uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_new(
-        FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedCreateRfqData`),FfiConverterString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
-}
-    )
 
     protected val pointer: Pointer?
     protected val cleanable: UniffiCleaner.Cleanable
@@ -6976,16 +7341,40 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
 
     
-    @Throws(RustCoreException::class)override fun `toJson`(): kotlin.String {
+    @Throws(RustCoreException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(RustCoreException::class)override fun `toJsonString`(): kotlin.String {
             return FfiConverterString.lift(
     callWithPointer {
     uniffiRustCallWithError(RustCoreException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_to_json(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_to_json_string(
         it, _status)
 }
     }
     )
     }
+    
+
+    
+    @Throws(RustCoreException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_rfq_verify(
+        it, _status)
+}
+    }
+    
     
 
     
@@ -7029,11 +7418,22 @@ open class Rfq: Disposable, AutoCloseable, RfqInterface {
     
     companion object {
         
-    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String, `requireAllPrivateData`: kotlin.Boolean): Rfq {
+    @Throws(RustCoreException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `jsonSerializedCreateRfqData`: kotlin.String, `protocol`: kotlin.String?, `externalId`: kotlin.String?): Rfq {
+            return FfiConverterTypeRfq.lift(
+    uniffiRustCallWithError(RustCoreException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`jsonSerializedCreateRfqData`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
+        
+    @Throws(RustCoreException::class) fun `fromJsonString`(`json`: kotlin.String): Rfq {
             return FfiConverterTypeRfq.lift(
     uniffiRustCallWithError(RustCoreException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_rfq_from_json_string(
-        FfiConverterString.lower(`json`),FfiConverterBoolean.lower(`requireAllPrivateData`),_status)
+        FfiConverterString.lower(`json`),_status)
 }
     )
     }
