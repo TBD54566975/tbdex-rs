@@ -4,6 +4,7 @@ import tbdex.sdk.messages.Quote
 import spark.Spark.port
 import spark.Spark.post
 import spark.Spark.stop
+import tbdex.sdk.http.ReplyToRequestBody
 
 class Webhook {
     var quote: Quote? = null
@@ -14,23 +15,20 @@ class Webhook {
         port(8081)
 
         post("/pfi-reply-to") { req, res ->
-            // todo we need parse support
-
-            val requestBodyString = req.body()
-
-            try {
-                quote = Quote(requestBodyString)
-            } catch (ex: Exception) {
-                try {
-                    val orderStatus = OrderStatus(requestBodyString)
-                    orderStatuses.add(orderStatus)
-                    println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}")
-                } catch (ex: Exception) {
-                    try {
-                        close = Close(requestBodyString)
-                    } catch (ex: Exception) {
-                        throw ex
-                    }
+            val requestBody = ReplyToRequestBody.fromJsonString(req.body())
+            when (val message = requestBody.message) {
+                is Quote -> {
+                    message.verify()
+                    quote = message
+                }
+                is OrderStatus -> {
+                    message.verify()
+                    orderStatuses.add(message)
+                    println("Received order status ${message.metadata.id} ${message.data.status}")
+                }
+                is Close -> {
+                    message.verify()
+                    close = message
                 }
             }
 

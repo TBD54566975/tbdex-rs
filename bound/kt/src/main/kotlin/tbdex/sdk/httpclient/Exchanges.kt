@@ -9,9 +9,6 @@ import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
 import tbdex.sdk.rust.submitCancel as rustCoreSubmitCancel
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
-import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
-import tbdex.sdk.rust.SubmitOrderRequestBody as RustCoreSubmitOrderRequestBody
-import tbdex.sdk.rust.SubmitCancelRequestBody as RustCoreSubmitCancelRequestBody
 
 data class Exchange(
     val rfq: Rfq,
@@ -26,14 +23,14 @@ data class Exchange(
     }
 
     companion object {
-        fun fromRustCore(rustCoreExchange: RustCoreExchange): Exchange {
+        internal fun fromRustCore(rustCoreExchange: RustCoreExchange): Exchange {
             return Exchange(
-                Rfq(rustCoreExchange.rfq),
-                rustCoreExchange.quote?.let { Quote(it) },
-                rustCoreExchange.order?.let { Order(it) },
-                rustCoreExchange.cancel?.let { Cancel(it) },
-                rustCoreExchange.orderStatuses?.let { it -> it.map { OrderStatus(it) } },
-                rustCoreExchange.close?.let { Close(it) },
+                Rfq.fromRustCoreRfq(rustCoreExchange.rfq),
+                rustCoreExchange.quote?.let { Quote.fromRustCoreQuote(it) },
+                rustCoreExchange.order?.let { Order.fromRustCoreOrder(it) },
+                rustCoreExchange.cancel?.let { Cancel.fromRustCoreCancel(it) },
+                rustCoreExchange.orderStatuses?.let { it -> it.map { OrderStatus.fromRustCoreOrderStatus(it) } },
+                rustCoreExchange.close?.let { Close.fromRustCoreClose(it) },
             )
         }
     }
@@ -70,40 +67,5 @@ fun getExchanges(pfiDidUri: String, bearerDid: BearerDid): List<String> {
     return rustCoreGetExchanges(pfiDidUri, bearerDid.rustCoreBearerDid)
 }
 
-class CreateExchangeRequestBody {
-    val message: Rfq
-    val replyTo: String?
 
-    constructor(json: String) {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
-        val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
-        val data = rustCoreCreateExchangeRequestBody.getData()
-        this.message = Rfq(data.message)
-        this.replyTo = data.replyTo
-    }
-}
-
-class SubmitOrderRequestBody {
-    val message: Order
-
-    constructor(json: String) {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
-        val rustCoreCreateExchangeRequestBody = RustCoreSubmitOrderRequestBody.fromJsonString(json)
-        val data = rustCoreCreateExchangeRequestBody.getData()
-        this.message = Order(data.message)
-    }
-}
-
-class SubmitCancelRequestBody {
-    val message: Cancel
-
-    constructor(json: String) {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
-        val rustCoreCreateExchangeRequestBody = RustCoreSubmitCancelRequestBody.fromJsonString(json)
-        val data = rustCoreCreateExchangeRequestBody.getData()
-        this.message = Cancel(data.message)
-    }
-}

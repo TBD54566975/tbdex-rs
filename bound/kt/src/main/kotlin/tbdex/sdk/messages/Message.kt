@@ -6,3 +6,5 @@ import tbdex.sdk.rust.MessageMetadataData as RustCoreMetadata
 typealias MessageKind = RustCoreMessageKind
 
 typealias MessageMetadata = RustCoreMetadata
+
+interface Message {}

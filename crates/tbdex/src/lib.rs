@@ -1,10 +1,14 @@
+pub mod http;
 pub mod http_client;
 pub mod messages;
 pub mod resources;
 
 mod jose;
+pub mod json;
 mod json_schemas;
 mod signature;
+
+const DEFAULT_PROTOCOL_VERSION: &str = "1.0";
 
 lazy_static::lazy_static! {
   pub(crate) static ref LOG_LEVEL: Option<String> = {

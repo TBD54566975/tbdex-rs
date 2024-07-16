@@ -1,5 +1,9 @@
 use super::{MessageKind, MessageMetadata, Result};
-use crate::json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA};
+use crate::{
+    json::{FromJson, ToJson},
+    json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_DATA_JSON_SCHEMA},
+    DEFAULT_PROTOCOL_VERSION,
+};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
@@ -11,13 +15,15 @@ pub struct Order {
     pub signature: String,
 }
 
+impl ToJson for Order {}
+impl FromJson for Order {}
+
 impl Order {
-    pub fn new(
-        bearer_did: &BearerDid,
+    pub fn create(
         to: &str,
         from: &str,
         exchange_id: &str,
-        protocol: &str,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
         let metadata = MessageMetadata {
@@ -27,7 +33,7 @@ impl Order {
             id: MessageKind::Order.typesafe_id()?,
             exchange_id: exchange_id.to_string(),
             external_id,
-            protocol: protocol.to_string(),
+            protocol: protocol.unwrap_or_else(|| DEFAULT_PROTOCOL_VERSION.to_string()),
             created_at: Utc::now().to_rfc3339(),
         };
 
@@ -36,22 +42,19 @@ impl Order {
         let order = Self {
             metadata: metadata.clone(),
             data: data.clone(),
-            signature: crate::signature::sign(
-                bearer_did,
-                &serde_json::to_value(metadata)?,
-                &serde_json::to_value(&data)?,
-            )?,
+            signature: String::default(),
         };
-
-        order.verify()?;
 
         Ok(order)
     }
 
-    pub fn from_json_string(json: &str) -> Result<Self> {
-        let order = serde_json::from_str::<Self>(json)?;
-        order.verify()?;
-        Ok(order)
+    pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
+        self.signature = crate::signature::sign(
+            bearer_did,
+            &serde_json::to_value(&self.metadata)?,
+            &serde_json::to_value(&self.data)?,
+        )?;
+        Ok(())
     }
 
     pub fn verify(&self) -> Result<()> {
@@ -70,10 +73,6 @@ impl Order {
         )?;
 
         Ok(())
-    }
-
-    pub fn to_json(&self) -> Result<String> {
-        Ok(serde_json::to_string(&self)?)
     }
 }
 

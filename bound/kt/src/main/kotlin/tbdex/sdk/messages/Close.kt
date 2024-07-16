@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Close as RustCoreClose
 import tbdex.sdk.web5.BearerDid
@@ -7,50 +8,51 @@ import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
 
 typealias CloseData = RustCoreCloseData
 
-class Close {
+class Close private constructor(
+    val metadata: MessageMetadata,
+    val data: CloseData,
+    val signature: String,
+    internal val rustCoreClose: RustCoreClose
+): Message, ReplyToMessage {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }
 
-    val metadata: MessageMetadata
-    val data: CloseData
-    val signature: String
+    companion object {
+        fun create(
+            to: String,
+            from: String,
+            exchangeId: String,
+            data: CloseData,
+            protocol: String? = null,
+            externalId: String? = null
+        ): Close {
+            val rustCoreClose = RustCoreClose.create(to, from, exchangeId, data, protocol, externalId)
+            val rustCoreData = rustCoreClose.getData()
+            return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
+        }
 
-    val rustCoreClose: RustCoreClose
+        fun fromJsonString(json: String): Close {
+            val rustCoreClose = RustCoreClose.fromJsonString(json)
+            val rustCoreData = rustCoreClose.getData()
+            return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
+        }
 
-    constructor(
-        bearerDid: BearerDid,
-        to: String,
-        from: String,
-        exchangeId: String,
-        data: CloseData,
-        protocol: String,
-        externalId: String? = null
-    ) {
-        this.rustCoreClose = RustCoreClose(bearerDid.rustCoreBearerDid, to, from, exchangeId, data, protocol, externalId)
-
-        this.metadata = rustCoreClose.getData().metadata
-        this.data = rustCoreClose.getData().data
-        this.signature = rustCoreClose.getData().signature
+        internal fun fromRustCoreClose(rustCoreClose: RustCoreClose): Close {
+            val rustCoreData = rustCoreClose.getData()
+            return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
+        }
     }
 
-    constructor(json: String) {
-        this.rustCoreClose = RustCoreClose.fromJsonString(json)
-
-        this.metadata = rustCoreClose.getData().metadata
-        this.data = rustCoreClose.getData().data
-        this.signature = rustCoreClose.getData().signature
+    fun toJsonString(): String {
+        return this.rustCoreClose.toJsonString()
     }
 
-    constructor(rustCoreClose: RustCoreClose) {
-        this.rustCoreClose = rustCoreClose
-
-        this.metadata = rustCoreClose.getData().metadata
-        this.data = rustCoreClose.getData().data
-        this.signature = rustCoreClose.getData().signature
+    fun sign(bearerDid: BearerDid) {
+        this.rustCoreClose.sign(bearerDid.rustCoreBearerDid)
     }
 
-    fun toJson(): String {
-        return this.rustCoreClose.toJson()
+    fun verify() {
+        this.rustCoreClose.verify()
     }
 }

@@ -17,7 +17,7 @@ class BearerDid {
     val document: Document
     val keyManager: KeyManager
 
-    val rustCoreBearerDid: RustCoreBearerDid
+    internal val rustCoreBearerDid: RustCoreBearerDid
 
     constructor(uri: String, keyManager: KeyManager) {
         this.rustCoreBearerDid = RustCoreBearerDid(uri, keyManager.getRustCoreKeyManager())

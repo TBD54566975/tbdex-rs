@@ -1,35 +1,34 @@
 use crate::errors::{Result, RustCoreError};
 use std::sync::{Arc, RwLock};
-use tbdex::messages::cancel::{Cancel as InnerCancel, CancelData};
+use tbdex::{
+    json::{FromJson, ToJson},
+    messages::cancel::{Cancel as InnerCancel, CancelData},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Cancel(pub Arc<RwLock<InnerCancel>>);
 
 impl Cancel {
-    pub fn new(
-        bearer_did: Arc<BearerDid>,
+    pub fn create(
         to: String,
         from: String,
         exchange_id: String,
         data: CancelData,
-        protocol: String,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
-        let close = InnerCancel::new(
-            &bearer_did.0.clone(),
-            &to,
-            &from,
-            &exchange_id,
-            &data,
-            &protocol,
-            external_id,
-        )?;
+        let close = InnerCancel::create(&to, &from, &exchange_id, &data, protocol, external_id)?;
 
         Ok(Self(Arc::new(RwLock::new(close))))
     }
 
-    pub fn from_inner(inner_cancel: InnerCancel) -> Self {
-        Self(Arc::new(RwLock::new(inner_cancel)))
+    pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
+        let mut inner_close = self
+            .0
+            .write()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+        inner_close.sign(&bearer_did.0.clone())?;
+        Ok(())
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
@@ -38,13 +37,13 @@ impl Cancel {
         Ok(Self(Arc::new(RwLock::new(inner_close))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_close = self
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_close.to_json()?)
+        Ok(inner_close.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerCancel> {
@@ -54,5 +53,14 @@ impl Cancel {
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(close.clone())
+    }
+
+    pub fn verify(&self) -> Result<()> {
+        let cancel = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(cancel.verify()?)
     }
 }

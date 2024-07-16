@@ -34,8 +34,7 @@ fun main() {
 
     // 2. create exchange
     println("2. Creating exchange...")
-    val rfq = Rfq(
-        bearerDid,
+    val rfq = Rfq.create(
         pfiDidUri,
         bearerDid.did.uri,
         CreateRfqData(
@@ -53,9 +52,10 @@ fun main() {
                 )
             ),
             claims = listOf(verifiableCredential)
-        ),
-        "1.0", null
+        )
     )
+    rfq.sign(bearerDid)
+    rfq.verify()
     tbdex.sdk.httpclient.createExchange(
         rfq = rfq,
         replyTo = replyToUrl
@@ -65,7 +65,7 @@ fun main() {
     // 3. wait for Quote to come into webhook
     println("3. Waiting for Quote...")
     while (webhook.quote == null) {
-        Thread.sleep(3000)
+        Thread.sleep(500)
     }
     println("Quote received to webhook ${webhook.quote!!.metadata.id}\n")
 
@@ -73,26 +73,26 @@ fun main() {
     if (showcaseCancelFlow) {
         // 4. submit cancel
         println("4. Submitting cancel...")
-        val cancel = Cancel(
-            bearerDid,
+        val cancel = Cancel.create(
             pfiDidUri,
             bearerDid.did.uri,
             rfq.metadata.exchangeId,
-            CancelData("showcasing an example"),
-            "1.0", null
+            CancelData("showcasing an example")
         )
+        cancel.sign(bearerDid)
+        cancel.verify()
         tbdex.sdk.httpclient.submitCancel(cancel)
         println("Cancel submitted ${cancel.metadata.id}")
     } else {
         // 4. submit order
         println("4. Submitting order...")
-        val order = Order(
-            bearerDid,
+        val order = Order.create(
             pfiDidUri,
             bearerDid.did.uri,
-            rfq.metadata.exchangeId,
-            "1.0", null
+            rfq.metadata.exchangeId
         )
+        order.sign(bearerDid)
+        order.verify()
         tbdex.sdk.httpclient.submitOrder(
             order = order
         )
@@ -102,7 +102,7 @@ fun main() {
         println("5. Waiting for OrderStatuses...")
         var status: Status? = null
         while (status != Status.PAYOUT_SETTLED) {
-            Thread.sleep(1500)
+            Thread.sleep(500)
             status = if (webhook.orderStatuses.size > 0) webhook.orderStatuses.last().data.status else null
         }
     }
@@ -110,7 +110,7 @@ fun main() {
     // 6. wait for Close to come into webhook
     println("\n6. Waiting for Close...")
     while (webhook.close == null) {
-        Thread.sleep(3000)
+        Thread.sleep(500)
     }
     println("Close received to webhook ${webhook.close!!.metadata.id} ${webhook.close!!.data.success}\n")
 

@@ -8,5 +8,5 @@ fun getOfferings(pfiDidUri: String): List<Offering> {
     SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
     val rustCoreOfferings = rustCoreGetOfferings(pfiDidUri)
-    return rustCoreOfferings.map { Offering(it) }
+    return rustCoreOfferings.map { Offering.fromRustCoreOffering(it) }
 }

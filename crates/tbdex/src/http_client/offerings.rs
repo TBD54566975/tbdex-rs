@@ -1,12 +1,6 @@
 use super::{get_service_endpoint, send_request, HttpClientError, Result};
-use crate::resources::offering::Offering;
+use crate::{http::offerings::GetOfferingsResponse, resources::offering::Offering};
 use reqwest::Method;
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-struct GetOfferingsResponse {
-    data: Vec<Offering>,
-}
 
 pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
     let service_endpoint = get_service_endpoint(pfi_did_uri)?;

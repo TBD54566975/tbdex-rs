@@ -3,51 +3,55 @@ use crate::{
     resources::offering::Offering,
 };
 use std::sync::{Arc, RwLock};
-use tbdex::messages::rfq::{CreateRfqData as InnerCreateRfqData, Rfq as InnerRfq};
+use tbdex::{
+    json::{FromJson, ToJson},
+    messages::rfq::{CreateRfqData as InnerCreateRfqData, Rfq as InnerRfq},
+};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Rfq(pub Arc<RwLock<InnerRfq>>);
 
 impl Rfq {
-    pub fn new(
-        bearer_did: Arc<BearerDid>,
+    pub fn create(
         to: String,
         from: String,
         json_serialized_create_rfq_data: String,
-        protocol: String,
+        protocol: Option<String>,
         external_id: Option<String>,
     ) -> Result<Self> {
         let create_rfq_data =
             serde_json::from_str::<InnerCreateRfqData>(&json_serialized_create_rfq_data)?;
-        let rfq = InnerRfq::new(
-            &bearer_did.0.clone(),
-            &to,
-            &from,
-            &create_rfq_data,
-            &protocol,
-            external_id,
-        )?;
+        let rfq = InnerRfq::create(&to, &from, &create_rfq_data, protocol, external_id)?;
 
         Ok(Self(Arc::new(RwLock::new(rfq))))
+    }
+
+    pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
+        let mut inner_rfq = self
+            .0
+            .write()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+        inner_rfq.sign(&bearer_did.0.clone())?;
+        Ok(())
     }
 
     pub fn from_inner(inner_rfq: InnerRfq) -> Self {
         Self(Arc::new(RwLock::new(inner_rfq)))
     }
 
-    pub fn from_json_string(json: &str, require_all_private_data: bool) -> Result<Self> {
-        let inner_rfq = InnerRfq::from_json_string(json, require_all_private_data)?;
+    pub fn from_json_string(json: &str) -> Result<Self> {
+        let inner_rfq = InnerRfq::from_json_string(json)?;
 
         Ok(Self(Arc::new(RwLock::new(inner_rfq))))
     }
 
-    pub fn to_json(&self) -> Result<String> {
+    pub fn to_json_string(&self) -> Result<String> {
         let inner_rfq = self
             .0
             .read()
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
-        Ok(inner_rfq.to_json()?)
+        Ok(inner_rfq.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<data::Rfq> {
@@ -76,6 +80,15 @@ impl Rfq {
             .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_rfq.clone())
+    }
+
+    pub fn verify(&self) -> Result<()> {
+        let rfq = self
+            .0
+            .read()
+            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+
+        Ok(rfq.verify()?)
     }
 
     pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<()> {

@@ -8,9 +8,9 @@ import spark.Request
 import spark.Response
 import spark.Spark.post
 import spark.Spark.put
-import tbdex.sdk.httpclient.CreateExchangeRequestBody
-import tbdex.sdk.httpclient.SubmitCancelRequestBody
-import tbdex.sdk.httpclient.SubmitOrderRequestBody
+import tbdex.sdk.http.UpdateExchangeRequestBody
+import tbdex.sdk.http.CreateExchangeRequestBody
+import tbdex.sdk.http.ReplyToRequestBody
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
@@ -25,11 +25,12 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private fun createExchange(req: Request, res: Response): String {
         println("POST /exchanges")
 
-        val requestBody = CreateExchangeRequestBody(req.body())
+        val requestBody = CreateExchangeRequestBody.fromJsonString(req.body())
 
         val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
         val rfq = requestBody.message
 
+        rfq.verify()
         rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
 
         this.exchangesToReplyTo[rfq.metadata.exchangeId] = replyTo
@@ -37,7 +38,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         res.status(202)
 
         Thread {
-            Thread.sleep(3000)
+            Thread.sleep(500)
             replyWithQuote(rfq.metadata.from, rfq.metadata.exchangeId)
         }.start()
 
@@ -45,8 +46,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     }
 
     private fun replyWithQuote(to: String, exchangeId: String) {
-        val quote = Quote(
-            bearerDid = this.bearerDid,
+        val quote = Quote.create(
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
@@ -67,52 +67,50 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
                     paymentInstruction = null
                 ),
                 payoutUnitsPerPayinUnit = "1.0"
-            ),
-            "1.0",
-            null
+            )
         )
+
+        quote.sign(bearerDid)
+        quote.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null for this example")
 
         println("Replying with quote")
 
-        this.replyRequest(replyTo, quote.toJson())
+        this.replyRequest(replyTo, ReplyToRequestBody(quote))
     }
 
     private fun updateExchange(req: Request, res: Response): String {
         println("PUT /exchanges/:id")
 
-        var order: Order? = null
-        var cancel: Cancel? = null
+        val updateExchangeRequestBody = UpdateExchangeRequestBody.fromJsonString(req.body())
+        when (val message = updateExchangeRequestBody.message) {
+            is Order -> {
+                // simulate order execution
+                message.verify()
 
-        // TODO we're going to implement a parser to alleviate this confusing DX
-        val reqBodyText = req.body()
-        try {
-            val submitOrderRequestBody = SubmitOrderRequestBody(reqBodyText)
-            order = submitOrderRequestBody.message
-        } catch (e: Exception) {
-            val submitCancelRequestBody = SubmitCancelRequestBody(reqBodyText)
-            cancel = submitCancelRequestBody.message
-        }
+                Thread {
+                    Thread.sleep(500)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId, Status.PAYIN_INITIATED)
+                    Thread.sleep(500)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYIN_SETTLED)
+                    Thread.sleep(500)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYOUT_INITIATED)
+                    Thread.sleep(500)
+                    replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYOUT_SETTLED)
+                    Thread.sleep(500)
+                    replyWithClose(message.metadata.from, message.metadata.exchangeId)
+                }.start()
+            }
+            is Cancel -> {
+                // simulate cancel
+                message.verify()
 
-        if (order != null) {
-            Thread {
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId, Status.PAYIN_INITIATED)
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYIN_SETTLED)
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYOUT_INITIATED)
-                Thread.sleep(1000)
-                replyWithOrderStatus(order.metadata.from, order.metadata.exchangeId,Status.PAYOUT_SETTLED)
-                Thread.sleep(1000)
-                replyWithClose(order.metadata.from, order.metadata.exchangeId)
-            }.start()
-        } else if (cancel != null) {
-            Thread {
-                Thread.sleep(3000)
-                replyWithClose(cancel.metadata.from, cancel.metadata.exchangeId, false)
-            }.start()
+                Thread {
+                    Thread.sleep(500)
+                    replyWithClose(message.metadata.from, message.metadata.exchangeId, false)
+                }.start()
+            }
         }
 
         res.status(202)
@@ -121,46 +119,48 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     }
 
     private fun replyWithOrderStatus(to: String, exchangeId: String, status: Status) {
-        val orderStatus = OrderStatus(
-            bearerDid = this.bearerDid,
+        val orderStatus = OrderStatus.create(
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
-            data = OrderStatusData(status, null),
-            "1.0"
+            data = OrderStatusData(status, null)
         )
+
+        orderStatus.sign(bearerDid)
+        orderStatus.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
         println("Replying with order status $status")
 
-        this.replyRequest(replyTo, orderStatus.toJson())
+        this.replyRequest(replyTo, ReplyToRequestBody(orderStatus))
     }
 
     private fun replyWithClose(to: String, exchangeId: String, success: Boolean? = true) {
-        val close = Close(
-            bearerDid = this.bearerDid,
+        val close = Close.create(
             to = to,
             from = this.bearerDid.did.uri,
             exchangeId = exchangeId,
             data = CloseData(
                 reason = null,
                 success = success
-            ),
-            "1.0"
+            )
         )
+
+        close.sign(bearerDid)
+        close.verify()
 
         val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
         println("Replying with close")
 
-        this.replyRequest(replyTo, close.toJson())
+        this.replyRequest(replyTo, ReplyToRequestBody(close))
     }
 
-    private fun replyRequest(replyTo: String, body: String) {
+    private fun replyRequest(replyTo: String, body: ReplyToRequestBody) {
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val requestBody = body.toRequestBody(mediaType)
+        val requestBody = body.toJsonString().toRequestBody(mediaType)
 
         val request = OkHttpRequest.Builder()
             .url(replyTo)
