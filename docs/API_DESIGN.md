@@ -112,8 +112,10 @@ CLASS Offering IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: OfferingData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, from: string, data: OfferingData, protocol: string)
-  CONSTRUCTOR from_json_string(json: string) 
+  CONSTRUCTOR create(from: string, data: OfferingData, protocol: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD verify(): Error?
   METHOD to_json_string(): string
 ```
 
@@ -194,8 +196,10 @@ CLASS Balance IMPLEMENTS Resource
   PUBLIC DATA metadata: ResourceMetadata
   PUBLIC DATA data: BalanceData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, from: string, data: BalanceData, protocol: string)
+  CONSTRUCTOR create(from: string, data: BalanceData, protocol: string?)
   CONSTRUCTOR from_json_string(json: string)
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD verify(): Error?
   METHOD to_json_string(): string
 ```
 
@@ -261,8 +265,10 @@ CLASS Rfq IMPLEMENTS Message
   PUBLIC DATA data: RfqData
   PUBLIC DATA privateData: RfqPrivateData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, to: string, from: string, rfqData: CreateRfqData, protocol: string, externalId: string?)
+  CONSTRUCTOR create(to: string, from: string, rfqData: CreateRfqData, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string, requireAllPrivateData: bool?)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
 ```
 
@@ -344,8 +350,10 @@ CLASS Quote IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: QuoteData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string, externalId: string?)
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, quoteData: QuoteData, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
 ```
 
@@ -383,8 +391,10 @@ CLASS PaymentInstruction
 CLASS Order IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, to: string, from: string, exchangeId: string, protocol: string, externalId: string?)
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
 ```
 
@@ -395,8 +405,10 @@ CLASS Cancel IMPLEMENTS Message, WalletUpdateMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CancelData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string, externalId: string?)
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, cancelData: CancelData, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
 ```
 
@@ -414,8 +426,10 @@ CLASS OrderStatus IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: OrderStatusData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string, externalId: string?)
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, orderStatusData: OrderStatusData, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
 ```
 
@@ -433,8 +447,10 @@ CLASS Close IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: CloseData
   PUBLIC DATA signature: string
-  CONSTRUCTOR create(bearer_did: BearerDid, to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string, externalId: string?)
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, closeData: CloseData, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
 ```
 
