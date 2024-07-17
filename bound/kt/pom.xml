@@ -12,6 +12,15 @@
   <artifactId>tbdex-core</artifactId>
   <version>0.0.1</version>
 
+<!--  NOTE KW: this is what's made available -->
+<!--  <dependency>-->
+<!--    &lt;!&ndash;            <groupId>com.github.TBD54566975</groupId>&ndash;&gt;-->
+<!--    &lt;!&ndash;            <artifactId>tbdex-rs</artifactId>&ndash;&gt;-->
+<!--    <groupId>com.github.TBD54566975.tbdex-rs</groupId>-->
+<!--    <artifactId>tbdex-core</artifactId>-->
+<!--    <version>v0.0.1</version>-->
+<!--  </dependency>-->
+
   <properties>
     <kotlin.version>1.9.22</kotlin.version>
     <kotlin.jvm.target>11</kotlin.jvm.target>
