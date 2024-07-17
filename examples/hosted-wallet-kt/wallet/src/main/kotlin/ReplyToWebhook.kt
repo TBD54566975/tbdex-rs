@@ -6,7 +6,7 @@ import spark.Spark.post
 import spark.Spark.stop
 import tbdex.sdk.http.ReplyToRequestBody
 
-class Webhook {
+class ReplyToWebhook {
     var quote: Quote? = null
     val orderStatuses: MutableList<OrderStatus> = mutableListOf()
     var close: Close? = null

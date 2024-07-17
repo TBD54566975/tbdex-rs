@@ -13,6 +13,7 @@ use web5::{
     crypto::{jwk::Jwk, key_managers::in_memory_key_manager::InMemoryKeyManager},
     dids::bearer_did::BearerDid,
 };
+use tbdex::http_client::exchanges::get_exchanges;
 
 fn main() {
     let pfi_did_uri = "did:web:localhost%3A8891".to_string();
@@ -71,6 +72,10 @@ fn main() {
     thread::sleep(Duration::from_secs(2));
     let exchange = get_exchange(&pfi_did_uri, &bearer_did, &rfq.metadata.exchange_id).unwrap();
     let quote = exchange.quote.unwrap();
+
+    // TODO: TESTING
+    let exchanges = get_exchanges(&pfi_did_uri, &bearer_did).unwrap();
+    println!("{:?}", exchanges);
 
     // submit order
     let mut order = Order::create(
