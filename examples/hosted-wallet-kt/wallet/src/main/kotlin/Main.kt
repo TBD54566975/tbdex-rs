@@ -41,7 +41,7 @@ fun main() {
             runCancelFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
 
             val allExchanges = tbdex.sdk.httpclient.getExchanges(pfiDidUri, bearerDid)
-            println(allExchanges)
+            println("All Exchanges Completed: $allExchanges")
         }
     }
 }

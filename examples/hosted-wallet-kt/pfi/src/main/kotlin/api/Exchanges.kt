@@ -25,10 +25,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private var exchangeIdToExchange: MutableMap<String, Exchange> = mutableMapOf()
 
     private fun getExchange(req: Request, res: Response): String {
-        // Extract the exchangeId from the request's path parameters
         val exchangeId = req.params(":id") ?: throw IllegalArgumentException("Missing exchangeId")
 
-        // Retrieve the Exchange object from the map
         val exchange = exchangeIdToExchange[exchangeId]
 
         val messages: List<Message> = listOfNotNull(
@@ -161,8 +159,6 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         orderStatus.sign(bearerDid)
         orderStatus.verify()
 
-//        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
-
         println("Replying with order status $status")
 
         this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.let { existingExchange ->
@@ -189,8 +185,6 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         close.sign(bearerDid)
         close.verify()
 
-//        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
-
         println("Replying with close")
 
         this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(close = close)
@@ -200,9 +194,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     }
 
     private fun replyRequest(replyTo: String?, body: ReplyToRequestBody) {
-
         if (replyTo == null) {
-//            println("Webhook not called because replyTo was not included, Continuing...")
             return;
         }
 
