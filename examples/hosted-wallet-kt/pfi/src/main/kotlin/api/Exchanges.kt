@@ -6,34 +6,65 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Request as OkHttpRequest
 import spark.Request
 import spark.Response
-import spark.Spark.post
-import spark.Spark.put
-import tbdex.sdk.http.UpdateExchangeRequestBody
-import tbdex.sdk.http.CreateExchangeRequestBody
-import tbdex.sdk.http.ReplyToRequestBody
+import spark.Spark.*
+import tbdex.sdk.http.*
+import tbdex.sdk.httpclient.Exchange
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
     init {
+        get("/exchanges") { _, res -> getExchanges(res) }
+        get("/exchanges/:id") { req, res -> getExchange(req,res) }
+
         post("/exchanges") { req, res -> createExchange(req, res) }
         put("/exchanges/:id") { req, res -> updateExchange(req, res) }
     }
 
     private var exchangesToReplyTo: MutableMap<String, String> = mutableMapOf()
+    private var exchangeIdToExchange: MutableMap<String, Exchange> = mutableMapOf()
+
+    private fun getExchange(req: Request, res: Response): String {
+        // Extract the exchangeId from the request's path parameters
+        val exchangeId = req.params(":id") ?: throw IllegalArgumentException("Missing exchangeId")
+
+        // Retrieve the Exchange object from the map
+        val exchange = exchangeIdToExchange[exchangeId]
+
+        val messages: List<Message> = listOfNotNull(
+            exchange?.rfq,
+            exchange?.quote,
+            exchange?.order,
+            exchange?.cancel,
+            exchange?.close
+        ).plus(exchange?.orderStatuses.orEmpty())
+
+        val responseBody = GetExchangeResponseBody(messages)
+        return responseBody.toJsonString()
+    }
+
+    private fun getExchanges(res: Response): String {
+        println("GET /exchanges")
+
+        val responseBody = GetExchangesResponseBody(exchangeIdToExchange.keys.toList())
+
+        res.type("application/json")
+        return responseBody.toJsonString()
+    }
 
     private fun createExchange(req: Request, res: Response): String {
         println("POST /exchanges")
 
         val requestBody = CreateExchangeRequestBody.fromJsonString(req.body())
-
-        val replyTo = requestBody.replyTo ?: throw Exception("replyTo cannot be null for this example")
         val rfq = requestBody.message
 
         rfq.verify()
         rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
 
-        this.exchangesToReplyTo[rfq.metadata.exchangeId] = replyTo
+        if(requestBody.replyTo != null) {
+            this.exchangesToReplyTo[rfq.metadata.exchangeId] = requestBody.replyTo!!
+        }
+        this.exchangeIdToExchange[rfq.metadata.exchangeId] = Exchange(rfq)
 
         res.status(202)
 
@@ -73,10 +104,11 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         quote.sign(bearerDid)
         quote.verify()
 
-        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null for this example")
-
         println("Replying with quote")
 
+        this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(quote = quote)
+
+        val replyTo = this.exchangesToReplyTo[exchangeId]
         this.replyRequest(replyTo, ReplyToRequestBody(quote))
     }
 
@@ -129,10 +161,17 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         orderStatus.sign(bearerDid)
         orderStatus.verify()
 
-        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
+//        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
         println("Replying with order status $status")
 
+        this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.let { existingExchange ->
+            val updatedOrderStatuses = existingExchange.orderStatuses?.toMutableList() ?: mutableListOf()
+            updatedOrderStatuses.add(orderStatus)
+            existingExchange.copy(orderStatuses = updatedOrderStatuses)
+        }
+
+        val replyTo = this.exchangesToReplyTo[exchangeId]
         this.replyRequest(replyTo, ReplyToRequestBody(orderStatus))
     }
 
@@ -150,14 +189,23 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         close.sign(bearerDid)
         close.verify()
 
-        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
+//        val replyTo = this.exchangesToReplyTo[exchangeId] ?: throw Exception("replyTo cannot be null")
 
         println("Replying with close")
 
+        this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(close = close)
+
+        val replyTo = this.exchangesToReplyTo[exchangeId]
         this.replyRequest(replyTo, ReplyToRequestBody(close))
     }
 
-    private fun replyRequest(replyTo: String, body: ReplyToRequestBody) {
+    private fun replyRequest(replyTo: String?, body: ReplyToRequestBody) {
+
+        if (replyTo == null) {
+//            println("Webhook not called because replyTo was not included, Continuing...")
+            return;
+        }
+
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val requestBody = body.toJsonString().toRequestBody(mediaType)

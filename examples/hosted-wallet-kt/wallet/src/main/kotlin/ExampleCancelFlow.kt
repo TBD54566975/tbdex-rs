@@ -1,13 +1,31 @@
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
+private lateinit var webhook: ReplyToWebhook
+private var closedReceived = false
+
 fun runCancelFlow(
     pfiDidUri: String,
     verifiableCredential: String,
     bearerDid: BearerDid,
     replyToUrl: String
 ) {
-    val replyToWebhook = ReplyToWebhook()
+    println("\n ~Running Cancel Flow~ \n")
+
+    webhook = ReplyToWebhook(
+        onQuoteReceived = { quote ->
+            println("3. Quote received...")
+            println("Quote received: ${quote.metadata.id}\n")
+            handleCancelFlowQuoteReceived(quote, pfiDidUri, bearerDid)
+        },
+        onOrderStatusReceived = { orderStatus ->
+            println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}\n")
+        },
+        onCloseReceived = { close ->
+            println("Close received: ${close.metadata.id} ${close.data.success}\n")
+            handleCancelFlowCloseReceived(close)
+        }
+    )
 
     println("1. Fetching offerings...")
     val offerings = tbdex.sdk.httpclient.getOfferings(pfiDidUri)
@@ -43,31 +61,33 @@ fun runCancelFlow(
     )
     println("Created exchange ${rfq.metadata.exchangeId}\n")
 
-    println("3. Waiting for Quote...")
-    while (replyToWebhook.quote == null) {
-        Thread.sleep(500)
+    // Stay active until closed is received
+    while(true) {
+        Thread.sleep(500);
+        if(closedReceived) {
+            break;
+        }
     }
-    println("Quote received to webhook ${replyToWebhook.quote!!.metadata.id}\n")
+}
 
+fun handleCancelFlowQuoteReceived(quote: Quote, pfiDidUri: String, bearerDid: BearerDid) {
     println("4. Submitting cancel...")
     val cancel = Cancel.create(
         pfiDidUri,
         bearerDid.did.uri,
-        rfq.metadata.exchangeId,
+        quote.metadata.exchangeId,
         CancelData("showcasing an example")
     )
     cancel.sign(bearerDid)
     cancel.verify()
     tbdex.sdk.httpclient.submitCancel(cancel)
     println("Cancel submitted ${cancel.metadata.id}")
+}
 
-
-    println("\n6. Waiting for Close...")
-    while (replyToWebhook.close == null) {
-        Thread.sleep(500)
-    }
-    println("Close received to webhook ${replyToWebhook.close!!.metadata.id} ${replyToWebhook.close!!.data.success}\n")
-
+fun handleCancelFlowCloseReceived(close: Close) {
+    close.verify()
     println("Exchange completed successfully!")
-    replyToWebhook.stopServer()
+
+    webhook.stopServer()
+    closedReceived = true;
 }

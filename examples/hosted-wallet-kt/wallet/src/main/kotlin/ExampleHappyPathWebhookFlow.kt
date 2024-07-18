@@ -1,13 +1,32 @@
 import tbdex.sdk.messages.*
 import tbdex.sdk.web5.BearerDid
 
+private lateinit var webhook: ReplyToWebhook
+private var closedReceived = false
+
 fun runHappyPathFlow(
     pfiDidUri: String,
     verifiableCredential: String,
     bearerDid: BearerDid,
     replyToUrl: String
 ) {
-    val replyToWebhook = ReplyToWebhook()
+    println("\n ~Running Happy Path Webhook Flow~ \n")
+
+    webhook = ReplyToWebhook(
+        onQuoteReceived = { quote ->
+            println("3. Quote received...")
+            println("Quote received from webhook: ${quote.metadata.id}\n")
+            handleQuoteReceived(quote, pfiDidUri, bearerDid)
+        },
+        onOrderStatusReceived = { orderStatus ->
+            println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}\n")
+            handleOrderStatusReceived(orderStatus)
+        },
+        onCloseReceived = { close ->
+            println("Close received: ${close.metadata.id} ${close.data.success}\n")
+            handleCloseReceived(close)
+        }
+    )
 
     println("1. Fetching offerings...")
     val offerings = tbdex.sdk.httpclient.getOfferings(pfiDidUri)
@@ -45,17 +64,21 @@ fun runHappyPathFlow(
     )
     println("Created exchange ${rfq.metadata.exchangeId}\n")
 
-    println("3. Waiting for Quote...")
-    while (replyToWebhook.quote == null) {
-        Thread.sleep(500)
+    // Stay active until closed is received
+    while(true) {
+        Thread.sleep(500);
+        if(closedReceived) {
+            break;
+        }
     }
-    println("Quote received to webhook ${replyToWebhook.quote!!.metadata.id}\n")
+}
 
+fun handleQuoteReceived(quote: Quote, pfiDidUri: String, bearerDid: BearerDid) {
     println("4. Submitting order...")
     val order = Order.create(
         pfiDidUri,
         bearerDid.did.uri,
-        rfq.metadata.exchangeId
+        quote.metadata.exchangeId
     )
 
     order.sign(bearerDid)
@@ -65,20 +88,19 @@ fun runHappyPathFlow(
         order = order
     )
     println("Order submitted ${order.metadata.id}\n")
+}
 
-    println("5. Waiting for OrderStatuses...")
-    var status: Status? = null
-    while (status != Status.PAYOUT_SETTLED) {
-        Thread.sleep(500)
-        status = if (replyToWebhook.orderStatuses.isNotEmpty()) replyToWebhook.orderStatuses.last().data.status else null
+fun handleOrderStatusReceived(orderStatus: OrderStatus) {
+    if (orderStatus.data.status == Status.PAYOUT_SETTLED) {
+        orderStatus.verify()
+        println("Order settled: ${orderStatus.metadata.id}")
     }
+}
 
-    println("\n6. Waiting for Close...")
-    while (replyToWebhook.close == null) {
-        Thread.sleep(500)
-    }
-    println("Close received to webhook ${replyToWebhook.close!!.metadata.id} ${replyToWebhook.close!!.data.success}\n")
-
+fun handleCloseReceived(close: Close) {
+    close.verify()
     println("Exchange completed successfully!")
-    replyToWebhook.stopServer()
+
+    webhook.stopServer()
+    closedReceived = true;
 }

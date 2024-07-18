@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use super::{get_service_endpoint, send_request, Result};
+use crate::http::exchanges::GetExchangesResponseBody;
 use crate::{
     http::exchanges::{
         CreateExchangeRequestBody, GetExchangeResponseBody, UpdateExchangeRequestBody,
@@ -15,7 +16,6 @@ use crate::{
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
-use crate::http::exchanges::GetExchangesResponseBody;
 
 #[derive(Clone, Default, Deserialize, Serialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -145,12 +145,6 @@ pub fn get_exchange(
 
     Ok(exchange)
 }
-
-// pub fn get_exchanges(_pfi_did: &str, _requestor_did: &BearerDid) -> Result<Vec<String>> {
-//     println!("TbdexHttpClient::get_exchanges() invoked");
-//     Ok(vec![])
-// }
-
 
 pub fn get_exchanges(pfi_did: &str, requestor_did: &BearerDid) -> Result<Vec<String>> {
     let service_endpoint = get_service_endpoint(pfi_did)?;

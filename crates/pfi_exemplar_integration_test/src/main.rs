@@ -1,4 +1,5 @@
 use std::{sync::Arc, thread, time::Duration};
+use tbdex::http_client::exchanges::get_exchanges;
 use tbdex::{
     http_client::{
         exchanges::{create_exchange, get_exchange, submit_order, Exchange},
@@ -13,7 +14,6 @@ use web5::{
     crypto::{jwk::Jwk, key_managers::in_memory_key_manager::InMemoryKeyManager},
     dids::bearer_did::BearerDid,
 };
-use tbdex::http_client::exchanges::get_exchanges;
 
 fn main() {
     let pfi_did_uri = "did:web:localhost%3A8891".to_string();

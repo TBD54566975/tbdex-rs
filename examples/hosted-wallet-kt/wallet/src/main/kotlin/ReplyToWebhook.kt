@@ -6,11 +6,11 @@ import spark.Spark.post
 import spark.Spark.stop
 import tbdex.sdk.http.ReplyToRequestBody
 
-class ReplyToWebhook {
-    var quote: Quote? = null
-    val orderStatuses: MutableList<OrderStatus> = mutableListOf()
-    var close: Close? = null
-
+class ReplyToWebhook(
+    private val onQuoteReceived: (Quote) -> Unit,
+    private val onOrderStatusReceived: (OrderStatus) -> Unit,
+    private val onCloseReceived: (Close) -> Unit
+) {
     init {
         port(8081)
 
@@ -19,16 +19,15 @@ class ReplyToWebhook {
             when (val message = requestBody.message) {
                 is Quote -> {
                     message.verify()
-                    quote = message
+                    onQuoteReceived(message)
                 }
                 is OrderStatus -> {
                     message.verify()
-                    orderStatuses.add(message)
-                    println("Received order status ${message.metadata.id} ${message.data.status}")
+                    onOrderStatusReceived(message)
                 }
                 is Close -> {
                     message.verify()
-                    close = message
+                    onCloseReceived(message)
                 }
             }
 
