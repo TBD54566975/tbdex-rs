@@ -16,7 +16,6 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 WORKDIR /usr/src/myapp
 COPY Cargo.toml ./
 COPY bindings/tbdex_uniffi ./bindings/tbdex_uniffi
-COPY crates/pfi_exemplar_integration_test ./crates/pfi_exemplar_integration_test
 COPY crates/tbdex ./crates/tbdex
 
 # Execute the build
