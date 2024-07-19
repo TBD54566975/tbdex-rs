@@ -19,6 +19,8 @@ fun runCancelFlow(
             handleCancelFlowQuoteReceived(quote, pfiDidUri, bearerDid)
         },
         onOrderStatusReceived = { orderStatus ->
+            // this example cancel flow submits the cancel prior to order submission, and so
+            // no order statuses are expected to be received
             println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}\n")
         },
         onCloseReceived = { close ->

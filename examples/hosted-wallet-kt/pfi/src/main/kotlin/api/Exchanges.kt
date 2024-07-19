@@ -25,6 +25,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
     private var exchangeIdToExchange: MutableMap<String, Exchange> = mutableMapOf()
 
     private fun getExchange(req: Request, res: Response): String {
+        println("GET /exchanges/:id")
         val exchangeId = req.params(":id") ?: throw IllegalArgumentException("Missing exchangeId")
 
         val exchange = exchangeIdToExchange[exchangeId]
@@ -74,42 +75,6 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         return ""
     }
 
-    private fun replyWithQuote(to: String, exchangeId: String) {
-        val quote = Quote.create(
-            to = to,
-            from = this.bearerDid.did.uri,
-            exchangeId = exchangeId,
-            data = QuoteData(
-                expiresAt = "2024-08-02T04:26:08.239Z",
-                payin = QuoteDetails(
-                    currencyCode = "BTC",
-                    subtotal = "1000.00",
-                    total = "1001.00",
-                    fee = null,
-                    paymentInstruction = null
-                ),
-                payout = QuoteDetails(
-                    currencyCode = "KES",
-                    subtotal = "1000.00",
-                    total = "1001.00",
-                    fee = null,
-                    paymentInstruction = null
-                ),
-                payoutUnitsPerPayinUnit = "1.0"
-            )
-        )
-
-        quote.sign(bearerDid)
-        quote.verify()
-
-        println("Replying with quote")
-
-        this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(quote = quote)
-
-        val replyTo = this.exchangesToReplyTo[exchangeId]
-        this.replyRequest(replyTo, ReplyToRequestBody(quote))
-    }
-
     private fun updateExchange(req: Request, res: Response): String {
         println("PUT /exchanges/:id")
 
@@ -148,6 +113,44 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         return ""
     }
 
+    private fun replyWithQuote(to: String, exchangeId: String) {
+        val quote = Quote.create(
+            to = to,
+            from = this.bearerDid.did.uri,
+            exchangeId = exchangeId,
+            data = QuoteData(
+                expiresAt = "2024-08-02T04:26:08.239Z",
+                payin = QuoteDetails(
+                    currencyCode = "BTC",
+                    subtotal = "1000.00",
+                    total = "1001.00",
+                    fee = null,
+                    paymentInstruction = null
+                ),
+                payout = QuoteDetails(
+                    currencyCode = "KES",
+                    subtotal = "1000.00",
+                    total = "1001.00",
+                    fee = null,
+                    paymentInstruction = null
+                ),
+                payoutUnitsPerPayinUnit = "1.0"
+            )
+        )
+
+        quote.sign(bearerDid)
+        quote.verify()
+
+        println("Replying with quote")
+
+        this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(quote = quote)
+
+        val replyTo = this.exchangesToReplyTo[exchangeId]
+        if (replyTo != null) {
+            this.replyRequest(replyTo, ReplyToRequestBody(quote))
+        }
+    }
+
     private fun replyWithOrderStatus(to: String, exchangeId: String, status: Status) {
         val orderStatus = OrderStatus.create(
             to = to,
@@ -168,7 +171,9 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         }
 
         val replyTo = this.exchangesToReplyTo[exchangeId]
-        this.replyRequest(replyTo, ReplyToRequestBody(orderStatus))
+        if (replyTo != null) {
+            this.replyRequest(replyTo, ReplyToRequestBody(orderStatus))
+        }
     }
 
     private fun replyWithClose(to: String, exchangeId: String, success: Boolean? = true) {
@@ -190,14 +195,12 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(close = close)
 
         val replyTo = this.exchangesToReplyTo[exchangeId]
-        this.replyRequest(replyTo, ReplyToRequestBody(close))
+        if (replyTo != null) {
+            this.replyRequest(replyTo, ReplyToRequestBody(close))
+        }
     }
 
-    private fun replyRequest(replyTo: String?, body: ReplyToRequestBody) {
-        if (replyTo == null) {
-            return;
-        }
-
+    private fun replyRequest(replyTo: String, body: ReplyToRequestBody) {
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val requestBody = body.toJsonString().toRequestBody(mediaType)
