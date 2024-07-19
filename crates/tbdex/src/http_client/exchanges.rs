@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use super::{get_service_endpoint, send_request, Result};
+use crate::http::exchanges::GetExchangesResponseBody;
 use crate::{
     http::exchanges::{
         CreateExchangeRequestBody, GetExchangeResponseBody, UpdateExchangeRequestBody,
@@ -110,7 +111,7 @@ pub fn get_exchange(
         Some(access_token),
     )?
     .ok_or(HttpClientError::ReqwestError(
-        "get exchanges response cannot be null".to_string(),
+        "get exchange response cannot be null".to_string(),
     ))?;
 
     let mut exchange = Exchange::default();
@@ -145,7 +146,21 @@ pub fn get_exchange(
     Ok(exchange)
 }
 
-pub fn get_exchanges(_pfi_did: &str, _requestor_did: &BearerDid) -> Result<Vec<String>> {
-    println!("TbdexHttpClient::get_exchanges() invoked");
-    Ok(vec![])
+pub fn get_exchanges(pfi_did: &str, requestor_did: &BearerDid) -> Result<Vec<String>> {
+    let service_endpoint = get_service_endpoint(pfi_did)?;
+    let get_exchanges_endpoint = format!("{}/exchanges", service_endpoint);
+
+    let access_token = generate_access_token(pfi_did, requestor_did)?;
+
+    let response = send_request::<(), GetExchangesResponseBody>(
+        &get_exchanges_endpoint,
+        Method::GET,
+        None,
+        Some(access_token),
+    )?
+    .ok_or(HttpClientError::ReqwestError(
+        "get exchanges response cannot be null".to_string(),
+    ))?;
+
+    Ok(response.data)
 }
