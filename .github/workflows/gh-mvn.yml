@@ -36,4 +36,4 @@ jobs:
         </settings>" > ~/.m2/settings.xml
 
     - name: Build and deploy
-      run: mvn deploy
+      run: cd bound/kt && mvn deploy
