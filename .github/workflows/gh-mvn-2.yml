@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - kendall/github-mvn-repo
-  pull_request:
 
 jobs:
   build_aarch64_apple_darwin:
@@ -194,10 +193,12 @@ jobs:
           </settings>" > ~/.m2/settings.xml
       - name: Get version from pom.xml
         id: get-version
-        run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-      - name: Build and deploy
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Deploy artifact
         run: |
           cd bound/kt
           mvn deploy:deploy-file \
-            -Dfile=bound/kt/target/tbdex-core-${{ steps.get-version.outputs.VERSION }}.jar \
-            -DpomFile=bound/kt/pom.xml
+            -Dfile=target/tbdex-core-${{ env.VERSION }}.jar \
+            -DpomFile=pom.xml \
+            -DrepositoryId=github \
+            -Durl=https://maven.pkg.github.com/TBD54566975/tbdex-rs
