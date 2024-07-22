@@ -191,14 +191,12 @@ jobs:
             </server>
           </servers>
           </settings>" > ~/.m2/settings.xml
-      - name: Get version from pom.xml
-        id: get-version
-        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Deploy artifact
         run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           cd bound/kt
           mvn deploy:deploy-file \
-            -Dfile=target/tbdex-core-${{ env.VERSION }}.jar \
+            -Dfile=target/tbdex-core-${VERSION}.jar \
             -DpomFile=pom.xml \
             -DrepositoryId=github \
             -Durl=https://maven.pkg.github.com/TBD54566975/tbdex-rs
