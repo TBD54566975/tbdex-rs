@@ -193,8 +193,13 @@ jobs:
           </settings>" > ~/.m2/settings.xml
       - name: Deploy artifact
         run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           cd bound/kt
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
+          echo "Derived version: $VERSION"
+          ls target/
+          echo "Deploying artifact: target/tbdex-core-${VERSION}.jar"
+
           mvn deploy:deploy-file \
             -Dfile=target/tbdex-core-${VERSION}.jar \
             -DpomFile=pom.xml \
