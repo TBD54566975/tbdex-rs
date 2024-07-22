@@ -5,7 +5,7 @@
 
   <groupId>tbdex.sdk</groupId>
   <artifactId>tbdex-core</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <packaging>jar</packaging>
 
   <distributionManagement>
