@@ -7,11 +7,12 @@ enum class ExchangeFlowType {
     HAPPY_PATH_WEBHOOK_FLOW,
     HAPPY_PATH_POLLING_FLOW,
     CANCEL_FLOW,
+    ERROR_FLOW,
     ALL_FLOWS
 }
 
 // Set the desired flow type here
-val FLOW_TYPE = ExchangeFlowType.ALL_FLOWS
+val FLOW_TYPE = ExchangeFlowType.ERROR_FLOW
 
 fun readEnv() {
     val envFile = File(Thread.currentThread().contextClassLoader.getResource(".env")?.file ?: throw Error("no .env file found"))
@@ -35,6 +36,7 @@ fun main() {
         ExchangeFlowType.HAPPY_PATH_WEBHOOK_FLOW -> runHappyPathFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
         ExchangeFlowType.HAPPY_PATH_POLLING_FLOW -> runHappyPathPollingFlow(pfiDidUri, verifiableCredential, bearerDid)
         ExchangeFlowType.CANCEL_FLOW -> runCancelFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
+        ExchangeFlowType.ERROR_FLOW -> runErrorFlow(pfiDidUri, verifiableCredential, bearerDid)
         ExchangeFlowType.ALL_FLOWS -> {
             runHappyPathFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
             runHappyPathPollingFlow(pfiDidUri, verifiableCredential, bearerDid)

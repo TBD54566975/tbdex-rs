@@ -301,6 +301,26 @@ dictionary ExchangeData {
 
 
 
+dictionary ErrorResponseBodyData {
+  string message;
+  sequence<ErrorDetailData>? details;
+};
+
+dictionary ErrorDetailData {
+  string? id;
+  string? message;
+  string? path;
+};
+
+interface ErrorResponseBody {
+  constructor(string message, sequence<ErrorDetailData>? details);
+  [Name=from_json_string, Throws=RustCoreError]
+  constructor([ByRef] string json);
+  [Throws=RustCoreError]
+  string to_json_string();
+  ErrorResponseBodyData get_data();
+};
+
 dictionary GetOfferingsResponseBodyData {
   sequence<Offering> data;
 };
