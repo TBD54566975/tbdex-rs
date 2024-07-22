@@ -192,7 +192,12 @@ jobs:
             </server>
           </servers>
           </settings>" > ~/.m2/settings.xml
+      - name: Get version from pom.xml
+        id: get-version
+        run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
       - name: Build and deploy
         run: |
           cd bound/kt
-          mvn deploy -DskipTests=true
+          mvn deploy:deploy-file \
+            -Dfile=bound/kt/target/tbdex-core-${{ steps.get-version.outputs.VERSION }}.jar \
+            -DpomFile=bound/kt/pom.xml
