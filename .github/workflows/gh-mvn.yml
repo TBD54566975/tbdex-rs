@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
@@ -36,4 +36,7 @@ jobs:
         </settings>" > ~/.m2/settings.xml
 
     - name: Build and deploy
-      run: cd bound/kt && mvn deploy
+      run: |
+        cd bound/kt
+        mvn '-Dtest=SystemArchitectureTest#can load shared library' test
+        mvn deploy
