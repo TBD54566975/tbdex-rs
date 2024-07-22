@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build x86_64-unknown-linux-gnu target
     steps:
-      # - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       # - name: Run Build Script
       #   run: |
       #     cd bindings/tbdex_uniffi/libtargets/x86_64_unknown_linux_gnu
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build x86_64-unknown-linux-musl target
     steps:
-      # - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       # - name: Run Build Script
       #   run: |
       #     cd bindings/tbdex_uniffi/libtargets/x86_64_unknown_linux_musl
