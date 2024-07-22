@@ -5,7 +5,16 @@
 
   <groupId>tbdex.sdk.core</groupId>
   <artifactId>tbdex-core-kt</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.0.1</version>
+  <packaging>jar</packaging>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub TBD54566975 Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/TBD54566975/tbdex-rs</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <kotlin.version>1.9.22</kotlin.version>
