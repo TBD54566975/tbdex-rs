@@ -12,7 +12,7 @@ enum class ExchangeFlowType {
 }
 
 // Set the desired flow type here
-val FLOW_TYPE = ExchangeFlowType.ALL_FLOWS
+val FLOW_TYPE = ExchangeFlowType.ERROR_FLOW
 
 fun readEnv() {
     val envFile = File(Thread.currentThread().contextClassLoader.getResource(".env")?.file ?: throw Error("no .env file found"))
