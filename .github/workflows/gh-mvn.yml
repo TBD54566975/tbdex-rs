@@ -13,6 +13,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        submodules: true          # Checkout submodules
+        fetch-depth: 0            # Fetch all history for all branches and tags
 
     - name: Set up Java
       uses: actions/setup-java@v3
