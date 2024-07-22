@@ -1,7 +1,7 @@
 use crate::{errors::Result, resources::balance::Balance};
 use std::sync::Arc;
 use tbdex::{
-    http::balances::GetBalancesResponse as InnerGetBalancesResponse,
+    http::balances::GetBalancesResponseBody as InnerGetBalancesResponseBody,
     json::{FromJson, ToJson},
     resources::balance::Balance as InnerBalance,
 };
@@ -19,7 +19,7 @@ impl GetBalancesResponseBody {
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner = InnerGetBalancesResponse::from_json_string(json)?;
+        let inner = InnerGetBalancesResponseBody::from_json_string(json)?;
         let data = inner
             .data
             .iter()
@@ -29,7 +29,7 @@ impl GetBalancesResponseBody {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner = InnerGetBalancesResponse {
+        let inner = InnerGetBalancesResponseBody {
             data: self
                 .0
                 .data

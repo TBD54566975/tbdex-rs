@@ -1,7 +1,7 @@
 use crate::{errors::Result, resources::offering::Offering};
 use std::sync::Arc;
 use tbdex::{
-    http::offerings::GetOfferingsResponse as InnerGetOfferingsResponse,
+    http::offerings::GetOfferingsResponseBody as InnerGetOfferingsResponseBody,
     json::{FromJson, ToJson},
     resources::offering::Offering as InnerOffering,
 };
@@ -19,7 +19,7 @@ impl GetOfferingsResponseBody {
     }
 
     pub fn from_json_string(json: &str) -> Result<Self> {
-        let inner = InnerGetOfferingsResponse::from_json_string(json)?;
+        let inner = InnerGetOfferingsResponseBody::from_json_string(json)?;
         let data = inner
             .data
             .iter()
@@ -29,7 +29,7 @@ impl GetOfferingsResponseBody {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner = InnerGetOfferingsResponse {
+        let inner = InnerGetOfferingsResponseBody {
             data: self
                 .0
                 .data
