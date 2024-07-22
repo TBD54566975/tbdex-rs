@@ -144,14 +144,15 @@ jobs:
         run: |
           cd bound/kt
           mvn '-Dtest=SystemArchitectureTest#can load shared library' test
-      - name: Install Docker
-        if: ${{ matrix.target == 'x86_64_unknown_linux_musl' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
       - name: Run tests on Alpine for x86_64_unknown_linux_musl
         if: ${{ matrix.target == 'x86_64_unknown_linux_musl' }}
         run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
           docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace \
           alpine:latest /bin/sh -c "\
             apk update && apk add openjdk11 && apk add maven && \
