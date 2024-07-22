@@ -162,6 +162,7 @@ jobs:
   publish_artifact:
     runs-on: ubuntu-latest
     # needs: test_shared_libraries
+    needs: package_artifact
     name: Publish Maven Artifact
     steps:
       - name: Checkout repository
