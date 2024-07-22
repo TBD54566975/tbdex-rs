@@ -12,7 +12,7 @@ enum class ExchangeFlowType {
 }
 
 // Set the desired flow type here
-val FLOW_TYPE = ExchangeFlowType.ERROR_FLOW
+val FLOW_TYPE = ExchangeFlowType.ALL_FLOWS
 
 fun readEnv() {
     val envFile = File(Thread.currentThread().contextClassLoader.getResource(".env")?.file ?: throw Error("no .env file found"))
@@ -41,6 +41,7 @@ fun main() {
             runHappyPathFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
             runHappyPathPollingFlow(pfiDidUri, verifiableCredential, bearerDid)
             runCancelFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
+            runErrorFlow(pfiDidUri, verifiableCredential, bearerDid)
 
             val allExchanges = tbdex.sdk.httpclient.getExchanges(pfiDidUri, bearerDid)
             println("All Exchanges Completed: $allExchanges")

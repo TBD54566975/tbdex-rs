@@ -1,5 +1,5 @@
 use crate::{
-    errors::{Result, RustCoreError},
+    errors::{Result, TbdexSdkError},
     messages::rfq::Rfq,
 };
 use std::sync::Arc;
@@ -63,7 +63,7 @@ impl GetExchangeResponseBody {
                 .0
                 .data
                 .iter()
-                .map(|i| Message::from_json_string(&i.json_serialized).map_err(RustCoreError::from))
+                .map(|i| Message::from_json_string(&i.json_serialized).map_err(TbdexSdkError::from))
                 .collect::<Result<Vec<Message>>>()?,
         };
         Ok(inner.to_json_string()?)

@@ -6,7 +6,7 @@ mod resources;
 mod errors;
 
 use crate::{
-    errors::RustCoreError,
+    errors::TbdexSdkError,
     http::{
         balances::{GetBalancesResponseBody, GetBalancesResponseBodyData},
         exchanges::{

@@ -10,7 +10,7 @@ import spark.Spark.*
 import tbdex.sdk.http.*
 import tbdex.sdk.httpclient.Exchange
 import tbdex.sdk.messages.*
-import tbdex.sdk.rust.RustCoreException
+import tbdex.sdk.rust.TbdexSdkException
 import tbdex.sdk.web5.BearerDid
 
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
@@ -62,7 +62,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
         try {
             rfq.verifyOfferingRequirements(this.offeringsRepository.getOffering(rfq.data.offeringId))
-        } catch (e: RustCoreException) {
+        } catch (e: TbdexSdkException) {
             res.status(400)
             val errorResponseBody = ErrorResponseBody("rfq does not satisfy an available offering")
             return errorResponseBody.toJsonString()

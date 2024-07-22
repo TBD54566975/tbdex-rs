@@ -1,5 +1,5 @@
 use crate::{
-    errors::{Result, RustCoreError},
+    errors::{Result, TbdexSdkError},
     resources::offering::Offering,
 };
 use std::sync::{Arc, RwLock};
@@ -30,7 +30,7 @@ impl Rfq {
         let mut inner_rfq = self
             .0
             .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
         inner_rfq.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -49,7 +49,7 @@ impl Rfq {
         let inner_rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_rfq.to_json_string()?)
     }
@@ -58,7 +58,7 @@ impl Rfq {
         let inner_rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
         let json_serialized_data = serde_json::to_string(&inner_rfq.data.clone())?;
         let json_serialized_private_data = if let Some(private_data) = &inner_rfq.private_data {
             Some(serde_json::to_string(private_data)?)
@@ -77,7 +77,7 @@ impl Rfq {
         let inner_rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_rfq.clone())
     }
@@ -86,7 +86,7 @@ impl Rfq {
         let rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(rfq.verify()?)
     }
@@ -95,7 +95,7 @@ impl Rfq {
         let rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(rfq.verify_offering_requirements(&offering.to_inner()?)?)
     }
@@ -104,7 +104,7 @@ impl Rfq {
         let rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(rfq.verify_all_private_data()?)
     }
@@ -113,7 +113,7 @@ impl Rfq {
         let rfq = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(rfq.verify_present_private_data()?)
     }

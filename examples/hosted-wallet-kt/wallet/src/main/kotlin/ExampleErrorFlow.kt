@@ -2,7 +2,7 @@ import tbdex.sdk.messages.CreateRfqData
 import tbdex.sdk.messages.CreateSelectedPayinMethod
 import tbdex.sdk.messages.CreateSelectedPayoutMethod
 import tbdex.sdk.messages.Rfq
-import tbdex.sdk.rust.RustCoreException
+import tbdex.sdk.rust.TbdexSdkException
 import tbdex.sdk.web5.BearerDid
 
 
@@ -47,7 +47,7 @@ fun runErrorFlow(
         // NOTE: in this example, we're showcasing the error case wherein,
         //       the RFQ does not match an available offering
         tbdex.sdk.httpclient.createExchange(rfq = rfq)
-    } catch (e: RustCoreException) {
-        println("example error response: $e")
+    } catch (e: TbdexSdkException) {
+        println("Example error response: $e\n")
     }
 }
