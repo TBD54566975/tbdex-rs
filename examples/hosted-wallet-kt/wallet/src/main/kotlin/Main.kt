@@ -7,6 +7,7 @@ enum class ExchangeFlowType {
     HAPPY_PATH_WEBHOOK_FLOW,
     HAPPY_PATH_POLLING_FLOW,
     CANCEL_FLOW,
+    ERROR_FLOW,
     ALL_FLOWS
 }
 
@@ -35,10 +36,12 @@ fun main() {
         ExchangeFlowType.HAPPY_PATH_WEBHOOK_FLOW -> runHappyPathFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
         ExchangeFlowType.HAPPY_PATH_POLLING_FLOW -> runHappyPathPollingFlow(pfiDidUri, verifiableCredential, bearerDid)
         ExchangeFlowType.CANCEL_FLOW -> runCancelFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
+        ExchangeFlowType.ERROR_FLOW -> runErrorFlow(pfiDidUri, verifiableCredential, bearerDid)
         ExchangeFlowType.ALL_FLOWS -> {
             runHappyPathFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
             runHappyPathPollingFlow(pfiDidUri, verifiableCredential, bearerDid)
             runCancelFlow(pfiDidUri, verifiableCredential, bearerDid, replyToUrl)
+            runErrorFlow(pfiDidUri, verifiableCredential, bearerDid)
 
             val allExchanges = tbdex.sdk.httpclient.getExchanges(pfiDidUri, bearerDid)
             println("All Exchanges Completed: $allExchanges")

@@ -5,8 +5,8 @@ use crate::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct GetOfferingsResponse {
+pub struct GetOfferingsResponseBody {
     pub data: Vec<Offering>,
 }
-impl FromJson for GetOfferingsResponse {}
-impl ToJson for GetOfferingsResponse {}
+impl FromJson for GetOfferingsResponseBody {}
+impl ToJson for GetOfferingsResponseBody {}

@@ -1,4 +1,4 @@
-use crate::errors::{Result, RustCoreError};
+use crate::errors::{Result, TbdexSdkError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -18,7 +18,7 @@ impl Balance {
         let mut inner_balance = self
             .0
             .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
         inner_balance.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -33,7 +33,7 @@ impl Balance {
         let inner_balance = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_balance.to_json_string()?)
     }
@@ -42,7 +42,7 @@ impl Balance {
         let balance = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(balance.clone())
     }
@@ -55,7 +55,7 @@ impl Balance {
         let inner_balance = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
         Ok(inner_balance.clone())
     }
 
@@ -63,7 +63,7 @@ impl Balance {
         let inner_balance = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
         inner_balance.verify()?;
         Ok(())
     }

@@ -1,4 +1,4 @@
-use crate::errors::{Result, RustCoreError};
+use crate::errors::{Result, TbdexSdkError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -26,7 +26,7 @@ impl Cancel {
         let mut inner_close = self
             .0
             .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
         inner_close.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -41,7 +41,7 @@ impl Cancel {
         let inner_close = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_close.to_json_string()?)
     }
@@ -50,7 +50,7 @@ impl Cancel {
         let close = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(close.clone())
     }
@@ -59,7 +59,7 @@ impl Cancel {
         let cancel = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(cancel.verify()?)
     }

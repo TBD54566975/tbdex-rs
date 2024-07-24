@@ -1,5 +1,5 @@
 use super::{generate_access_token, get_service_endpoint, send_request, HttpClientError, Result};
-use crate::{http::balances::GetBalancesResponse, resources::balance::Balance};
+use crate::{http::balances::GetBalancesResponseBody, resources::balance::Balance};
 use reqwest::Method;
 use web5::dids::bearer_did::BearerDid;
 
@@ -9,7 +9,7 @@ pub fn get_balances(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<Vec<Bal
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
 
-    let balances_response = send_request::<(), GetBalancesResponse>(
+    let balances_response = send_request::<(), GetBalancesResponseBody>(
         &balances_endpoint,
         Method::GET,
         None,

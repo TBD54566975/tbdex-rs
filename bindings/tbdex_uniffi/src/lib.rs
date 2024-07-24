@@ -6,7 +6,7 @@ mod resources;
 mod errors;
 
 use crate::{
-    errors::RustCoreError,
+    errors::TbdexSdkError,
     http::{
         balances::{GetBalancesResponseBody, GetBalancesResponseBodyData},
         exchanges::{
@@ -16,6 +16,7 @@ use crate::{
             ReplyToRequestBodyData, UpdateExchangeRequestBody, UpdateExchangeRequestBodyData,
         },
         offerings::{GetOfferingsResponseBody, GetOfferingsResponseBodyData},
+        ErrorResponseBody,
     },
     http_client::{
         balances::get_balances,
@@ -39,6 +40,7 @@ use crate::{
     },
 };
 use tbdex::{
+    http::{ErrorDetail as ErrorDetailData, ErrorResponseBody as ErrorResponseBodyData},
     messages::{
         cancel::{Cancel as CancelData, CancelData as CancelDataData},
         close::{Close as CloseData, CloseData as CloseDataData},

@@ -8,7 +8,7 @@ use tbdex::resources::ResourceError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum RustCoreError {
+pub enum TbdexSdkError {
     #[error("{msg}")]
     Error {
         r#type: String,
@@ -17,9 +17,9 @@ pub enum RustCoreError {
     },
 }
 
-impl RustCoreError {
+impl TbdexSdkError {
     pub fn from_poison_error<T>(error: PoisonError<T>, error_type: &str) -> Self {
-        RustCoreError::Error {
+        TbdexSdkError::Error {
             r#type: error_type.to_string(),
             variant: "PoisonError".to_string(),
             msg: error.to_string(),
@@ -50,34 +50,34 @@ where
     variant_name.to_string()
 }
 
-impl From<ResourceError> for RustCoreError {
+impl From<ResourceError> for TbdexSdkError {
     fn from(error: ResourceError) -> Self {
-        RustCoreError::new(error)
+        TbdexSdkError::new(error)
     }
 }
 
-impl From<MessageError> for RustCoreError {
+impl From<MessageError> for TbdexSdkError {
     fn from(error: MessageError) -> Self {
-        RustCoreError::new(error)
+        TbdexSdkError::new(error)
     }
 }
 
-impl From<HttpClientError> for RustCoreError {
+impl From<HttpClientError> for TbdexSdkError {
     fn from(error: HttpClientError) -> Self {
-        RustCoreError::new(error)
+        TbdexSdkError::new(error)
     }
 }
 
-impl From<JsonError> for RustCoreError {
+impl From<JsonError> for TbdexSdkError {
     fn from(error: JsonError) -> Self {
-        RustCoreError::new(error)
+        TbdexSdkError::new(error)
     }
 }
 
-impl From<SerdeJsonError> for RustCoreError {
+impl From<SerdeJsonError> for TbdexSdkError {
     fn from(error: SerdeJsonError) -> Self {
-        RustCoreError::new(error)
+        TbdexSdkError::new(error)
     }
 }
 
-pub type Result<T> = std::result::Result<T, RustCoreError>;
+pub type Result<T> = std::result::Result<T, TbdexSdkError>;

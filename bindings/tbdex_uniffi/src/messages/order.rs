@@ -1,4 +1,4 @@
-use crate::errors::{Result, RustCoreError};
+use crate::errors::{Result, TbdexSdkError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -25,7 +25,7 @@ impl Order {
         let mut inner_order = self
             .0
             .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
         inner_order.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -40,7 +40,7 @@ impl Order {
         let inner_order = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_order.to_json_string()?)
     }
@@ -49,7 +49,7 @@ impl Order {
         let order = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(order.clone())
     }
@@ -58,7 +58,7 @@ impl Order {
         let order = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(order.verify()?)
     }

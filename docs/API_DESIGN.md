@@ -44,6 +44,8 @@
   - [`Close`](#close)
     - [`CloseData`](#closedata)
 - [HTTP](#http)
+  - [`ErrorResponseBody`](#errorresponsebody)
+    - [`ErrorDetail`](#errordetail)
   - [`GetOfferingsResponseBody`](#getofferingsresponsebody)
   - [`GetBalancesResponseBody`](#getbalancesresponsebody)
   - [`GetExchangeResponseBody`](#getexchangeresponsebody)
@@ -463,6 +465,27 @@ CLASS CloseData
 ```
 
 # HTTP
+
+## `ErrorResponseBody`
+
+[Reference.](https://github.com/TBD54566975/tbdex/tree/main/specs/http-api#error-responses)
+
+```pseudocode!
+CLASS ErrorResponseBody
+  PUBLIC DATA message: string
+  PUBLIC DATA details: []ErrorDetail?
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD to_json_string(): string
+```
+
+### `ErrorDetail`
+
+```pseudocode!
+CLASS ErrorDetail
+  PUBLIC DATA id: string?
+  PUBLIC DATA message: string?
+  PUBLIC DATA path: string?
+```
 
 ## `GetOfferingsResponseBody`
 

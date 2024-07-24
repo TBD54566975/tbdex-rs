@@ -1,4 +1,4 @@
-use crate::errors::{Result, RustCoreError};
+use crate::errors::{Result, TbdexSdkError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -23,7 +23,7 @@ impl Offering {
         let mut inner_offering = self
             .0
             .write()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockWriteError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
         inner_offering.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -37,7 +37,7 @@ impl Offering {
         let inner_offering = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
 
         Ok(inner_offering.to_json_string()?)
     }
@@ -46,7 +46,7 @@ impl Offering {
         let inner_offering = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
         let json_serialized_data = serde_json::to_string(&inner_offering.data.clone())?;
         Ok(data::Offering {
             metadata: inner_offering.metadata.clone(),
@@ -63,7 +63,7 @@ impl Offering {
         let inner_offering = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
         Ok(inner_offering.clone())
     }
 
@@ -71,7 +71,7 @@ impl Offering {
         let inner_offering = self
             .0
             .read()
-            .map_err(|e| RustCoreError::from_poison_error(e, "RwLockReadError"))?;
+            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
         inner_offering.verify()?;
         Ok(())
     }

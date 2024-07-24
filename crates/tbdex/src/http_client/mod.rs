@@ -2,7 +2,9 @@ pub mod balances;
 pub mod exchanges;
 pub mod offerings;
 
-use crate::{jose::Signer, messages::MessageError, resources::ResourceError};
+use crate::{
+    http::ErrorResponseBody, jose::Signer, messages::MessageError, resources::ResourceError,
+};
 use josekit::{jwt::JwtPayload, JoseError as JosekitError};
 use reqwest::{blocking::Client, Error as ReqwestError, Method, StatusCode};
 use serde::{de::DeserializeOwned, Serialize};
@@ -36,6 +38,10 @@ pub enum HttpClientError {
     Resolution(#[from] ResolutionMetadataError),
     #[error("missing service endpoint for {0}")]
     MissingServiceEndpoint(String),
+    #[error("unsuccessfuly response {0}")]
+    UnsuccessfulResponse(String),
+    #[error(transparent)]
+    ErrorResponseBody(#[from] ErrorResponseBody),
 }
 
 impl From<ReqwestError> for HttpClientError {
@@ -160,7 +166,12 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
     });
 
     if !response_status.is_success() {
-        return Err(HttpClientError::ReqwestError(format!(
+        if response_status.as_u16() >= 400 {
+            let error_response_body = serde_json::from_str::<ErrorResponseBody>(&response_text)?;
+            return Err(HttpClientError::ErrorResponseBody(error_response_body));
+        }
+
+        return Err(HttpClientError::UnsuccessfulResponse(format!(
             "{} {}",
             response_status, response_text
         )));
