@@ -19,3 +19,6 @@ Cargo.lock
 build/
 .gradle/
 **/.idea/
+
+bound/kt/src/main/resources/*.dylib
+bound/kt/src/main/resources/*.so
