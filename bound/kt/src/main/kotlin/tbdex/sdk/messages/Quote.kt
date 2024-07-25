@@ -2,11 +2,12 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.InnerBearerDid
 import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
 import tbdex.sdk.rust.Quote as RustCoreQuote
 import tbdex.sdk.rust.QuoteDataData as RustCoreQuoteData
+import web5.sdk.dids.BearerDid
 
 typealias QuoteData = RustCoreQuoteData
 typealias QuoteDetails = RustCoreQuoteDetails
@@ -53,7 +54,8 @@ class Quote private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreQuote.sign(bearerDid.rustCoreBearerDid)
+        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
+        this.rustCoreQuote.sign(innerBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

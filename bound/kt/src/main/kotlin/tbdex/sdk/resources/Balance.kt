@@ -1,9 +1,10 @@
 package tbdex.sdk.resources
 
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.InnerBearerDid
 import tbdex.sdk.rust.Balance as RustCoreBalance
 import tbdex.sdk.rust.BalanceDataData as RustCoreBalanceData
+import web5.sdk.dids.BearerDid
 
 typealias BalanceData = RustCoreBalanceData
 
@@ -45,7 +46,8 @@ class Balance private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreBalance.sign(bearerDid.rustCoreBearerDid)
+        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
+        this.rustCoreBalance.sign(innerBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

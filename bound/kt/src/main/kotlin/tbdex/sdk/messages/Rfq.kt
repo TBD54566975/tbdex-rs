@@ -3,8 +3,9 @@ package tbdex.sdk.messages
 import tbdex.sdk.Json
 import tbdex.sdk.resources.Offering
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.InnerBearerDid
 import tbdex.sdk.rust.Rfq as RustCoreRfq
+import web5.sdk.dids.BearerDid
 
 class Rfq private constructor(
     val metadata: MessageMetadata,
@@ -66,7 +67,8 @@ class Rfq private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreRfq.sign(bearerDid.rustCoreBearerDid)
+        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
+        this.rustCoreRfq.sign(innerBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

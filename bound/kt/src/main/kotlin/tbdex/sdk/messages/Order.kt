@@ -2,8 +2,9 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.InnerBearerDid
 import tbdex.sdk.rust.Order as RustCoreOrder
+import web5.sdk.dids.BearerDid
 
 class Order private constructor(
     val metadata: MessageMetadata,
@@ -44,7 +45,8 @@ class Order private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOrder.sign(bearerDid.rustCoreBearerDid)
+        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
+        this.rustCoreOrder.sign(innerBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

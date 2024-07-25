@@ -3,9 +3,10 @@ package tbdex.sdk.messages
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.OrderStatusStatus as RustCoreStatus
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
+import tbdex.sdk.web5.InnerBearerDid
 import tbdex.sdk.rust.OrderStatus as RustCoreOrderStatus
 import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
+import web5.sdk.dids.BearerDid
 
 typealias OrderStatusData = RustCoreOrderStatusData
 typealias Status = RustCoreStatus
@@ -51,7 +52,8 @@ class OrderStatus private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOrderStatus.sign(bearerDid.rustCoreBearerDid)
+        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
+        this.rustCoreOrderStatus.sign(innerBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

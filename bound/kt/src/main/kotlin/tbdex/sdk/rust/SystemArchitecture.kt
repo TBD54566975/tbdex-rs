@@ -2,7 +2,7 @@ package tbdex.sdk.rust
 
 import java.io.File
 
-object SystemArchitecture {
+internal object SystemArchitecture {
     @Volatile
     private var isSet = false
 
