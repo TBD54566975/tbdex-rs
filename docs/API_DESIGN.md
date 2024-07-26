@@ -399,6 +399,7 @@ CLASS Order IMPLEMENTS Message, WalletUpdateMessage
 ```pseudocode!
 CLASS OrderInstructions IMPLEMENTS Message
   PUBLIC DATA metadata: MessageMetadata
+  PUBLIC DATA data: OrderInstructionsData
   PUBLIC DATA signature: string
   CONSTRUCTOR create(to: string, from: string, exchangeId: string, orderInstructionsData: OrderInstructionsData, protocol: string?, externalId: string?)
   CONSTRUCTOR from_json_string(json: string)
