@@ -31,6 +31,7 @@ bind: setup
 
 bind-kotlin: setup
   cargo build --release --package tbdex_uniffi --target aarch64-apple-darwin
+  mkdir -p bound/kt/src/main/resources
   cp target/aarch64-apple-darwin/release/libtbdex_uniffi.dylib \
     bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib
   cargo run --release --package tbdex_uniffi \
@@ -39,3 +40,9 @@ bind-kotlin: setup
     --language kotlin \
     --out-dir target/bindgen-kotlin
   cp target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt bound/kt/src/main/kotlin/tbdex/sdk/rust/UniFFI.kt
+
+test-bound: setup
+  just test-kotlin
+
+test-kotlin: setup
+  cd bound/kt && mvn clean verify
