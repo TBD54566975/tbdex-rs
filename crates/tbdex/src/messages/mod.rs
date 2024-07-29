@@ -1,6 +1,7 @@
 pub mod cancel;
 pub mod close;
 pub mod order;
+pub mod order_instructions;
 pub mod order_status;
 pub mod quote;
 pub mod rfq;
@@ -13,6 +14,7 @@ use crate::{
 use cancel::Cancel;
 use close::Close;
 use order::Order;
+use order_instructions::OrderInstructions;
 use order_status::OrderStatus;
 use quote::Quote;
 use rfq::Rfq;
@@ -63,6 +65,7 @@ pub enum MessageKind {
     Rfq,
     Quote,
     Order,
+    OrderInstructions,
     Cancel,
     OrderStatus,
     Close,
@@ -84,6 +87,7 @@ impl FromStr for MessageKind {
             "rfq" => Ok(MessageKind::Rfq),
             "quote" => Ok(MessageKind::Quote),
             "order" => Ok(MessageKind::Order),
+            "orderinstructions" => Ok(MessageKind::OrderInstructions),
             "cancel" => Ok(MessageKind::Cancel),
             "orderstatus" => Ok(MessageKind::OrderStatus),
             "close" => Ok(MessageKind::Close),
@@ -112,6 +116,7 @@ pub enum Message {
     Rfq(Arc<Rfq>),
     Quote(Arc<Quote>),
     Order(Arc<Order>),
+    OrderInstructions(Arc<OrderInstructions>),
     Cancel(Arc<Cancel>),
     OrderStatus(Arc<OrderStatus>),
     Close(Arc<Close>),
@@ -131,7 +136,9 @@ impl<'de> Deserialize<'de> for Message {
             type Value = Message;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("an Rfq, Order, OrderStatus, Close, Cancel, or String")
+                formatter.write_str(
+                    "an Rfq, Order, OrderInstructions, OrderStatus, Close, Cancel, or String",
+                )
             }
 
             fn visit_some<D>(self, deserializer: D) -> std::result::Result<Self::Value, D::Error>
@@ -167,6 +174,17 @@ impl<'de> Deserialize<'de> for Message {
                                     Ok(Message::Order(Arc::new(order)))
                                 } else {
                                     Err(serde::de::Error::custom("failed to deserialize order"))
+                                }
+                            }
+                            MessageKind::OrderInstructions => {
+                                if let Ok(order_instructions) =
+                                    serde_json::from_value::<OrderInstructions>(value.clone())
+                                {
+                                    Ok(Message::OrderInstructions(Arc::new(order_instructions)))
+                                } else {
+                                    Err(serde::de::Error::custom(
+                                        "failed to deserialize order_instructions",
+                                    ))
                                 }
                             }
                             MessageKind::Cancel => {

@@ -1,8 +1,8 @@
 use crate::{
     json::{FromJson, ToJson},
     messages::{
-        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
-        rfq::Rfq, Message, MessageKind,
+        cancel::Cancel, close::Close, order::Order, order_instructions::OrderInstructions,
+        order_status::OrderStatus, quote::Quote, rfq::Rfq, Message, MessageKind,
     },
 };
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
@@ -125,6 +125,7 @@ impl ToJson for UpdateExchangeRequestBody {}
 pub enum ReplyToMessage {
     Quote(Arc<Quote>),
     OrderStatus(Arc<OrderStatus>),
+    OrderInstructions(Arc<OrderInstructions>),
     Close(Arc<Close>),
 }
 impl FromJson for ReplyToMessage {}
@@ -173,6 +174,19 @@ impl<'de> Deserialize<'de> for ReplyToMessage {
                                 } else {
                                     Err(serde::de::Error::custom(
                                         "failed to deserialize order_status",
+                                    ))
+                                }
+                            }
+                            MessageKind::OrderInstructions => {
+                                if let Ok(order_instructions) =
+                                    serde_json::from_value::<OrderInstructions>(value.clone())
+                                {
+                                    Ok(ReplyToMessage::OrderInstructions(Arc::new(
+                                        order_instructions,
+                                    )))
+                                } else {
+                                    Err(serde::de::Error::custom(
+                                        "failed to deserialize order_instructions",
                                     ))
                                 }
                             }
