@@ -1,7 +1,7 @@
 use super::{MessageKind, MessageMetadata, Result};
 use crate::{
     json::{FromJson, ToJson},
-    json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_STATUS_DATA_JSON_SCHEMA},
+    json_schemas::generated::MESSAGE_JSON_SCHEMA,
     DEFAULT_PROTOCOL_VERSION,
 };
 use chrono::Utc;
