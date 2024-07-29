@@ -3,6 +3,7 @@ package tbdex.sdk.http
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.GetExchangeResponseBodyDataSerializedMessage
 import tbdex.sdk.rust.MessageKind
+import tbdex.sdk.rust.OrderInstructions
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 import tbdex.sdk.rust.GetExchangeResponseBody as RustCoreGetExchangeResponseBody
 import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponseBodyData
@@ -28,6 +29,7 @@ class GetExchangeResponseBody private constructor(
                         is Rfq -> Pair(MessageKind.RFQ, it.toJsonString())
                         is Quote -> Pair(MessageKind.QUOTE, it.toJsonString())
                         is Order -> Pair(MessageKind.ORDER, it.toJsonString())
+                        is OrderInstructions -> Pair(MessageKind.ORDER_INSTRUCTIONS, it.toJsonString())
                         is Cancel -> Pair(MessageKind.CANCEL, it.toJsonString())
                         is OrderStatus -> Pair(MessageKind.ORDER_STATUS, it.toJsonString())
                         is Close -> Pair(MessageKind.CLOSE, it.toJsonString())
@@ -48,6 +50,7 @@ class GetExchangeResponseBody private constructor(
                     MessageKind.RFQ -> Rfq.fromJsonString(it.jsonSerialized)
                     MessageKind.QUOTE -> Quote.fromJsonString(it.jsonSerialized)
                     MessageKind.ORDER -> Order.fromJsonString(it.jsonSerialized)
+                    MessageKind.ORDER_INSTRUCTIONS -> Order.fromJsonString(it.jsonSerialized)
                     MessageKind.CANCEL -> Cancel.fromJsonString(it.jsonSerialized)
                     MessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(it.jsonSerialized)
                     MessageKind.CLOSE -> Close.fromJsonString(it.jsonSerialized)
