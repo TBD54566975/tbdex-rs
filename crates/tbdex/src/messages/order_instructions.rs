@@ -1,7 +1,7 @@
 use super::{MessageKind, MessageMetadata, Result};
 use crate::{
     json::{FromJson, ToJson},
-    json_schemas::generated::MESSAGE_JSON_SCHEMA,
+    json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_INSTRUCTIONS_DATA_JSON_SCHEMA},
     DEFAULT_PROTOCOL_VERSION,
 };
 use chrono::Utc;
@@ -60,9 +60,8 @@ impl OrderInstructions {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
-        // TODO: Uncomment when we have the schema for order instructions data generated
         // verify data json schema
-        // crate::json_schemas::validate_from_str(ORDER_INSTRUCTIONS_DATA_JSON_SCHEMA, &self.data)?;
+        crate::json_schemas::validate_from_str(ORDER_INSTRUCTIONS_DATA_JSON_SCHEMA, &self.data)?;
 
         // verify signature
         crate::signature::verify(

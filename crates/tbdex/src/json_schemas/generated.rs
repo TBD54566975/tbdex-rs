@@ -476,6 +476,38 @@ pub const ORDER_DATA_JSON_SCHEMA: &str = r#"{
   "additionalProperties": false,
   "properties": {}
 }"#;
+pub const ORDER_INSTRUCTIONS_DATA_JSON_SCHEMA: &str = r#"{
+  "$schema": "http://json-schema.org/draft-07/schema\#",
+  "$id": "https://tbdex.dev/orderinstructions.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "payin": {
+      "$ref": "\#/definitions/PaymentInstruction"
+    },
+    "payout": {
+      "$ref": "\#/definitions/PaymentInstruction"
+    }
+  },
+  "definitions": {
+    "PaymentInstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "link": {
+          "type": "string",
+          "description": "Link to allow Alice to pay PFI, or be paid by the PFI"
+        },
+        "instruction": {
+          "type": "string",
+          "description": "Instruction on how Alice can pay PFI, or how Alice can be paid by the PFI"
+        }
+      }
+    }
+  },
+  "required": ["payin", "payout"]
+}
+"#;
 pub const CANCEL_DATA_JSON_SCHEMA: &str = r#"{
     "$schema": "http://json-schema.org/draft-07/schema\#",
     "$id": "https://tbdex.dev/cancel.schema.json",
