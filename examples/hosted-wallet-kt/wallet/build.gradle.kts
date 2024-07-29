@@ -25,7 +25,7 @@ dependencies {
 
     // JitPack dependency
     // Reference: https://jitpack.io/#TBD54566975/tbdex-rs/
-    implementation("com.github.TBD54566975:tbdex-rs:v1.0.19")
+    implementation("com.github.TBD54566975:tbdex-rs:v1.0.20")
 }
 
 java {

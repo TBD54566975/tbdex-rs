@@ -3,7 +3,6 @@ package tbdex.sdk.http
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.GetExchangeResponseBodyDataSerializedMessage
 import tbdex.sdk.rust.MessageKind
-import tbdex.sdk.rust.OrderInstructions
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 import tbdex.sdk.rust.GetExchangeResponseBody as RustCoreGetExchangeResponseBody
 import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponseBodyData
@@ -179,6 +178,7 @@ class ReplyToRequestBody private constructor(
         message,
         when (message) {
             is Quote -> RustCoreReplyToRequestBody(MessageKind.QUOTE, message.toJsonString())
+            is OrderInstructions -> RustCoreReplyToRequestBody(MessageKind.ORDER_INSTRUCTIONS, message.toJsonString())
             is OrderStatus -> RustCoreReplyToRequestBody(MessageKind.ORDER_STATUS, message.toJsonString())
             is Close -> RustCoreReplyToRequestBody(MessageKind.CLOSE, message.toJsonString())
             else -> throw Exception("unknown type")
@@ -190,8 +190,9 @@ class ReplyToRequestBody private constructor(
             val rustCoreReplyToRequestBody = RustCoreReplyToRequestBody.fromJsonString(json)
             val data = rustCoreReplyToRequestBody.getData()
 
-            val message = when (data.kind) {
+            val message: ReplyToMessage = when (data.kind) {
                 MessageKind.QUOTE -> Quote.fromJsonString(data.jsonSerializedMessage)
+                MessageKind.ORDER_INSTRUCTIONS -> OrderInstructions.fromJsonString(data.jsonSerializedMessage)
                 MessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(data.jsonSerializedMessage)
                 MessageKind.CLOSE -> Close.fromJsonString(data.jsonSerializedMessage)
                 else -> throw Exception("Unsupported message kind ${data.kind}")

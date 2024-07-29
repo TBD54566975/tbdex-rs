@@ -68,7 +68,18 @@ fun runHappyPathPollingFlow(
     tbdex.sdk.httpclient.submitOrder(order = order)
     println("Order submitted ${order.metadata.id}\n")
 
-    println("5. Waiting for order status: PAYOUT_SETTLED...")
+    println("5. Waiting for order instructions...")
+    var orderInstructions: OrderInstructions? = null
+    while (orderInstructions == null) {
+        Thread.sleep(500)
+        val exchange = tbdex.sdk.httpclient.getExchange(pfiDidUri, bearerDid, exchangeId)
+        if(exchange.orderInstructions != null) {
+            orderInstructions = exchange.orderInstructions
+            println("Received order instructions: ${orderInstructions!!.metadata.id}\n")
+        }
+    }
+
+    println("6. Waiting for order status: PAYOUT_SETTLED...")
     var orderStatuses: List<OrderStatus>? = null
     while (orderStatuses == null) {
         Thread.sleep(500)
@@ -86,7 +97,7 @@ fun runHappyPathPollingFlow(
         println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}\n")
     }
 
-    println("6. Waiting for Close...")
+    println("7. Waiting for Close...")
     var close: Close? = null
     while (close == null) {
         Thread.sleep(500)

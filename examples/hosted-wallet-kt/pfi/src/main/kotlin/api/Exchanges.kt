@@ -35,6 +35,7 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
             exchange?.rfq,
             exchange?.quote,
             exchange?.order,
+            exchange?.orderInstructions,
             exchange?.cancel,
             exchange?.close
         ).plus(exchange?.orderStatuses.orEmpty())
@@ -94,6 +95,8 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
 
                 Thread {
                     Thread.sleep(500)
+                    replyWithOrderInstructions(message.metadata.from, message.metadata.exchangeId)
+                    Thread.sleep(500)
                     replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId, Status.PAYIN_INITIATED)
                     Thread.sleep(500)
                     replyWithOrderStatus(message.metadata.from, message.metadata.exchangeId,Status.PAYIN_SETTLED)
@@ -132,15 +135,13 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
                     currencyCode = "BTC",
                     subtotal = "1000.00",
                     total = "1001.00",
-                    fee = null,
-                    paymentInstruction = null
+                    fee = null
                 ),
                 payout = QuoteDetails(
                     currencyCode = "KES",
                     subtotal = "1000.00",
                     total = "1001.00",
-                    fee = null,
-                    paymentInstruction = null
+                    fee = null
                 ),
                 payoutUnitsPerPayinUnit = "1.0"
             )
@@ -156,6 +157,30 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         val replyTo = this.exchangesToReplyTo[exchangeId]
         if (replyTo != null) {
             this.replyRequest(replyTo, ReplyToRequestBody(quote))
+        }
+    }
+
+    private fun replyWithOrderInstructions(to: String, exchangeId: String) {
+        val orderInstructions = OrderInstructions.create(
+            to = to,
+            from = this.bearerDid.did.uri,
+            exchangeId = exchangeId,
+            data = OrderInstructionsData(
+                payin = PaymentInstruction("http://tbd.website/payin", "payin instruction"),
+                payout = PaymentInstruction("http://tbd.website/payout", "payout instruction")
+            )
+        )
+
+        orderInstructions.sign(bearerDid)
+        orderInstructions.verify()
+
+        println("Replying with orderInstructions")
+
+        this.exchangeIdToExchange[exchangeId] = this.exchangeIdToExchange[exchangeId]!!.copy(orderInstructions = orderInstructions)
+
+        val replyTo = this.exchangesToReplyTo[exchangeId]
+        if (replyTo != null) {
+            this.replyRequest(replyTo, ReplyToRequestBody(orderInstructions))
         }
     }
 

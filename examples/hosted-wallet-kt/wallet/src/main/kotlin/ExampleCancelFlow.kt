@@ -23,6 +23,11 @@ fun runCancelFlow(
             // no order statuses are expected to be received
             println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}\n")
         },
+        onOrderInstructionsReceived = { orderInstructions ->
+            // this example cancel flow submits the cancel prior to order submission, and so
+            // no order instructions are expected to be received
+            println("Received order instructions ${orderInstructions.metadata.id}\n")
+        },
         onCloseReceived = { close ->
             println("Close received: ${close.metadata.id} ${close.data.success}\n")
             handleCancelFlowCloseReceived(close)

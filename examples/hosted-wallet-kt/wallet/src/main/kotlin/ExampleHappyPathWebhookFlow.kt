@@ -22,6 +22,10 @@ fun runHappyPathFlow(
             println("Received order status ${orderStatus.metadata.id} ${orderStatus.data.status}\n")
             handleOrderStatusReceived(orderStatus)
         },
+        onOrderInstructionsReceived = { orderInstructions ->
+            println("Received order instructions ${orderInstructions.metadata.id}\n")
+            handleOrderInstructionsReceived(orderInstructions)
+        },
         onCloseReceived = { close ->
             println("Close received: ${close.metadata.id} ${close.data.success}\n")
             handleCloseReceived(close)
@@ -95,6 +99,11 @@ fun handleOrderStatusReceived(orderStatus: OrderStatus) {
         orderStatus.verify()
         println("Order settled: ${orderStatus.metadata.id}")
     }
+}
+
+fun handleOrderInstructionsReceived(orderInstructions: OrderInstructions) {
+    println("Payin link and instructions: ${orderInstructions.data.payin.link} ${orderInstructions.data.payin.instruction}")
+    println("Payout link and instructions: ${orderInstructions.data.payout.link} ${orderInstructions.data.payout.instruction}")
 }
 
 fun handleCloseReceived(close: Close) {
