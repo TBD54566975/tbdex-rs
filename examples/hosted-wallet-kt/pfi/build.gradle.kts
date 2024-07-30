@@ -18,7 +18,7 @@ dependencies {
 
     // For local development dependency.
     // Install the dependency locally by running `mvn install` in the `bound/kt` directory
-    // implementation("tbdex.sdk.core:tbdex-core-kt:1.0-SNAPSHOT")
+     implementation("tbdex.sdk.core:tbdex-core-kt:1.0-SNAPSHOT")
 
     // GitHub dependency
     // Reference: https://github.com/TBD54566975/tbdex-rs/packages/2210202
@@ -26,7 +26,7 @@ dependencies {
 
     // JitPack dependency
     // Reference: https://jitpack.io/#TBD54566975/tbdex-rs/
-    implementation("com.github.TBD54566975:tbdex-rs:v1.0.21")
+//    implementation("com.github.TBD54566975:tbdex-rs:v1.0.21")
 }
 
 java {

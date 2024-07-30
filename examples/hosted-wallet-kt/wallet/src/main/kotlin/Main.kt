@@ -1,5 +1,5 @@
-import tbdex.sdk.web5.BearerDid
-import tbdex.sdk.web5.PortableDid
+import web5.sdk.dids.BearerDid
+import web5.sdk.dids.PortableDid
 import java.io.File
 import java.util.Properties
 

@@ -2,6 +2,7 @@ package tbdex.sdk.web5
 
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid as Web5BearerDid
+import web5.sdk.crypto.keys.KeyManager as Web5KeyManager
 
 internal class InternalBearerDid private constructor(
     internal val rustCoreBearerDid: RustCoreBearerDid,
@@ -11,7 +12,7 @@ internal class InternalBearerDid private constructor(
             return InternalBearerDid(
                 RustCoreBearerDid(
                     uri = web5BearerDid.did.uri,
-                    keyManager = InternalKeyManager.fromWeb5(web5BearerDid.keyManager)
+                    keyManager = InternalKeyManager.fromWeb5(web5BearerDid.keyManager as Web5KeyManager)
                 )
             )
         }

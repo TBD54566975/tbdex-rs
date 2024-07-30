@@ -1,5 +1,5 @@
 import tbdex.sdk.messages.*
-import tbdex.sdk.web5.BearerDid
+import web5.sdk.dids.BearerDid
 
 private lateinit var webhook: ReplyToWebhook
 private var closedReceived = false
