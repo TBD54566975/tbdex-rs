@@ -2,7 +2,7 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.InnerBearerDid
+import tbdex.sdk.web5.InternalBearerDid
 import tbdex.sdk.rust.Cancel as RustCoreCancel
 import tbdex.sdk.rust.CancelDataData as RustCoreCancelData
 import web5.sdk.dids.BearerDid
@@ -50,8 +50,8 @@ class Cancel private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
-        this.rustCoreCancel.sign(innerBearerDid.rustCoreBearerDid)
+        val internalBearerDid = InternalBearerDid.fromWeb5(bearerDid)
+        this.rustCoreCancel.sign(internalBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

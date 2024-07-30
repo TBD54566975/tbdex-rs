@@ -2,7 +2,7 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.InnerBearerDid
+import tbdex.sdk.web5.InternalBearerDid
 import tbdex.sdk.rust.Close as RustCoreClose
 import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
 import web5.sdk.dids.BearerDid
@@ -50,8 +50,8 @@ class Close private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
-        this.rustCoreClose.sign(innerBearerDid.rustCoreBearerDid)
+        val internalBearerDid = InternalBearerDid.fromWeb5(bearerDid)
+        this.rustCoreClose.sign(internalBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {

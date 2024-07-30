@@ -5,12 +5,12 @@ import tbdex.sdk.rust.Signer
 import web5.sdk.crypto.keys.KeyManager as Web5KeyManager
 import web5.sdk.crypto.keys.Jwk as Web5Jwk
 
-internal class InnerKeyManager private constructor(
+internal class InternalKeyManager private constructor(
     private val web5KeyManager: Web5KeyManager
 ): tbdex.sdk.rust.KeyManager {
     companion object {
-        fun fromWeb5(keyManager: Web5KeyManager): InnerKeyManager {
-            return InnerKeyManager(keyManager)
+        fun fromWeb5(keyManager: Web5KeyManager): InternalKeyManager {
+            return InternalKeyManager(keyManager)
         }
     }
 
@@ -26,6 +26,6 @@ internal class InnerKeyManager private constructor(
 
         val web5Signer = this.web5KeyManager.getSigner(web5PublicJwk)
 
-        return InnerSigner.fromWeb5(web5Signer)
+        return InternalSigner.fromWeb5(web5Signer)
     }
 }

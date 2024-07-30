@@ -2,7 +2,7 @@ package tbdex.sdk.httpclient
 
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.InnerBearerDid
+import tbdex.sdk.web5.InternalBearerDid
 import tbdex.sdk.rust.ExchangeData as RustCoreExchange
 import tbdex.sdk.rust.createExchange as rustCoreCreateExchange
 import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
@@ -60,16 +60,16 @@ fun submitCancel(cancel: Cancel) {
 fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Exchange {
     SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
-    val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
-    val rustCoreExchange = rustCoreGetExchange(pfiDidUri, innerBearerDid.rustCoreBearerDid, exchangeId)
+    val internalBearerDid = InternalBearerDid.fromWeb5(bearerDid)
+    val rustCoreExchange = rustCoreGetExchange(pfiDidUri, internalBearerDid.rustCoreBearerDid, exchangeId)
     return Exchange.fromRustCore(rustCoreExchange)
 }
 
 fun getExchanges(pfiDidUri: String, bearerDid: BearerDid): List<String> {
     SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
-    val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
-    return rustCoreGetExchanges(pfiDidUri, innerBearerDid.rustCoreBearerDid)
+    val internalBearerDid = InternalBearerDid.fromWeb5(bearerDid)
+    return rustCoreGetExchanges(pfiDidUri, internalBearerDid.rustCoreBearerDid)
 }
 
 

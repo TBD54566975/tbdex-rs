@@ -2,7 +2,7 @@ package tbdex.sdk.resources
 
 import tbdex.sdk.Json
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.InnerBearerDid
+import tbdex.sdk.web5.InternalBearerDid
 import tbdex.sdk.rust.Offering as RustCoreOffering
 import web5.sdk.dids.BearerDid
 import web5.sdk.vc.pex.PresentationDefinition
@@ -53,8 +53,8 @@ class Offering private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        val innerBearerDid = InnerBearerDid.fromWeb5(bearerDid)
-        this.rustCoreOffering.sign(innerBearerDid.rustCoreBearerDid)
+        val internalBearerDid = InternalBearerDid.fromWeb5(bearerDid)
+        this.rustCoreOffering.sign(internalBearerDid.rustCoreBearerDid)
     }
 
     fun verify() {
