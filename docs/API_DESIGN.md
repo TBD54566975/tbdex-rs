@@ -397,7 +397,7 @@ CLASS Order IMPLEMENTS Message, WalletUpdateMessage
 ## `OrderInstructions`
 
 ```pseudocode!
-CLASS OrderInstructions IMPLEMENTS Message
+CLASS OrderInstructions IMPLEMENTS Message, ReplyToMessage
   PUBLIC DATA metadata: MessageMetadata
   PUBLIC DATA data: OrderInstructionsData
   PUBLIC DATA signature: string
