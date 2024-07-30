@@ -47,6 +47,14 @@ impl SchemaResolver for LocalSchemaResolver {
         url: &reqwest::Url,
         _original_reference: &str,
     ) -> std::result::Result<std::sync::Arc<josekit::Value>, SchemaResolverError> {
+        let url_str = url.as_str().replace("http://", "https://");
+        let url = reqwest::Url::parse(&url_str).map_err(|err| {
+            SchemaResolverError::new(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                format!("invalid URL {}: {}", url_str, err),
+            ))
+        })?;
+
         if let Some(schema) = self.schemas.get(url.as_str()) {
             Ok(std::sync::Arc::new(schema.clone()))
         } else {
