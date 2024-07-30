@@ -985,6 +985,20 @@ internal open class UniffiVTableCallbackInterfaceSigner(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -1189,6 +1203,22 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_fn_method_order_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_method_order_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_clone_orderinstructions(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_free_orderinstructions(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_constructor_orderinstructions_create(`to`: RustBuffer.ByValue,`from`: RustBuffer.ByValue,`exchangeId`: RustBuffer.ByValue,`data`: RustBuffer.ByValue,`protocol`: RustBuffer.ByValue,`externalId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_constructor_orderinstructions_from_json_string(`json`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): Pointer
+    fun uniffi_tbdex_uniffi_fn_method_orderinstructions_get_data(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_orderinstructions_sign(`ptr`: Pointer,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): Unit
+    fun uniffi_tbdex_uniffi_fn_method_orderinstructions_to_json_string(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
+    fun uniffi_tbdex_uniffi_fn_method_orderinstructions_verify(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_tbdex_uniffi_fn_clone_orderstatus(`ptr`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Pointer
@@ -1510,6 +1540,14 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_order_verify(
     ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_orderinstructions_get_data(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_orderinstructions_sign(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_orderinstructions_to_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_method_orderinstructions_verify(
+    ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_method_orderstatus_sign(
@@ -1605,6 +1643,10 @@ internal interface UniffiLib : Library {
     fun uniffi_tbdex_uniffi_checksum_constructor_order_create(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_orderinstructions_create(
+    ): Short
+    fun uniffi_tbdex_uniffi_checksum_constructor_orderinstructions_from_json_string(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_constructor_orderstatus_create(
     ): Short
@@ -1782,6 +1824,18 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_method_order_verify() != 47944.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderinstructions_get_data() != 38565.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderinstructions_sign() != 51485.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderinstructions_to_json_string() != 39014.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_method_orderinstructions_verify() != 4103.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
     if (lib.uniffi_tbdex_uniffi_checksum_method_orderstatus_get_data() != 26826.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
@@ -1924,6 +1978,12 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_order_from_json_string() != 18477.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderinstructions_create() != 799.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderinstructions_from_json_string() != 2176.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_constructor_orderstatus_create() != 7053.toShort()) {
@@ -6177,6 +6237,305 @@ public object FfiConverterTypeOrder: FfiConverter<Order, Pointer> {
 //
 
 
+public interface OrderInstructionsInterface {
+    
+    fun `getData`(): OrderInstructionsData
+    
+    fun `sign`(`bearerDid`: BearerDid)
+    
+    fun `toJsonString`(): kotlin.String
+    
+    fun `verify`()
+    
+    companion object
+}
+
+open class OrderInstructions: Disposable, AutoCloseable, OrderInstructionsInterface {
+
+    constructor(pointer: Pointer) {
+        this.pointer = pointer
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
+    }
+
+    /**
+     * This constructor can be used to instantiate a fake object. Only used for tests. Any
+     * attempt to actually use an object constructed this way will fail as there is no
+     * connected Rust object.
+     */
+    @Suppress("UNUSED_PARAMETER")
+    constructor(noPointer: NoPointer) {
+        this.pointer = null
+        this.cleanable = UniffiLib.CLEANER.register(this, UniffiCleanAction(pointer))
+    }
+
+    protected val pointer: Pointer?
+    protected val cleanable: UniffiCleaner.Cleanable
+
+    private val wasDestroyed = AtomicBoolean(false)
+    private val callCounter = AtomicLong(1)
+
+    override fun destroy() {
+        // Only allow a single call to this method.
+        // TODO: maybe we should log a warning if called more than once?
+        if (this.wasDestroyed.compareAndSet(false, true)) {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable.clean()
+            }
+        }
+    }
+
+    @Synchronized
+    override fun close() {
+        this.destroy()
+    }
+
+    internal inline fun <R> callWithPointer(block: (ptr: Pointer) -> R): R {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        do {
+            val c = this.callCounter.get()
+            if (c == 0L) {
+                throw IllegalStateException("${this.javaClass.simpleName} object has already been destroyed")
+            }
+            if (c == Long.MAX_VALUE) {
+                throw IllegalStateException("${this.javaClass.simpleName} call counter would overflow")
+            }
+        } while (! this.callCounter.compareAndSet(c, c + 1L))
+        // Now we can safely do the method call without the pointer being freed concurrently.
+        try {
+            return block(this.uniffiClonePointer())
+        } finally {
+            // This decrement always matches the increment we performed above.
+            if (this.callCounter.decrementAndGet() == 0L) {
+                cleanable.clean()
+            }
+        }
+    }
+
+    // Use a static inner class instead of a closure so as not to accidentally
+    // capture `this` as part of the cleanable's action.
+    private class UniffiCleanAction(private val pointer: Pointer?) : Runnable {
+        override fun run() {
+            pointer?.let { ptr ->
+                uniffiRustCall { status ->
+                    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_free_orderinstructions(ptr, status)
+                }
+            }
+        }
+    }
+
+    fun uniffiClonePointer(): Pointer {
+        return uniffiRustCall() { status ->
+            UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_clone_orderinstructions(pointer!!, status)
+        }
+    }
+
+    
+    @Throws(TbdexSdkException::class)override fun `getData`(): OrderInstructionsData {
+            return FfiConverterTypeOrderInstructionsData.lift(
+    callWithPointer {
+    uniffiRustCallWithError(TbdexSdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderinstructions_get_data(
+        it, _status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(TbdexSdkException::class)override fun `sign`(`bearerDid`: BearerDid)
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(TbdexSdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderinstructions_sign(
+        it, FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+}
+    }
+    
+    
+
+    
+    @Throws(TbdexSdkException::class)override fun `toJsonString`(): kotlin.String {
+            return FfiConverterString.lift(
+    callWithPointer {
+    uniffiRustCallWithError(TbdexSdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderinstructions_to_json_string(
+        it, _status)
+}
+    }
+    )
+    }
+    
+
+    
+    @Throws(TbdexSdkException::class)override fun `verify`()
+        = 
+    callWithPointer {
+    uniffiRustCallWithError(TbdexSdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_method_orderinstructions_verify(
+        it, _status)
+}
+    }
+    
+    
+
+    
+
+    
+    companion object {
+        
+    @Throws(TbdexSdkException::class) fun `create`(`to`: kotlin.String, `from`: kotlin.String, `exchangeId`: kotlin.String, `data`: OrderInstructionsDataData, `protocol`: kotlin.String?, `externalId`: kotlin.String?): OrderInstructions {
+            return FfiConverterTypeOrderInstructions.lift(
+    uniffiRustCallWithError(TbdexSdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_orderinstructions_create(
+        FfiConverterString.lower(`to`),FfiConverterString.lower(`from`),FfiConverterString.lower(`exchangeId`),FfiConverterTypeOrderInstructionsDataData.lower(`data`),FfiConverterOptionalString.lower(`protocol`),FfiConverterOptionalString.lower(`externalId`),_status)
+}
+    )
+    }
+    
+
+        
+    @Throws(TbdexSdkException::class) fun `fromJsonString`(`json`: kotlin.String): OrderInstructions {
+            return FfiConverterTypeOrderInstructions.lift(
+    uniffiRustCallWithError(TbdexSdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_constructor_orderinstructions_from_json_string(
+        FfiConverterString.lower(`json`),_status)
+}
+    )
+    }
+    
+
+        
+    }
+    
+}
+
+public object FfiConverterTypeOrderInstructions: FfiConverter<OrderInstructions, Pointer> {
+
+    override fun lower(value: OrderInstructions): Pointer {
+        return value.uniffiClonePointer()
+    }
+
+    override fun lift(value: Pointer): OrderInstructions {
+        return OrderInstructions(value)
+    }
+
+    override fun read(buf: ByteBuffer): OrderInstructions {
+        // The Rust code always writes pointers as 8 bytes, and will
+        // fail to compile if they don't fit.
+        return lift(Pointer(buf.getLong()))
+    }
+
+    override fun allocationSize(value: OrderInstructions) = 8UL
+
+    override fun write(value: OrderInstructions, buf: ByteBuffer) {
+        // The Rust code always expects pointers written as 8 bytes,
+        // and will fail to compile if they don't fit.
+        buf.putLong(Pointer.nativeValue(lower(value)))
+    }
+}
+
+
+// This template implements a class for working with a Rust struct via a Pointer/Arc<T>
+// to the live Rust struct on the other side of the FFI.
+//
+// Each instance implements core operations for working with the Rust `Arc<T>` and the
+// Kotlin Pointer to work with the live Rust struct on the other side of the FFI.
+//
+// There's some subtlety here, because we have to be careful not to operate on a Rust
+// struct after it has been dropped, and because we must expose a public API for freeing
+// theq Kotlin wrapper object in lieu of reliable finalizers. The core requirements are:
+//
+//   * Each instance holds an opaque pointer to the underlying Rust struct.
+//     Method calls need to read this pointer from the object's state and pass it in to
+//     the Rust FFI.
+//
+//   * When an instance is no longer needed, its pointer should be passed to a
+//     special destructor function provided by the Rust FFI, which will drop the
+//     underlying Rust struct.
+//
+//   * Given an instance, calling code is expected to call the special
+//     `destroy` method in order to free it after use, either by calling it explicitly
+//     or by using a higher-level helper like the `use` method. Failing to do so risks
+//     leaking the underlying Rust struct.
+//
+//   * We can't assume that calling code will do the right thing, and must be prepared
+//     to handle Kotlin method calls executing concurrently with or even after a call to
+//     `destroy`, and to handle multiple (possibly concurrent!) calls to `destroy`.
+//
+//   * We must never allow Rust code to operate on the underlying Rust struct after
+//     the destructor has been called, and must never call the destructor more than once.
+//     Doing so may trigger memory unsafety.
+//
+//   * To mitigate many of the risks of leaking memory and use-after-free unsafety, a `Cleaner`
+//     is implemented to call the destructor when the Kotlin object becomes unreachable.
+//     This is done in a background thread. This is not a panacea, and client code should be aware that
+//      1. the thread may starve if some there are objects that have poorly performing
+//     `drop` methods or do significant work in their `drop` methods.
+//      2. the thread is shared across the whole library. This can be tuned by using `android_cleaner = true`,
+//         or `android = true` in the [`kotlin` section of the `uniffi.toml` file](https://mozilla.github.io/uniffi-rs/kotlin/configuration.html).
+//
+// If we try to implement this with mutual exclusion on access to the pointer, there is the
+// possibility of a race between a method call and a concurrent call to `destroy`:
+//
+//    * Thread A starts a method call, reads the value of the pointer, but is interrupted
+//      before it can pass the pointer over the FFI to Rust.
+//    * Thread B calls `destroy` and frees the underlying Rust struct.
+//    * Thread A resumes, passing the already-read pointer value to Rust and triggering
+//      a use-after-free.
+//
+// One possible solution would be to use a `ReadWriteLock`, with each method call taking
+// a read lock (and thus allowed to run concurrently) and the special `destroy` method
+// taking a write lock (and thus blocking on live method calls). However, we aim not to
+// generate methods with any hidden blocking semantics, and a `destroy` method that might
+// block if called incorrectly seems to meet that bar.
+//
+// So, we achieve our goals by giving each instance an associated `AtomicLong` counter to track
+// the number of in-flight method calls, and an `AtomicBoolean` flag to indicate whether `destroy`
+// has been called. These are updated according to the following rules:
+//
+//    * The initial value of the counter is 1, indicating a live object with no in-flight calls.
+//      The initial value for the flag is false.
+//
+//    * At the start of each method call, we atomically check the counter.
+//      If it is 0 then the underlying Rust struct has already been destroyed and the call is aborted.
+//      If it is nonzero them we atomically increment it by 1 and proceed with the method call.
+//
+//    * At the end of each method call, we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+//    * When `destroy` is called, we atomically flip the flag from false to true.
+//      If the flag was already true we silently fail.
+//      Otherwise we atomically decrement and check the counter.
+//      If it has reached zero then we destroy the underlying Rust struct.
+//
+// Astute readers may observe that this all sounds very similar to the way that Rust's `Arc<T>` works,
+// and indeed it is, with the addition of a flag to guard against multiple calls to `destroy`.
+//
+// The overall effect is that the underlying Rust struct is destroyed only when `destroy` has been
+// called *and* all in-flight method calls have completed, avoiding violating any of the expectations
+// of the underlying Rust code.
+//
+// This makes a cleaner a better alternative to _not_ calling `destroy()` as
+// and when the object is finished with, but the abstraction is not perfect: if the Rust object's `drop`
+// method is slow, and/or there are many objects to cleanup, and it's on a low end Android device, then the cleaner
+// thread may be starved, and the app will leak memory.
+//
+// In this case, `destroy`ing manually may be a better solution.
+//
+// The cleaner can live side by side with the manual calling of `destroy`. In the order of responsiveness, uniffi objects
+// with Rust peers are reclaimed:
+//
+// 1. By calling the `destroy` method of the object, which calls `rustObject.free()`. If that doesn't happen:
+// 2. When the object becomes unreachable, AND the Cleaner thread gets to call `rustObject.free()`. If the thread is starved then:
+// 3. The memory is reclaimed when the process terminates.
+//
+// [1] https://stackoverflow.com/questions/24376768/can-java-finalize-an-object-when-it-is-still-in-scope/24380219
+//
+
+
 public interface OrderStatusInterface {
     
     fun `getData`(): OrderStatusData
@@ -8763,6 +9122,7 @@ data class ExchangeData (
     var `rfq`: Rfq, 
     var `quote`: Quote?, 
     var `order`: Order?, 
+    var `orderInstructions`: OrderInstructions?, 
     var `cancel`: Cancel?, 
     var `orderStatuses`: List<OrderStatus>?, 
     var `close`: Close?
@@ -8775,6 +9135,7 @@ data class ExchangeData (
         this.`rfq`, 
         this.`quote`, 
         this.`order`, 
+        this.`orderInstructions`, 
         this.`cancel`, 
         this.`orderStatuses`, 
         this.`close`)
@@ -8789,6 +9150,7 @@ public object FfiConverterTypeExchangeData: FfiConverterRustBuffer<ExchangeData>
             FfiConverterTypeRfq.read(buf),
             FfiConverterOptionalTypeQuote.read(buf),
             FfiConverterOptionalTypeOrder.read(buf),
+            FfiConverterOptionalTypeOrderInstructions.read(buf),
             FfiConverterOptionalTypeCancel.read(buf),
             FfiConverterOptionalSequenceTypeOrderStatus.read(buf),
             FfiConverterOptionalTypeClose.read(buf),
@@ -8799,6 +9161,7 @@ public object FfiConverterTypeExchangeData: FfiConverterRustBuffer<ExchangeData>
             FfiConverterTypeRfq.allocationSize(value.`rfq`) +
             FfiConverterOptionalTypeQuote.allocationSize(value.`quote`) +
             FfiConverterOptionalTypeOrder.allocationSize(value.`order`) +
+            FfiConverterOptionalTypeOrderInstructions.allocationSize(value.`orderInstructions`) +
             FfiConverterOptionalTypeCancel.allocationSize(value.`cancel`) +
             FfiConverterOptionalSequenceTypeOrderStatus.allocationSize(value.`orderStatuses`) +
             FfiConverterOptionalTypeClose.allocationSize(value.`close`)
@@ -8808,6 +9171,7 @@ public object FfiConverterTypeExchangeData: FfiConverterRustBuffer<ExchangeData>
             FfiConverterTypeRfq.write(value.`rfq`, buf)
             FfiConverterOptionalTypeQuote.write(value.`quote`, buf)
             FfiConverterOptionalTypeOrder.write(value.`order`, buf)
+            FfiConverterOptionalTypeOrderInstructions.write(value.`orderInstructions`, buf)
             FfiConverterOptionalTypeCancel.write(value.`cancel`, buf)
             FfiConverterOptionalSequenceTypeOrderStatus.write(value.`orderStatuses`, buf)
             FfiConverterOptionalTypeClose.write(value.`close`, buf)
@@ -9148,6 +9512,68 @@ public object FfiConverterTypeOrderDataData: FfiConverterRustBuffer<OrderDataDat
 
 
 
+data class OrderInstructionsData (
+    var `metadata`: MessageMetadataData, 
+    var `data`: OrderInstructionsDataData, 
+    var `signature`: kotlin.String
+) {
+    
+    companion object
+}
+
+public object FfiConverterTypeOrderInstructionsData: FfiConverterRustBuffer<OrderInstructionsData> {
+    override fun read(buf: ByteBuffer): OrderInstructionsData {
+        return OrderInstructionsData(
+            FfiConverterTypeMessageMetadataData.read(buf),
+            FfiConverterTypeOrderInstructionsDataData.read(buf),
+            FfiConverterString.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: OrderInstructionsData) = (
+            FfiConverterTypeMessageMetadataData.allocationSize(value.`metadata`) +
+            FfiConverterTypeOrderInstructionsDataData.allocationSize(value.`data`) +
+            FfiConverterString.allocationSize(value.`signature`)
+    )
+
+    override fun write(value: OrderInstructionsData, buf: ByteBuffer) {
+            FfiConverterTypeMessageMetadataData.write(value.`metadata`, buf)
+            FfiConverterTypeOrderInstructionsDataData.write(value.`data`, buf)
+            FfiConverterString.write(value.`signature`, buf)
+    }
+}
+
+
+
+data class OrderInstructionsDataData (
+    var `payin`: PaymentInstructionData, 
+    var `payout`: PaymentInstructionData
+) {
+    
+    companion object
+}
+
+public object FfiConverterTypeOrderInstructionsDataData: FfiConverterRustBuffer<OrderInstructionsDataData> {
+    override fun read(buf: ByteBuffer): OrderInstructionsDataData {
+        return OrderInstructionsDataData(
+            FfiConverterTypePaymentInstructionData.read(buf),
+            FfiConverterTypePaymentInstructionData.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: OrderInstructionsDataData) = (
+            FfiConverterTypePaymentInstructionData.allocationSize(value.`payin`) +
+            FfiConverterTypePaymentInstructionData.allocationSize(value.`payout`)
+    )
+
+    override fun write(value: OrderInstructionsDataData, buf: ByteBuffer) {
+            FfiConverterTypePaymentInstructionData.write(value.`payin`, buf)
+            FfiConverterTypePaymentInstructionData.write(value.`payout`, buf)
+    }
+}
+
+
+
 data class OrderStatusData (
     var `metadata`: MessageMetadataData, 
     var `data`: OrderStatusDataData, 
@@ -9346,8 +9772,7 @@ data class QuoteDetailsData (
     var `currencyCode`: kotlin.String, 
     var `subtotal`: kotlin.String, 
     var `total`: kotlin.String, 
-    var `fee`: kotlin.String?, 
-    var `paymentInstruction`: PaymentInstructionData?
+    var `fee`: kotlin.String?
 ) {
     
     companion object
@@ -9360,7 +9785,6 @@ public object FfiConverterTypeQuoteDetailsData: FfiConverterRustBuffer<QuoteDeta
             FfiConverterString.read(buf),
             FfiConverterString.read(buf),
             FfiConverterOptionalString.read(buf),
-            FfiConverterOptionalTypePaymentInstructionData.read(buf),
         )
     }
 
@@ -9368,8 +9792,7 @@ public object FfiConverterTypeQuoteDetailsData: FfiConverterRustBuffer<QuoteDeta
             FfiConverterString.allocationSize(value.`currencyCode`) +
             FfiConverterString.allocationSize(value.`subtotal`) +
             FfiConverterString.allocationSize(value.`total`) +
-            FfiConverterOptionalString.allocationSize(value.`fee`) +
-            FfiConverterOptionalTypePaymentInstructionData.allocationSize(value.`paymentInstruction`)
+            FfiConverterOptionalString.allocationSize(value.`fee`)
     )
 
     override fun write(value: QuoteDetailsData, buf: ByteBuffer) {
@@ -9377,7 +9800,6 @@ public object FfiConverterTypeQuoteDetailsData: FfiConverterRustBuffer<QuoteDeta
             FfiConverterString.write(value.`subtotal`, buf)
             FfiConverterString.write(value.`total`, buf)
             FfiConverterOptionalString.write(value.`fee`, buf)
-            FfiConverterOptionalTypePaymentInstructionData.write(value.`paymentInstruction`, buf)
     }
 }
 
@@ -9599,6 +10021,7 @@ enum class MessageKind {
     RFQ,
     QUOTE,
     ORDER,
+    ORDER_INSTRUCTIONS,
     CANCEL,
     ORDER_STATUS,
     CLOSE;
@@ -9967,6 +10390,35 @@ public object FfiConverterOptionalTypeOrder: FfiConverterRustBuffer<Order?> {
 
 
 
+public object FfiConverterOptionalTypeOrderInstructions: FfiConverterRustBuffer<OrderInstructions?> {
+    override fun read(buf: ByteBuffer): OrderInstructions? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeOrderInstructions.read(buf)
+    }
+
+    override fun allocationSize(value: OrderInstructions?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeOrderInstructions.allocationSize(value)
+        }
+    }
+
+    override fun write(value: OrderInstructions?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeOrderInstructions.write(value, buf)
+        }
+    }
+}
+
+
+
+
 public object FfiConverterOptionalTypeQuote: FfiConverterRustBuffer<Quote?> {
     override fun read(buf: ByteBuffer): Quote? {
         if (buf.get().toInt() == 0) {
@@ -9989,35 +10441,6 @@ public object FfiConverterOptionalTypeQuote: FfiConverterRustBuffer<Quote?> {
         } else {
             buf.put(1)
             FfiConverterTypeQuote.write(value, buf)
-        }
-    }
-}
-
-
-
-
-public object FfiConverterOptionalTypePaymentInstructionData: FfiConverterRustBuffer<PaymentInstructionData?> {
-    override fun read(buf: ByteBuffer): PaymentInstructionData? {
-        if (buf.get().toInt() == 0) {
-            return null
-        }
-        return FfiConverterTypePaymentInstructionData.read(buf)
-    }
-
-    override fun allocationSize(value: PaymentInstructionData?): ULong {
-        if (value == null) {
-            return 1UL
-        } else {
-            return 1UL + FfiConverterTypePaymentInstructionData.allocationSize(value)
-        }
-    }
-
-    override fun write(value: PaymentInstructionData?, buf: ByteBuffer) {
-        if (value == null) {
-            buf.put(0)
-        } else {
-            buf.put(1)
-            FfiConverterTypePaymentInstructionData.write(value, buf)
         }
     }
 }

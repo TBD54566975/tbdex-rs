@@ -1,8 +1,8 @@
 use crate::{
     errors::Result,
     messages::{
-        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
-        rfq::Rfq,
+        cancel::Cancel, close::Close, order::Order, order_instructions::OrderInstructions,
+        order_status::OrderStatus, quote::Quote, rfq::Rfq,
     },
 };
 use std::sync::{Arc, RwLock};
@@ -13,6 +13,7 @@ pub struct Exchange {
     pub rfq: Arc<Rfq>,
     pub quote: Option<Arc<Quote>>,
     pub order: Option<Arc<Order>>,
+    pub order_instructions: Option<Arc<OrderInstructions>>,
     pub cancel: Option<Arc<Cancel>>,
     pub order_statuses: Option<Vec<Arc<OrderStatus>>>,
     pub close: Option<Arc<Close>>,
@@ -28,6 +29,9 @@ impl Exchange {
             order: inner
                 .order
                 .map(|o| Arc::new(Order(Arc::new(RwLock::new((*o).clone()))))),
+            order_instructions: inner
+                .order_instructions
+                .map(|oi| Arc::new(OrderInstructions(Arc::new(RwLock::new((*oi).clone()))))),
             cancel: inner
                 .cancel
                 .map(|c| Arc::new(Cancel(Arc::new(RwLock::new((*c).clone()))))),

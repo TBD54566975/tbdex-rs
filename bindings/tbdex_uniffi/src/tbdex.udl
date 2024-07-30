@@ -85,6 +85,7 @@ enum MessageKind {
   "Rfq",
   "Quote",
   "Order",
+  "OrderInstructions",
   "Cancel",
   "OrderStatus",
   "Close"
@@ -163,12 +164,6 @@ dictionary QuoteDetailsData {
   string subtotal;
   string total;
   string? fee;
-  PaymentInstructionData? payment_instruction;
-};
-
-dictionary PaymentInstructionData {
-  string? link;
-  string? instruction;
 };
 
 interface Order {
@@ -194,6 +189,37 @@ dictionary OrderData {
 
 dictionary OrderDataData {
 
+};
+
+interface OrderInstructions {
+  [Name=create, Throws=TbdexSdkError]
+  constructor(string to, string from, string exchange_id, OrderInstructionsDataData data, string? protocol, string? external_id);
+  [Name=from_json_string, Throws=TbdexSdkError]
+  constructor([ByRef] string json);
+  [Throws=TbdexSdkError]
+  string to_json_string();
+  [Throws=TbdexSdkError]
+  OrderInstructionsData get_data();
+  [Throws=TbdexSdkError]
+  void verify();
+  [Throws=TbdexSdkError]
+  void sign(BearerDid bearer_did);
+};
+
+dictionary OrderInstructionsData {
+  MessageMetadataData metadata;
+  OrderInstructionsDataData data;
+  string signature;
+};
+
+dictionary OrderInstructionsDataData {
+  PaymentInstructionData payin;
+  PaymentInstructionData payout;
+};
+
+dictionary PaymentInstructionData {
+  string? link;
+  string? instruction;
 };
 
 interface Cancel {
@@ -293,6 +319,7 @@ dictionary ExchangeData {
   Rfq rfq;
   Quote? quote;
   Order? order;
+  OrderInstructions? order_instructions;
   Cancel? cancel;
   sequence<OrderStatus>? order_statuses;
   Close? close;

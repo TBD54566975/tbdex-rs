@@ -9,8 +9,8 @@ use crate::{
     },
     http_client::{generate_access_token, HttpClientError},
     messages::{
-        cancel::Cancel, close::Close, order::Order, order_status::OrderStatus, quote::Quote,
-        rfq::Rfq, Message,
+        cancel::Cancel, close::Close, order::Order, order_instructions::OrderInstructions,
+        order_status::OrderStatus, quote::Quote, rfq::Rfq, Message,
     },
 };
 use reqwest::Method;
@@ -25,6 +25,8 @@ pub struct Exchange {
     pub quote: Option<Arc<Quote>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub order: Option<Arc<Order>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order_instructions: Option<Arc<OrderInstructions>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cancel: Option<Arc<Cancel>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -126,6 +128,9 @@ pub fn get_exchange(
             }
             Message::Order(order) => {
                 exchange.order = Some(order);
+            }
+            Message::OrderInstructions(order_instructions) => {
+                exchange.order_instructions = Some(order_instructions);
             }
             Message::Cancel(cancel) => {
                 exchange.cancel = Some(cancel);

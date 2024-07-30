@@ -1,5 +1,6 @@
 import tbdex.sdk.messages.Close
 import tbdex.sdk.messages.OrderStatus
+import tbdex.sdk.messages.OrderInstructions
 import tbdex.sdk.messages.Quote
 import spark.Spark.port
 import spark.Spark.post
@@ -9,6 +10,7 @@ import tbdex.sdk.http.ReplyToRequestBody
 class ReplyToWebhook(
     private val onQuoteReceived: (Quote) -> Unit,
     private val onOrderStatusReceived: (OrderStatus) -> Unit,
+    private val onOrderInstructionsReceived: (OrderInstructions) -> Unit,
     private val onCloseReceived: (Close) -> Unit
 ) {
     init {
@@ -24,6 +26,10 @@ class ReplyToWebhook(
                 is OrderStatus -> {
                     message.verify()
                     onOrderStatusReceived(message)
+                }
+                is OrderInstructions -> {
+                    message.verify()
+                    onOrderInstructionsReceived(message)
                 }
                 is Close -> {
                     message.verify()

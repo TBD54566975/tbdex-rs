@@ -46,6 +46,7 @@ impl GetExchangeResponseBody {
                         Message::Rfq(_) => MessageKind::Rfq,
                         Message::Quote(_) => MessageKind::Quote,
                         Message::Order(_) => MessageKind::Order,
+                        Message::OrderInstructions(_) => MessageKind::OrderInstructions,
                         Message::Cancel(_) => MessageKind::Cancel,
                         Message::OrderStatus(_) => MessageKind::OrderStatus,
                         Message::Close(_) => MessageKind::Close,
@@ -197,6 +198,7 @@ impl ReplyToRequestBody {
         let inner = InnerReplyToRequestBody::from_json_string(json)?;
         let kind = match inner.message {
             ReplyToMessage::Quote(_) => MessageKind::Quote,
+            ReplyToMessage::OrderInstructions(_) => MessageKind::OrderInstructions,
             ReplyToMessage::OrderStatus(_) => MessageKind::OrderStatus,
             ReplyToMessage::Close(_) => MessageKind::Close,
         };

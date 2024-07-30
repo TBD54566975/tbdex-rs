@@ -35,8 +35,10 @@
   - [`Quote`](#quote)
     - [`QuoteData`](#quotedata)
     - [`QuoteDetails`](#quotedetails)
-    - [`PaymentInstruction`](#paymentinstruction)
   - [`Order`](#order)
+  - [`OrderInstructions`](#orderinstructions)
+    - [`OrderInstructionsData](#orderinstructionsdata)
+    - [`PaymentInstruction`](#paymentinstruction)
   - [`Cancel`](#cancel)
     - [`CancelData`](#canceldata)
   - [`OrderStatus`](#orderstatus)
@@ -222,6 +224,7 @@ ENUM MessageKind
   rfq,
   quote,
   order,
+  orderinstructions,
   cancel,
   orderstatus,
   close,
@@ -376,15 +379,6 @@ CLASS QuoteDetails
   PUBLIC DATA subtotal: string
   PUBLIC DATA total: string
   PUBLIC DATA fee: string?
-  PUBLIC DATA paymentInstruction: PaymentInstruction?
-```
-
-### `PaymentInstruction`
-
-```pseudocode!
-CLASS PaymentInstruction
-  PUBLIC DATA link: string?
-  PUBLIC DATA instruction: string?
 ```
 
 ## `Order`
@@ -398,6 +392,36 @@ CLASS Order IMPLEMENTS Message, WalletUpdateMessage
   METHOD verify(): Error?
   METHOD sign(bearer_did: BearerDid): Error?
   METHOD to_json_string(): string
+```
+
+## `OrderInstructions`
+
+```pseudocode!
+CLASS OrderInstructions IMPLEMENTS Message, ReplyToMessage
+  PUBLIC DATA metadata: MessageMetadata
+  PUBLIC DATA data: OrderInstructionsData
+  PUBLIC DATA signature: string
+  CONSTRUCTOR create(to: string, from: string, exchangeId: string, orderInstructionsData: OrderInstructionsData, protocol: string?, externalId: string?)
+  CONSTRUCTOR from_json_string(json: string)
+  METHOD verify(): Error?
+  METHOD sign(bearer_did: BearerDid): Error?
+  METHOD to_json_string(): string
+```
+
+### `OrderInstructionsData`
+
+```pseudocode!
+CLASS OrderInstructionsData
+  PUBLIC DATA payin: PaymentInstruction
+  PUBLIC DATA payout: PaymentInstruction
+```
+
+### `PaymentInstruction`
+
+```pseudocode!
+CLASS PaymentInstruction
+  PUBLIC DATA link: string?
+  PUBLIC DATA instruction: string?
 ```
 
 ## `Cancel`
