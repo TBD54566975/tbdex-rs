@@ -3,8 +3,7 @@ import tbdex.sdk.messages.CreateSelectedPayinMethod
 import tbdex.sdk.messages.CreateSelectedPayoutMethod
 import tbdex.sdk.messages.Rfq
 import tbdex.sdk.rust.TbdexSdkException
-import tbdex.sdk.web5.BearerDid
-
+import web5.sdk.dids.BearerDid
 
 fun runErrorFlow(
     pfiDidUri: String,

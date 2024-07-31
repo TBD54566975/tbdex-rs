@@ -1,7 +1,7 @@
-import tbdex.sdk.web5.BearerDid
-import tbdex.sdk.web5.PortableDid
 import java.io.File
 import java.util.Properties
+import web5.sdk.dids.BearerDid
+import web5.sdk.dids.PortableDid
 
 enum class ExchangeFlowType {
     HAPPY_PATH_WEBHOOK_FLOW,

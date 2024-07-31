@@ -1,10 +1,12 @@
-package tbdex.sdk.web5
+package web5.sdk.crypto.keys
 
 import tbdex.sdk.rust.SystemArchitecture
+import web5.sdk.crypto.signers.Signer
+import web5.sdk.crypto.signers.ToOuterSigner
 import tbdex.sdk.rust.InMemoryKeyManager as RustCoreInMemoryKeyManager
 import tbdex.sdk.rust.KeyManager as RustCoreKeyManager
 
-class InMemoryKeyManager : KeyManager {
+internal class InMemoryKeyManager : KeyManager {
     init {
         SystemArchitecture.set() // ensure the sys arch is set for first-time loading
     }

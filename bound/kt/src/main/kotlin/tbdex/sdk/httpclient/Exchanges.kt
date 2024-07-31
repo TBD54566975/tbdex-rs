@@ -3,12 +3,12 @@ package tbdex.sdk.httpclient
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.ExchangeData as RustCoreExchange
-import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.createExchange as rustCoreCreateExchange
 import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
 import tbdex.sdk.rust.submitCancel as rustCoreSubmitCancel
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
+import web5.sdk.dids.BearerDid
 
 data class Exchange(
     val rfq: Rfq,

@@ -1,4 +1,4 @@
-package tbdex.sdk.web5
+package web5.sdk.vc.pex
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tbdex.sdk.Json

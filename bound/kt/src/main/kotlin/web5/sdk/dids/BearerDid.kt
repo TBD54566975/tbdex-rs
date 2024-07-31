@@ -1,6 +1,10 @@
-package tbdex.sdk.web5
+package web5.sdk.dids
 
 import tbdex.sdk.rust.SystemArchitecture
+import web5.sdk.crypto.keys.KeyManager
+import web5.sdk.crypto.keys.ToOuterKeyManager
+import web5.sdk.crypto.signers.Signer
+import web5.sdk.crypto.signers.ToOuterSigner
 import tbdex.sdk.rust.DidData as RustCoreDid
 import tbdex.sdk.rust.DocumentData as RustCoreDocument
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid

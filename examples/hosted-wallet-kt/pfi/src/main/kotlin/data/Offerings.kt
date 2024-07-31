@@ -1,12 +1,8 @@
 package data
 
 import tbdex.sdk.resources.*
-import tbdex.sdk.web5.BearerDid
-import tbdex.sdk.web5.PresentationDefinition
-import tbdex.sdk.web5.InputDescriptor
-import tbdex.sdk.web5.Constraints
-import tbdex.sdk.web5.Field
-import tbdex.sdk.web5.Filter
+import web5.sdk.dids.BearerDid
+import web5.sdk.vc.pex.*
 
 class Offerings(private val bearerDid: BearerDid) {
     private var offerings: MutableList<Offering> = mutableListOf()

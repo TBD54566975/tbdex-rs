@@ -1,4 +1,4 @@
-package tbdex.sdk.web5
+package web5.sdk.crypto.signers
 
 import tbdex.sdk.rust.Signer as RustCoreSigner
 
