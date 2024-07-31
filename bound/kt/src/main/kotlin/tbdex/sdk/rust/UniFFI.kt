@@ -1330,7 +1330,7 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_get_exchange(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,`exchangeId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_func_get_exchanges(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_func_get_exchange_ids(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_get_offerings(`pfiDidUri`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1456,7 +1456,7 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_tbdex_uniffi_checksum_func_get_exchange(
     ): Short
-    fun uniffi_tbdex_uniffi_checksum_func_get_exchanges(
+    fun uniffi_tbdex_uniffi_checksum_func_get_exchange_ids(
     ): Short
     fun uniffi_tbdex_uniffi_checksum_func_get_offerings(
     ): Short
@@ -1698,7 +1698,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange() != 35978.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchanges() != 31534.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange_ids() != 44594.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_offerings() != 28498.toShort()) {
@@ -10878,10 +10878,10 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
     }
     
 
-    @Throws(TbdexSdkException::class) fun `getExchanges`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid): List<kotlin.String> {
+    @Throws(TbdexSdkException::class) fun `getExchangeIds`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid): List<kotlin.String> {
             return FfiConverterSequenceString.lift(
     uniffiRustCallWithError(TbdexSdkException) { _status ->
-    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_exchanges(
+    UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_exchange_ids(
         FfiConverterString.lower(`pfiDidUri`),FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
 }
     )

@@ -21,7 +21,7 @@ use crate::{
     http_client::{
         balances::get_balances,
         exchanges::{
-            create_exchange, get_exchange, get_exchanges, submit_cancel, submit_order,
+            create_exchange, get_exchange, get_exchange_ids, submit_cancel, submit_order,
             Exchange as ExchangeData,
         },
         offerings::get_offerings,
