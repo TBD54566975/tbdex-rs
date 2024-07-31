@@ -2,11 +2,11 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
 import tbdex.sdk.rust.Quote as RustCoreQuote
 import tbdex.sdk.rust.QuoteDataData as RustCoreQuoteData
+import web5.sdk.dids.BearerDid
 
 typealias QuoteData = RustCoreQuoteData
 typealias QuoteDetails = RustCoreQuoteDetails

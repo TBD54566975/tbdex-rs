@@ -11,7 +11,7 @@ import tbdex.sdk.http.*
 import tbdex.sdk.httpclient.Exchange
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.TbdexSdkException
-import tbdex.sdk.web5.BearerDid
+import web5.sdk.dids.BearerDid
 
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
     init {

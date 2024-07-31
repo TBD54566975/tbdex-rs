@@ -2,9 +2,9 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
-
 import tbdex.sdk.rust.OrderInstructionsDataData as RustCoreOrderInstructionsData
+import web5.sdk.dids.BearerDid
+
 typealias OrderInstructionsData = RustCoreOrderInstructionsData
 
 class OrderInstructions private constructor(

@@ -2,8 +2,8 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
 import tbdex.sdk.rust.SystemArchitecture
-import tbdex.sdk.web5.BearerDid
 import tbdex.sdk.rust.Order as RustCoreOrder
+import web5.sdk.dids.BearerDid
 
 class Order private constructor(
     val metadata: MessageMetadata,

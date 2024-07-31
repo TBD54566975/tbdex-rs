@@ -1,9 +1,11 @@
-package tbdex.sdk.web5
+package web5.sdk.crypto.keys
 
+import web5.sdk.crypto.signers.Signer
+import web5.sdk.crypto.signers.ToOuterSigner
 import tbdex.sdk.rust.JwkData as RustCoreJwk
 import tbdex.sdk.rust.KeyManager as RustCoreKeyManager
 
-typealias Jwk = RustCoreJwk
+internal typealias Jwk = RustCoreJwk
 
 interface KeyManager {
     fun getSigner(publicJwk: Jwk): Signer
