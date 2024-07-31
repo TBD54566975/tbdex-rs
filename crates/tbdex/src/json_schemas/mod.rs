@@ -36,6 +36,10 @@ impl LocalSchemaResolver {
             "https://tbdex.dev/definitions.json".to_string(),
             serde_json::from_str(&DEFINITIONS_JSON_SCHEMA.replace("\\#", "#")).unwrap(),
         );
+        schemas.insert(
+            "http://json-schema.org/draft-07/schema#".to_string(),
+            serde_json::from_str(include_str!("json_schema_org/draft-07.json")).unwrap(),
+        );
         LocalSchemaResolver { schemas }
     }
 }
