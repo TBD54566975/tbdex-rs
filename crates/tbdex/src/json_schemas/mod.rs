@@ -115,41 +115,24 @@ mod json_schemas_test {
 
     #[test]
     fn test_validate_json_schema() {
-        // Sample JSON data
-        let sample_json_data = json!({
+        let data = json!({
             "name": "John Doe",
             "age": 30,
             "email": "john.doe@example.com"
         });
 
-        // Sample JSON schema
-        let sample_json_schema = r#"
-        {
+        let schema = json!({
             "$schema": "https://json-schema.org/draft-07/schema#",
             "type": "object",
             "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "age": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "email": {
-                    "type": "string",
-                    "format": "email"
-                }
+                "name": { "type": "string" },
+                "age": { "type": "integer", "minimum": 0 },
+                "email": { "type": "string", "format": "email" }
             },
             "required": ["name", "age", "email"]
-        }
-        "#;
+        });
 
-        // Validate the sample JSON data against the schema
-        let schema: serde_json::Value = serde_json::from_str(sample_json_schema).unwrap();
-        let result = crate::json_schemas::validate(&schema, &sample_json_data);
-
-        // Check that the validation was successful
-        assert!(result.is_ok());
+        assert!(crate::json_schemas::validate(&schema, &data).is_ok());
     }
 
     #[test]
