@@ -5,6 +5,7 @@ use std::path::Path;
 fn write_json_schemas() -> Result<(), Box<dyn std::error::Error>> {
     let commit_hash = "7d2fdd03c9405b920b056ab7c7c776a858dc3591";
     let schemas = vec![
+        // Tbdex Schemas
       ("DEFINITIONS_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/definitions.json", commit_hash)),
       ("RESOURCE_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/resource.schema.json", commit_hash)),
       ("BALANCE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/balance.schema.json", commit_hash)),
@@ -18,7 +19,10 @@ fn write_json_schemas() -> Result<(), Box<dyn std::error::Error>> {
       ("CANCEL_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/cancel.schema.json", commit_hash)),
       ("ORDER_STATUS_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/orderstatus.schema.json", commit_hash)),
       ("CLOSE_DATA_JSON_SCHEMA", format!("https://raw.githubusercontent.com/TBD54566975/tbdex/{}/hosted/json-schemas/close.schema.json", commit_hash)),
-  ];
+
+        // Json schema
+      ("DRAFT_07_JSON_SCHEMA", "https://json-schema.org/draft-07/schema".to_string()),
+    ];
 
     let dest_path = Path::new("src/json_schemas").join("generated.rs");
 
