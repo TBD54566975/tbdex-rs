@@ -27,7 +27,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.sparkjava:spark-core:2.9.4")
 
-    implementation("xyz.block:tbdex:commit-d6edc85-SNAPSHOT")
+    implementation("xyz.block:tbdex:commit-b5c73ab-SNAPSHOT")
 }
 
 java {

@@ -28,7 +28,7 @@ dependencies {
     implementation("com.sparkjava:spark-core:2.9.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    implementation("xyz.block:tbdex:commit-d6edc85-SNAPSHOT")
+    implementation("xyz.block:tbdex:commit-b5c73ab-SNAPSHOT")
 }
 
 java {

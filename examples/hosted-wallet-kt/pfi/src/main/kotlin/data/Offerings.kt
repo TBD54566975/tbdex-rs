@@ -20,7 +20,7 @@ class Offerings(private val bearerDid: BearerDid) {
                     currencyCode = "USD",
                     methods = listOf(
                         PayinMethod(
-                            kind = "USD_LEDGER",
+                            kind = "STORED_BALANCE",
                         )
                     )
                 ),
@@ -28,20 +28,20 @@ class Offerings(private val bearerDid: BearerDid) {
                     currencyCode = "KES",
                     methods = listOf(
                         PayoutMethod(
-                            kind = "MOMO_MPESA",
+                            kind = "MXN_SPEI_PAYOUT",
                             requiredPaymentDetails = mapOf(
                                 "\$schema" to "http://json-schema.org/draft-07/schema#",
                                 "title" to "Mobile Money Required Payment Details",
                                 "type" to "object",
-                                "required" to listOf("phoneNumber", "reason"),
+                                "required" to listOf("clabe", "fullName"),
                                 "additionalProperties" to false,
                                 "properties" to mapOf(
-                                    "phoneNumber" to mapOf(
+                                    "clabe" to mapOf(
                                         "title" to "Mobile money phone number",
                                         "description" to "Phone number of the Mobile Money account",
                                         "type" to "string"
                                     ),
-                                    "reason" to mapOf(
+                                    "fullName" to mapOf(
                                         "title" to "Reason for sending",
                                         "description" to "To abide by the travel rules and financial reporting requirements, the reason for sending money",
                                         "type" to "string"
@@ -65,7 +65,8 @@ class Offerings(private val bearerDid: BearerDid) {
                                         path = listOf("$.issuer"),
                                         filter = Filter(
                                             type = "string",
-                                            const = bearerDid.did.uri
+//                                            const = bearerDid.did.uri
+                                            const = "did:web:pfi.tbd.engineering"
                                         ),
                                         optional = false,
                                     )
