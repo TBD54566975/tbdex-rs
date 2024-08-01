@@ -16,6 +16,7 @@ jobs:
 
   git-tag:
     runs-on: ubuntu-latest
+    needs: run-ci
 
     name: Create Git Tag
     steps:
@@ -41,6 +42,10 @@ jobs:
 
       - name: Set version of Kotlin and commit
         run: |
+
+          # cd into the Kotlin project
+          cd bound/kt/
+
           # Get the required provided version
           version=${{ github.event.inputs.version }}
           # Precondition check; do not allow this to proceed if a version ending in "-SNAPSHOT" was specified
@@ -58,9 +63,6 @@ jobs:
 
           echo "Version to be released: $version"
           echo "Setting next development version back to original in pom.xml: $nextVersion"
-
-          # cd into the Kotlin project
-          cd bound/kt/
 
           # Set newly resolved version in POM config
           mvn \
