@@ -7,7 +7,7 @@ import tbdex.sdk.rust.createExchange as rustCoreCreateExchange
 import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
 import tbdex.sdk.rust.submitCancel as rustCoreSubmitCancel
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
-import tbdex.sdk.rust.getExchanges as rustCoreGetExchanges
+import tbdex.sdk.rust.getExchangeIds as rustCoreGetExchangeIds
 import web5.sdk.dids.BearerDid
 
 data class Exchange(
@@ -63,10 +63,10 @@ fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Ex
     return Exchange.fromRustCore(rustCoreExchange)
 }
 
-fun getExchanges(pfiDidUri: String, bearerDid: BearerDid): List<String> {
+fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid): List<String> {
     SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
-    return rustCoreGetExchanges(pfiDidUri, bearerDid.rustCoreBearerDid)
+    return rustCoreGetExchangeIds(pfiDidUri, bearerDid.rustCoreBearerDid)
 }
 
 
