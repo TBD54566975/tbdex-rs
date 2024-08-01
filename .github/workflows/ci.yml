@@ -134,12 +134,6 @@ jobs:
             echo "Requesting deployment as version: $resolvedVersion"
           fi
 
-          # Postcondition check; only allow this to proceed if we have a version ending in "-SNAPSHOT"
-          if [[ ! "$resolvedVersion" =~ -SNAPSHOT$ ]]; then
-            echo "Error: The version does not end with \"-SNAPSHOT\": $resolvedVersion"
-            exit 1
-          fi
-
           echo "Resolved SNAPSHOT Version: $resolvedVersion"
           echo "resolved_version=$resolvedVersion" >> $GITHUB_OUTPUT
 
