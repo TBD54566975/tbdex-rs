@@ -13,10 +13,19 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+# Do not put native binaries in source control
+bound/kt/src/main/resources/*.dylib
+bound/kt/src/main/resources/*.so
+
+# .class file for acceptance test
+tests/jvm/**.class
+
+
 # ---
 
 .hermit/
 build/
 .gradle/
 **/.idea/
-.DS_Store
+**/**.iml
+**/.DS_Store
