@@ -37,7 +37,7 @@
     - [`QuoteDetails`](#quotedetails)
   - [`Order`](#order)
   - [`OrderInstructions`](#orderinstructions)
-    - [`OrderInstructionsData](#orderinstructionsdata)
+    - [`OrderInstructionsData`](#orderinstructionsdata)
     - [`PaymentInstruction`](#paymentinstruction)
   - [`Cancel`](#cancel)
     - [`CancelData`](#canceldata)
@@ -63,7 +63,7 @@
   - [`submit_close()`](#submit_close)
   - [`get_exchange()`](#get_exchange)
   - [`Exchange`](#exchange)
-  - [`get_exchanges()`](#get_exchanges)
+  - [`get_exchange_ids()`](#get_exchange_ids)
 
 > [!WARNING]
 >
@@ -625,8 +625,8 @@ CLASS Exchange
   PUBLIC DATA close: Close
 ```
 
-## `get_exchanges()`
+## `get_exchange_ids()`
 
 ```pseudocode!
-FUNCTION get_exchanges(pfi_did_uri: string, bearer_did: BearerDid): []string
+FUNCTION get_exchange_ids(pfi_did_uri: string, bearer_did: BearerDid): []string
 ```

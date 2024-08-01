@@ -151,7 +151,7 @@ pub fn get_exchange(
     Ok(exchange)
 }
 
-pub fn get_exchanges(pfi_did: &str, requestor_did: &BearerDid) -> Result<Vec<String>> {
+pub fn get_exchange_ids(pfi_did: &str, requestor_did: &BearerDid) -> Result<Vec<String>> {
     let service_endpoint = get_service_endpoint(pfi_did)?;
     let get_exchanges_endpoint = format!("{}/exchanges", service_endpoint);
 

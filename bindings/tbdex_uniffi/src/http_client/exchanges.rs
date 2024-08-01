@@ -76,8 +76,8 @@ pub fn get_exchange(
     Ok(Exchange::from_inner(inner_exchange))
 }
 
-pub fn get_exchanges(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<Vec<String>> {
+pub fn get_exchange_ids(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<Vec<String>> {
     let exchange_ids =
-        tbdex::http_client::exchanges::get_exchanges(&pfi_did_uri, &bearer_did.0.clone())?;
+        tbdex::http_client::exchanges::get_exchange_ids(&pfi_did_uri, &bearer_did.0.clone())?;
     Ok(exchange_ids)
 }

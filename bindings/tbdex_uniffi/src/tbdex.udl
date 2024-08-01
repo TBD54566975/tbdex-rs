@@ -12,7 +12,7 @@ namespace tbdex {
   [Throws=TbdexSdkError]
   ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
   [Throws=TbdexSdkError]
-  sequence<string> get_exchanges(string pfi_did_uri, BearerDid bearer_did);
+  sequence<string> get_exchange_ids(string pfi_did_uri, BearerDid bearer_did);
 };
 
 [Error]
