@@ -4,7 +4,7 @@ import tbdex.sdk.rust.SystemArchitecture
 import web5.sdk.crypto.keys.Jwk
 import tbdex.sdk.rust.PortableDid as RustCorePortableDid
 
-internal class PortableDid private constructor(
+class PortableDid private constructor(
     val didUri: String,
     val document: Document,
     val privateKeys: List<Jwk>,

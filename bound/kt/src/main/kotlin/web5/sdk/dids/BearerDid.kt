@@ -21,8 +21,7 @@ class BearerDid private constructor(
     }
 
     companion object {
-        fun fromJsonString(json: String): BearerDid {
-            val portableDid = PortableDid.fromJsonString(json)
+        fun fromPortableDid(portableDid: PortableDid): BearerDid {
             val rustCoreBearerDid = RustCoreBearerDid.fromPortableDid(portableDid.rustCorePortableDid)
             val data = rustCoreBearerDid.getData()
 
