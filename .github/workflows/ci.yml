@@ -4,13 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version of Kotlin binary to publish to TBD Artifactory. For example "1.0.0-SNAPSHOT". If not supplied, will default to version specified in the POM. Must end in "-SNAPSHOT".'
+        description: 'Version of Kotlin binary to publish to TBD Artifactory. For example "1.0.0-SNAPSHOT". If not supplied, will default to "commit-$shortSHA-SNAPSHOT" where $shortSHA is the shortform commit SHA. Must end in "-SNAPSHOT".'
         required: false
         default: "0.0.0-SNAPSHOT"
   push:
     branches:
       - main
   pull_request:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version of Kotlin binary to publish to TBD Artifactory. For example "1.0.0-SNAPSHOT". If not supplied, will default to "commit-$shortSHA-SNAPSHOT" where $shortSHA is the shortform commit SHA. Must end in "-SNAPSHOT".'
+        required: true
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
@@ -111,6 +117,14 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
+     # Cache Maven repo
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Resolve Snapshot Version
         id: resolve_version
         run: |
@@ -125,15 +139,11 @@ jobs:
             echo "Requesting deployment as version: $resolvedVersion"
           fi
 
-          # Postcondition check; only allow this to proceed if we have a version ending in "-SNAPSHOT"
-          if [[ ! "$resolvedVersion" =~ -SNAPSHOT$ ]]; then
-            echo "Error: The version does not end with \"-SNAPSHOT\": $resolvedVersion"
-            exit 1
-          fi
-
           echo "Resolved SNAPSHOT Version: $resolvedVersion"
           echo "resolved_version=$resolvedVersion" >> $GITHUB_OUTPUT
 
+      # Package up the native binaries
+      #TODO Centralize this block as we re-use it via copy/paste right now
       - name: Download MacOS aarch64 Native Library
         uses: actions/download-artifact@v4.0.0
         with:
