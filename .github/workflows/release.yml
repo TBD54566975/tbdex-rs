@@ -1,4 +1,4 @@
-name: CI
+name: Release
 
 on:
   workflow_dispatch:
@@ -105,6 +105,7 @@ jobs:
         with:
           distribution: "adopt"
           java-version: "11"
+
       # Cache Maven repo
       - uses: actions/cache@v3
         with:
@@ -149,9 +150,23 @@ jobs:
                 echo "Error: No credentials"
                 exit 1
             fi
+
+            # Only attempt to publish artifact if we have credentials
+            if [ -n "${{ secrets.ARTIFACTORY_PASSWORD }}" ]; then
+                # Maven deploy lifecycle will build, run tests, verify, sign, and deploy
+                mvn deploy \ 
+                  --batch-mode \
+                  --settings .maven_settings.xml \
+                  -P ossrh,sign-artifacts
+            else
+                echo "Error: No credentials"
+                exit 1
+            fi
         env:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SIGN_KEY_PASS: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           SIGN_KEY: ${{ secrets.GPG_SECRET_KEY }}
         
