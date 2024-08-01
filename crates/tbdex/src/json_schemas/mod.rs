@@ -38,7 +38,7 @@ impl LocalSchemaResolver {
             serde_json::from_str(&DEFINITIONS_JSON_SCHEMA.replace("\\#", "#")).unwrap(),
         );
         schemas.insert(
-            "http://json-schema.org/draft-07/schema".to_string(),
+            "https://json-schema.org/draft-07/schema".to_string(),
             serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap(),
         );
         LocalSchemaResolver { schemas }
@@ -47,7 +47,11 @@ impl LocalSchemaResolver {
     fn normalize_url(url: &reqwest::Url) -> String {
         let mut normalized_url = url.clone();
         normalized_url.set_fragment(None);
-        normalized_url.to_string()
+        let mut url_str = normalized_url.to_string();
+        if url_str.starts_with("http://") {
+            url_str = url_str.replacen("http://", "https://", 1);
+        }
+        url_str
     }
 }
 
