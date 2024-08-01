@@ -6,6 +6,7 @@ use reqwest::blocking::get;
 use serde::Serialize;
 use serde_json::Error as SerdeJsonError;
 use std::{collections::HashMap, sync::Arc};
+use crate::json_schemas::generated::DRAFT_07_JSON_SCHEMA;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum JsonSchemaError {
@@ -38,7 +39,7 @@ impl LocalSchemaResolver {
         );
         schemas.insert(
             "http://json-schema.org/draft-07/schema#".to_string(),
-            serde_json::from_str(include_str!("json_schema_org/draft-07.json")).unwrap(),
+            serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap(),
         );
         LocalSchemaResolver { schemas }
     }
@@ -104,4 +105,88 @@ pub fn validate<T: Serialize>(schema: &serde_json::Value, value: &T) -> Result<(
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod json_schemas_test {
+    use reqwest::Url;
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_validate_json_schema() {
+        // Sample JSON data
+        let sample_json_data = json!({
+            "name": "John Doe",
+            "age": 30,
+            "email": "john.doe@example.com"
+        });
+
+        // Sample JSON schema
+        let sample_json_schema = r#"
+        {
+            "$schema": "https://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "age": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                }
+            },
+            "required": ["name", "age", "email"]
+        }
+        "#;
+
+        // Validate the sample JSON data against the schema
+        let schema: serde_json::Value = serde_json::from_str(sample_json_schema).unwrap();
+        let result = crate::json_schemas::validate(&schema, &sample_json_data);
+
+        // Check that the validation was successful
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_local_schema_resolver_local() {
+        // Create a local schema resolver
+        let resolver = LocalSchemaResolver::new();
+
+        // Create a URL that matches one of the schemas in the resolver
+        let url = Url::parse("https://tbdex.dev/definitions.json").unwrap();
+
+        // Resolve the schema
+        let resolved_schema = resolver.resolve(&json!({}), &url, "").unwrap();
+
+        // Ensure the resolved schema is correct
+        let expected_schema: serde_json::Value = serde_json::from_str(&DEFINITIONS_JSON_SCHEMA.replace("\\#", "#")).unwrap();
+        assert_eq!(
+            resolved_schema.as_ref(),
+            &expected_schema
+        );
+    }
+
+    #[test]
+    fn test_local_draft_07_schema_resolver_local() {
+        // Create a local schema resolver
+        let resolver = LocalSchemaResolver::new();
+
+        // Create a URL that matches one of the schemas in the resolver
+        let url = Url::parse("http://json-schema.org/draft-07/schema#").unwrap();
+
+        // Resolve the schema
+        let resolved_schema = resolver.resolve(&json!({}), &url, "").unwrap();
+
+        // Ensure the resolved schema is correct
+        let expected_schema: serde_json::Value = serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap();
+        assert_eq!(
+            resolved_schema.as_ref(),
+            &expected_schema
+        );
+    }
 }
