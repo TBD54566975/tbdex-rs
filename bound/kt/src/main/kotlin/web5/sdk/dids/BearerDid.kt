@@ -21,11 +21,12 @@ class BearerDid private constructor(
     }
 
     companion object {
-        fun fromPortableDid(portableDid: PortableDid): BearerDid {
+        fun fromJsonString(json: String): BearerDid {
+            val portableDid = PortableDid.fromJsonString(json)
             val rustCoreBearerDid = RustCoreBearerDid.fromPortableDid(portableDid.rustCorePortableDid)
             val data = rustCoreBearerDid.getData()
 
-            val keyManager = InMemoryKeyManager(portableDid.privateKeys)
+            val keyManager = InMemoryKeyManager.fromPrivateJwks(portableDid.privateKeys)
 
             return BearerDid(data.did, data.document, keyManager, rustCoreBearerDid)
         }
