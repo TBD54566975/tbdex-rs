@@ -11,7 +11,7 @@ jobs:
 
   run-ci:
     #TODO Update this to TBD org when done testing
-    uses: ALRubinger/.tbdex-rs/workflows/ci.yml@main
+    uses: ALRubinger/tbdex-rs/.github/workflows/ci.yml@main
     secrets: inherit
 
   git-tag:
