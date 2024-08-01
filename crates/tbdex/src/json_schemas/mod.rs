@@ -1,12 +1,12 @@
 pub mod generated;
 
+use crate::json_schemas::generated::DRAFT_07_JSON_SCHEMA;
 use generated::DEFINITIONS_JSON_SCHEMA;
 use jsonschema::{JSONSchema, SchemaResolver, SchemaResolverError};
 use reqwest::blocking::get;
 use serde::Serialize;
 use serde_json::Error as SerdeJsonError;
 use std::{collections::HashMap, sync::Arc};
-use crate::json_schemas::generated::DRAFT_07_JSON_SCHEMA;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum JsonSchemaError {
@@ -38,10 +38,16 @@ impl LocalSchemaResolver {
             serde_json::from_str(&DEFINITIONS_JSON_SCHEMA.replace("\\#", "#")).unwrap(),
         );
         schemas.insert(
-            "http://json-schema.org/draft-07/schema#".to_string(),
+            "http://json-schema.org/draft-07/schema".to_string(),
             serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap(),
         );
         LocalSchemaResolver { schemas }
+    }
+
+    fn normalize_url(url: &reqwest::Url) -> String {
+        let mut normalized_url = url.clone();
+        normalized_url.set_fragment(None);
+        normalized_url.to_string()
     }
 }
 
@@ -52,7 +58,7 @@ impl SchemaResolver for LocalSchemaResolver {
         url: &reqwest::Url,
         _original_reference: &str,
     ) -> std::result::Result<std::sync::Arc<josekit::Value>, SchemaResolverError> {
-        if let Some(schema) = self.schemas.get(url.as_str()) {
+        if let Some(schema) = self.schemas.get(&LocalSchemaResolver::normalize_url(url)) {
             Ok(std::sync::Arc::new(schema.clone()))
         } else {
             match get(url.as_str()) {
@@ -109,8 +115,8 @@ pub fn validate<T: Serialize>(schema: &serde_json::Value, value: &T) -> Result<(
 
 #[cfg(test)]
 mod json_schemas_test {
-    use reqwest::Url;
     use super::*;
+    use reqwest::Url;
     use serde_json::json;
 
     #[test]
@@ -147,11 +153,9 @@ mod json_schemas_test {
         let resolved_schema = resolver.resolve(&json!({}), &url, "").unwrap();
 
         // Ensure the resolved schema is correct
-        let expected_schema: serde_json::Value = serde_json::from_str(&DEFINITIONS_JSON_SCHEMA.replace("\\#", "#")).unwrap();
-        assert_eq!(
-            resolved_schema.as_ref(),
-            &expected_schema
-        );
+        let expected_schema: serde_json::Value =
+            serde_json::from_str(&DEFINITIONS_JSON_SCHEMA.replace("\\#", "#")).unwrap();
+        assert_eq!(resolved_schema.as_ref(), &expected_schema);
     }
 
     #[test]
@@ -160,16 +164,31 @@ mod json_schemas_test {
         let resolver = LocalSchemaResolver::new();
 
         // Create a URL that matches one of the schemas in the resolver
+        let url = Url::parse("http://json-schema.org/draft-07/schema").unwrap();
+
+        // Resolve the schema
+        let resolved_schema = resolver.resolve(&json!({}), &url, "").unwrap();
+
+        // Ensure the resolved schema is correct
+        let expected_schema: serde_json::Value =
+            serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap();
+        assert_eq!(resolved_schema.as_ref(), &expected_schema);
+    }
+
+    #[test]
+    fn test_local_draft_07_schema_resolver_local_with_fragment() {
+        // Create a local schema resolver
+        let resolver = LocalSchemaResolver::new();
+
+        // Create a URL with the fragment (#)
         let url = Url::parse("http://json-schema.org/draft-07/schema#").unwrap();
 
         // Resolve the schema
         let resolved_schema = resolver.resolve(&json!({}), &url, "").unwrap();
 
         // Ensure the resolved schema is correct
-        let expected_schema: serde_json::Value = serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap();
-        assert_eq!(
-            resolved_schema.as_ref(),
-            &expected_schema
-        );
+        let expected_schema: serde_json::Value =
+            serde_json::from_str(&DRAFT_07_JSON_SCHEMA.replace("\\#", "#")).unwrap();
+        assert_eq!(resolved_schema.as_ref(), &expected_schema);
     }
 }
