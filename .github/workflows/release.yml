@@ -106,11 +106,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      with:
-        submodules: true
-        ref: $RELEASE_TAG # Check out the tag we created above
-      env: 
-        RELEASE_TAG: ${{ needs.git-tag.outputs.RELEASE_TAG }}
+        with:
+          submodules: true
+          ref: $RELEASE_TAG # Check out the tag we created above
+        env: 
+          RELEASE_TAG: ${{ needs.git-tag.outputs.RELEASE_TAG }}
         
 
         
