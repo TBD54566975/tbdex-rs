@@ -20,6 +20,8 @@ bound/kt/src/main/resources/*.so
 # .class file for acceptance test
 tests/jvm/**.class
 
+# Do not commit versionBackup files 
+**/pom.xml.versionsBackup
 
 # ---
 
