@@ -10,6 +10,7 @@ on:
 jobs:
 
   run-ci:
+    # This will run CI and also publish the Kotlin release to the TBD Artifactory repo manager
     name: Run CI
     #TODO Update this to TBD org when done testing
     uses: ALRubinger/tbdex-rs/.github/workflows/ci.yml@main
@@ -88,8 +89,8 @@ jobs:
           git push origin $tagName
 
           # Make the version and tag name available to subsequent jobs as an output param
-          echo "{RELEASE_TAG}={$tagName}" >> "$GITHUB_OUTPUT"
-          echo "{RELEASE_VERSION}={$version}" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_TAG=$tagName" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_OUTPUT"
 
           # Set the next development version and commit
           mvn \
@@ -152,20 +153,10 @@ jobs:
           name: x86_64-unknown-linux-musl-so
           path: bound/kt/src/main/resources/
 
-      - name: Deploy Release Version of Kotlin Project to TBD Artifactory
+      - name: Deploy Release Version of Kotlin Project to Maven Central
         run: |
             # cd into the Kotlin project
             cd bound/kt/
-
-            # Publish to TBD Artifactory
-            # Only attempt to publish artifact if we have credentials
-            if [ -n "${{ secrets.ARTIFACTORY_PASSWORD }}" ]; then
-                # Maven deploy lifecycle will build, run tests, verify, sign, and deploy
-                mvn deploy --batch-mode --settings .maven_settings.xml -P sign-artifacts
-            else
-                echo "Error: No credentials"
-                exit 1
-            fi
 
             # Publish to Sonatype
             # Precondition check: Only attempt to publish artifact if we have credentials
@@ -180,8 +171,6 @@ jobs:
                 exit 1
             fi
         env:
-          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SIGN_KEY_PASS: ${{ secrets.GPG_SECRET_PASSPHRASE }}
