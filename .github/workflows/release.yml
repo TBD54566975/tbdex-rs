@@ -15,7 +15,9 @@ jobs:
     name: Run CI
     #TODO Update this to TBD org when done testing
     uses: ALRubinger/tbdex-rs/.github/workflows/ci.yml@main
-    secrets: inherit   
+    secrets: inherit
+    with:
+      version: ${{ github.event.inputs.version }}
 
   git-tag:
     runs-on: ubuntu-latest
