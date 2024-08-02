@@ -105,11 +105,10 @@ jobs:
     needs: git-tag
     runs-on: ubuntu-latest
     steps:
-      # Check out the tag we created above
       - uses: actions/checkout@v4
       with:
         submodules: true
-        ref: $RELEASE_TAG
+        ref: $RELEASE_TAG # Check out the tag we created above
       env: 
         RELEASE_TAG: ${{ needs.git-tag.outputs.RELEASE_TAG }}
         
