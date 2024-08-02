@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     #needs: run-ci
     outputs:
-      output1: ${{ steps.set-version-and-tag.outputs.RELEASE_TAG }}
-      output2: ${{ steps.set-version-and-tag.outputs.RELEASE_VERSION }}
+      RELEASE_TAG: ${{ steps.set-version-and-tag.outputs.RELEASE_TAG }}
+      RELEASE_VERSION: ${{ steps.set-version-and-tag.outputs.RELEASE_VERSION }}
 
     name: Create Git Tag
     steps:
