@@ -161,11 +161,10 @@ jobs:
             # Publish to Sonatype
             # Precondition check: Only attempt to publish artifact if we have credentials
             if [ -n "${{ secrets.SONATYPE_PASSWORD }}" ]; then
-                # Maven deploy lifecycle will build, run tests, verify, sign, and deploy
-                mvn deploy \ 
-                  --batch-mode \
-                  --settings .maven_settings.xml \
-                  -P ossrh,sign-artifacts
+              # Maven deploy lifecycle will build, run tests, verify, sign, and deploy
+              mvn deploy --batch-mode \
+                --settings .maven_settings.xml \
+                -P ossrh,sign-artifacts
             else
                 echo "Error: No credentials"
                 exit 1
