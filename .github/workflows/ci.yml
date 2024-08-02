@@ -7,15 +7,16 @@ on:
         description: 'Version of Kotlin binary to publish to TBD Artifactory. For example "1.0.0-SNAPSHOT". If not supplied, will default to "commit-$shortSHA-SNAPSHOT" where $shortSHA is the shortform commit SHA. Must end in "-SNAPSHOT".'
         required: false
         default: "0.0.0-SNAPSHOT"
-      git_ref:
-        description: 'Git ref to check out. Used principally by the Release workflow but may be supplied to run CI on any Git ref.'
-        required: false
-        default: "main"
   push:
     branches:
       - main
   pull_request:
   workflow_call:
+    inputs:
+      version:
+        description: 'Version of Kotlin binary to publish to TBD Artifactory. For example "1.0.0-SNAPSHOT". If not supplied, will default to "commit-$shortSHA-SNAPSHOT" where $shortSHA is the shortform commit SHA. Must end in "-SNAPSHOT".'
+        required: true
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
