@@ -90,6 +90,7 @@ jobs:
           # Make the version and tag name available to subsequent jobs as an output param
           echo "RELEASE_TAG=$tagName" >> "$GITHUB_OUTPUT"
           echo "RELEASE_VERSION=$version" >> "$GITHUB_OUTPUT"
+          cat $GITHUB_OUTPUT
 
           # Set the next development version and commit
           mvn \
