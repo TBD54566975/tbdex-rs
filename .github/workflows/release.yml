@@ -74,7 +74,7 @@ jobs:
           git add -Av
           git commit -m "[TBD Release Manager 🚀] Setting version to: $version"
           tagName=v$version
-          git tag -a v$tagName -m "Tag version: v$tagName" # We tag with a prefix of "v"
+          git tag -a $tagName -m "Tag version: $tagName" # We tag with a prefix of "v"
           git push origin main
           git push origin $tagName
 
