@@ -8,7 +8,7 @@ pub mod json;
 mod json_schemas;
 mod signature;
 
-const DEFAULT_PROTOCOL_VERSION: &str = "1.0";
+const DEFAULT_PROTOCOL_VERSION: &str = "2.0";
 
 lazy_static::lazy_static! {
   pub(crate) static ref LOG_LEVEL: Option<String> = {
