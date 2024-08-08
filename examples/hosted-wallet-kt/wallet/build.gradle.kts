@@ -22,14 +22,14 @@ dependencies {
 
     // For local development dependency.
     // Install the dependency locally by running `mvn install` in the `bound/kt` directory
-     implementation("xyz.block:tbdex:0.0.0-main-SNAPSHOT")
+    // implementation("xyz.block:tbdex:0.0.0-main-SNAPSHOT")
 
     // For a snapshot from maven
     // Update the short git commit SHA below
-    // implementation("xyz.block:tbdex:commit-d6edc85-SNAPSHOT")
+    implementation("xyz.block:tbdex:commit-cc93a9c-SNAPSHOT")
 
     // For the official release on maven central
-//    implementation("xyz.block:tbdex:3.0.0")
+    // implementation("xyz.block:tbdex:3.0.0")
 }
 
 java {
