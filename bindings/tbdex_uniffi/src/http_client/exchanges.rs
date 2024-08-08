@@ -6,7 +6,7 @@ use crate::{
     },
 };
 use std::sync::{Arc, RwLock};
-use tbdex::http_client::exchanges::Exchange as InnerExchange;
+use tbdex::http_client::exchanges::{Exchange as InnerExchange, GetExchangeIdsQueryParams};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
 
 pub struct Exchange {
@@ -76,8 +76,15 @@ pub fn get_exchange(
     Ok(Exchange::from_inner(inner_exchange))
 }
 
-pub fn get_exchange_ids(pfi_did_uri: String, bearer_did: Arc<BearerDid>) -> Result<Vec<String>> {
-    let exchange_ids =
-        tbdex::http_client::exchanges::get_exchange_ids(&pfi_did_uri, &bearer_did.0.clone())?;
+pub fn get_exchange_ids(
+    pfi_did_uri: String,
+    bearer_did: Arc<BearerDid>,
+    query_params: Option<GetExchangeIdsQueryParams>,
+) -> Result<Vec<String>> {
+    let exchange_ids = tbdex::http_client::exchanges::get_exchange_ids(
+        &pfi_did_uri,
+        &bearer_did.0.clone(),
+        query_params,
+    )?;
     Ok(exchange_ids)
 }

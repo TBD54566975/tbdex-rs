@@ -15,7 +15,7 @@ import web5.sdk.dids.BearerDid
 
 class Exchanges(private val bearerDid: BearerDid, private val offeringsRepository: data.Offerings) {
     init {
-        get("/exchanges") { _, res -> getExchanges(res) }
+        get("/exchanges") { req, res -> getExchangeIds(req, res) }
         get("/exchanges/:id") { req, res -> getExchange(req,res) }
 
         post("/exchanges") { req, res -> createExchange(req, res) }
@@ -44,10 +44,14 @@ class Exchanges(private val bearerDid: BearerDid, private val offeringsRepositor
         return responseBody.toJsonString()
     }
 
-    private fun getExchanges(res: Response): String {
+    private fun getExchangeIds(req: Request, res: Response): String {
         println("GET /exchanges")
 
-        val responseBody = GetExchangesResponseBody(exchangeIdToExchange.keys.toList())
+        val offset = req.queryParams("page[offset]")?.toIntOrNull() ?: 0
+        val limit = req.queryParams("page[limit]")?.toIntOrNull() ?: 10
+        val paginatedExchanges = exchangeIdToExchange.keys.toList().drop(offset).take(limit)
+
+        val responseBody = GetExchangesResponseBody(paginatedExchanges)
 
         res.type("application/json")
         return responseBody.toJsonString()

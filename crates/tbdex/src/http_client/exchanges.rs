@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use super::{get_service_endpoint, send_request, Result};
+use super::{add_pagination, get_service_endpoint, send_request, Result};
 use crate::http::exchanges::GetExchangesResponseBody;
 use crate::{
     http::exchanges::{
@@ -151,9 +151,29 @@ pub fn get_exchange(
     Ok(exchange)
 }
 
-pub fn get_exchange_ids(pfi_did: &str, requestor_did: &BearerDid) -> Result<Vec<String>> {
+#[derive(Clone, Default, Debug, PartialEq)]
+pub struct GetExchangeIdsQueryParams {
+    pub pagination_offset: Option<i64>,
+    pub pagination_limit: Option<i64>,
+}
+
+pub fn get_exchange_ids(
+    pfi_did: &str,
+    requestor_did: &BearerDid,
+    query_params: Option<GetExchangeIdsQueryParams>,
+) -> Result<Vec<String>> {
     let service_endpoint = get_service_endpoint(pfi_did)?;
     let get_exchanges_endpoint = format!("{}/exchanges", service_endpoint);
+
+    let get_exchanges_endpoint = if let Some(params) = query_params {
+        add_pagination(
+            &get_exchanges_endpoint,
+            params.pagination_offset,
+            params.pagination_limit,
+        )
+    } else {
+        get_exchanges_endpoint
+    };
 
     let access_token = generate_access_token(pfi_did, requestor_did)?;
 

@@ -12,7 +12,7 @@ namespace tbdex {
   [Throws=TbdexSdkError]
   ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
   [Throws=TbdexSdkError]
-  sequence<string> get_exchange_ids(string pfi_did_uri, BearerDid bearer_did);
+  sequence<string> get_exchange_ids(string pfi_did_uri, BearerDid bearer_did, GetExchangeIdsQueryParamsData? query_params);
 };
 
 [Error]
@@ -447,7 +447,10 @@ interface ReplyToRequestBody {
   ReplyToRequestBodyData get_data();
 };
 
-
+dictionary GetExchangeIdsQueryParamsData {
+  i64? pagination_offset;
+  i64? pagination_limit;
+};
 
 
 

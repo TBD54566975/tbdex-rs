@@ -64,6 +64,7 @@
   - [`get_exchange()`](#get_exchange)
   - [`Exchange`](#exchange)
   - [`get_exchange_ids()`](#get_exchange_ids)
+    - [`GetExchangeIdsQueryParams`](#getexchangeidsqueryparams)
 
 > [!WARNING]
 >
@@ -628,5 +629,16 @@ CLASS Exchange
 ## `get_exchange_ids()`
 
 ```pseudocode!
-FUNCTION get_exchange_ids(pfi_did_uri: string, bearer_did: BearerDid): []string
+FUNCTION get_exchange_ids(
+  pfi_did_uri: string, 
+  bearer_did: BearerDid, 
+  query_params: GetExchangeIdsQueryParams?): []string
+```
+
+### `GetExchangeIdsQueryParams`
+
+```pseudocode!
+CLASS GetExchangeIdsQueryParams
+  PUBLIC DATA pagination_offset: int
+  PUBLIC DATA pagination_limit: int
 ```

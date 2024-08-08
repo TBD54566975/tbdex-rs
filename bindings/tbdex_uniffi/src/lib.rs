@@ -42,6 +42,7 @@ use crate::{
 };
 use tbdex::{
     http::{ErrorDetail as ErrorDetailData, ErrorResponseBody as ErrorResponseBodyData},
+    http_client::exchanges::GetExchangeIdsQueryParams as GetExchangeIdsQueryParamsData,
     messages::{
         cancel::{Cancel as CancelData, CancelData as CancelDataData},
         close::{Close as CloseData, CloseData as CloseDataData},

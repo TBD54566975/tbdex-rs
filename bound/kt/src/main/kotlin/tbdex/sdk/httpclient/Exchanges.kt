@@ -1,6 +1,7 @@
 package tbdex.sdk.httpclient
 
 import tbdex.sdk.messages.*
+import tbdex.sdk.rust.GetExchangeIdsQueryParamsData as RustCoreGetExchangeIdsQueryParams
 import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.ExchangeData as RustCoreExchange
 import tbdex.sdk.rust.createExchange as rustCoreCreateExchange
@@ -63,10 +64,12 @@ fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Ex
     return Exchange.fromRustCore(rustCoreExchange)
 }
 
-fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid): List<String> {
+typealias GetExchangeIdsQueryParams = RustCoreGetExchangeIdsQueryParams
+
+fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid, queryParams: GetExchangeIdsQueryParams? = null): List<String> {
     SystemArchitecture.set() // ensure the sys arch is set for first-time loading
 
-    return rustCoreGetExchangeIds(pfiDidUri, bearerDid.rustCoreBearerDid)
+    return rustCoreGetExchangeIds(pfiDidUri, bearerDid.rustCoreBearerDid, queryParams)
 }
 
 
