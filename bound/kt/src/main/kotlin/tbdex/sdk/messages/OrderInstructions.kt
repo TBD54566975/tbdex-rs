@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.OrderInstructionsDataData as RustCoreOrderInstructionsData
 import web5.sdk.dids.BearerDid
 

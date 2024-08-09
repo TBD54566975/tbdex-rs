@@ -1,7 +1,6 @@
 package tbdex.sdk.http
 
 import tbdex.sdk.resources.Offering
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.GetOfferingsResponseBody as RustCoreGetOfferingsResponseBody
 
 class GetOfferingsResponseBody private constructor(

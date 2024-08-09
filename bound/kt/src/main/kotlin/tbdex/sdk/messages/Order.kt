@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Order as RustCoreOrder
 import web5.sdk.dids.BearerDid
 

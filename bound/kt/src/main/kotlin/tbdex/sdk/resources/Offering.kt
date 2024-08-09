@@ -1,7 +1,6 @@
 package tbdex.sdk.resources
 
 import tbdex.sdk.Json
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Offering as RustCoreOffering
 import web5.sdk.dids.BearerDid
 import web5.sdk.vc.pex.PresentationDefinition

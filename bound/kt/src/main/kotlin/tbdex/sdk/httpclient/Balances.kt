@@ -1,7 +1,6 @@
 package tbdex.sdk.httpclient
 
 import tbdex.sdk.resources.Balance
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.getBalances as rustCoreGetBalances
 import web5.sdk.dids.BearerDid
 

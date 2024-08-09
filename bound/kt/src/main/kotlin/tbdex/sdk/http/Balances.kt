@@ -1,7 +1,6 @@
 package tbdex.sdk.http
 
 import tbdex.sdk.resources.Balance
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.GetBalancesResponseBody as RustCoreGetBalancesResponseBody
 
 class GetBalancesResponseBody private constructor(

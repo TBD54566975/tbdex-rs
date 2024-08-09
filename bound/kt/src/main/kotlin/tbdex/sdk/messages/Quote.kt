@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
 import tbdex.sdk.rust.Quote as RustCoreQuote

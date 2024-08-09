@@ -1,6 +1,5 @@
 package web5.sdk.crypto.keys
 
-import tbdex.sdk.rust.SystemArchitecture
 import web5.sdk.crypto.signers.Signer
 import web5.sdk.crypto.signers.ToOuterSigner
 import tbdex.sdk.rust.InMemoryKeyManager as RustCoreInMemoryKeyManager

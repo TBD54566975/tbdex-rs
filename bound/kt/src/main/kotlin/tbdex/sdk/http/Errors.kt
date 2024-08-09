@@ -1,6 +1,5 @@
 package tbdex.sdk.http
 
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.ErrorDetailData as RustCoreErrorDetail
 import tbdex.sdk.rust.ErrorResponseBody as RustCoreErrorResponseBody
 

@@ -2,7 +2,6 @@ package web5.sdk.vc.pex
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import tbdex.sdk.Json
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.PresentationDefinition as RustCorePresentationDefinition
 
 data class PresentationDefinition(

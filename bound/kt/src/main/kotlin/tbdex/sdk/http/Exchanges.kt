@@ -9,7 +9,6 @@ import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponse
 import tbdex.sdk.rust.GetExchangesResponseBody as RustCoreGetExchangesResponseBody
 import tbdex.sdk.rust.UpdateExchangeRequestBody as RustCoreUpdateExchangeRequestBody
 import tbdex.sdk.rust.ReplyToRequestBody as RustCoreReplyToRequestBody
-import tbdex.sdk.rust.SystemArchitecture
 
 class GetExchangeResponseBody private constructor(
     val data: List<Message>,

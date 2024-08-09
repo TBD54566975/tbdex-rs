@@ -1,6 +1,5 @@
 package web5.sdk.dids
 
-import tbdex.sdk.rust.SystemArchitecture
 import web5.sdk.crypto.keys.KeyManager
 import web5.sdk.crypto.keys.ToOuterKeyManager
 import web5.sdk.crypto.signers.Signer

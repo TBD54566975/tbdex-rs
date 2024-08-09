@@ -1,6 +1,5 @@
 package web5.sdk.dids
 
-import tbdex.sdk.rust.SystemArchitecture
 import web5.sdk.crypto.keys.Jwk
 import tbdex.sdk.rust.PortableDid as RustCorePortableDid
 

@@ -2,7 +2,6 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.Json
 import tbdex.sdk.resources.Offering
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Rfq as RustCoreRfq
 import web5.sdk.dids.BearerDid
 

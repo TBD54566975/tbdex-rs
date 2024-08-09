@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Close as RustCoreClose
 import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
 import web5.sdk.dids.BearerDid
