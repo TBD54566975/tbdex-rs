@@ -360,6 +360,7 @@ private fun findLibraryName(componentName: String): String {
 private inline fun <reified Lib : Library> loadIndirect(
     componentName: String
 ): Lib {
+    SystemArchitecture.set()
     return Native.load<Lib>(findLibraryName(componentName), Lib::class.java)
 }
 

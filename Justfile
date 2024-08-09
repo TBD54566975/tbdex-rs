@@ -39,6 +39,9 @@ bind-kotlin: setup
     generate --library bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib \
     --language kotlin \
     --out-dir target/bindgen-kotlin
+  sed -i '' \
+    's|return Native.load<Lib>(findLibraryName(componentName), Lib::class.java)|SystemArchitecture.set()\n    &|' \
+    target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt
   cp target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt bound/kt/src/main/kotlin/tbdex/sdk/rust/UniFFI.kt
 
 test-bound: setup
