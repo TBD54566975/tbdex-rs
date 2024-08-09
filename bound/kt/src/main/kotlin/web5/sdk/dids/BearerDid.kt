@@ -13,10 +13,6 @@ typealias Did = RustCoreDid
 typealias Document = RustCoreDocument
 
 class BearerDid {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     val did: Did
     val document: Document
     val keyManager: KeyManager

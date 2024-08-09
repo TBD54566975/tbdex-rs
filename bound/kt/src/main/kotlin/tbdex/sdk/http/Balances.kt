@@ -8,10 +8,6 @@ class GetBalancesResponseBody private constructor(
     val data: List<Balance>,
     internal val rustCoreGetBalancesResponseBody: RustCoreGetBalancesResponseBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(balances: List<Balance>) : this(
         data = balances,
         rustCoreGetBalancesResponseBody = RustCoreGetBalancesResponseBody(

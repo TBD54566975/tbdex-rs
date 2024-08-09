@@ -10,10 +10,6 @@ class Order private constructor(
     val signature: String,
     internal val rustCoreOrder: RustCoreOrder
 ): Message, WalletUpdateMessage {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             to: String,

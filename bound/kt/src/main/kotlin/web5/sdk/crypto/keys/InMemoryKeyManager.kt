@@ -7,10 +7,6 @@ import tbdex.sdk.rust.InMemoryKeyManager as RustCoreInMemoryKeyManager
 import tbdex.sdk.rust.KeyManager as RustCoreKeyManager
 
 internal class InMemoryKeyManager : KeyManager {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     private val rustCoreInMemoryKeyManager = RustCoreInMemoryKeyManager()
 
     constructor(privateJwks: List<Jwk>) {

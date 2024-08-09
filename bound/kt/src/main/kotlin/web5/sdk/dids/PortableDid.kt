@@ -5,10 +5,6 @@ import web5.sdk.crypto.keys.Jwk
 import tbdex.sdk.rust.PortableDid as RustCorePortableDid
 
 class PortableDid {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     val didUri: String
     val document: Document
     val privateKeys: List<Jwk>

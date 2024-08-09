@@ -8,10 +8,6 @@ class GetOfferingsResponseBody private constructor(
     val data: List<Offering>,
     internal val rustCoreGetOfferingsResponseBody: RustCoreGetOfferingsResponseBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(offerings: List<Offering>) : this(
         data = offerings,
         rustCoreGetOfferingsResponseBody = RustCoreGetOfferingsResponseBody(
