@@ -107,7 +107,7 @@ jobs:
       - build_x86_64_apple_darwin
       - build_x86_64_unknown_linux_gnu
       - build_x86_64_unknown_linux_musl
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
