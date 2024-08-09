@@ -1,7 +1,6 @@
 package tbdex.sdk.resources
 
 import tbdex.sdk.Json
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Offering as RustCoreOffering
 import web5.sdk.dids.BearerDid
 import web5.sdk.vc.pex.PresentationDefinition
@@ -12,10 +11,6 @@ class Offering private constructor(
     val signature: String,
     internal val rustCoreOffering: RustCoreOffering
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             from: String,

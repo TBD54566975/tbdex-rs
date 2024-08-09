@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Cancel as RustCoreCancel
 import tbdex.sdk.rust.CancelDataData as RustCoreCancelData
 import web5.sdk.dids.BearerDid
@@ -14,10 +13,6 @@ class Cancel private constructor(
     val signature: String,
     internal val rustCoreCancel: RustCoreCancel
 ): Message, WalletUpdateMessage {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             to: String,

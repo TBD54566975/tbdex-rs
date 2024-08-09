@@ -1,6 +1,5 @@
 package tbdex.sdk.resources
 
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Balance as RustCoreBalance
 import tbdex.sdk.rust.BalanceDataData as RustCoreBalanceData
 import web5.sdk.dids.BearerDid
@@ -13,10 +12,6 @@ class Balance private constructor(
     val signature: String,
     internal val rustCoreBalance: RustCoreBalance
 ){
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             from: String,

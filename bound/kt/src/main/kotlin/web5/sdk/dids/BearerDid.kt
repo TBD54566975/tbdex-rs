@@ -1,6 +1,5 @@
 package web5.sdk.dids
 
-import tbdex.sdk.rust.SystemArchitecture
 import web5.sdk.crypto.keys.KeyManager
 import web5.sdk.crypto.keys.ToOuterKeyManager
 import web5.sdk.crypto.signers.Signer
@@ -13,10 +12,6 @@ typealias Did = RustCoreDid
 typealias Document = RustCoreDocument
 
 class BearerDid {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     val did: Did
     val document: Document
     val keyManager: KeyManager

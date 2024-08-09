@@ -1,6 +1,5 @@
 package tbdex.sdk.http
 
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.ErrorDetailData as RustCoreErrorDetail
 import tbdex.sdk.rust.ErrorResponseBody as RustCoreErrorResponseBody
 
@@ -11,10 +10,6 @@ class ErrorResponseBody private constructor(
     val details: List<ErrorDetail>?,
     internal val rustCoreErrorResponseBody: RustCoreErrorResponseBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(message: String, details: List<ErrorDetail>? = null) : this(
         message,
         details,

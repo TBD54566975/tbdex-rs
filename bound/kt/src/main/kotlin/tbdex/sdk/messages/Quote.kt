@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
 import tbdex.sdk.rust.Quote as RustCoreQuote
@@ -18,10 +17,6 @@ class Quote private constructor(
     val signature: String,
     internal val rustCoreQuote: RustCoreQuote
 ): Message, ReplyToMessage {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             to: String,

@@ -2,7 +2,6 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.OrderStatusStatus as RustCoreStatus
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.OrderStatus as RustCoreOrderStatus
 import tbdex.sdk.rust.OrderStatusDataData as RustCoreOrderStatusData
 import web5.sdk.dids.BearerDid
@@ -16,10 +15,6 @@ class OrderStatus private constructor(
     val signature: String,
     internal val rustCoreOrderStatus: RustCoreOrderStatus
 ): Message, ReplyToMessage {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             to: String,

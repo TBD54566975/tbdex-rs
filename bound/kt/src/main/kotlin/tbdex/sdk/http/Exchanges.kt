@@ -9,16 +9,11 @@ import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponse
 import tbdex.sdk.rust.GetExchangesResponseBody as RustCoreGetExchangesResponseBody
 import tbdex.sdk.rust.UpdateExchangeRequestBody as RustCoreUpdateExchangeRequestBody
 import tbdex.sdk.rust.ReplyToRequestBody as RustCoreReplyToRequestBody
-import tbdex.sdk.rust.SystemArchitecture
 
 class GetExchangeResponseBody private constructor(
     val data: List<Message>,
     internal val rustCoreGetExchangeResponseBody: RustCoreGetExchangeResponseBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(data: List<Message>) : this(
         data,
         RustCoreGetExchangeResponseBody(
@@ -69,10 +64,6 @@ class GetExchangesResponseBody private constructor(
     val data: List<String>,
     internal val rustCoreGetExchangesResponseBody: RustCoreGetExchangesResponseBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(data: List<String>) : this(
         data,
         RustCoreGetExchangesResponseBody(data)
@@ -98,10 +89,6 @@ class CreateExchangeRequestBody private constructor(
     val replyTo: String? = null,
     internal val rustCoreCreateExchangeRequestBody: RustCoreCreateExchangeRequestBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(message: Rfq, replyTo: String? = null) : this(
         message,
         replyTo,
@@ -131,10 +118,6 @@ class UpdateExchangeRequestBody private constructor(
     val message: WalletUpdateMessage,
     internal val rustCoreUpdateExchangeRequestBody: RustCoreUpdateExchangeRequestBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(message: WalletUpdateMessage) : this(
         message,
         when (message) {
@@ -170,10 +153,6 @@ class ReplyToRequestBody private constructor(
     val message: ReplyToMessage,
     internal val rustCoreReplyToRequestBody: RustCoreReplyToRequestBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(message: ReplyToMessage) : this(
         message,
         when (message) {

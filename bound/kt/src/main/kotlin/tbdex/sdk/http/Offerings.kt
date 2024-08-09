@@ -1,17 +1,12 @@
 package tbdex.sdk.http
 
 import tbdex.sdk.resources.Offering
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.GetOfferingsResponseBody as RustCoreGetOfferingsResponseBody
 
 class GetOfferingsResponseBody private constructor(
     val data: List<Offering>,
     internal val rustCoreGetOfferingsResponseBody: RustCoreGetOfferingsResponseBody
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     constructor(offerings: List<Offering>) : this(
         data = offerings,
         rustCoreGetOfferingsResponseBody = RustCoreGetOfferingsResponseBody(

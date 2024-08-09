@@ -2,7 +2,6 @@ package tbdex.sdk.httpclient
 
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.GetExchangeIdsQueryParamsData as RustCoreGetExchangeIdsQueryParams
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.ExchangeData as RustCoreExchange
 import tbdex.sdk.rust.createExchange as rustCoreCreateExchange
 import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
@@ -20,10 +19,6 @@ data class Exchange(
     val orderStatuses: List<OrderStatus>? = null,
     val close: Close? = null
 ) {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         internal fun fromRustCore(rustCoreExchange: RustCoreExchange): Exchange {
             return Exchange(
@@ -40,26 +35,18 @@ data class Exchange(
 }
 
 fun createExchange(rfq: Rfq, replyTo: String? = null) {
-    SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
     rustCoreCreateExchange(rfq.rustCoreRfq, replyTo)
 }
 
 fun submitOrder(order: Order) {
-    SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
     rustCoreSubmitOrder(order.rustCoreOrder)
 }
 
 fun submitCancel(cancel: Cancel) {
-    SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
     rustCoreSubmitCancel(cancel.rustCoreCancel)
 }
 
 fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Exchange {
-    SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
     val rustCoreExchange = rustCoreGetExchange(pfiDidUri, bearerDid.rustCoreBearerDid, exchangeId)
     return Exchange.fromRustCore(rustCoreExchange)
 }
@@ -67,8 +54,6 @@ fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Ex
 typealias GetExchangeIdsQueryParams = RustCoreGetExchangeIdsQueryParams
 
 fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid, queryParams: GetExchangeIdsQueryParams? = null): List<String> {
-    SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-
     return rustCoreGetExchangeIds(pfiDidUri, bearerDid.rustCoreBearerDid, queryParams)
 }
 

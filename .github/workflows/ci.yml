@@ -21,6 +21,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: "-Dwarnings"
+  TBDEX_SDK_LOG_LEVEL: debug
 
 jobs:
   build_aarch64_apple_darwin:
@@ -106,7 +107,7 @@ jobs:
       - build_x86_64_apple_darwin
       - build_x86_64_unknown_linux_gnu
       - build_x86_64_unknown_linux_musl
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -185,7 +186,7 @@ jobs:
             # Otherwise, Maven verify lifecycle will build, run tests, and verify
             mvn verify --batch-mode
           fi
-          
+
         env:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}

@@ -1,7 +1,6 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
-import tbdex.sdk.rust.SystemArchitecture
 import tbdex.sdk.rust.Order as RustCoreOrder
 import web5.sdk.dids.BearerDid
 
@@ -10,10 +9,6 @@ class Order private constructor(
     val signature: String,
     internal val rustCoreOrder: RustCoreOrder
 ): Message, WalletUpdateMessage {
-    init {
-        SystemArchitecture.set() // ensure the sys arch is set for first-time loading
-    }
-
     companion object {
         fun create(
             to: String,
