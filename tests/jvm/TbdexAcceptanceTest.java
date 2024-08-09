@@ -1,4 +1,3 @@
-import tbdex.sdk.rust.SystemArchitecture;
 import tbdex.sdk.rust.UniffiLib;
 
 /**
@@ -11,7 +10,6 @@ public class TbdexAcceptanceTest {
 
     public static void main(String... args) {
         System.setProperty("TBDEX_SDK_LOG_LEVEL", "debug");
-        SystemArchitecture.INSTANCE.set();
         UniffiLib.Companion.getINSTANCE$tbdex();
         System.out.println(
                 "Successfully loaded shared library for " +
