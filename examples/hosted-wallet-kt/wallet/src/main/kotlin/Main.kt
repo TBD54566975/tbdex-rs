@@ -1,3 +1,4 @@
+import tbdex.sdk.httpclient.GetExchangeIdsQueryParams
 import java.io.File
 import java.util.Properties
 import web5.sdk.dids.BearerDid
@@ -45,6 +46,16 @@ fun main() {
 
             val allExchanges = tbdex.sdk.httpclient.getExchangeIds(pfiDidUri, bearerDid)
             println("All Exchanges Completed: $allExchanges")
+
+            val paginatedExchanges = tbdex.sdk.httpclient.getExchangeIds(
+                pfiDidUri,
+                bearerDid,
+                GetExchangeIdsQueryParams(
+                    paginationOffset = 1,
+                    paginationLimit = 2
+                )
+            )
+            println("Paginated Exchanges: $paginatedExchanges")
         }
     }
 }

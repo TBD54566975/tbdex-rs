@@ -122,6 +122,28 @@ pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
     Ok(endpoint)
 }
 
+fn add_pagination(
+    endpoint: &str,
+    pagination_offset: Option<i64>,
+    pagination_limit: Option<i64>,
+) -> String {
+    let mut query_string = String::new();
+
+    if let Some(offset) = pagination_offset {
+        query_string.push_str(&format!("?page[offset]={}", offset));
+    }
+
+    if let Some(limit) = pagination_limit {
+        if query_string.is_empty() {
+            query_string.push_str(&format!("?page[limit]={}", limit));
+        } else {
+            query_string.push_str(&format!("&page[limit]={}", limit));
+        }
+    }
+
+    format!("{}{}", endpoint, query_string)
+}
+
 fn send_request<T: Serialize, U: DeserializeOwned>(
     url: &str,
     method: Method,

@@ -1330,7 +1330,7 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_get_exchange(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,`exchangeId`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
-    fun uniffi_tbdex_uniffi_fn_func_get_exchange_ids(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
+    fun uniffi_tbdex_uniffi_fn_func_get_exchange_ids(`pfiDidUri`: RustBuffer.ByValue,`bearerDid`: Pointer,`queryParams`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
     fun uniffi_tbdex_uniffi_fn_func_get_offerings(`pfiDidUri`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): RustBuffer.ByValue
@@ -1698,7 +1698,7 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange() != 35978.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange_ids() != 44594.toShort()) {
+    if (lib.uniffi_tbdex_uniffi_checksum_func_get_exchange_ids() != 1186.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_tbdex_uniffi_checksum_func_get_offerings() != 28498.toShort()) {
@@ -2061,6 +2061,26 @@ inline fun <T : Disposable?, R> T.use(block: (T) -> R) =
 
 /** Used to instantiate an interface without an actual pointer, for fakes in tests, mostly. */
 object NoPointer
+
+public object FfiConverterLong: FfiConverter<Long, Long> {
+    override fun lift(value: Long): Long {
+        return value
+    }
+
+    override fun read(buf: ByteBuffer): Long {
+        return buf.getLong()
+    }
+
+    override fun lower(value: Long): Long {
+        return value
+    }
+
+    override fun allocationSize(value: Long) = 8UL
+
+    override fun write(value: Long, buf: ByteBuffer) {
+        buf.putLong(value)
+    }
+}
 
 public object FfiConverterBoolean: FfiConverter<Boolean, Byte> {
     override fun lift(value: Byte): Boolean {
@@ -9212,6 +9232,35 @@ public object FfiConverterTypeGetBalancesResponseBodyData: FfiConverterRustBuffe
 
 
 
+data class GetExchangeIdsQueryParamsData (
+    var `paginationOffset`: kotlin.Long?, 
+    var `paginationLimit`: kotlin.Long?
+) {
+    
+    companion object
+}
+
+public object FfiConverterTypeGetExchangeIdsQueryParamsData: FfiConverterRustBuffer<GetExchangeIdsQueryParamsData> {
+    override fun read(buf: ByteBuffer): GetExchangeIdsQueryParamsData {
+        return GetExchangeIdsQueryParamsData(
+            FfiConverterOptionalLong.read(buf),
+            FfiConverterOptionalLong.read(buf),
+        )
+    }
+
+    override fun allocationSize(value: GetExchangeIdsQueryParamsData) = (
+            FfiConverterOptionalLong.allocationSize(value.`paginationOffset`) +
+            FfiConverterOptionalLong.allocationSize(value.`paginationLimit`)
+    )
+
+    override fun write(value: GetExchangeIdsQueryParamsData, buf: ByteBuffer) {
+            FfiConverterOptionalLong.write(value.`paginationOffset`, buf)
+            FfiConverterOptionalLong.write(value.`paginationLimit`, buf)
+    }
+}
+
+
+
 data class GetExchangeResponseBodyData (
     var `data`: List<GetExchangeResponseBodyDataSerializedMessage>
 ) {
@@ -10245,6 +10294,35 @@ public object FfiConverterTypeWeb5RustCoreError : FfiConverterRustBuffer<Web5Rus
 
 
 
+public object FfiConverterOptionalLong: FfiConverterRustBuffer<kotlin.Long?> {
+    override fun read(buf: ByteBuffer): kotlin.Long? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterLong.read(buf)
+    }
+
+    override fun allocationSize(value: kotlin.Long?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterLong.allocationSize(value)
+        }
+    }
+
+    override fun write(value: kotlin.Long?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterLong.write(value, buf)
+        }
+    }
+}
+
+
+
+
 public object FfiConverterOptionalBoolean: FfiConverterRustBuffer<kotlin.Boolean?> {
     override fun read(buf: ByteBuffer): kotlin.Boolean? {
         if (buf.get().toInt() == 0) {
@@ -10441,6 +10519,35 @@ public object FfiConverterOptionalTypeQuote: FfiConverterRustBuffer<Quote?> {
         } else {
             buf.put(1)
             FfiConverterTypeQuote.write(value, buf)
+        }
+    }
+}
+
+
+
+
+public object FfiConverterOptionalTypeGetExchangeIdsQueryParamsData: FfiConverterRustBuffer<GetExchangeIdsQueryParamsData?> {
+    override fun read(buf: ByteBuffer): GetExchangeIdsQueryParamsData? {
+        if (buf.get().toInt() == 0) {
+            return null
+        }
+        return FfiConverterTypeGetExchangeIdsQueryParamsData.read(buf)
+    }
+
+    override fun allocationSize(value: GetExchangeIdsQueryParamsData?): ULong {
+        if (value == null) {
+            return 1UL
+        } else {
+            return 1UL + FfiConverterTypeGetExchangeIdsQueryParamsData.allocationSize(value)
+        }
+    }
+
+    override fun write(value: GetExchangeIdsQueryParamsData?, buf: ByteBuffer) {
+        if (value == null) {
+            buf.put(0)
+        } else {
+            buf.put(1)
+            FfiConverterTypeGetExchangeIdsQueryParamsData.write(value, buf)
         }
     }
 }
@@ -10878,11 +10985,11 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
     }
     
 
-    @Throws(TbdexSdkException::class) fun `getExchangeIds`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid): List<kotlin.String> {
+    @Throws(TbdexSdkException::class) fun `getExchangeIds`(`pfiDidUri`: kotlin.String, `bearerDid`: BearerDid, `queryParams`: GetExchangeIdsQueryParamsData?): List<kotlin.String> {
             return FfiConverterSequenceString.lift(
     uniffiRustCallWithError(TbdexSdkException) { _status ->
     UniffiLib.INSTANCE.uniffi_tbdex_uniffi_fn_func_get_exchange_ids(
-        FfiConverterString.lower(`pfiDidUri`),FfiConverterTypeBearerDid.lower(`bearerDid`),_status)
+        FfiConverterString.lower(`pfiDidUri`),FfiConverterTypeBearerDid.lower(`bearerDid`),FfiConverterOptionalTypeGetExchangeIdsQueryParamsData.lower(`queryParams`),_status)
 }
     )
     }
