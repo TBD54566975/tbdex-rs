@@ -11,11 +11,14 @@ use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Error as SerdeJsonError;
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
-use web5::dids::{
-    bearer_did::{BearerDid, BearerDidError},
-    resolution::{
-        resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
+use web5::{
+    dids::{
+        bearer_did::BearerDid,
+        resolution::{
+            resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
+        },
     },
+    errors::Web5Error,
 };
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
@@ -24,10 +27,10 @@ pub enum HttpClientError {
     ReqwestError(String),
     #[error("serde json error {0}")]
     SerdeJson(String),
-    #[error(transparent)]
-    BearerDid(#[from] BearerDidError),
     #[error("jose error {0}")]
     Jose(String),
+    #[error(transparent)]
+    Web5Error(#[from] Web5Error),
     #[error(transparent)]
     Resource(#[from] ResourceError),
     #[error(transparent)]
@@ -77,7 +80,7 @@ fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<St
 
     // default to first VM
     let key_id = bearer_did.document.verification_method[0].id.clone();
-    let web5_signer = bearer_did.get_signer(key_id.clone())?;
+    let web5_signer = bearer_did.get_signer(&key_id)?;
     let jose_signer = Signer {
         kid: key_id,
         web5_signer,
@@ -89,7 +92,7 @@ fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<St
 }
 
 pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
-    let resolution_result = ResolutionResult::new(pfi_did_uri);
+    let resolution_result = ResolutionResult::resolve(pfi_did_uri);
 
     let endpoint = match &resolution_result.document {
         None => {

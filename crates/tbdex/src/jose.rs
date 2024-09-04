@@ -14,7 +14,7 @@ use std::{
 };
 use web5::{
     crypto::{
-        dsa::{ed25519::Ed25519Verifier, DsaError, Signer as Web5Signer, Verifier as Web5Verifier},
+        dsa::{ed25519::Ed25519Verifier, Signer as Web5Signer, Verifier as Web5Verifier},
         jwk::Jwk,
     },
     dids::data_model::document::Document,
@@ -89,17 +89,10 @@ impl JwsVerifier for Verifier {
 
     fn verify(&self, message: &[u8], signature: &[u8]) -> core::result::Result<(), JosekitError> {
         let verifier = Ed25519Verifier::new(self.public_jwk.clone());
-        let result = verifier
+        verifier
             .verify(message, signature)
             .map_err(|e| JosekitError::InvalidSignature(e.into()))?;
-
-        match result {
-            true => Ok(()),
-            false => Err(JosekitError::InvalidSignature(
-                // 🚧 improve error message semantics
-                DsaError::VerificationFailure("ed25519 verification failed".to_string()).into(),
-            )),
-        }
+        Ok(())
     }
 
     fn box_clone(&self) -> Box<dyn JwsVerifier> {

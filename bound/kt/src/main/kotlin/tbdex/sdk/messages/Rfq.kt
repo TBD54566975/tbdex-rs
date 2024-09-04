@@ -2,7 +2,9 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.Json
 import tbdex.sdk.resources.Offering
+import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.Rfq as RustCoreRfq
+import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
 class Rfq private constructor(
@@ -61,7 +63,7 @@ class Rfq private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreRfq.sign(bearerDid.rustCoreBearerDid)
+        this.rustCoreRfq.sign(RustCoreBearerDid.fromWeb5(bearerDid))
     }
 
     fun verify() {

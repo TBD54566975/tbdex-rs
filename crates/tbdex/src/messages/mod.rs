@@ -22,7 +22,7 @@ use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
 use serde_json::Error as SerdeJsonError;
 use std::{str::FromStr, sync::Arc};
 use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
-use web5::dids::bearer_did::BearerDidError;
+use web5::errors::Web5Error;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum MessageError {
@@ -31,7 +31,7 @@ pub enum MessageError {
     #[error("typeid error {0}")]
     TypeId(String),
     #[error(transparent)]
-    BearerDid(#[from] BearerDidError),
+    Web5Error(#[from] Web5Error),
     #[error(transparent)]
     Signature(#[from] SignatureError),
     #[error("unknown kind {0}")]

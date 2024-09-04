@@ -17,7 +17,7 @@ fun readEnv() {
 fun main() {
     readEnv()
 
-    val bearerDid = BearerDid(PortableDid(System.getProperty("PFI_PORTABLE_DID")))
+    val bearerDid = BearerDid.fromPortableDid(PortableDid.fromJsonString(System.getProperty("PFI_PORTABLE_DID")))
 
     port(8082)
 

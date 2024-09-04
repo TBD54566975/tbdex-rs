@@ -27,7 +27,7 @@ dependencies {
 
     // For a snapshot from maven
     // Update the short git commit SHA below
-    implementation("xyz.block:tbdex:commit-cc93a9c-SNAPSHOT")
+    implementation("xyz.block:tbdex:commit-21dd3cc-SNAPSHOT")
 
     // For the official release on maven central
     // implementation("xyz.block:tbdex:3.0.0")

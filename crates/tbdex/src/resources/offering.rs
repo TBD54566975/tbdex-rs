@@ -158,26 +158,14 @@ pub struct CancellationDetails {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Arc;
-    use web5::{
-        crypto::{
-            dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
-        },
-        dids::methods::did_jwk::DidJwk,
-    };
+    use web5::dids::methods::did_jwk::DidJwk;
 
     #[test]
     fn can_create_and_sign_and_verify() {
-        let key_manager = InMemoryKeyManager::new();
-        let public_jwk = key_manager
-            .import_private_jwk(Ed25519Generator::generate())
-            .unwrap();
-        let did_jwk = DidJwk::from_public_jwk(public_jwk).unwrap();
-
-        let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
+        let bearer_did = DidJwk::create(None).unwrap();
 
         let mut offering = Offering::create(
-            &did_jwk.did.uri,
+            &bearer_did.did.uri,
             &OfferingData {
                 description: "Selling BTC for USD".to_string(),
                 payout_units_per_payin_unit: "1.5".to_string(),

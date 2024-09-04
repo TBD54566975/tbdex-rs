@@ -30,7 +30,7 @@ fun main() {
 
     val pfiDidUri = System.getProperty("PFI_DID_URI")
     val verifiableCredential = System.getProperty("HOSTED_WALLET_VERIFIABLE_CREDENTIAL")
-    val bearerDid = BearerDid(PortableDid(System.getProperty("HOSTED_WALLET_PORTABLE_DID_JSON")))
+    val bearerDid = BearerDid.fromPortableDid(PortableDid.fromJsonString(System.getProperty("HOSTED_WALLET_PORTABLE_DID_JSON")))
     val replyToUrl = System.getProperty("REPLY_TO_URL")
 
     when (FLOW_TYPE) {

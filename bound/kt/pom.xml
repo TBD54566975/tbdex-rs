@@ -102,6 +102,7 @@
         <version.com.fasterxml.jackson>2.17.0</version.com.fasterxml.jackson>
         <version.net.java.dev.jna>5.12.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlinx.kotlinx.coroutines.core>1.8.1</version.org.jetbrains.kotlinx.kotlinx.coroutines.core>
+        <version.xyz.block.web5>commit-f28d90c-SNAPSHOT</version.xyz.block.web5>
 
         <!-- Versioning for Test Dependencies -->
         <version.org.junit.jupiter>5.10.1</version.org.junit.jupiter>
@@ -188,6 +189,11 @@
                 <artifactId>kotlinx-coroutines-core</artifactId>
                 <version>${version.org.jetbrains.kotlinx.kotlinx.coroutines.core}</version>
             </dependency>
+            <dependency>
+                <groupId>xyz.block</groupId>
+                <artifactId>web5</artifactId>
+                <version>${version.xyz.block.web5}</version>
+            </dependency>
 
             <!-- Test Dependency Management -->
             <dependency>
@@ -230,6 +236,10 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xyz.block</groupId>
+            <artifactId>web5</artifactId>
         </dependency>
 
         <!-- Test Dependencies -->

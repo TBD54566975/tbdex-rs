@@ -6,12 +6,10 @@ use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 use std::fmt::Debug;
 use web5::dids::bearer_did::BearerDid;
-use web5::dids::{
-    bearer_did::BearerDidError,
-    resolution::{
-        resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
-    },
+use web5::dids::resolution::{
+    resolution_metadata::ResolutionMetadataError, resolution_result::ResolutionResult,
 };
+use web5::errors::Web5Error;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum SignatureError {
@@ -20,7 +18,7 @@ pub enum SignatureError {
     #[error(transparent)]
     ResolutionMetadata(#[from] ResolutionMetadataError),
     #[error(transparent)]
-    BearerDid(#[from] BearerDidError),
+    Web5Error(#[from] Web5Error),
     #[error("serde json error {0}")]
     SerdeJson(String),
 }
@@ -55,7 +53,7 @@ pub fn sign(bearer_did: &BearerDid, metadata: &Value, data: &Value) -> Result<St
 
     // default to first VM
     let key_id = bearer_did.document.verification_method[0].id.clone();
-    let web5_signer = bearer_did.get_signer(key_id.clone())?;
+    let web5_signer = bearer_did.get_signer(&key_id)?;
     let jose_signer = Signer {
         kid: key_id,
         web5_signer,
@@ -86,7 +84,7 @@ pub fn verify(
     }
     let message = format!("{}.{}.{}", parts[0], payload, parts[2]);
 
-    let resolution_result = ResolutionResult::new(did_uri);
+    let resolution_result = ResolutionResult::resolve(did_uri);
     match resolution_result.resolution_metadata.error {
         Some(e) => Err(SignatureError::ResolutionMetadata(e)),
         None => {

@@ -5,6 +5,8 @@ import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
 import tbdex.sdk.rust.Quote as RustCoreQuote
 import tbdex.sdk.rust.QuoteDataData as RustCoreQuoteData
+import tbdex.sdk.rust.fromWeb5
+import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
 typealias QuoteData = RustCoreQuoteData
@@ -48,7 +50,7 @@ class Quote private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreQuote.sign(bearerDid.rustCoreBearerDid)
+        this.rustCoreQuote.sign(RustCoreBearerDid.fromWeb5(bearerDid))
     }
 
     fun verify() {
