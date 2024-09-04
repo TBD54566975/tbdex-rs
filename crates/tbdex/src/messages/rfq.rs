@@ -239,7 +239,7 @@ impl Rfq {
             }
 
             for vc_jwt in vc_jwts {
-                VerifiableCredential::verify(&vc_jwt).map_err(|_| {
+                VerifiableCredential::from_vc_jwt(&vc_jwt, true).map_err(|_| {
                     MessageError::OfferingVerification(format!(
                         "vc_jwt failed verifiction {}",
                         vc_jwt
@@ -524,24 +524,19 @@ mod tests {
     use std::sync::Arc;
     use web5::{
         crypto::{
-            dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
+            dsa::ed25519::Ed25519Generator,
+            key_managers::{in_memory_key_manager::InMemoryKeyManager, KeyManager},
         },
         dids::methods::did_jwk::DidJwk,
     };
 
     #[test]
     fn can_create_and_sign() {
-        let key_manager = InMemoryKeyManager::new();
-        let public_jwk = key_manager
-            .import_private_jwk(Ed25519Generator::generate())
-            .unwrap();
-        let did_jwk = DidJwk::from_public_jwk(public_jwk).unwrap();
-
-        let bearer_did = BearerDid::new(&did_jwk.did.uri, Arc::new(key_manager)).unwrap();
+        let bearer_did = DidJwk::create(None).unwrap();
 
         let mut rfq = Rfq::create(
             "did:test:pfi",
-            &did_jwk.did.uri,
+            &bearer_did.did.uri,
             &CreateRfqData {
                 offering_id: "offering_123".to_string(),
                 payin: CreateSelectedPayinMethod {
