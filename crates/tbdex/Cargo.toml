@@ -10,7 +10,7 @@ build = "build.rs"
 [dependencies]
 base64 = "0.22.0"
 chrono = "0.4.38"
-josekit = "0.8.6"
+josekit = { version = "0.8.6", features = ["vendored"] }
 jsonschema = { version = "0.18.0", features = ["draft201909", "draft202012"] }
 lazy_static = "1.5.0"
 rand = "0.8.5"
@@ -23,8 +23,6 @@ thiserror = { workspace = true }
 type-safe-id = { version = "0.3.0", features = ["serde"] }
 uuid = "1.9.0"
 web5 = { workspace = true }
-openssl = "0.10.66"
-openssl-sys = "=0.9.103"
 
 [build-dependencies]
 reqwest = { version = "0.12.5", features = ["blocking"] }
