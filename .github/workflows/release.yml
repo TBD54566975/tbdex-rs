@@ -152,6 +152,11 @@ jobs:
         with:
           name: x86_64-unknown-linux-musl-so
           path: bound/kt/src/main/resources/
+      - name: Download Windows x86_64 MSVC Native Library
+        uses: actions/download-artifact@v4.1.7
+        with:
+          name: x86_64-pc-windows-msvc-dll
+          path: bound/kt/src/main/resources/
 
       - name: Deploy Release Version of Kotlin Project to Maven Central
         run: |
