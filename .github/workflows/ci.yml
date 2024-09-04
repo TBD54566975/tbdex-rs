@@ -251,15 +251,22 @@ jobs:
         with:
           name: tbdex-with-dependencies-jar
           path: tests/jvm
-      - name: Run Acceptance Tests
+      - name: Run Acceptance Tests (Non-Windows)
+        if: matrix.os != 'windows-latest'
+        shell: bash
         run: |
           cd tests/jvm
           mv *-with-dependencies.jar tbdex-with-dependencies.jar
-          javac TbdexAcceptanceTest.java \
-            -cp tbdex-with-dependencies.jar
-          java -classpath tbdex-with-dependencies.jar:. \
-            TbdexAcceptanceTest
-
+          javac TbdexAcceptanceTest.java -cp tbdex-with-dependencies.jar
+          java -classpath tbdex-with-dependencies.jar:. TbdexAcceptanceTest
+      - name: Run Acceptance Tests (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          cd tests/jvm
+          ren *-with-dependencies.jar tbdex-with-dependencies.jar
+          javac TbdexAcceptanceTest.java -cp tbdex-with-dependencies.jar
+          java -classpath tbdex-with-dependencies.jar;. TbdexAcceptanceTest
 
   rust-test-vectors:
     runs-on: macos-latest
