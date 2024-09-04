@@ -72,17 +72,13 @@ use web5::{
             verification_method::VerificationMethod as VerificationMethodData,
         },
         did::Did as DidData,
-        portable_did::PortableDid as PortableDidData,
     },
 };
 use web5_uniffi_wrapper::{
     credentials::presentation_definition::PresentationDefinition,
-    crypto::{dsa::Signer, in_memory_key_manager::InMemoryKeyManager, key_manager::KeyManager},
-    dids::{
-        bearer_did::{BearerDid, BearerDidData},
-        portable_did::PortableDid,
-    },
-    errors::RustCoreError as Web5RustCoreError,
+    crypto::{dsa::Signer, key_manager::KeyManager},
+    dids::bearer_did::BearerDid,
+    errors::Web5Error,
 };
 
 uniffi::include_scaffolding!("tbdex");

@@ -460,7 +460,10 @@ dictionary GetExchangeIdsQueryParamsData {
 
 
 
-
+[Error]
+interface Web5Error {
+  Error(string variant, string msg);
+};
 
 dictionary JwkData {
   string? alg;
@@ -509,59 +512,28 @@ dictionary ServiceData {
   sequence<string> service_endpoint;
 };
 
-[Error]
-interface Web5RustCoreError {
-  Error(string type, string variant, string msg);
-};
-
 [Trait, WithForeign]
 interface Signer {
-  [Throws=Web5RustCoreError]
+  [Throws=Web5Error]
   bytes sign(bytes payload);
 };
 
 [Trait, WithForeign]
 interface KeyManager {
-  [Throws=Web5RustCoreError]
+  [Throws=Web5Error]
+  JwkData import_private_jwk(JwkData private_jwk);
+  [Throws=Web5Error]
   Signer get_signer(JwkData public_jwk);
-};
-
-interface InMemoryKeyManager {
-  constructor();
-  [Throws=Web5RustCoreError]
-  Signer get_signer(JwkData public_jwk);
-  [Throws=Web5RustCoreError]
-  JwkData import_private_jwk(JwkData private_key);
-  KeyManager get_as_key_manager();
-};
-
-dictionary PortableDidData {
-  string did_uri;
-  DocumentData document;
-  sequence<JwkData> private_jwks;
-};
-
-interface PortableDid {
-  [Throws=Web5RustCoreError]
-  constructor([ByRef] string json);
-  PortableDidData get_data();
-};
-
-dictionary BearerDidData {
-  DidData did;
-  DocumentData document;
-  KeyManager key_manager;
 };
 
 interface BearerDid {
-  [Throws=Web5RustCoreError]
-  constructor([ByRef] string uri, KeyManager key_manager);
-  [Throws=Web5RustCoreError, Name=from_portable_did]
-  constructor(PortableDid portable_did);
-  BearerDidData get_data();
-  [Throws=Web5RustCoreError]
-  Signer get_signer(string key_id);
+  constructor(DidData did, DocumentData document, KeyManager key_manager);
+  [Throws=Web5Error]
+  Signer get_signer(string verification_method_id);
 };
+
+
+
 
 
 
@@ -569,10 +541,10 @@ interface BearerDid {
 
 
 interface PresentationDefinition {
-  [Throws=Web5RustCoreError]
+  [Throws=Web5Error]
   constructor(string json_serialized_presentation_definition);
-  [Throws=Web5RustCoreError]
+  [Throws=Web5Error]
   string get_json_serialized_presentation_definition();
-  [Throws=Web5RustCoreError]
+  [Throws=Web5Error]
   sequence<string> select_credentials([ByRef] sequence<string> vc_jwts);
 };

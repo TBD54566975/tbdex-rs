@@ -89,10 +89,9 @@ impl JwsVerifier for Verifier {
 
     fn verify(&self, message: &[u8], signature: &[u8]) -> core::result::Result<(), JosekitError> {
         let verifier = Ed25519Verifier::new(self.public_jwk.clone());
-        let _ = verifier
+        verifier
             .verify(message, signature)
             .map_err(|e| JosekitError::InvalidSignature(e.into()))?;
-
         Ok(())
     }
 

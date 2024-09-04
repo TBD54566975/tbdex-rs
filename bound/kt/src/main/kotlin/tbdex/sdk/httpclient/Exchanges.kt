@@ -8,6 +8,8 @@ import tbdex.sdk.rust.submitOrder as rustCoreSubmitOrder
 import tbdex.sdk.rust.submitCancel as rustCoreSubmitCancel
 import tbdex.sdk.rust.getExchange as rustCoreGetExchange
 import tbdex.sdk.rust.getExchangeIds as rustCoreGetExchangeIds
+import tbdex.sdk.rust.fromWeb5
+import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
 data class Exchange(
@@ -47,14 +49,14 @@ fun submitCancel(cancel: Cancel) {
 }
 
 fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Exchange {
-    val rustCoreExchange = rustCoreGetExchange(pfiDidUri, bearerDid.rustCoreBearerDid, exchangeId)
+    val rustCoreExchange = rustCoreGetExchange(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), exchangeId)
     return Exchange.fromRustCore(rustCoreExchange)
 }
 
 typealias GetExchangeIdsQueryParams = RustCoreGetExchangeIdsQueryParams
 
 fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid, queryParams: GetExchangeIdsQueryParams? = null): List<String> {
-    return rustCoreGetExchangeIds(pfiDidUri, bearerDid.rustCoreBearerDid, queryParams)
+    return rustCoreGetExchangeIds(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), queryParams)
 }
 
 

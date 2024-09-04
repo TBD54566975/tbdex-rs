@@ -2,6 +2,8 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.OrderInstructionsDataData as RustCoreOrderInstructionsData
+import tbdex.sdk.rust.fromWeb5
+import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
 typealias OrderInstructionsData = RustCoreOrderInstructionsData
@@ -44,7 +46,7 @@ class OrderInstructions private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOrderInstructions.sign(bearerDid.rustCoreBearerDid)
+        this.rustCoreOrderInstructions.sign(RustCoreBearerDid.fromWeb5(bearerDid))
     }
 
     fun verify() {

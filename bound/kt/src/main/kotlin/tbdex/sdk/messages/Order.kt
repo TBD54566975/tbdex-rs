@@ -2,6 +2,8 @@ package tbdex.sdk.messages
 
 import tbdex.sdk.http.WalletUpdateMessage
 import tbdex.sdk.rust.Order as RustCoreOrder
+import tbdex.sdk.rust.fromWeb5
+import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
 class Order private constructor(
@@ -39,7 +41,7 @@ class Order private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOrder.sign(bearerDid.rustCoreBearerDid)
+        this.rustCoreOrder.sign(RustCoreBearerDid.fromWeb5(bearerDid))
     }
 
     fun verify() {

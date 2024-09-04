@@ -158,13 +158,7 @@ pub struct CancellationDetails {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Arc;
-    use web5::{
-        crypto::{
-            dsa::ed25519::Ed25519Generator, key_managers::in_memory_key_manager::InMemoryKeyManager,
-        },
-        dids::methods::did_jwk::DidJwk,
-    };
+    use web5::dids::methods::did_jwk::DidJwk;
 
     #[test]
     fn can_create_and_sign_and_verify() {

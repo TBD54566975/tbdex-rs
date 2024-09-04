@@ -3,6 +3,8 @@ package tbdex.sdk.messages
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.Close as RustCoreClose
 import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
+import tbdex.sdk.rust.fromWeb5
+import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
 typealias CloseData = RustCoreCloseData
@@ -44,7 +46,7 @@ class Close private constructor(
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreClose.sign(bearerDid.rustCoreBearerDid)
+        this.rustCoreClose.sign(RustCoreBearerDid.fromWeb5(bearerDid))
     }
 
     fun verify() {
