@@ -1,8 +1,8 @@
 package tbdex.sdk.http
 
 import tbdex.sdk.messages.*
-import tbdex.sdk.rust.GetExchangeResponseBodyDataSerializedMessage
-import tbdex.sdk.rust.MessageKind
+import tbdex.sdk.rust.GetExchangeResponseBodyDataSerializedMessage as RustCoreGetExchangeResponseBodyDataSerializedMessage
+import tbdex.sdk.rust.MessageKind as RustCoreMessageKind
 import tbdex.sdk.rust.CreateExchangeRequestBody as RustCoreCreateExchangeRequestBody
 import tbdex.sdk.rust.GetExchangeResponseBody as RustCoreGetExchangeResponseBody
 import tbdex.sdk.rust.GetExchangeResponseBodyData as RustCoreGetExchangeResponseBodyData
@@ -20,17 +20,17 @@ class GetExchangeResponseBody private constructor(
             RustCoreGetExchangeResponseBodyData(
                 data.map {
                     val (kind, jsonSerialized) = when (it) {
-                        is Rfq -> Pair(MessageKind.RFQ, it.toJsonString())
-                        is Quote -> Pair(MessageKind.QUOTE, it.toJsonString())
-                        is Order -> Pair(MessageKind.ORDER, it.toJsonString())
-                        is OrderInstructions -> Pair(MessageKind.ORDER_INSTRUCTIONS, it.toJsonString())
-                        is Cancel -> Pair(MessageKind.CANCEL, it.toJsonString())
-                        is OrderStatus -> Pair(MessageKind.ORDER_STATUS, it.toJsonString())
-                        is Close -> Pair(MessageKind.CLOSE, it.toJsonString())
+                        is Rfq -> Pair(RustCoreMessageKind.RFQ, it.toJsonString())
+                        is Quote -> Pair(RustCoreMessageKind.QUOTE, it.toJsonString())
+                        is Order -> Pair(RustCoreMessageKind.ORDER, it.toJsonString())
+                        is OrderInstructions -> Pair(RustCoreMessageKind.ORDER_INSTRUCTIONS, it.toJsonString())
+                        is Cancel -> Pair(RustCoreMessageKind.CANCEL, it.toJsonString())
+                        is OrderStatus -> Pair(RustCoreMessageKind.ORDER_STATUS, it.toJsonString())
+                        is Close -> Pair(RustCoreMessageKind.CLOSE, it.toJsonString())
                         else -> throw Exception("unknown type $it")
                     }
 
-                    GetExchangeResponseBodyDataSerializedMessage(kind, jsonSerialized)
+                    RustCoreGetExchangeResponseBodyDataSerializedMessage(kind, jsonSerialized)
                 }
             )
         )
@@ -41,13 +41,13 @@ class GetExchangeResponseBody private constructor(
             val rustCoreGetExchangeResponseBody = RustCoreGetExchangeResponseBody.fromJsonString(json)
             val data = rustCoreGetExchangeResponseBody.getData().data.map {
                 when (it.kind) {
-                    MessageKind.RFQ -> Rfq.fromJsonString(it.jsonSerialized)
-                    MessageKind.QUOTE -> Quote.fromJsonString(it.jsonSerialized)
-                    MessageKind.ORDER -> Order.fromJsonString(it.jsonSerialized)
-                    MessageKind.ORDER_INSTRUCTIONS -> Order.fromJsonString(it.jsonSerialized)
-                    MessageKind.CANCEL -> Cancel.fromJsonString(it.jsonSerialized)
-                    MessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(it.jsonSerialized)
-                    MessageKind.CLOSE -> Close.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.RFQ -> Rfq.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.QUOTE -> Quote.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.ORDER -> Order.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.ORDER_INSTRUCTIONS -> Order.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.CANCEL -> Cancel.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(it.jsonSerialized)
+                    RustCoreMessageKind.CLOSE -> Close.fromJsonString(it.jsonSerialized)
                 }
             }
 
@@ -121,8 +121,8 @@ class UpdateExchangeRequestBody private constructor(
     constructor(message: WalletUpdateMessage) : this(
         message,
         when (message) {
-            is Order -> RustCoreUpdateExchangeRequestBody(MessageKind.ORDER_STATUS, message.toJsonString())
-            is Cancel -> RustCoreUpdateExchangeRequestBody(MessageKind.CANCEL, message.toJsonString())
+            is Order -> RustCoreUpdateExchangeRequestBody(RustCoreMessageKind.ORDER_STATUS, message.toJsonString())
+            is Cancel -> RustCoreUpdateExchangeRequestBody(RustCoreMessageKind.CANCEL, message.toJsonString())
             else -> throw Exception("unknown type")
         }
     )
@@ -133,8 +133,8 @@ class UpdateExchangeRequestBody private constructor(
             val data = rustCoreUpdateExchangeRequestBody.getData()
 
             val message = when (data.kind) {
-                MessageKind.ORDER -> Order.fromJsonString(data.jsonSerializedMessage)
-                MessageKind.CANCEL -> Cancel.fromJsonString(data.jsonSerializedMessage)
+                RustCoreMessageKind.ORDER -> Order.fromJsonString(data.jsonSerializedMessage)
+                RustCoreMessageKind.CANCEL -> Cancel.fromJsonString(data.jsonSerializedMessage)
                 else -> throw Exception("Unsupported message kind ${data.kind}")
             }
 
@@ -156,10 +156,10 @@ class ReplyToRequestBody private constructor(
     constructor(message: ReplyToMessage) : this(
         message,
         when (message) {
-            is Quote -> RustCoreReplyToRequestBody(MessageKind.QUOTE, message.toJsonString())
-            is OrderInstructions -> RustCoreReplyToRequestBody(MessageKind.ORDER_INSTRUCTIONS, message.toJsonString())
-            is OrderStatus -> RustCoreReplyToRequestBody(MessageKind.ORDER_STATUS, message.toJsonString())
-            is Close -> RustCoreReplyToRequestBody(MessageKind.CLOSE, message.toJsonString())
+            is Quote -> RustCoreReplyToRequestBody(RustCoreMessageKind.QUOTE, message.toJsonString())
+            is OrderInstructions -> RustCoreReplyToRequestBody(RustCoreMessageKind.ORDER_INSTRUCTIONS, message.toJsonString())
+            is OrderStatus -> RustCoreReplyToRequestBody(RustCoreMessageKind.ORDER_STATUS, message.toJsonString())
+            is Close -> RustCoreReplyToRequestBody(RustCoreMessageKind.CLOSE, message.toJsonString())
             else -> throw Exception("unknown type")
         }
     )
@@ -170,10 +170,10 @@ class ReplyToRequestBody private constructor(
             val data = rustCoreReplyToRequestBody.getData()
 
             val message: ReplyToMessage = when (data.kind) {
-                MessageKind.QUOTE -> Quote.fromJsonString(data.jsonSerializedMessage)
-                MessageKind.ORDER_INSTRUCTIONS -> OrderInstructions.fromJsonString(data.jsonSerializedMessage)
-                MessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(data.jsonSerializedMessage)
-                MessageKind.CLOSE -> Close.fromJsonString(data.jsonSerializedMessage)
+                RustCoreMessageKind.QUOTE -> Quote.fromJsonString(data.jsonSerializedMessage)
+                RustCoreMessageKind.ORDER_INSTRUCTIONS -> OrderInstructions.fromJsonString(data.jsonSerializedMessage)
+                RustCoreMessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(data.jsonSerializedMessage)
+                RustCoreMessageKind.CLOSE -> Close.fromJsonString(data.jsonSerializedMessage)
                 else -> throw Exception("Unsupported message kind ${data.kind}")
             }
 

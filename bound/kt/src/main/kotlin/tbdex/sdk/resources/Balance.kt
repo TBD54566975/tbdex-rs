@@ -6,7 +6,20 @@ import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
-typealias BalanceData = RustCoreBalanceData
+data class BalanceData (
+    val currencyCode: String,
+    val available: String
+) {
+    companion object {
+        internal fun fromRustCore(rustCore: RustCoreBalanceData): BalanceData {
+            return BalanceData(rustCore.currencyCode, rustCore.available)
+        }
+    }
+
+    internal fun toRustCore(): RustCoreBalanceData {
+        return RustCoreBalanceData(currencyCode, available)
+    }
+}
 
 class Balance private constructor(
     val metadata: ResourceMetadata,
@@ -20,20 +33,35 @@ class Balance private constructor(
             data: BalanceData,
             protocol: String? = null
         ): Balance {
-            val rustCoreBalance = RustCoreBalance.create(from, data, protocol)
+            val rustCoreBalance = RustCoreBalance.create(from, data.toRustCore(), protocol)
             val rustCoreData = rustCoreBalance.getData()
-            return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
+            return Balance(
+                ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                BalanceData.fromRustCore(rustCoreData.data),
+                rustCoreData.signature,
+                rustCoreBalance
+            )
         }
 
         fun fromJsonString(json: String): Balance {
             val rustCoreBalance = RustCoreBalance.fromJsonString(json)
             val rustCoreData = rustCoreBalance.getData()
-            return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
+            return Balance(
+                ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                BalanceData.fromRustCore(rustCoreData.data),
+                rustCoreData.signature,
+                rustCoreBalance
+            )
         }
 
         internal fun fromRustCoreBalance(rustCoreBalance: RustCoreBalance): Balance {
             val rustCoreData = rustCoreBalance.getData()
-            return Balance(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreBalance)
+            return Balance(
+                ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                BalanceData.fromRustCore(rustCoreData.data),
+                rustCoreData.signature,
+                rustCoreBalance
+            )
         }
     }
 

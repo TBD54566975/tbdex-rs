@@ -27,7 +27,13 @@ class Rfq private constructor(
             val rustCoreData = rustCoreRfq.getData()
             val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
             val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-            return Rfq(rustCoreData.metadata, data, privateData, rustCoreData.signature, rustCoreRfq)
+            return Rfq(
+                MessageMetadata.fromRustCore(rustCoreData.metadata),
+                data,
+                privateData,
+                rustCoreData.signature,
+                rustCoreRfq
+            )
         }
 
         fun fromJsonString(json: String): Rfq {
@@ -35,14 +41,26 @@ class Rfq private constructor(
             val rustCoreData = rustCoreRfq.getData()
             val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
             val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-            return Rfq(rustCoreData.metadata, data, privateData, rustCoreData.signature, rustCoreRfq)
+            return Rfq(
+                MessageMetadata.fromRustCore(rustCoreData.metadata),
+                data,
+                privateData,
+                rustCoreData.signature,
+                rustCoreRfq
+            )
         }
 
         internal fun fromRustCoreRfq(rustCoreRfq: RustCoreRfq): Rfq {
             val rustCoreData = rustCoreRfq.getData()
             val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
             val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-            return Rfq(rustCoreData.metadata, data, privateData, rustCoreData.signature, rustCoreRfq)
+            return Rfq(
+                MessageMetadata.fromRustCore(rustCoreData.metadata),
+                data,
+                privateData,
+                rustCoreData.signature,
+                rustCoreRfq
+            )
         }
     }
 
