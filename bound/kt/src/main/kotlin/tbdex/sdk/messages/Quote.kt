@@ -58,7 +58,7 @@ data class QuoteData (
     }
 }
 
-class Quote private constructor(
+data class Quote private constructor(
     val metadata: MessageMetadata,
     val data: QuoteData,
     val signature: String,

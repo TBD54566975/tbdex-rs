@@ -6,7 +6,7 @@ import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
-class Order private constructor(
+data class Order private constructor(
     val metadata: MessageMetadata,
     val signature: String,
     internal val rustCoreOrder: RustCoreOrder

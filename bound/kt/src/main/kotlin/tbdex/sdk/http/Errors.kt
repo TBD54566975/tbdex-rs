@@ -19,7 +19,7 @@ data class ErrorDetail(
     }
 }
 
-class ErrorResponseBody private constructor(
+data class ErrorResponseBody private constructor(
     val message: String,
     val details: List<ErrorDetail>?,
     internal val rustCoreErrorResponseBody: RustCoreErrorResponseBody

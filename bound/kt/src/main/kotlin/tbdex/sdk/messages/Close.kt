@@ -22,7 +22,7 @@ data class CloseData (
     }
 }
 
-class Close private constructor(
+data class Close private constructor(
     val metadata: MessageMetadata,
     val data: CloseData,
     val signature: String,

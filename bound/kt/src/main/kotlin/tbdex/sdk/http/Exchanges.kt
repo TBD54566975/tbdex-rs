@@ -10,7 +10,7 @@ import tbdex.sdk.rust.GetExchangesResponseBody as RustCoreGetExchangesResponseBo
 import tbdex.sdk.rust.UpdateExchangeRequestBody as RustCoreUpdateExchangeRequestBody
 import tbdex.sdk.rust.ReplyToRequestBody as RustCoreReplyToRequestBody
 
-class GetExchangeResponseBody private constructor(
+data class GetExchangeResponseBody private constructor(
     val data: List<Message>,
     internal val rustCoreGetExchangeResponseBody: RustCoreGetExchangeResponseBody
 ) {
@@ -60,7 +60,7 @@ class GetExchangeResponseBody private constructor(
     }
 }
 
-class GetExchangesResponseBody private constructor(
+data class GetExchangesResponseBody private constructor(
     val data: List<String>,
     internal val rustCoreGetExchangesResponseBody: RustCoreGetExchangesResponseBody
 ) {
@@ -84,7 +84,7 @@ class GetExchangesResponseBody private constructor(
     }
 }
 
-class CreateExchangeRequestBody private constructor(
+data class CreateExchangeRequestBody private constructor(
     val message: Rfq,
     val replyTo: String? = null,
     internal val rustCoreCreateExchangeRequestBody: RustCoreCreateExchangeRequestBody
@@ -114,7 +114,7 @@ class CreateExchangeRequestBody private constructor(
 
 interface WalletUpdateMessage {}
 
-class UpdateExchangeRequestBody private constructor(
+data class UpdateExchangeRequestBody private constructor(
     val message: WalletUpdateMessage,
     internal val rustCoreUpdateExchangeRequestBody: RustCoreUpdateExchangeRequestBody
 ) {
@@ -149,7 +149,7 @@ class UpdateExchangeRequestBody private constructor(
 
 interface ReplyToMessage {}
 
-class ReplyToRequestBody private constructor(
+data class ReplyToRequestBody private constructor(
     val message: ReplyToMessage,
     internal val rustCoreReplyToRequestBody: RustCoreReplyToRequestBody
 ) {

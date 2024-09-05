@@ -21,7 +21,7 @@ data class BalanceData (
     }
 }
 
-class Balance private constructor(
+data class Balance private constructor(
     val metadata: ResourceMetadata,
     val data: BalanceData,
     val signature: String,

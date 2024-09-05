@@ -7,7 +7,7 @@ import tbdex.sdk.rust.Rfq as RustCoreRfq
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
-class Rfq private constructor(
+data class Rfq private constructor(
     val metadata: MessageMetadata,
     val data: RfqData,
     val privateData: RfqPrivateData? = null,

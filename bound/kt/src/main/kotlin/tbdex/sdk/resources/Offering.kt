@@ -7,7 +7,7 @@ import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 import web5.sdk.vc.pex.PresentationDefinition
 
-class Offering private constructor(
+data class Offering private constructor(
     val metadata: ResourceMetadata,
     val data: OfferingData,
     val signature: String,

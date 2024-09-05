@@ -40,7 +40,7 @@ data class OrderInstructionsData (
     }
 }
 
-class OrderInstructions private constructor(
+data class OrderInstructions private constructor(
     val metadata: MessageMetadata,
     val data: OrderInstructionsData,
     val signature: String,

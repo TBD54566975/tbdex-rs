@@ -15,7 +15,7 @@ data class CancelData(val reason: String? = null) {
     }
 }
 
-class Cancel private constructor(
+data class Cancel private constructor(
     val metadata: MessageMetadata,
     val data: CancelData,
     val signature: String,

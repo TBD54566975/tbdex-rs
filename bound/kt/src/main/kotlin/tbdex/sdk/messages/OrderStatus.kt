@@ -77,7 +77,7 @@ data class OrderStatusData (
     }
 }
 
-class OrderStatus private constructor(
+data class OrderStatus private constructor(
     val metadata: MessageMetadata,
     val data: OrderStatusData,
     val signature: String,
