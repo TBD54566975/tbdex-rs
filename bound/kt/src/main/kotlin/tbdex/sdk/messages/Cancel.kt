@@ -13,6 +13,10 @@ data class CancelData(val reason: String? = null) {
             return CancelData(rustCore.reason)
         }
     }
+
+    internal fun toRustCore(): RustCoreCancelData {
+        return RustCoreCancelData(reason)
+    }
 }
 
 data class Cancel private constructor(
@@ -26,11 +30,11 @@ data class Cancel private constructor(
             to: String,
             from: String,
             exchangeId: String,
-            data: RustCoreCancelData,
+            data: CancelData,
             protocol: String? = null,
             externalId: String? = null
         ): Cancel {
-            val rustCoreCancel = RustCoreCancel.create(to, from, exchangeId, data, protocol, externalId)
+            val rustCoreCancel = RustCoreCancel.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
             val rustCoreData = rustCoreCancel.getData()
             return Cancel(
                 MessageMetadata.fromRustCore(rustCoreData.metadata),
