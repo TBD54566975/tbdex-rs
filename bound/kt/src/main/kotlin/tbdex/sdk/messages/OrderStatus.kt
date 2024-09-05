@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.OrderStatusStatus as RustCoreStatus
 import tbdex.sdk.rust.OrderStatus as RustCoreOrderStatus
@@ -92,25 +93,33 @@ data class OrderStatus private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): OrderStatus {
-            val rustCoreOrderStatus = RustCoreOrderStatus.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
-            val rustCoreData = rustCoreOrderStatus.getData()
-            return OrderStatus(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                OrderStatusData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreOrderStatus
-            )
+            try {
+                val rustCoreOrderStatus = RustCoreOrderStatus.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
+                val rustCoreData = rustCoreOrderStatus.getData()
+                return OrderStatus(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    OrderStatusData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreOrderStatus
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): OrderStatus {
-            val rustCoreOrderStatus = RustCoreOrderStatus.fromJsonString(json)
-            val rustCoreData = rustCoreOrderStatus.getData()
-            return OrderStatus(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                OrderStatusData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreOrderStatus
-            )
+            try {
+                val rustCoreOrderStatus = RustCoreOrderStatus.fromJsonString(json)
+                val rustCoreData = rustCoreOrderStatus.getData()
+                return OrderStatus(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    OrderStatusData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreOrderStatus
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreOrderStatus(rustCoreOrderStatus: RustCoreOrderStatus): OrderStatus {
@@ -125,14 +134,26 @@ data class OrderStatus private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreOrderStatus.toJsonString()
+        try {
+            return rustCoreOrderStatus.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOrderStatus.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreOrderStatus.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreOrderStatus.verify()
+        try {
+            rustCoreOrderStatus.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

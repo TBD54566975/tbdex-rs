@@ -1,5 +1,7 @@
-use super::{generate_access_token, get_service_endpoint, send_request, HttpClientError, Result};
-use crate::{http::balances::GetBalancesResponseBody, resources::balance::Balance};
+use super::{generate_access_token, get_service_endpoint, send_request, Result};
+use crate::{
+    errors::TbdexError, http::balances::GetBalancesResponseBody, resources::balance::Balance,
+};
 use reqwest::Method;
 use web5::dids::bearer_did::BearerDid;
 
@@ -15,7 +17,7 @@ pub fn get_balances(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<Vec<Bal
         None,
         Some(access_token),
     )?
-    .ok_or(HttpClientError::ReqwestError(
+    .ok_or(TbdexError::HttpClient(
         "get balances response returned null".to_string(),
     ))?;
 

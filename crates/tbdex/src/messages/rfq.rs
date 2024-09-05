@@ -1,10 +1,10 @@
 use super::{MessageKind, MessageMetadata, Result};
 use crate::{
+    errors::TbdexError,
     json::{FromJson, ToJson},
     json_schemas::generated::{
         MESSAGE_JSON_SCHEMA, RFQ_DATA_JSON_SCHEMA, RFQ_PRIVATE_DATA_JSON_SCHEMA,
     },
-    messages::MessageError,
     resources::offering::Offering,
     DEFAULT_PROTOCOL_VERSION,
 };
@@ -98,7 +98,7 @@ impl Rfq {
     pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<()> {
         // verify protocol version
         if offering.metadata.protocol != self.metadata.protocol {
-            return Err(MessageError::OfferingVerification(format!(
+            return Err(TbdexError::OfferingVerification(format!(
                 "offering has protocol version {} but rfq has protocol version {}",
                 offering.metadata.protocol, self.metadata.protocol
             )));
@@ -106,14 +106,14 @@ impl Rfq {
 
         // verify offering id
         if offering.metadata.id != self.data.offering_id {
-            return Err(MessageError::OfferingVerification(format!(
+            return Err(TbdexError::OfferingVerification(format!(
                 "offering id is {} but rfq has offering id {}",
                 offering.metadata.id, self.data.offering_id
             )));
         }
 
         let payin_amount = self.data.payin.amount.parse::<f64>().map_err(|_| {
-            MessageError::OfferingVerification(format!(
+            TbdexError::OfferingVerification(format!(
                 "rfq payin amount invalid decimal string {}",
                 self.data.payin.amount
             ))
@@ -122,14 +122,14 @@ impl Rfq {
         // verify max amount
         if let Some(max_amount) = offering.data.payin.max.as_ref() {
             let max_amount = max_amount.parse::<f64>().map_err(|_| {
-                MessageError::OfferingVerification(format!(
+                TbdexError::OfferingVerification(format!(
                     "offering max amount invalid decimal string {}",
                     max_amount
                 ))
             })?;
 
             if payin_amount > max_amount {
-                return Err(MessageError::OfferingVerification(format!(
+                return Err(TbdexError::OfferingVerification(format!(
                     "rfq payin of {} is larger than max offering amount of {}",
                     payin_amount, max_amount
                 )));
@@ -139,14 +139,14 @@ impl Rfq {
         // verify min amount
         if let Some(min_amount) = offering.data.payin.min.as_ref() {
             let min_amount = min_amount.parse::<f64>().map_err(|_| {
-                MessageError::OfferingVerification(format!(
+                TbdexError::OfferingVerification(format!(
                     "offering min amount invalid decimal string {}",
                     min_amount
                 ))
             })?;
 
             if payin_amount < min_amount {
-                return Err(MessageError::OfferingVerification(format!(
+                return Err(TbdexError::OfferingVerification(format!(
                     "rfq payin of {} is smaller than min offering amount of {}",
                     payin_amount, min_amount
                 )));
@@ -155,7 +155,7 @@ impl Rfq {
 
         let private_data = match &self.private_data {
             None => {
-                return Err(MessageError::OfferingVerification(
+                return Err(TbdexError::OfferingVerification(
                     "cannot verify offering requirements without private data".to_string(),
                 ))
             }
@@ -175,18 +175,18 @@ impl Rfq {
                     .payin
                     .as_ref()
                     .ok_or_else(|| {
-                        MessageError::OfferingVerification("missing private payin data".to_string())
+                        TbdexError::OfferingVerification("missing private payin data".to_string())
                     })?
                     .payment_details
                     .as_ref()
                     .ok_or_else(|| {
-                        MessageError::OfferingVerification("missing payment details".to_string())
+                        TbdexError::OfferingVerification("missing payment details".to_string())
                     })?;
 
                 crate::json_schemas::validate(json_schema, payment_details)?;
             }
         } else {
-            return Err(MessageError::OfferingVerification(format!(
+            return Err(TbdexError::OfferingVerification(format!(
                 "kind {} not found in offering",
                 self.data.payin.kind
             )));
@@ -205,20 +205,18 @@ impl Rfq {
                     .payout
                     .as_ref()
                     .ok_or_else(|| {
-                        MessageError::OfferingVerification(
-                            "missing private payout data".to_string(),
-                        )
+                        TbdexError::OfferingVerification("missing private payout data".to_string())
                     })?
                     .payment_details
                     .as_ref()
                     .ok_or_else(|| {
-                        MessageError::OfferingVerification("missing payment details".to_string())
+                        TbdexError::OfferingVerification("missing payment details".to_string())
                     })?;
 
                 crate::json_schemas::validate(json_schema, payment_details)?;
             }
         } else {
-            return Err(MessageError::OfferingVerification(format!(
+            return Err(TbdexError::OfferingVerification(format!(
                 "kind {} not found in offering",
                 self.data.payout.kind
             )));
@@ -229,18 +227,18 @@ impl Rfq {
             let vc_jwts = required_claims
                 .select_credentials(&private_data.claims.clone().unwrap_or_default())
                 .map_err(|_| {
-                    MessageError::OfferingVerification("failed to select credentials".to_string())
+                    TbdexError::OfferingVerification("failed to select credentials".to_string())
                 })?;
 
             if vc_jwts.is_empty() {
-                return Err(MessageError::OfferingVerification(
+                return Err(TbdexError::OfferingVerification(
                     "no matching credentials found".to_string(),
                 ));
             }
 
             for vc_jwt in vc_jwts {
                 VerifiableCredential::from_vc_jwt(&vc_jwt, true).map_err(|_| {
-                    MessageError::OfferingVerification(format!(
+                    TbdexError::OfferingVerification(format!(
                         "vc_jwt failed verifiction {}",
                         vc_jwt
                     ))
@@ -254,7 +252,7 @@ impl Rfq {
     pub fn verify_all_private_data(&self) -> Result<()> {
         let private_data = match &self.private_data {
             None => {
-                return Err(MessageError::PrivateDataVerification(
+                return Err(TbdexError::PrivateDataVerification(
                     "cannot verify all private data without private data".to_string(),
                 ))
             }
@@ -265,12 +263,12 @@ impl Rfq {
             if let Some(payin) = &private_data.payin {
                 let digest = digest_private_data(&private_data.salt, &payin.payment_details)?;
                 if &digest != hash {
-                    return Err(MessageError::PrivateDataVerification(
+                    return Err(TbdexError::PrivateDataVerification(
                         "private data payin hash mismatch".to_string(),
                     ));
                 }
             } else {
-                return Err(MessageError::PrivateDataVerification(
+                return Err(TbdexError::PrivateDataVerification(
                     "private data missing payin".to_string(),
                 ));
             }
@@ -280,12 +278,12 @@ impl Rfq {
             if let Some(payout) = &private_data.payout {
                 let digest = digest_private_data(&private_data.salt, &payout.payment_details)?;
                 if &digest != hash {
-                    return Err(MessageError::PrivateDataVerification(
+                    return Err(TbdexError::PrivateDataVerification(
                         "private data payout hash mismatch".to_string(),
                     ));
                 }
             } else {
-                return Err(MessageError::PrivateDataVerification(
+                return Err(TbdexError::PrivateDataVerification(
                     "private data missing payout".to_string(),
                 ));
             }
@@ -294,7 +292,7 @@ impl Rfq {
         if let Some(hash) = &self.data.claims_hash {
             let digest = digest_private_data(&private_data.salt, &private_data.claims)?;
             if &digest != hash {
-                return Err(MessageError::PrivateDataVerification(
+                return Err(TbdexError::PrivateDataVerification(
                     "private data claims hash mismatch".to_string(),
                 ));
             }
@@ -311,7 +309,7 @@ impl Rfq {
                         || private_data.payout.is_some()
                         || private_data.claims.is_some()
                     {
-                        return Err(MessageError::PrivateDataVerification(
+                        return Err(TbdexError::PrivateDataVerification(
                             "private data defined but salt is not defined".to_string(),
                         ));
                     } else {
@@ -325,12 +323,12 @@ impl Rfq {
                 if let Some(hash) = &self.data.payin.payment_details_hash {
                     let digest = digest_private_data(&salt, &payin.payment_details)?;
                     if &digest != hash {
-                        return Err(MessageError::PrivateDataVerification(
+                        return Err(TbdexError::PrivateDataVerification(
                             "private data payin hash mismatch".to_string(),
                         ));
                     }
                 } else {
-                    return Err(MessageError::PrivateDataVerification(
+                    return Err(TbdexError::PrivateDataVerification(
                         "private data payin defined but hash is not defined".to_string(),
                     ));
                 }
@@ -340,12 +338,12 @@ impl Rfq {
                 if let Some(hash) = &self.data.payout.payment_details_hash {
                     let digest = digest_private_data(&salt, &payout.payment_details)?;
                     if &digest != hash {
-                        return Err(MessageError::PrivateDataVerification(
+                        return Err(TbdexError::PrivateDataVerification(
                             "private data payout hash mismatch".to_string(),
                         ));
                     }
                 } else {
-                    return Err(MessageError::PrivateDataVerification(
+                    return Err(TbdexError::PrivateDataVerification(
                         "private data payout defined but hash is not defined".to_string(),
                     ));
                 }
@@ -355,12 +353,12 @@ impl Rfq {
                 if let Some(hash) = &self.data.claims_hash {
                     let digest = digest_private_data(&salt, &claims)?;
                     if &digest != hash {
-                        return Err(MessageError::PrivateDataVerification(
+                        return Err(TbdexError::PrivateDataVerification(
                             "private data claims hash mismatch".to_string(),
                         ));
                     }
                 } else {
-                    return Err(MessageError::PrivateDataVerification(
+                    return Err(TbdexError::PrivateDataVerification(
                         "private data claims defined but hash is not defined".to_string(),
                     ));
                 }

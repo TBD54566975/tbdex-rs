@@ -3,12 +3,13 @@ pub mod exchanges;
 pub mod offerings;
 
 use crate::{
-    http::ErrorResponseBody, jose::Signer, messages::MessageError, resources::ResourceError,
+    errors::{Result, TbdexError},
+    http::ErrorResponseBody,
+    jose::Signer,
 };
-use josekit::{jwt::JwtPayload, JoseError as JosekitError};
-use reqwest::{blocking::Client, Error as ReqwestError, Method, StatusCode};
+use josekit::jwt::JwtPayload;
+use reqwest::{blocking::Client, Method, StatusCode};
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::Error as SerdeJsonError;
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
 use web5::{
@@ -20,52 +21,6 @@ use web5::{
     },
     errors::Web5Error,
 };
-
-#[derive(thiserror::Error, Debug, Clone, PartialEq)]
-pub enum HttpClientError {
-    #[error("reqwest error {0}")]
-    ReqwestError(String),
-    #[error("serde json error {0}")]
-    SerdeJson(String),
-    #[error("jose error {0}")]
-    Jose(String),
-    #[error(transparent)]
-    Web5Error(#[from] Web5Error),
-    #[error(transparent)]
-    Resource(#[from] ResourceError),
-    #[error(transparent)]
-    Message(#[from] MessageError),
-    #[error("unable to map response to exchange")]
-    ExchangeMapping,
-    #[error(transparent)]
-    Resolution(#[from] ResolutionMetadataError),
-    #[error("missing service endpoint for {0}")]
-    MissingServiceEndpoint(String),
-    #[error("unsuccessfuly response {0}")]
-    UnsuccessfulResponse(String),
-    #[error(transparent)]
-    ErrorResponseBody(#[from] ErrorResponseBody),
-}
-
-impl From<ReqwestError> for HttpClientError {
-    fn from(err: ReqwestError) -> Self {
-        HttpClientError::ReqwestError(err.to_string())
-    }
-}
-
-impl From<SerdeJsonError> for HttpClientError {
-    fn from(err: SerdeJsonError) -> Self {
-        HttpClientError::SerdeJson(err.to_string())
-    }
-}
-
-impl From<JosekitError> for HttpClientError {
-    fn from(err: JosekitError) -> Self {
-        HttpClientError::Jose(err.to_string())
-    }
-}
-
-type Result<T> = std::result::Result<T, HttpClientError>;
 
 fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<String> {
     let now = SystemTime::now();
@@ -97,27 +52,32 @@ pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
     let endpoint = match &resolution_result.document {
         None => {
             return Err(match resolution_result.resolution_metadata.error {
-                Some(e) => HttpClientError::Resolution(e),
-                None => HttpClientError::Resolution(ResolutionMetadataError::InternalError),
+                Some(e) => TbdexError::Web5Error(Web5Error::Resolution(e)),
+                None => TbdexError::Web5Error(Web5Error::Resolution(
+                    ResolutionMetadataError::InternalError,
+                )),
             })
         }
         Some(d) => match &d.service {
             None => {
-                return Err(HttpClientError::MissingServiceEndpoint(
-                    pfi_did_uri.to_string(),
-                ))
+                return Err(TbdexError::HttpClient(format!(
+                    "missing service endpoint {}",
+                    pfi_did_uri
+                )))
             }
             Some(s) => s
                 .iter()
                 .find(|s| s.r#type == *"PFI")
-                .ok_or(HttpClientError::MissingServiceEndpoint(
-                    pfi_did_uri.to_string(),
-                ))?
+                .ok_or(TbdexError::HttpClient(format!(
+                    "missing service endpoint {}",
+                    pfi_did_uri
+                )))?
                 .service_endpoint
                 .first()
-                .ok_or(HttpClientError::MissingServiceEndpoint(
-                    pfi_did_uri.to_string(),
-                ))?
+                .ok_or(TbdexError::HttpClient(format!(
+                    "missing service endpoint {}",
+                    pfi_did_uri
+                )))?
                 .clone(),
         },
     };
@@ -193,11 +153,11 @@ fn send_request<T: Serialize, U: DeserializeOwned>(
     if !response_status.is_success() {
         if response_status.as_u16() >= 400 {
             let error_response_body = serde_json::from_str::<ErrorResponseBody>(&response_text)?;
-            return Err(HttpClientError::ErrorResponseBody(error_response_body));
+            return Err(error_response_body.into());
         }
 
-        return Err(HttpClientError::UnsuccessfulResponse(format!(
-            "{} {}",
+        return Err(TbdexError::HttpClient(format!(
+            "unsuccessful http response {} {}",
             response_status, response_text
         )));
     }

@@ -1,39 +1,9 @@
 pub mod balance;
 pub mod offering;
 
-use crate::{json_schemas::JsonSchemaError, signature::SignatureError};
+use crate::errors::Result;
 use serde::{Deserialize, Serialize};
-use serde_json::Error as SerdeJsonError;
-use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
-use web5::errors::Web5Error;
-
-#[derive(thiserror::Error, Debug, Clone, PartialEq)]
-pub enum ResourceError {
-    #[error("serde json error {0}")]
-    SerdeJson(String),
-    #[error("typeid error {0}")]
-    TypeId(String),
-    #[error(transparent)]
-    Web5Error(#[from] Web5Error),
-    #[error(transparent)]
-    Signature(#[from] SignatureError),
-    #[error(transparent)]
-    JsonSchema(#[from] JsonSchemaError),
-}
-
-impl From<SerdeJsonError> for ResourceError {
-    fn from(err: SerdeJsonError) -> Self {
-        ResourceError::SerdeJson(err.to_string())
-    }
-}
-
-impl From<TypeIdError> for ResourceError {
-    fn from(err: TypeIdError) -> Self {
-        ResourceError::TypeId(err.to_string())
-    }
-}
-
-type Result<T> = std::result::Result<T, ResourceError>;
+use type_safe_id::{DynamicType, TypeSafeId};
 
 #[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]

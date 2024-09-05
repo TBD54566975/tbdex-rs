@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.Close as RustCoreClose
 import tbdex.sdk.rust.CloseDataData as RustCoreCloseData
@@ -37,25 +38,33 @@ data class Close private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): Close {
-            val rustCoreClose = RustCoreClose.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
-            val rustCoreData = rustCoreClose.getData()
-            return Close(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                CloseData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreClose
-            )
+            try {
+                val rustCoreClose = RustCoreClose.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
+                val rustCoreData = rustCoreClose.getData()
+                return Close(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    CloseData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreClose
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Close {
-            val rustCoreClose = RustCoreClose.fromJsonString(json)
-            val rustCoreData = rustCoreClose.getData()
-            return Close(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                CloseData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreClose
-            )
+            try {
+                val rustCoreClose = RustCoreClose.fromJsonString(json)
+                val rustCoreData = rustCoreClose.getData()
+                return Close(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    CloseData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreClose
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreClose(rustCoreClose: RustCoreClose): Close {
@@ -70,14 +79,26 @@ data class Close private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreClose.toJsonString()
+        try {
+            return rustCoreClose.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreClose.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreClose.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreClose.verify()
+        try {
+            rustCoreClose.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

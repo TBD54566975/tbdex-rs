@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.http.WalletUpdateMessage
 import tbdex.sdk.rust.Cancel as RustCoreCancel
 import tbdex.sdk.rust.CancelDataData as RustCoreCancelData
@@ -34,25 +35,33 @@ data class Cancel private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): Cancel {
-            val rustCoreCancel = RustCoreCancel.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
-            val rustCoreData = rustCoreCancel.getData()
-            return Cancel(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                CancelData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreCancel
-            )
+            try {
+                val rustCoreCancel = RustCoreCancel.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
+                val rustCoreData = rustCoreCancel.getData()
+                return Cancel(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    CancelData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreCancel
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Cancel {
-            val rustCoreCancel = RustCoreCancel.fromJsonString(json)
-            val rustCoreData = rustCoreCancel.getData()
-            return Cancel(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                CancelData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreCancel
-            )
+            try {
+                val rustCoreCancel = RustCoreCancel.fromJsonString(json)
+                val rustCoreData = rustCoreCancel.getData()
+                return Cancel(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    CancelData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreCancel
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreCancel(rustCoreCancel: RustCoreCancel): Cancel {
@@ -67,14 +76,26 @@ data class Cancel private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreCancel.toJsonString()
+        try {
+            return rustCoreCancel.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreCancel.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreCancel.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreCancel.verify()
+        try {
+            rustCoreCancel.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

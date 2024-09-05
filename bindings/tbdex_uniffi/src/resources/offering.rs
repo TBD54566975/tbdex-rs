@@ -1,4 +1,4 @@
-use crate::errors::{Result, TbdexSdkError};
+use crate::errors::{Result, TbdexError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -20,10 +20,7 @@ impl Offering {
     }
 
     pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
-        let mut inner_offering = self
-            .0
-            .write()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
+        let mut inner_offering = self.0.write().map_err(TbdexError::from_poison_error)?;
         inner_offering.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -34,19 +31,13 @@ impl Offering {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner_offering = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let inner_offering = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(inner_offering.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<data::Offering> {
-        let inner_offering = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let inner_offering = self.0.read().map_err(TbdexError::from_poison_error)?;
         let json_serialized_data = serde_json::to_string(&inner_offering.data.clone())?;
         Ok(data::Offering {
             metadata: inner_offering.metadata.clone(),
@@ -60,18 +51,12 @@ impl Offering {
     }
 
     pub fn to_inner(&self) -> Result<InnerOffering> {
-        let inner_offering = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let inner_offering = self.0.read().map_err(TbdexError::from_poison_error)?;
         Ok(inner_offering.clone())
     }
 
     pub fn verify(&self) -> Result<()> {
-        let inner_offering = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let inner_offering = self.0.read().map_err(TbdexError::from_poison_error)?;
         inner_offering.verify()?;
         Ok(())
     }

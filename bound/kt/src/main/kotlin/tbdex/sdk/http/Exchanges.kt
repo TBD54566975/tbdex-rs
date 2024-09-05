@@ -1,5 +1,6 @@
 package tbdex.sdk.http
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.GetExchangeResponseBodyDataSerializedMessage as RustCoreGetExchangeResponseBodyDataSerializedMessage
 import tbdex.sdk.rust.MessageKind as RustCoreMessageKind
@@ -16,47 +17,59 @@ data class GetExchangeResponseBody private constructor(
 ) {
     constructor(data: List<Message>) : this(
         data,
-        RustCoreGetExchangeResponseBody(
-            RustCoreGetExchangeResponseBodyData(
-                data.map {
-                    val (kind, jsonSerialized) = when (it) {
-                        is Rfq -> Pair(RustCoreMessageKind.RFQ, it.toJsonString())
-                        is Quote -> Pair(RustCoreMessageKind.QUOTE, it.toJsonString())
-                        is Order -> Pair(RustCoreMessageKind.ORDER, it.toJsonString())
-                        is OrderInstructions -> Pair(RustCoreMessageKind.ORDER_INSTRUCTIONS, it.toJsonString())
-                        is Cancel -> Pair(RustCoreMessageKind.CANCEL, it.toJsonString())
-                        is OrderStatus -> Pair(RustCoreMessageKind.ORDER_STATUS, it.toJsonString())
-                        is Close -> Pair(RustCoreMessageKind.CLOSE, it.toJsonString())
-                        else -> throw Exception("unknown type $it")
-                    }
+        try {
+            RustCoreGetExchangeResponseBody(
+                RustCoreGetExchangeResponseBodyData(
+                    data.map {
+                        val (kind, jsonSerialized) = when (it) {
+                            is Rfq -> Pair(RustCoreMessageKind.RFQ, it.toJsonString())
+                            is Quote -> Pair(RustCoreMessageKind.QUOTE, it.toJsonString())
+                            is Order -> Pair(RustCoreMessageKind.ORDER, it.toJsonString())
+                            is OrderInstructions -> Pair(RustCoreMessageKind.ORDER_INSTRUCTIONS, it.toJsonString())
+                            is Cancel -> Pair(RustCoreMessageKind.CANCEL, it.toJsonString())
+                            is OrderStatus -> Pair(RustCoreMessageKind.ORDER_STATUS, it.toJsonString())
+                            is Close -> Pair(RustCoreMessageKind.CLOSE, it.toJsonString())
+                            else -> throw Exception("unknown type $it")
+                        }
 
-                    RustCoreGetExchangeResponseBodyDataSerializedMessage(kind, jsonSerialized)
-                }
+                        RustCoreGetExchangeResponseBodyDataSerializedMessage(kind, jsonSerialized)
+                    }
+                )
             )
-        )
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     )
 
     companion object {
         fun fromJsonString(json: String): GetExchangeResponseBody {
-            val rustCoreGetExchangeResponseBody = RustCoreGetExchangeResponseBody.fromJsonString(json)
-            val data = rustCoreGetExchangeResponseBody.getData().data.map {
-                when (it.kind) {
-                    RustCoreMessageKind.RFQ -> Rfq.fromJsonString(it.jsonSerialized)
-                    RustCoreMessageKind.QUOTE -> Quote.fromJsonString(it.jsonSerialized)
-                    RustCoreMessageKind.ORDER -> Order.fromJsonString(it.jsonSerialized)
-                    RustCoreMessageKind.ORDER_INSTRUCTIONS -> Order.fromJsonString(it.jsonSerialized)
-                    RustCoreMessageKind.CANCEL -> Cancel.fromJsonString(it.jsonSerialized)
-                    RustCoreMessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(it.jsonSerialized)
-                    RustCoreMessageKind.CLOSE -> Close.fromJsonString(it.jsonSerialized)
+            try {
+                val rustCoreGetExchangeResponseBody = RustCoreGetExchangeResponseBody.fromJsonString(json)
+                val data = rustCoreGetExchangeResponseBody.getData().data.map {
+                    when (it.kind) {
+                        RustCoreMessageKind.RFQ -> Rfq.fromJsonString(it.jsonSerialized)
+                        RustCoreMessageKind.QUOTE -> Quote.fromJsonString(it.jsonSerialized)
+                        RustCoreMessageKind.ORDER -> Order.fromJsonString(it.jsonSerialized)
+                        RustCoreMessageKind.ORDER_INSTRUCTIONS -> Order.fromJsonString(it.jsonSerialized)
+                        RustCoreMessageKind.CANCEL -> Cancel.fromJsonString(it.jsonSerialized)
+                        RustCoreMessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(it.jsonSerialized)
+                        RustCoreMessageKind.CLOSE -> Close.fromJsonString(it.jsonSerialized)
+                    }
                 }
-            }
 
-            return GetExchangeResponseBody(data, rustCoreGetExchangeResponseBody)
+                return GetExchangeResponseBody(data, rustCoreGetExchangeResponseBody)
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
     }
 
     fun toJsonString(): String {
-        return this.rustCoreGetExchangeResponseBody.toJsonString()
+        try {
+            return rustCoreGetExchangeResponseBody.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }
 
@@ -66,21 +79,33 @@ data class GetExchangesResponseBody private constructor(
 ) {
     constructor(data: List<String>) : this(
         data,
-        RustCoreGetExchangesResponseBody(data)
+        try {
+            RustCoreGetExchangesResponseBody(data)
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     )
 
     companion object {
         fun fromJsonString(json: String): GetExchangesResponseBody {
-            val rustCoreGetExchangesResponseBody = RustCoreGetExchangesResponseBody.fromJsonString(json)
-            return GetExchangesResponseBody(
-                rustCoreGetExchangesResponseBody.getData().data,
-                rustCoreGetExchangesResponseBody
-            )
+            try {
+                val rustCoreGetExchangesResponseBody = RustCoreGetExchangesResponseBody.fromJsonString(json)
+                return GetExchangesResponseBody(
+                    rustCoreGetExchangesResponseBody.getData().data,
+                    rustCoreGetExchangesResponseBody
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
     }
 
     fun toJsonString(): String {
-        return this.rustCoreGetExchangesResponseBody.toJsonString()
+        try {
+            return rustCoreGetExchangesResponseBody.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }
 
@@ -92,23 +117,35 @@ data class CreateExchangeRequestBody private constructor(
     constructor(message: Rfq, replyTo: String? = null) : this(
         message,
         replyTo,
-        RustCoreCreateExchangeRequestBody(message.rustCoreRfq, replyTo)
+        try {
+            RustCoreCreateExchangeRequestBody(message.rustCoreRfq, replyTo)
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     )
 
     companion object {
         fun fromJsonString(json: String): CreateExchangeRequestBody {
-            val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
-            val data = rustCoreCreateExchangeRequestBody.getData()
-            return CreateExchangeRequestBody(
-                Rfq.fromRustCoreRfq(data.message),
-                data.replyTo,
-                rustCoreCreateExchangeRequestBody
-            )
+            try {
+                val rustCoreCreateExchangeRequestBody = RustCoreCreateExchangeRequestBody.fromJsonString(json)
+                val data = rustCoreCreateExchangeRequestBody.getData()
+                return CreateExchangeRequestBody(
+                    Rfq.fromRustCoreRfq(data.message),
+                    data.replyTo,
+                    rustCoreCreateExchangeRequestBody
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
     }
 
     fun toJsonString(): String {
-        return this.rustCoreCreateExchangeRequestBody.toJsonString()
+        try {
+            return rustCoreCreateExchangeRequestBody.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }
 
@@ -120,30 +157,42 @@ data class UpdateExchangeRequestBody private constructor(
 ) {
     constructor(message: WalletUpdateMessage) : this(
         message,
-        when (message) {
-            is Order -> RustCoreUpdateExchangeRequestBody(RustCoreMessageKind.ORDER_STATUS, message.toJsonString())
-            is Cancel -> RustCoreUpdateExchangeRequestBody(RustCoreMessageKind.CANCEL, message.toJsonString())
-            else -> throw Exception("unknown type")
+        try {
+            when (message) {
+                is Order -> RustCoreUpdateExchangeRequestBody(RustCoreMessageKind.ORDER_STATUS, message.toJsonString())
+                is Cancel -> RustCoreUpdateExchangeRequestBody(RustCoreMessageKind.CANCEL, message.toJsonString())
+                else -> throw Exception("unknown type")
+            }
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
         }
     )
 
     companion object {
         fun fromJsonString(json: String): UpdateExchangeRequestBody {
-            val rustCoreUpdateExchangeRequestBody = RustCoreUpdateExchangeRequestBody.fromJsonString(json)
-            val data = rustCoreUpdateExchangeRequestBody.getData()
+            try {
+                val rustCoreUpdateExchangeRequestBody = RustCoreUpdateExchangeRequestBody.fromJsonString(json)
+                val data = rustCoreUpdateExchangeRequestBody.getData()
 
-            val message = when (data.kind) {
-                RustCoreMessageKind.ORDER -> Order.fromJsonString(data.jsonSerializedMessage)
-                RustCoreMessageKind.CANCEL -> Cancel.fromJsonString(data.jsonSerializedMessage)
-                else -> throw Exception("Unsupported message kind ${data.kind}")
+                val message = when (data.kind) {
+                    RustCoreMessageKind.ORDER -> Order.fromJsonString(data.jsonSerializedMessage)
+                    RustCoreMessageKind.CANCEL -> Cancel.fromJsonString(data.jsonSerializedMessage)
+                    else -> throw Exception("Unsupported message kind ${data.kind}")
+                }
+
+                return UpdateExchangeRequestBody(message, rustCoreUpdateExchangeRequestBody)
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
             }
-
-            return UpdateExchangeRequestBody(message, rustCoreUpdateExchangeRequestBody)
         }
     }
 
     fun toJsonString(): String {
-        return this.rustCoreUpdateExchangeRequestBody.toJsonString()
+        try {
+            return rustCoreUpdateExchangeRequestBody.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }
 
@@ -155,33 +204,45 @@ data class ReplyToRequestBody private constructor(
 ) {
     constructor(message: ReplyToMessage) : this(
         message,
-        when (message) {
-            is Quote -> RustCoreReplyToRequestBody(RustCoreMessageKind.QUOTE, message.toJsonString())
-            is OrderInstructions -> RustCoreReplyToRequestBody(RustCoreMessageKind.ORDER_INSTRUCTIONS, message.toJsonString())
-            is OrderStatus -> RustCoreReplyToRequestBody(RustCoreMessageKind.ORDER_STATUS, message.toJsonString())
-            is Close -> RustCoreReplyToRequestBody(RustCoreMessageKind.CLOSE, message.toJsonString())
-            else -> throw Exception("unknown type")
+        try {
+            when (message) {
+                is Quote -> RustCoreReplyToRequestBody(RustCoreMessageKind.QUOTE, message.toJsonString())
+                is OrderInstructions -> RustCoreReplyToRequestBody(RustCoreMessageKind.ORDER_INSTRUCTIONS, message.toJsonString())
+                is OrderStatus -> RustCoreReplyToRequestBody(RustCoreMessageKind.ORDER_STATUS, message.toJsonString())
+                is Close -> RustCoreReplyToRequestBody(RustCoreMessageKind.CLOSE, message.toJsonString())
+                else -> throw Exception("unknown type")
+            }
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
         }
     )
 
     companion object {
         fun fromJsonString(json: String): ReplyToRequestBody {
-            val rustCoreReplyToRequestBody = RustCoreReplyToRequestBody.fromJsonString(json)
-            val data = rustCoreReplyToRequestBody.getData()
+            try {
+                val rustCoreReplyToRequestBody = RustCoreReplyToRequestBody.fromJsonString(json)
+                val data = rustCoreReplyToRequestBody.getData()
 
-            val message: ReplyToMessage = when (data.kind) {
-                RustCoreMessageKind.QUOTE -> Quote.fromJsonString(data.jsonSerializedMessage)
-                RustCoreMessageKind.ORDER_INSTRUCTIONS -> OrderInstructions.fromJsonString(data.jsonSerializedMessage)
-                RustCoreMessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(data.jsonSerializedMessage)
-                RustCoreMessageKind.CLOSE -> Close.fromJsonString(data.jsonSerializedMessage)
-                else -> throw Exception("Unsupported message kind ${data.kind}")
+                val message: ReplyToMessage = when (data.kind) {
+                    RustCoreMessageKind.QUOTE -> Quote.fromJsonString(data.jsonSerializedMessage)
+                    RustCoreMessageKind.ORDER_INSTRUCTIONS -> OrderInstructions.fromJsonString(data.jsonSerializedMessage)
+                    RustCoreMessageKind.ORDER_STATUS -> OrderStatus.fromJsonString(data.jsonSerializedMessage)
+                    RustCoreMessageKind.CLOSE -> Close.fromJsonString(data.jsonSerializedMessage)
+                    else -> throw Exception("Unsupported message kind ${data.kind}")
+                }
+
+                return ReplyToRequestBody(message, rustCoreReplyToRequestBody)
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
             }
-
-            return ReplyToRequestBody(message, rustCoreReplyToRequestBody)
         }
     }
 
     fun toJsonString(): String {
-        return this.rustCoreReplyToRequestBody.toJsonString()
+        try {
+            return rustCoreReplyToRequestBody.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

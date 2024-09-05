@@ -1,5 +1,6 @@
 package tbdex.sdk.http
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.rust.ErrorDetailData as RustCoreErrorDetail
 import tbdex.sdk.rust.ErrorResponseBody as RustCoreErrorResponseBody
 
@@ -27,22 +28,34 @@ data class ErrorResponseBody private constructor(
     constructor(message: String, details: List<ErrorDetail>? = null) : this(
         message,
         details,
-        RustCoreErrorResponseBody(message, details?.map { it.toRustCore() }),
+        try {
+            RustCoreErrorResponseBody(message, details?.map { it.toRustCore() })
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     )
 
     companion object {
         fun fromJsonString(json: String): ErrorResponseBody {
-            val rustCoreErrorResponseBody = RustCoreErrorResponseBody.fromJsonString(json)
-            val data = rustCoreErrorResponseBody.getData()
-            return ErrorResponseBody(
-                data.message,
-                data.details?.map { ErrorDetail.fromRustCore(it) },
-                rustCoreErrorResponseBody
-            )
+            try {
+                val rustCoreErrorResponseBody = RustCoreErrorResponseBody.fromJsonString(json)
+                val data = rustCoreErrorResponseBody.getData()
+                return ErrorResponseBody(
+                    data.message,
+                    data.details?.map { ErrorDetail.fromRustCore(it) },
+                    rustCoreErrorResponseBody
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
     }
 
     fun toJsonString(): String {
-        return this.rustCoreErrorResponseBody.toJsonString()
+        try {
+            return rustCoreErrorResponseBody.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

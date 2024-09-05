@@ -1,13 +1,14 @@
 use std::sync::Arc;
 
 use super::{add_pagination, get_service_endpoint, send_request, Result};
+use crate::errors::TbdexError;
 use crate::http::exchanges::GetExchangesResponseBody;
 use crate::{
     http::exchanges::{
         CreateExchangeRequestBody, GetExchangeResponseBody, UpdateExchangeRequestBody,
         WalletUpdateMessage,
     },
-    http_client::{generate_access_token, HttpClientError},
+    http_client::generate_access_token,
     messages::{
         cancel::Cancel, close::Close, order::Order, order_instructions::OrderInstructions,
         order_status::OrderStatus, quote::Quote, rfq::Rfq, Message,
@@ -112,7 +113,7 @@ pub fn get_exchange(
         None,
         Some(access_token),
     )?
-    .ok_or(HttpClientError::ReqwestError(
+    .ok_or(TbdexError::HttpClient(
         "get exchange response cannot be null".to_string(),
     ))?;
 
@@ -183,7 +184,7 @@ pub fn get_exchange_ids(
         None,
         Some(access_token),
     )?
-    .ok_or(HttpClientError::ReqwestError(
+    .ok_or(TbdexError::HttpClient(
         "get exchanges response cannot be null".to_string(),
     ))?;
 

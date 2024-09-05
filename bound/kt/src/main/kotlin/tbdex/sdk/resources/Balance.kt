@@ -1,5 +1,6 @@
 package tbdex.sdk.resources
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.rust.Balance as RustCoreBalance
 import tbdex.sdk.rust.BalanceDataData as RustCoreBalanceData
 import tbdex.sdk.rust.fromWeb5
@@ -33,25 +34,33 @@ data class Balance private constructor(
             data: BalanceData,
             protocol: String? = null
         ): Balance {
-            val rustCoreBalance = RustCoreBalance.create(from, data.toRustCore(), protocol)
-            val rustCoreData = rustCoreBalance.getData()
-            return Balance(
-                ResourceMetadata.fromRustCore(rustCoreData.metadata),
-                BalanceData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreBalance
-            )
+            try {
+                val rustCoreBalance = RustCoreBalance.create(from, data.toRustCore(), protocol)
+                val rustCoreData = rustCoreBalance.getData()
+                return Balance(
+                    ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                    BalanceData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreBalance
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Balance {
-            val rustCoreBalance = RustCoreBalance.fromJsonString(json)
-            val rustCoreData = rustCoreBalance.getData()
-            return Balance(
-                ResourceMetadata.fromRustCore(rustCoreData.metadata),
-                BalanceData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreBalance
-            )
+            try {
+                val rustCoreBalance = RustCoreBalance.fromJsonString(json)
+                val rustCoreData = rustCoreBalance.getData()
+                return Balance(
+                    ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                    BalanceData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreBalance
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreBalance(rustCoreBalance: RustCoreBalance): Balance {
@@ -66,14 +75,26 @@ data class Balance private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreBalance.toJsonString()
+        try {
+            return rustCoreBalance.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreBalance.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreBalance.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreBalance.verify()
+        try {
+            rustCoreBalance.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

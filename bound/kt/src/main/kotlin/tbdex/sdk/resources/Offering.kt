@@ -1,6 +1,7 @@
 package tbdex.sdk.resources
 
 import tbdex.sdk.Json
+import tbdex.sdk.TbdexException
 import tbdex.sdk.rust.Offering as RustCoreOffering
 import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
@@ -19,27 +20,35 @@ data class Offering private constructor(
             data: OfferingData,
             protocol: String? = null
         ): Offering {
-            val jsonSerializedData = Json.stringify(data)
-            val rustCoreOffering = RustCoreOffering.create(from, jsonSerializedData, protocol)
-            val rustCoreData = rustCoreOffering.getData()
-            return Offering(
-                ResourceMetadata.fromRustCore(rustCoreData.metadata),
-                Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, OfferingData::class.java),
-                rustCoreData.signature,
-                rustCoreOffering
-            )
+            try {
+                val jsonSerializedData = Json.stringify(data)
+                val rustCoreOffering = RustCoreOffering.create(from, jsonSerializedData, protocol)
+                val rustCoreData = rustCoreOffering.getData()
+                return Offering(
+                    ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                    Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, OfferingData::class.java),
+                    rustCoreData.signature,
+                    rustCoreOffering
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Offering {
-            val rustCoreOffering = RustCoreOffering.fromJsonString(json)
-            val rustCoreData = rustCoreOffering.getData()
-            val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
-            return Offering(
-                ResourceMetadata.fromRustCore(rustCoreData.metadata),
-                data,
-                rustCoreData.signature,
-                rustCoreOffering
-            )
+            try {
+                val rustCoreOffering = RustCoreOffering.fromJsonString(json)
+                val rustCoreData = rustCoreOffering.getData()
+                val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
+                return Offering(
+                    ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                    data,
+                    rustCoreData.signature,
+                    rustCoreOffering
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreOffering(rustCoreOffering: RustCoreOffering): Offering {
@@ -55,15 +64,27 @@ data class Offering private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreOffering.toJsonString()
+        try {
+            return rustCoreOffering.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOffering.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreOffering.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreOffering.verify()
+        try {
+            rustCoreOffering.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }
 
