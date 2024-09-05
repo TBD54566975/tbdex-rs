@@ -7,9 +7,22 @@ import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
-typealias CloseData = RustCoreCloseData
+data class CloseData (
+    val reason: String?,
+    val success: Boolean?
+) {
+    companion object {
+        internal fun fromRustCore(rustCore: RustCoreCloseData): CloseData {
+            return CloseData(rustCore.reason, rustCore.success)
+        }
+    }
 
-class Close private constructor(
+    internal fun toRustCore(): RustCoreCloseData {
+        return RustCoreCloseData(reason, success)
+    }
+}
+
+data class Close private constructor(
     val metadata: MessageMetadata,
     val data: CloseData,
     val signature: String,
@@ -24,20 +37,35 @@ class Close private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): Close {
-            val rustCoreClose = RustCoreClose.create(to, from, exchangeId, data, protocol, externalId)
+            val rustCoreClose = RustCoreClose.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
             val rustCoreData = rustCoreClose.getData()
-            return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
+            return Close(
+                MessageMetadata.fromRustCore(rustCoreData.metadata),
+                CloseData.fromRustCore(rustCoreData.data),
+                rustCoreData.signature,
+                rustCoreClose
+            )
         }
 
         fun fromJsonString(json: String): Close {
             val rustCoreClose = RustCoreClose.fromJsonString(json)
             val rustCoreData = rustCoreClose.getData()
-            return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
+            return Close(
+                MessageMetadata.fromRustCore(rustCoreData.metadata),
+                CloseData.fromRustCore(rustCoreData.data),
+                rustCoreData.signature,
+                rustCoreClose
+            )
         }
 
         internal fun fromRustCoreClose(rustCoreClose: RustCoreClose): Close {
             val rustCoreData = rustCoreClose.getData()
-            return Close(rustCoreData.metadata, rustCoreData.data, rustCoreData.signature, rustCoreClose)
+            return Close(
+                MessageMetadata.fromRustCore(rustCoreData.metadata),
+                CloseData.fromRustCore(rustCoreData.data),
+                rustCoreData.signature,
+                rustCoreClose
+            )
         }
     }
 

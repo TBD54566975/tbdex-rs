@@ -7,7 +7,7 @@ import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 import web5.sdk.vc.pex.PresentationDefinition
 
-class Offering private constructor(
+data class Offering private constructor(
     val metadata: ResourceMetadata,
     val data: OfferingData,
     val signature: String,
@@ -23,7 +23,7 @@ class Offering private constructor(
             val rustCoreOffering = RustCoreOffering.create(from, jsonSerializedData, protocol)
             val rustCoreData = rustCoreOffering.getData()
             return Offering(
-                rustCoreData.metadata,
+                ResourceMetadata.fromRustCore(rustCoreData.metadata),
                 Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, OfferingData::class.java),
                 rustCoreData.signature,
                 rustCoreOffering
@@ -34,13 +34,23 @@ class Offering private constructor(
             val rustCoreOffering = RustCoreOffering.fromJsonString(json)
             val rustCoreData = rustCoreOffering.getData()
             val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
-            return Offering(rustCoreData.metadata, data, rustCoreData.signature, rustCoreOffering)
+            return Offering(
+                ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                data,
+                rustCoreData.signature,
+                rustCoreOffering
+            )
         }
 
         internal fun fromRustCoreOffering(rustCoreOffering: RustCoreOffering): Offering {
             val rustCoreData = rustCoreOffering.getData()
             val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)
-            return Offering(rustCoreData.metadata, data, rustCoreData.signature, rustCoreOffering)
+            return Offering(
+                ResourceMetadata.fromRustCore(rustCoreData.metadata),
+                data,
+                rustCoreData.signature,
+                rustCoreOffering
+            )
         }
     }
 

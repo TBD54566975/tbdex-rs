@@ -23,7 +23,7 @@ const val dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
  * val node = Json.parse(payload)
  * ```
  */
-object Json {
+internal object Json {
     /**
      * The Jackson object mapper instance, shared across the lib.
      *

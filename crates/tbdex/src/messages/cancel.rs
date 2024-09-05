@@ -77,7 +77,7 @@ impl Cancel {
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct CancelData {
-    pub reason: String,
+    pub reason: Option<String>,
 }
 
 #[cfg(test)]

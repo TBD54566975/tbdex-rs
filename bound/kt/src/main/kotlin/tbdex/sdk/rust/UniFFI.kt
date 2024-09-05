@@ -8223,7 +8223,7 @@ public object FfiConverterTypeCancelData: FfiConverterRustBuffer<CancelData> {
 
 
 data class CancelDataData (
-    var `reason`: kotlin.String
+    var `reason`: kotlin.String?
 ) {
     
     companion object
@@ -8232,16 +8232,16 @@ data class CancelDataData (
 public object FfiConverterTypeCancelDataData: FfiConverterRustBuffer<CancelDataData> {
     override fun read(buf: ByteBuffer): CancelDataData {
         return CancelDataData(
-            FfiConverterString.read(buf),
+            FfiConverterOptionalString.read(buf),
         )
     }
 
     override fun allocationSize(value: CancelDataData) = (
-            FfiConverterString.allocationSize(value.`reason`)
+            FfiConverterOptionalString.allocationSize(value.`reason`)
     )
 
     override fun write(value: CancelDataData, buf: ByteBuffer) {
-            FfiConverterString.write(value.`reason`, buf)
+            FfiConverterOptionalString.write(value.`reason`, buf)
     }
 }
 

@@ -3,7 +3,7 @@ package tbdex.sdk.http
 import tbdex.sdk.resources.Offering
 import tbdex.sdk.rust.GetOfferingsResponseBody as RustCoreGetOfferingsResponseBody
 
-class GetOfferingsResponseBody private constructor(
+data class GetOfferingsResponseBody private constructor(
     val data: List<Offering>,
     internal val rustCoreGetOfferingsResponseBody: RustCoreGetOfferingsResponseBody
 ) {

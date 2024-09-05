@@ -3,7 +3,7 @@ package tbdex.sdk.http
 import tbdex.sdk.resources.Balance
 import tbdex.sdk.rust.GetBalancesResponseBody as RustCoreGetBalancesResponseBody
 
-class GetBalancesResponseBody private constructor(
+data class GetBalancesResponseBody private constructor(
     val data: List<Balance>,
     internal val rustCoreGetBalancesResponseBody: RustCoreGetBalancesResponseBody
 ) {

@@ -53,10 +53,17 @@ fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Ex
     return Exchange.fromRustCore(rustCoreExchange)
 }
 
-typealias GetExchangeIdsQueryParams = RustCoreGetExchangeIdsQueryParams
+data class GetExchangeIdsQueryParams (
+    val paginationOffset: Long?,
+    val paginationLimit: Long?
+) {
+    internal fun toRustCore(): RustCoreGetExchangeIdsQueryParams {
+        return RustCoreGetExchangeIdsQueryParams(paginationOffset, paginationLimit)
+    }
+}
 
 fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid, queryParams: GetExchangeIdsQueryParams? = null): List<String> {
-    return rustCoreGetExchangeIds(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), queryParams)
+    return rustCoreGetExchangeIds(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), queryParams?.toRustCore())
 }
 
 

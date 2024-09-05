@@ -6,7 +6,7 @@ import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
-class Order private constructor(
+data class Order private constructor(
     val metadata: MessageMetadata,
     val signature: String,
     internal val rustCoreOrder: RustCoreOrder
@@ -21,18 +21,18 @@ class Order private constructor(
         ): Order {
             val rustCoreOrder = RustCoreOrder.create(to, from, exchangeId, protocol, externalId)
             val rustCoreData = rustCoreOrder.getData()
-            return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
+            return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
         }
 
         fun fromJsonString(json: String): Order {
             val rustCoreOrder = RustCoreOrder.fromJsonString(json)
             val rustCoreData = rustCoreOrder.getData()
-            return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
+            return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
         }
 
         internal fun fromRustCoreOrder(rustCoreOrder: RustCoreOrder): Order {
             val rustCoreData = rustCoreOrder.getData()
-            return Order(rustCoreData.metadata, rustCoreData.signature, rustCoreOrder)
+            return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
         }
     }
 
