@@ -2,7 +2,7 @@ import tbdex.sdk.messages.CreateRfqData
 import tbdex.sdk.messages.CreateSelectedPayinMethod
 import tbdex.sdk.messages.CreateSelectedPayoutMethod
 import tbdex.sdk.messages.Rfq
-import tbdex.sdk.rust.TbdexSdkException
+import tbdex.sdk.TbdexException
 import web5.sdk.dids.BearerDid
 
 fun runErrorFlow(
@@ -46,7 +46,7 @@ fun runErrorFlow(
         // NOTE: in this example, we're showcasing the error case wherein,
         //       the RFQ does not match an available offering
         tbdex.sdk.httpclient.createExchange(rfq = rfq)
-    } catch (e: TbdexSdkException) {
+    } catch (e: TbdexException) {
         println("Example error response: $e\n")
     }
 }
