@@ -1,5 +1,6 @@
 package tbdex.sdk.httpclient
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.messages.*
 import tbdex.sdk.rust.GetExchangeIdsQueryParamsData as RustCoreGetExchangeIdsQueryParams
 import tbdex.sdk.rust.ExchangeData as RustCoreExchange
@@ -37,20 +38,36 @@ data class Exchange(
 }
 
 fun createExchange(rfq: Rfq, replyTo: String? = null) {
-    rustCoreCreateExchange(rfq.rustCoreRfq, replyTo)
+    try {
+        rustCoreCreateExchange(rfq.rustCoreRfq, replyTo)
+    } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+        throw TbdexException.fromRustCore(e)
+    }
 }
 
 fun submitOrder(order: Order) {
-    rustCoreSubmitOrder(order.rustCoreOrder)
+    try {
+        rustCoreSubmitOrder(order.rustCoreOrder)
+    } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+        throw TbdexException.fromRustCore(e)
+    }
 }
 
 fun submitCancel(cancel: Cancel) {
-    rustCoreSubmitCancel(cancel.rustCoreCancel)
+    try {
+        rustCoreSubmitCancel(cancel.rustCoreCancel)
+    } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+        throw TbdexException.fromRustCore(e)
+    }
 }
 
 fun getExchange(pfiDidUri: String, bearerDid: BearerDid, exchangeId: String): Exchange {
-    val rustCoreExchange = rustCoreGetExchange(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), exchangeId)
-    return Exchange.fromRustCore(rustCoreExchange)
+    try {
+        val rustCoreExchange = rustCoreGetExchange(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), exchangeId)
+        return Exchange.fromRustCore(rustCoreExchange)
+    } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+        throw TbdexException.fromRustCore(e)
+    }
 }
 
 data class GetExchangeIdsQueryParams (
@@ -63,7 +80,11 @@ data class GetExchangeIdsQueryParams (
 }
 
 fun getExchangeIds(pfiDidUri: String, bearerDid: BearerDid, queryParams: GetExchangeIdsQueryParams? = null): List<String> {
-    return rustCoreGetExchangeIds(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), queryParams?.toRustCore())
+    try {
+        return rustCoreGetExchangeIds(pfiDidUri, RustCoreBearerDid.fromWeb5(bearerDid), queryParams?.toRustCore())
+    } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+        throw TbdexException.fromRustCore(e)
+    }
 }
 
 

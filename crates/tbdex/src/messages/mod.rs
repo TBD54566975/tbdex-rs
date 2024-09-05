@@ -7,9 +7,8 @@ pub mod quote;
 pub mod rfq;
 
 use crate::{
+    errors::{Result, TbdexError},
     json::{FromJson, ToJson},
-    json_schemas::JsonSchemaError,
-    signature::SignatureError,
 };
 use cancel::Cancel;
 use close::Close;
@@ -19,44 +18,8 @@ use order_status::OrderStatus;
 use quote::Quote;
 use rfq::Rfq;
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
-use serde_json::Error as SerdeJsonError;
 use std::{str::FromStr, sync::Arc};
-use type_safe_id::{DynamicType, Error as TypeIdError, TypeSafeId};
-use web5::errors::Web5Error;
-
-#[derive(thiserror::Error, Debug, Clone, PartialEq)]
-pub enum MessageError {
-    #[error("serde json error {0}")]
-    SerdeJson(String),
-    #[error("typeid error {0}")]
-    TypeId(String),
-    #[error(transparent)]
-    Web5Error(#[from] Web5Error),
-    #[error(transparent)]
-    Signature(#[from] SignatureError),
-    #[error("unknown kind {0}")]
-    UnknownKind(String),
-    #[error("offering verification failure {0}")]
-    OfferingVerification(String),
-    #[error(transparent)]
-    JsonSchema(#[from] JsonSchemaError),
-    #[error("private data verification failure {0}")]
-    PrivateDataVerification(String),
-}
-
-impl From<SerdeJsonError> for MessageError {
-    fn from(err: SerdeJsonError) -> Self {
-        MessageError::SerdeJson(err.to_string())
-    }
-}
-
-impl From<TypeIdError> for MessageError {
-    fn from(err: TypeIdError) -> Self {
-        MessageError::TypeId(err.to_string())
-    }
-}
-
-type Result<T> = std::result::Result<T, MessageError>;
+use type_safe_id::{DynamicType, TypeSafeId};
 
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -80,7 +43,7 @@ impl MessageKind {
 }
 
 impl FromStr for MessageKind {
-    type Err = MessageError;
+    type Err = TbdexError;
 
     fn from_str(s: &str) -> Result<Self> {
         match s {
@@ -91,7 +54,7 @@ impl FromStr for MessageKind {
             "cancel" => Ok(MessageKind::Cancel),
             "orderstatus" => Ok(MessageKind::OrderStatus),
             "close" => Ok(MessageKind::Close),
-            _ => Err(MessageError::UnknownKind(s.to_string())),
+            _ => Err(TbdexError::Parse(format!("unknown message kind {}", s))),
         }
     }
 }

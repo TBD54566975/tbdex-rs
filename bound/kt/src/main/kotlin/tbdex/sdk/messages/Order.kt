@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.http.WalletUpdateMessage
 import tbdex.sdk.rust.Order as RustCoreOrder
 import tbdex.sdk.rust.fromWeb5
@@ -19,15 +20,23 @@ data class Order private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): Order {
-            val rustCoreOrder = RustCoreOrder.create(to, from, exchangeId, protocol, externalId)
-            val rustCoreData = rustCoreOrder.getData()
-            return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
+            try {
+                val rustCoreOrder = RustCoreOrder.create(to, from, exchangeId, protocol, externalId)
+                val rustCoreData = rustCoreOrder.getData()
+                return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Order {
-            val rustCoreOrder = RustCoreOrder.fromJsonString(json)
-            val rustCoreData = rustCoreOrder.getData()
-            return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
+            try {
+                val rustCoreOrder = RustCoreOrder.fromJsonString(json)
+                val rustCoreData = rustCoreOrder.getData()
+                return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreOrder(rustCoreOrder: RustCoreOrder): Order {
@@ -37,14 +46,26 @@ data class Order private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreOrder.toJsonString()
+        try {
+            return rustCoreOrder.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreOrder.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreOrder.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreOrder.verify()
+        try {
+            rustCoreOrder.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

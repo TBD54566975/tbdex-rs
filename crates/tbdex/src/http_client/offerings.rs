@@ -1,5 +1,7 @@
-use super::{get_service_endpoint, send_request, HttpClientError, Result};
-use crate::{http::offerings::GetOfferingsResponseBody, resources::offering::Offering};
+use super::{get_service_endpoint, send_request, Result};
+use crate::{
+    errors::TbdexError, http::offerings::GetOfferingsResponseBody, resources::offering::Offering,
+};
 use reqwest::Method;
 
 pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
@@ -8,7 +10,7 @@ pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
 
     let offerings_response =
         send_request::<(), GetOfferingsResponseBody>(&offerings_endpoint, Method::GET, None, None)?
-            .ok_or(HttpClientError::ReqwestError(
+            .ok_or(TbdexError::HttpClient(
                 "get offerings response returned null".to_string(),
             ))?;
 

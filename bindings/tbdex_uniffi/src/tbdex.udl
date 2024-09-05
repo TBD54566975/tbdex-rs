@@ -1,23 +1,23 @@
 namespace tbdex {
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   sequence<Offering> get_offerings(string pfi_did_uri);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   sequence<Balance> get_balances(string pfi_did_uri, BearerDid bearer_did);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void create_exchange(Rfq rfq, string? reply_to);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void submit_order(Order order);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void submit_cancel(Cancel cancel);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   ExchangeData get_exchange(string pfi_did_uri, BearerDid bearer_did, string exchange_id);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   sequence<string> get_exchange_ids(string pfi_did_uri, BearerDid bearer_did, GetExchangeIdsQueryParamsData? query_params);
 };
 
 [Error]
-interface TbdexSdkError {
-  Error(string type, string variant, string msg);
+interface TbdexError {
+  Error(string variant, string msg);
 };
 
 enum ResourceKind {
@@ -35,17 +35,17 @@ dictionary ResourceMetadataData {
 };
 
 interface Offering {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string from, string json_serialized_data, string? protocol);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   OfferingData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -67,17 +67,17 @@ dictionary BalanceDataData {
 };
 
 interface Balance {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string from, BalanceDataData data, string? protocol);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   BalanceData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
 };
 
@@ -103,24 +103,24 @@ dictionary MessageMetadataData {
 };
 
 interface Rfq {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string json_serialized_create_rfq_data, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   RfqData get_data();
 
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify_offering_requirements(Offering offering);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify_all_private_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify_present_private_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -132,17 +132,17 @@ dictionary RfqData {
 };
 
 interface Quote {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string exchange_id, QuoteDataData data, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   QuoteData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -167,17 +167,17 @@ dictionary QuoteDetailsData {
 };
 
 interface Order {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string exchange_id, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   OrderData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -192,17 +192,17 @@ dictionary OrderDataData {
 };
 
 interface OrderInstructions {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string exchange_id, OrderInstructionsDataData data, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   OrderInstructionsData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -223,17 +223,17 @@ dictionary PaymentInstructionData {
 };
 
 interface Cancel {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string exchange_id, CancelDataData data, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   CancelData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -248,17 +248,17 @@ dictionary CancelDataData {
 };
 
 interface OrderStatus {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string exchange_id, OrderStatusDataData data, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   OrderStatusData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -290,17 +290,17 @@ enum OrderStatusStatus {
 };
 
 interface Close {
-  [Name=create, Throws=TbdexSdkError]
+  [Name=create, Throws=TbdexError]
   constructor(string to, string from, string exchange_id, CloseDataData data, string? protocol, string? external_id);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   CloseData get_data();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void verify();
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   void sign(BearerDid bearer_did);
 };
 
@@ -341,9 +341,9 @@ dictionary ErrorDetailData {
 
 interface ErrorResponseBody {
   constructor(string message, sequence<ErrorDetailData>? details);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   ErrorResponseBodyData get_data();
 };
@@ -354,9 +354,9 @@ dictionary GetOfferingsResponseBodyData {
 
 interface GetOfferingsResponseBody {
   constructor(sequence<Offering> offerings);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   GetOfferingsResponseBodyData get_data();
 };
@@ -367,9 +367,9 @@ dictionary GetBalancesResponseBodyData {
 
 interface GetBalancesResponseBody {
   constructor(sequence<Balance> balances);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   GetBalancesResponseBodyData get_data();
 };
@@ -385,9 +385,9 @@ dictionary GetExchangeResponseBodyData {
 
 interface GetExchangeResponseBody {
   constructor(GetExchangeResponseBodyData response_body_data);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   GetExchangeResponseBodyData get_data();
 };
@@ -398,9 +398,9 @@ dictionary GetExchangesResponseBodyData {
 
 interface GetExchangesResponseBody {
   constructor(sequence<string> data);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   GetExchangesResponseBodyData get_data();
 };
@@ -412,9 +412,9 @@ dictionary CreateExchangeRequestBodyData {
 
 interface CreateExchangeRequestBody {
   constructor(Rfq message, string? reply_to);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   CreateExchangeRequestBodyData get_data();
 };
@@ -426,9 +426,9 @@ dictionary UpdateExchangeRequestBodyData {
 
 interface UpdateExchangeRequestBody {
   constructor(MessageKind kind, string json_serialized_message);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   UpdateExchangeRequestBodyData get_data();
 };
@@ -440,9 +440,9 @@ dictionary ReplyToRequestBodyData {
 
 interface ReplyToRequestBody {
   constructor(MessageKind kind, string json_serialized_message);
-  [Name=from_json_string, Throws=TbdexSdkError]
+  [Name=from_json_string, Throws=TbdexError]
   constructor([ByRef] string json);
-  [Throws=TbdexSdkError]
+  [Throws=TbdexError]
   string to_json_string();
   ReplyToRequestBodyData get_data();
 };

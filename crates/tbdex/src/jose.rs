@@ -1,4 +1,3 @@
-use crate::signature::SignatureError;
 use josekit::{
     jws::{
         alg::eddsa::EddsaJwsAlgorithm, serialize_compact, JwsAlgorithm, JwsHeader, JwsSigner,
@@ -19,6 +18,8 @@ use web5::{
     },
     dids::data_model::document::Document,
 };
+
+use crate::errors::TbdexError;
 
 #[derive(Clone)]
 pub struct Signer {
@@ -105,12 +106,12 @@ fn create_selector<'a>(
 ) -> impl Fn(&JwsHeader) -> core::result::Result<Option<&'a dyn JwsVerifier>, JosekitError> + 'a {
     move |header: &JwsHeader| -> core::result::Result<Option<&'a dyn JwsVerifier>, JosekitError> {
         let kid = header.key_id().ok_or_else(|| {
-            JosekitError::InvalidJwsFormat(SignatureError::Jose("missing kid".to_string()).into())
+            JosekitError::InvalidJwsFormat(TbdexError::Jose("missing kid".to_string()).into())
         })?;
 
         let verifier = verifiers.get(kid).ok_or_else(|| {
             JosekitError::InvalidJwsFormat(
-                SignatureError::Jose("verification method not found".to_string()).into(),
+                TbdexError::Jose("verification method not found".to_string()).into(),
             )
         })?;
 

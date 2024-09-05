@@ -1,6 +1,7 @@
 package tbdex.sdk.messages
 
 import tbdex.sdk.Json
+import tbdex.sdk.TbdexException
 import tbdex.sdk.resources.Offering
 import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.Rfq as RustCoreRfq
@@ -22,32 +23,40 @@ data class Rfq private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): Rfq {
-            val jsonSerializedCreateRfqData = Json.stringify(createRfqData)
-            val rustCoreRfq = RustCoreRfq.create(to, from, jsonSerializedCreateRfqData, protocol, externalId)
-            val rustCoreData = rustCoreRfq.getData()
-            val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
-            val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-            return Rfq(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                data,
-                privateData,
-                rustCoreData.signature,
-                rustCoreRfq
-            )
+            try {
+                val jsonSerializedCreateRfqData = Json.stringify(createRfqData)
+                val rustCoreRfq = RustCoreRfq.create(to, from, jsonSerializedCreateRfqData, protocol, externalId)
+                val rustCoreData = rustCoreRfq.getData()
+                val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
+                val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
+                return Rfq(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    data,
+                    privateData,
+                    rustCoreData.signature,
+                    rustCoreRfq
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Rfq {
-            val rustCoreRfq = RustCoreRfq.fromJsonString(json)
-            val rustCoreData = rustCoreRfq.getData()
-            val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
-            val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
-            return Rfq(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                data,
-                privateData,
-                rustCoreData.signature,
-                rustCoreRfq
-            )
+            try {
+                val rustCoreRfq = RustCoreRfq.fromJsonString(json)
+                val rustCoreData = rustCoreRfq.getData()
+                val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)
+                val privateData = rustCoreData.jsonSerializedPrivateData?.let { Json.jsonMapper.readValue(it, RfqPrivateData::class.java) }
+                return Rfq(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    data,
+                    privateData,
+                    rustCoreData.signature,
+                    rustCoreRfq
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreRfq(rustCoreRfq: RustCoreRfq): Rfq {
@@ -65,27 +74,51 @@ data class Rfq private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreRfq.toJsonString()
+        try {
+            return rustCoreRfq.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verifyOfferingRequirements(offering: Offering) {
-        this.rustCoreRfq.verifyOfferingRequirements(offering.rustCoreOffering)
+        try {
+            rustCoreRfq.verifyOfferingRequirements(offering.rustCoreOffering)
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verifyAllPrivateData() {
-        this.rustCoreRfq.verifyAllPrivateData()
+        try {
+            rustCoreRfq.verifyAllPrivateData()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verifyPresentPrivateData() {
-        this.rustCoreRfq.verifyPresentPrivateData()
+        try {
+            rustCoreRfq.verifyPresentPrivateData()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreRfq.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreRfq.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreRfq.verify()
+        try {
+            rustCoreRfq.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }
 

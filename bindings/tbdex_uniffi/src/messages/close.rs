@@ -1,4 +1,4 @@
-use crate::errors::{Result, TbdexSdkError};
+use crate::errors::{Result, TbdexError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -23,10 +23,7 @@ impl Close {
     }
 
     pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
-        let mut inner_close = self
-            .0
-            .write()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
+        let mut inner_close = self.0.write().map_err(TbdexError::from_poison_error)?;
         inner_close.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -38,28 +35,19 @@ impl Close {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner_close = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let inner_close = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(inner_close.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerClose> {
-        let close = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let close = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(close.clone())
     }
 
     pub fn verify(&self) -> Result<()> {
-        let close = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let close = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(close.verify()?)
     }

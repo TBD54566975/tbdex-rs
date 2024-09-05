@@ -1,5 +1,6 @@
 package tbdex.sdk.messages
 
+import tbdex.sdk.TbdexException
 import tbdex.sdk.http.ReplyToMessage
 import tbdex.sdk.rust.PaymentInstructionData as RustCorePaymentInstruction
 import tbdex.sdk.rust.QuoteDetailsData as RustCoreQuoteDetails
@@ -73,25 +74,33 @@ data class Quote private constructor(
             protocol: String? = null,
             externalId: String? = null
         ): Quote {
-            val rustCoreQuote = RustCoreQuote.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
-            val rustCoreData = rustCoreQuote.getData()
-            return Quote(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                QuoteData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreQuote
-            )
+            try {
+                val rustCoreQuote = RustCoreQuote.create(to, from, exchangeId, data.toRustCore(), protocol, externalId)
+                val rustCoreData = rustCoreQuote.getData()
+                return Quote(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    QuoteData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreQuote
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         fun fromJsonString(json: String): Quote {
-            val rustCoreQuote = RustCoreQuote.fromJsonString(json)
-            val rustCoreData = rustCoreQuote.getData()
-            return Quote(
-                MessageMetadata.fromRustCore(rustCoreData.metadata),
-                QuoteData.fromRustCore(rustCoreData.data),
-                rustCoreData.signature,
-                rustCoreQuote
-            )
+            try {
+                val rustCoreQuote = RustCoreQuote.fromJsonString(json)
+                val rustCoreData = rustCoreQuote.getData()
+                return Quote(
+                    MessageMetadata.fromRustCore(rustCoreData.metadata),
+                    QuoteData.fromRustCore(rustCoreData.data),
+                    rustCoreData.signature,
+                    rustCoreQuote
+                )
+            } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+                throw TbdexException.fromRustCore(e)
+            }
         }
 
         internal fun fromRustCoreQuote(rustCoreQuote: RustCoreQuote): Quote {
@@ -106,14 +115,26 @@ data class Quote private constructor(
     }
 
     fun toJsonString(): String {
-        return this.rustCoreQuote.toJsonString()
+        try {
+            return rustCoreQuote.toJsonString()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun sign(bearerDid: BearerDid) {
-        this.rustCoreQuote.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        try {
+            rustCoreQuote.sign(RustCoreBearerDid.fromWeb5(bearerDid))
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 
     fun verify() {
-        this.rustCoreQuote.verify()
+        try {
+            rustCoreQuote.verify()
+        } catch (e: tbdex.sdk.rust.TbdexException.Exception) {
+            throw TbdexException.fromRustCore(e)
+        }
     }
 }

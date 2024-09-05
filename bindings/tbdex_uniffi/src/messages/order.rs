@@ -1,4 +1,4 @@
-use crate::errors::{Result, TbdexSdkError};
+use crate::errors::{Result, TbdexError};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -22,10 +22,7 @@ impl Order {
     }
 
     pub fn sign(&self, bearer_did: Arc<BearerDid>) -> Result<()> {
-        let mut inner_order = self
-            .0
-            .write()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockWriteError"))?;
+        let mut inner_order = self.0.write().map_err(TbdexError::from_poison_error)?;
         inner_order.sign(&bearer_did.0.clone())?;
         Ok(())
     }
@@ -37,28 +34,19 @@ impl Order {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        let inner_order = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let inner_order = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(inner_order.to_json_string()?)
     }
 
     pub fn get_data(&self) -> Result<InnerOrder> {
-        let order = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let order = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(order.clone())
     }
 
     pub fn verify(&self) -> Result<()> {
-        let order = self
-            .0
-            .read()
-            .map_err(|e| TbdexSdkError::from_poison_error(e, "RwLockReadError"))?;
+        let order = self.0.read().map_err(TbdexError::from_poison_error)?;
 
         Ok(order.verify()?)
     }
