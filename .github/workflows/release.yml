@@ -201,7 +201,7 @@ jobs:
             ${{ runner.os }}-maven-
       - run: mvn dokka:dokka
         working-directory: bound/kt
-      - run: mkdir -p _site/kt/${GITHUB_REF_NAME} && mv bound/kt/target/dokka _site/kt/${GITHUB_REF_NAME}
+      - run: mkdir -p _site/kt/${GITHUB_REF_NAME} && mv bound/kt/target/dokka/* _site/kt/${GITHUB_REF_NAME}
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
       - name: Setup Pages
