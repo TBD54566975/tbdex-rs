@@ -12,6 +12,10 @@ setup:
     rustup default 1.78.0
     rustup target add aarch64-apple-darwin
   fi
+  cargo install wasm-pack --version 0.13.0
+
+wasm: setup
+  (cd bindings/tbdex_wasm; wasm-pack build --target bundler)
 
 # Build a release variant
 build: setup
