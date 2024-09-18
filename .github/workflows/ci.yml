@@ -147,7 +147,7 @@ jobs:
           cache: true
       - name: Setup
         run: just setup
-      - name: Lint
+      - name: Test
         run: just test
 
   kotlin-build-test-deploy-snapshot:
