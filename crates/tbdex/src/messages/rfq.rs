@@ -17,13 +17,27 @@ use web5::{
     credentials::verifiable_credential_1_1::VerifiableCredential, dids::bearer_did::BearerDid,
 };
 
+/// Represents an RFQ (Request For Quote) message in the tbDEX protocol.
+///
+/// An RFQ message allows Alice to ask a PFI for a quote to exchange assets.
+/// It includes metadata about the exchange, the data related to the RFQ,
+/// and optionally private data such as sensitive payment or credential information.
+///
+/// The signature ensures the integrity of the message.
 #[derive(Clone, Serialize, Default, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Rfq {
+    /// Metadata about the message, including sender, recipient, and protocol information.
     pub metadata: MessageMetadata,
+
+    /// The public data part of the RFQ, such as the requested offering, payin, and payout details.
     pub data: RfqData,
+
+    /// Optional private data that may include sensitive details like payment information and credentials.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub private_data: Option<RfqPrivateData>,
+
+    /// The signature verifying the authenticity and integrity of the RFQ message.
     pub signature: String,
 }
 
@@ -31,6 +45,19 @@ impl ToJson for Rfq {}
 impl FromJson for Rfq {}
 
 impl Rfq {
+    /// Creates a new RFQ (Request For Quote) message.
+    ///
+    /// # Arguments
+    ///
+    /// * `to` - The DID of the recipient (the PFI).
+    /// * `from` - The DID of the sender (Alice).
+    /// * `create_rfq_data` - The data required to generate the RFQ, including payin, payout, and offering details.
+    /// * `protocol` - Optional protocol version; defaults to the current version if not provided.
+    /// * `external_id` - Optional external ID for additional identification.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `Rfq` containing the metadata, data, and private data (if any), with an empty signature.
     pub fn create(
         to: &str,
         from: &str,
@@ -63,6 +90,15 @@ impl Rfq {
         Ok(rfq)
     }
 
+    /// Signs the RFQ message using the provided Bearer DID.
+    ///
+    /// # Arguments
+    ///
+    /// * `bearer_did` - The DID to sign the RFQ message.
+    ///
+    /// # Returns
+    ///
+    /// An empty result, or an error if the signing process fails.
     pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
         self.signature = crate::signature::sign(
             bearer_did,
@@ -72,6 +108,14 @@ impl Rfq {
         Ok(())
     }
 
+    /// Verifies the validity of the RFQ message.
+    ///
+    /// This method ensures that the message adheres to its JSON schema,
+    /// checks the private data schema (if present), and verifies the signature.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -95,6 +139,18 @@ impl Rfq {
         Ok(())
     }
 
+    /// Verifies the RFQ message against an offering's requirements.
+    ///
+    /// This ensures that the protocol version, offering ID, payin amount, and required payment details
+    /// align with the specified offering, and that the necessary Verifiable Credentials (VCs) are present.
+    ///
+    /// # Arguments
+    ///
+    /// * `offering` - The offering to validate the RFQ against.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<()> {
         // verify protocol version
         if offering.metadata.protocol != self.metadata.protocol {
@@ -249,6 +305,14 @@ impl Rfq {
         Ok(())
     }
 
+    /// Verifies that all private data provided in the RFQ is valid by checking their corresponding hashes.
+    ///
+    /// This method ensures the integrity of private data by computing a digest and comparing it with
+    /// the hashes in the public `data` section of the RFQ.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if the verification fails.
     pub fn verify_all_private_data(&self) -> Result<()> {
         let private_data = match &self.private_data {
             None => {
@@ -301,6 +365,14 @@ impl Rfq {
         Ok(())
     }
 
+    /// Verifies the present private data fields by checking their corresponding hashes.
+    ///
+    /// This method verifies only the private data that is currently present (if any), ensuring
+    /// that no additional private data is left undefined or mismatched.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify_present_private_data(&self) -> Result<()> {
         if let Some(private_data) = &self.private_data {
             let salt = match &self.private_data {

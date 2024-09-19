@@ -8,10 +8,19 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
+/// Represents an Order message in the tbDEX protocol.
+///
+/// An Order message is sent by Alice to a PFI to execute a transaction based on a previously provided quote.
+/// It includes metadata about the message and the signature to ensure its integrity and authenticity.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Order {
+    /// Metadata about the message, including sender, recipient, and protocol information.
     pub metadata: MessageMetadata,
+
+    /// The public data part of the Order.
     pub data: OrderData,
+
+    /// The signature verifying the authenticity and integrity of the Order message.
     pub signature: String,
 }
 
@@ -19,6 +28,19 @@ impl ToJson for Order {}
 impl FromJson for Order {}
 
 impl Order {
+    /// Creates a new Order message.
+    ///
+    /// # Arguments
+    ///
+    /// * `to` - The DID of the recipient (the PFI).
+    /// * `from` - The DID of the sender (Alice).
+    /// * `exchange_id` - The exchange ID shared between Alice and the PFI.
+    /// * `protocol` - Optional protocol version; defaults to the current version if not provided.
+    /// * `external_id` - Optional external ID for additional identification.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `Order` containing the metadata, data, and an empty signature.
     pub fn create(
         to: &str,
         from: &str,
@@ -48,6 +70,15 @@ impl Order {
         Ok(order)
     }
 
+    /// Signs the Order message using the provided Bearer DID.
+    ///
+    /// # Arguments
+    ///
+    /// * `bearer_did` - The DID to sign the Order message.
+    ///
+    /// # Returns
+    ///
+    /// An empty result, or an error if the signing process fails.
     pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
         self.signature = crate::signature::sign(
             bearer_did,
@@ -57,6 +88,14 @@ impl Order {
         Ok(())
     }
 
+    /// Verifies the validity of the Order message.
+    ///
+    /// This method ensures that the message adheres to its JSON schema
+    /// and verifies the signature to ensure authenticity and integrity.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -76,6 +115,9 @@ impl Order {
     }
 }
 
+/// Represents the data for an Order in the tbDEX protocol.
+///
+/// Currently, it is an empty structure, but can be expanded in the future as needed.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct OrderData {}
 
