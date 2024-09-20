@@ -12,6 +12,12 @@ setup:
     rustup default 1.78.0
     rustup target add aarch64-apple-darwin
   fi
+  if ! command -v wasm-pack >/dev/null || [[ "$(wasm-pack --version)" != "wasm-pack 0.13.0" ]]; then
+    cargo install wasm-pack --version 0.13.0
+  fi
+
+wasm: setup
+  (cd bindings/tbdex_wasm; wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg)
 
 # Build a release variant
 build: setup

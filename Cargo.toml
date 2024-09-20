@@ -1,11 +1,6 @@
 [workspace]
-members = [ 
-    "bindings/tbdex_uniffi",
-    "crates/tbdex",
-]
-default-members = [
-    "crates/tbdex",
-]
+members = ["bindings/tbdex_uniffi", "bindings/tbdex_wasm", "crates/tbdex"]
+default-members = ["crates/tbdex"]
 resolver = "2"
 
 [workspace.package]
