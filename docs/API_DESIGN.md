@@ -701,7 +701,7 @@ CLASS CloseData
 
 ## `ErrorResponseBody`
 
-[Reference.](https:///github.com/TBD54566975/tbdex/tree/main/specs/http-api#error-responses)
+[Reference.](https://github.com/TBD54566975/tbdex/tree/main/specs/http-api#error-responses)
 
 ```pseudocode!
 /// Represents the error response body for HTTP errors.
