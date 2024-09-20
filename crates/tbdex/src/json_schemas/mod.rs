@@ -42,10 +42,10 @@ impl LocalSchemaResolver {
 impl SchemaResolver for LocalSchemaResolver {
     fn resolve(
         &self,
-        _root_schema: &josekit::Value,
+        _root_schema: &serde_json::Value,
         url: &reqwest::Url,
         _original_reference: &str,
-    ) -> std::result::Result<std::sync::Arc<josekit::Value>, SchemaResolverError> {
+    ) -> std::result::Result<std::sync::Arc<serde_json::Value>, SchemaResolverError> {
         if let Some(schema) = self.schemas.get(&LocalSchemaResolver::normalize_url(url)) {
             Ok(std::sync::Arc::new(schema.clone()))
         } else {

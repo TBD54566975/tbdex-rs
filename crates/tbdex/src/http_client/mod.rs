@@ -5,9 +5,7 @@ pub mod offerings;
 use crate::{
     errors::{Result, TbdexError},
     http::ErrorResponseBody,
-    jose::Signer,
 };
-use josekit::jwt::JwtPayload;
 use reqwest::{blocking::Client, Method, StatusCode};
 use serde::{de::DeserializeOwned, Serialize};
 use std::time::{Duration, SystemTime};
@@ -20,30 +18,25 @@ use web5::{
         },
     },
     errors::Web5Error,
+    jose::{Jwt, JwtClaims},
 };
 
 fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<String> {
     let now = SystemTime::now();
     let exp = now + Duration::from_secs(60);
 
-    let mut payload = JwtPayload::new();
-    payload.set_audience(vec![pfi_did_uri]);
-    payload.set_issuer(&bearer_did.did.uri);
-    payload.set_issued_at(&now);
-    payload.set_expires_at(&exp);
-    payload.set_jwt_id(Uuid::new_v4().to_string());
-
-    // default to first VM
-    let key_id = bearer_did.document.verification_method[0].id.clone();
-    let web5_signer = bearer_did.get_signer(&key_id)?;
-    let jose_signer = Signer {
-        kid: key_id,
-        web5_signer,
+    let claims = &JwtClaims {
+        aud: Some(vec![pfi_did_uri.to_string()]),
+        iss: Some(bearer_did.did.uri.clone()),
+        iat: Some(now),
+        exp: Some(exp),
+        jti: Some(Uuid::new_v4().to_string()),
+        ..Default::default()
     };
+    // TODO default to first vm
+    let jwt = Jwt::from_claims(claims, bearer_did, None)?;
 
-    let access_token = jose_signer.sign_jwt(&payload)?;
-
-    Ok(access_token)
+    Ok(jwt.compact_jws)
 }
 
 pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {

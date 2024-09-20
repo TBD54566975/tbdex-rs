@@ -1,4 +1,3 @@
-use josekit::JoseError as JosekitError;
 use reqwest::Error as ReqwestError;
 use serde_json::Error as SerdeJsonError;
 use type_safe_id::Error as TypeIdError;
@@ -42,12 +41,6 @@ impl From<SerdeJsonError> for TbdexError {
 impl From<TypeIdError> for TbdexError {
     fn from(err: TypeIdError) -> Self {
         TbdexError::TypeId(err.to_string())
-    }
-}
-
-impl From<JosekitError> for TbdexError {
-    fn from(err: JosekitError) -> Self {
-        TbdexError::Jose(err.to_string())
     }
 }
 
