@@ -25,12 +25,6 @@ data class QuoteDetails (
     val fee: String?
 ) {
     companion object {
-        /**
-         * Converts the RustCore quote details into a Kotlin `QuoteDetails`.
-         *
-         * @param rustCore The RustCore representation of quote details.
-         * @return The Kotlin `QuoteDetails` object.
-         */
         internal fun fromRustCore(rustCore: RustCoreQuoteDetails): QuoteDetails {
             return QuoteDetails(
                 rustCore.currencyCode,
@@ -41,11 +35,6 @@ data class QuoteDetails (
         }
     }
 
-    /**
-     * Converts the Kotlin `QuoteDetails` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of quote details.
-     */
     internal fun toRustCore(): RustCoreQuoteDetails {
         return RustCoreQuoteDetails(currencyCode, subtotal, total, fee)
     }
@@ -66,12 +55,6 @@ data class QuoteData (
     val payout: QuoteDetails
 ) {
     companion object {
-        /**
-         * Converts the RustCore quote data into a Kotlin `QuoteData`.
-         *
-         * @param rustCore The RustCore representation of quote data.
-         * @return The Kotlin `QuoteData` object.
-         */
         internal fun fromRustCore(rustCore: RustCoreQuoteData): QuoteData {
             return QuoteData(
                 rustCore.expiresAt,
@@ -82,11 +65,6 @@ data class QuoteData (
         }
     }
 
-    /**
-     * Converts the Kotlin `QuoteData` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of quote data.
-     */
     internal fun toRustCore(): RustCoreQuoteData {
         return RustCoreQuoteData(
             expiresAt,
@@ -171,12 +149,6 @@ data class Quote private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore Quote into a Kotlin Quote.
-         *
-         * @param rustCoreQuote The RustCore representation of the Quote.
-         * @return The Kotlin Quote message.
-         */
         internal fun fromRustCoreQuote(rustCoreQuote: RustCoreQuote): Quote {
             val rustCoreData = rustCoreQuote.getData()
             return Quote(

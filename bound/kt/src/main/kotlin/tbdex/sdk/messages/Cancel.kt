@@ -15,22 +15,11 @@ import web5.sdk.dids.BearerDid
  */
 data class CancelData(val reason: String? = null) {
     companion object {
-        /**
-         * Converts the RustCore cancel data into a Kotlin `CancelData`.
-         *
-         * @param rustCore The RustCore representation of cancel data.
-         * @return The Kotlin `CancelData`.
-         */
         internal fun fromRustCore(rustCore: RustCoreCancelData): CancelData {
             return CancelData(rustCore.reason)
         }
     }
 
-    /**
-     * Converts the Kotlin `CancelData` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of cancel data.
-     */
     internal fun toRustCore(): RustCoreCancelData {
         return RustCoreCancelData(reason)
     }
@@ -110,12 +99,6 @@ data class Cancel private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore Cancel message into a Kotlin Cancel message.
-         *
-         * @param rustCoreCancel The RustCore representation of the Cancel message.
-         * @return The Kotlin Cancel message.
-         */
         internal fun fromRustCoreCancel(rustCoreCancel: RustCoreCancel): Cancel {
             val rustCoreData = rustCoreCancel.getData()
             return Cancel(

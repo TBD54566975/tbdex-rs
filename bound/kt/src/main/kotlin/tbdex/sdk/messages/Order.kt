@@ -66,12 +66,6 @@ data class Order private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore Order into a Kotlin Order.
-         *
-         * @param rustCoreOrder The RustCore representation of the Order.
-         * @return The Kotlin Order message.
-         */
         internal fun fromRustCoreOrder(rustCoreOrder: RustCoreOrder): Order {
             val rustCoreData = rustCoreOrder.getData()
             return Order(MessageMetadata.fromRustCore(rustCoreData.metadata), rustCoreData.signature, rustCoreOrder)

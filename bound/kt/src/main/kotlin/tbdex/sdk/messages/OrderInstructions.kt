@@ -19,22 +19,11 @@ data class PaymentInstruction (
     val instruction: String?
 ) {
     companion object {
-        /**
-         * Converts the RustCore payment instruction into a Kotlin `PaymentInstruction`.
-         *
-         * @param rustCore The RustCore representation of the payment instruction.
-         * @return The Kotlin `PaymentInstruction` object.
-         */
         internal fun fromRustCore(rustCore: RustCorePaymentInstruction): PaymentInstruction {
             return PaymentInstruction(rustCore.link, rustCore.instruction)
         }
     }
 
-    /**
-     * Converts the Kotlin `PaymentInstruction` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of the payment instruction.
-     */
     internal fun toRustCore(): RustCorePaymentInstruction {
         return RustCorePaymentInstruction(link, instruction)
     }

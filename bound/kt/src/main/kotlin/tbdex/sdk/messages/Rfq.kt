@@ -87,12 +87,6 @@ data class Rfq private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore RFQ into a Kotlin RFQ.
-         *
-         * @param rustCoreRfq The RustCore RFQ instance.
-         * @return The Kotlin RFQ message.
-         */
         internal fun fromRustCoreRfq(rustCoreRfq: RustCoreRfq): Rfq {
             val rustCoreData = rustCoreRfq.getData()
             val data = Json.jsonMapper.readValue(rustCoreData.jsonSerializedData, RfqData::class.java)

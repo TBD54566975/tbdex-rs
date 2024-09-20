@@ -59,12 +59,6 @@ data class MessageMetadata (
     val createdAt: String
 ) {
     companion object {
-        /**
-         * Converts a RustCore message metadata into a Kotlin `MessageMetadata`.
-         *
-         * @param rustCore The RustCore representation of the message metadata.
-         * @return The Kotlin `MessageMetadata`.
-         */
         internal fun fromRustCore(rustCore: RustCoreMessageMetadata): MessageMetadata {
             return MessageMetadata(
                 rustCore.from,

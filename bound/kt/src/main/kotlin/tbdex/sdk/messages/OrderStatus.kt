@@ -30,12 +30,6 @@ enum class Status {
     REFUND_FAILED;
 
     companion object {
-        /**
-         * Converts the RustCore status into a Kotlin `Status`.
-         *
-         * @param rustCore The RustCore representation of the order status.
-         * @return The Kotlin `Status`.
-         */
         internal fun fromRustCore(rustCore: RustCoreStatus): Status {
             return when (rustCore) {
                 RustCoreStatus.PAYIN_PENDING -> PAYIN_PENDING
@@ -55,11 +49,6 @@ enum class Status {
         }
     }
 
-    /**
-     * Converts the Kotlin `Status` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of the order status.
-     */
     internal fun toRustCore(): RustCoreStatus {
         return when (this) {
             PAYIN_PENDING -> RustCoreStatus.PAYIN_PENDING
@@ -90,22 +79,11 @@ data class OrderStatusData (
     val details: String?
 ) {
     companion object {
-        /**
-         * Converts the RustCore order status data into a Kotlin `OrderStatusData`.
-         *
-         * @param rustCore The RustCore representation of order status data.
-         * @return The Kotlin `OrderStatusData`.
-         */
         internal fun fromRustCore(rustCore: RustCoreOrderStatusData): OrderStatusData {
             return OrderStatusData(Status.fromRustCore(rustCore.status), rustCore.details)
         }
     }
 
-    /**
-     * Converts the Kotlin `OrderStatusData` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of order status data.
-     */
     internal fun toRustCore(): RustCoreOrderStatusData {
         return RustCoreOrderStatusData(status.toRustCore(), details)
     }
@@ -185,12 +163,6 @@ data class OrderStatus private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore Order Status into a Kotlin Order Status.
-         *
-         * @param rustCoreOrderStatus The RustCore representation of the Order Status.
-         * @return The Kotlin Order Status message.
-         */
         internal fun fromRustCoreOrderStatus(rustCoreOrderStatus: RustCoreOrderStatus): OrderStatus {
             val rustCoreData = rustCoreOrderStatus.getData()
             return OrderStatus(

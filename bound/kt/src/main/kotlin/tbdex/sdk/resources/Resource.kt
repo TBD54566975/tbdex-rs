@@ -49,12 +49,6 @@ data class ResourceMetadata (
     val updatedAt: String?
 ) {
     companion object {
-        /**
-         * Converts a RustCore resource metadata into a Kotlin `ResourceMetadata`.
-         *
-         * @param rustCore The RustCore representation of the resource metadata.
-         * @return The Kotlin `ResourceMetadata`.
-         */
         internal fun fromRustCore(rustCore: RustCoreResourceMetadata): ResourceMetadata {
             return ResourceMetadata(
                 ResourceKind.fromRustCore(rustCore.kind),

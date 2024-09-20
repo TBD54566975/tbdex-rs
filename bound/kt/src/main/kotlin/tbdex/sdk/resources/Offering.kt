@@ -78,12 +78,6 @@ data class Offering private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore Offering resource into a Kotlin Offering resource.
-         *
-         * @param rustCoreOffering The RustCore representation of the Offering resource.
-         * @return The Kotlin Offering resource.
-         */
         internal fun fromRustCoreOffering(rustCoreOffering: RustCoreOffering): Offering {
             val rustCoreData = rustCoreOffering.getData()
             val data = Json.jsonMapper.readValue(rustCoreOffering.getData().jsonSerializedData, OfferingData::class.java)

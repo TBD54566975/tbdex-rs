@@ -19,22 +19,11 @@ data class CloseData (
     val success: Boolean?
 ) {
     companion object {
-        /**
-         * Converts the RustCore close data into a Kotlin `CloseData`.
-         *
-         * @param rustCore The RustCore representation of close data.
-         * @return The Kotlin `CloseData`.
-         */
         internal fun fromRustCore(rustCore: RustCoreCloseData): CloseData {
             return CloseData(rustCore.reason, rustCore.success)
         }
     }
 
-    /**
-     * Converts the Kotlin `CloseData` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of close data.
-     */
     internal fun toRustCore(): RustCoreCloseData {
         return RustCoreCloseData(reason, success)
     }

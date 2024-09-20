@@ -18,22 +18,11 @@ data class BalanceData (
     val available: String
 ) {
     companion object {
-        /**
-         * Converts the RustCore balance data into a Kotlin `BalanceData`.
-         *
-         * @param rustCore The RustCore representation of balance data.
-         * @return The Kotlin `BalanceData`.
-         */
         internal fun fromRustCore(rustCore: RustCoreBalanceData): BalanceData {
             return BalanceData(rustCore.currencyCode, rustCore.available)
         }
     }
 
-    /**
-     * Converts the Kotlin `BalanceData` into the RustCore equivalent.
-     *
-     * @return The RustCore representation of balance data.
-     */
     internal fun toRustCore(): RustCoreBalanceData {
         return RustCoreBalanceData(currencyCode, available)
     }
@@ -106,12 +95,6 @@ data class Balance private constructor(
             }
         }
 
-        /**
-         * Converts a RustCore Balance resource into a Kotlin Balance resource.
-         *
-         * @param rustCoreBalance The RustCore representation of the Balance resource.
-         * @return The Kotlin Balance resource.
-         */
         internal fun fromRustCoreBalance(rustCoreBalance: RustCoreBalance): Balance {
             val rustCoreData = rustCoreBalance.getData()
             return Balance(
