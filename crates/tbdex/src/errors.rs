@@ -1,4 +1,3 @@
-use reqwest::Error as ReqwestError;
 use serde_json::Error as SerdeJsonError;
 use type_safe_id::Error as TypeIdError;
 use web5::errors::Web5Error;
@@ -41,12 +40,6 @@ impl From<SerdeJsonError> for TbdexError {
 impl From<TypeIdError> for TbdexError {
     fn from(err: TypeIdError) -> Self {
         TbdexError::TypeId(err.to_string())
-    }
-}
-
-impl From<ReqwestError> for TbdexError {
-    fn from(err: ReqwestError) -> Self {
-        TbdexError::Http(err.to_string())
     }
 }
 

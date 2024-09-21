@@ -1,22 +1,15 @@
-use super::{get_service_endpoint, send_request, Result};
-use crate::{
-    errors::TbdexError, http::offerings::GetOfferingsResponseBody, resources::offering::Offering,
-};
-use reqwest::Method;
+use super::{get_json, get_service_endpoint, Result};
+use crate::{http::offerings::GetOfferingsResponseBody, resources::offering::Offering};
 
 pub fn get_offerings(pfi_did_uri: &str) -> Result<Vec<Offering>> {
     let service_endpoint = get_service_endpoint(pfi_did_uri)?;
     let offerings_endpoint = format!("{}/offerings", service_endpoint);
+    let get_offerings_response_body =
+        get_json::<GetOfferingsResponseBody>(&offerings_endpoint, None)?;
 
-    let offerings_response =
-        send_request::<(), GetOfferingsResponseBody>(&offerings_endpoint, Method::GET, None, None)?
-            .ok_or(TbdexError::HttpClient(
-                "get offerings response returned null".to_string(),
-            ))?;
-
-    for offering in &offerings_response.data {
+    for offering in &get_offerings_response_body.data {
         offering.verify()?;
     }
 
-    Ok(offerings_response.data)
+    Ok(get_offerings_response_body.data)
 }

@@ -31,3 +31,5 @@ build/
 **/.idea/
 **/**.iml
 **/.DS_Store
+
+bound/LICENSE

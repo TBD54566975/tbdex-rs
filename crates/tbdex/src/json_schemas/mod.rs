@@ -2,11 +2,11 @@ pub mod generated;
 
 use crate::{
     errors::{Result, TbdexError},
+    http_client::get_json,
     json_schemas::generated::DRAFT_07_JSON_SCHEMA,
 };
 use generated::DEFINITIONS_JSON_SCHEMA;
 use jsonschema::{JSONSchema, SchemaResolver, SchemaResolverError};
-use reqwest::blocking::get;
 use serde::Serialize;
 use std::{collections::HashMap, sync::Arc};
 
@@ -28,7 +28,7 @@ impl LocalSchemaResolver {
         LocalSchemaResolver { schemas }
     }
 
-    fn normalize_url(url: &reqwest::Url) -> String {
+    fn normalize_url(url: &url::Url) -> String {
         let mut normalized_url = url.clone();
         normalized_url.set_fragment(None);
         let mut url_str = normalized_url.to_string();
@@ -43,22 +43,14 @@ impl SchemaResolver for LocalSchemaResolver {
     fn resolve(
         &self,
         _root_schema: &serde_json::Value,
-        url: &reqwest::Url,
+        url: &url::Url,
         _original_reference: &str,
     ) -> std::result::Result<std::sync::Arc<serde_json::Value>, SchemaResolverError> {
         if let Some(schema) = self.schemas.get(&LocalSchemaResolver::normalize_url(url)) {
             Ok(std::sync::Arc::new(schema.clone()))
         } else {
-            match get(url.as_str()) {
-                Ok(response) => {
-                    let schema: serde_json::Value = response.json().map_err(|err| {
-                        SchemaResolverError::new(std::io::Error::new(
-                            std::io::ErrorKind::InvalidData,
-                            format!("failed to parse schema: {}", err),
-                        ))
-                    })?;
-                    Ok(Arc::new(schema))
-                }
+            match get_json::<serde_json::Value>(url.as_str(), None) {
+                Ok(schema) => Ok(Arc::new(schema)),
                 Err(err) => Err(SchemaResolverError::new(std::io::Error::new(
                     std::io::ErrorKind::NotFound,
                     format!("schema not found {}: {}", url, err),
@@ -108,8 +100,8 @@ pub fn validate<T: Serialize>(schema: &serde_json::Value, value: &T) -> Result<(
 #[cfg(test)]
 mod json_schemas_test {
     use super::*;
-    use reqwest::Url;
     use serde_json::json;
+    use url::Url;
 
     #[test]
     fn test_validate_json_schema() {
