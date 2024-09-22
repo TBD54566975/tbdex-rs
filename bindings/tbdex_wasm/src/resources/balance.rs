@@ -1,9 +1,8 @@
+use super::WasmResourceMetadata;
 use crate::{
     errors::{map_err, Result},
     web5::bearer_did::WasmBearerDid,
 };
-
-use super::WasmResourceMetadata;
 use tbdex::resources::balance::{Balance, BalanceData};
 use wasm_bindgen::prelude::wasm_bindgen;
 

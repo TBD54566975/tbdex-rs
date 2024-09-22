@@ -41,6 +41,26 @@ export class WasmBearerDid {
 }
 /**
 */
+export class WasmCancellationDetails {
+  free(): void;
+/**
+* @param {boolean} enabled
+* @param {string | undefined} [terms_url]
+* @param {string | undefined} [terms]
+*/
+  constructor(enabled: boolean, terms_url?: string, terms?: string);
+}
+/**
+*/
+export class WasmConstraints {
+  free(): void;
+/**
+* @param {(WasmField)[]} fields
+*/
+  constructor(fields: (WasmField)[]);
+}
+/**
+*/
 export class WasmDocument {
   free(): void;
 /**
@@ -69,12 +89,51 @@ export class WasmDocument {
 }
 /**
 */
+export class WasmField {
+  free(): void;
+/**
+* @param {string | undefined} id
+* @param {string | undefined} name
+* @param {(string)[]} path
+* @param {string | undefined} [purpose]
+* @param {WasmFilter | undefined} [filter]
+* @param {boolean | undefined} [optional]
+* @param {WasmOptionality | undefined} [predicate]
+*/
+  constructor(id: string | undefined, name: string | undefined, path: (string)[], purpose?: string, filter?: WasmFilter, optional?: boolean, predicate?: WasmOptionality);
+}
+/**
+*/
+export class WasmFilter {
+  free(): void;
+/**
+* @param {string | undefined} [type]
+* @param {string | undefined} [pattern]
+* @param {string | undefined} [const_value]
+* @param {WasmFilter | undefined} [contains]
+*/
+  constructor(type?: string, pattern?: string, const_value?: string, contains?: WasmFilter);
+}
+/**
+*/
 export class WasmGetBalancesResponseBody {
   free(): void;
 /**
 * @param {(WasmBalance)[]} data
 */
   constructor(data: (WasmBalance)[]);
+}
+/**
+*/
+export class WasmInputDescriptor {
+  free(): void;
+/**
+* @param {string} id
+* @param {string | undefined} name
+* @param {string | undefined} purpose
+* @param {WasmConstraints} constraints
+*/
+  constructor(id: string, name: string | undefined, purpose: string | undefined, constraints: WasmConstraints);
 }
 /**
 */
@@ -114,6 +173,106 @@ export class WasmJwk {
 }
 /**
 */
+export class WasmOffering {
+  free(): void;
+/**
+* @param {string} from
+* @param {WasmOfferingData} data
+* @param {string | undefined} [protocol]
+* @returns {WasmOffering}
+*/
+  static create(from: string, data: WasmOfferingData, protocol?: string): WasmOffering;
+/**
+* @param {string} json
+* @returns {WasmOffering}
+*/
+  static from_json_string(json: string): WasmOffering;
+/**
+*/
+  verify(): void;
+}
+/**
+*/
+export class WasmOfferingData {
+  free(): void;
+/**
+* @param {string} description
+* @param {string} payout_units_per_payin_unit
+* @param {WasmPayinDetails} payin
+* @param {WasmPayoutDetails} payout
+* @param {WasmPresentationDefinition | undefined} required_claims
+* @param {WasmCancellationDetails} cancellation
+*/
+  constructor(description: string, payout_units_per_payin_unit: string, payin: WasmPayinDetails, payout: WasmPayoutDetails, required_claims: WasmPresentationDefinition | undefined, cancellation: WasmCancellationDetails);
+}
+/**
+*/
+export class WasmOptionality {
+  free(): void;
+/**
+* @param {string} optionality
+*/
+  constructor(optionality: string);
+}
+/**
+*/
+export class WasmPayinDetails {
+  free(): void;
+/**
+* @param {string} currency_code
+* @param {(WasmPayinMethod)[]} methods
+* @param {string | undefined} [min]
+* @param {string | undefined} [max]
+*/
+  constructor(currency_code: string, methods: (WasmPayinMethod)[], min?: string, max?: string);
+}
+/**
+*/
+export class WasmPayinMethod {
+  free(): void;
+/**
+* @param {string} kind
+* @param {string | undefined} name
+* @param {string | undefined} description
+* @param {string | undefined} group
+* @param {any} required_payment_details
+* @param {string | undefined} [fee]
+* @param {string | undefined} [min]
+* @param {string | undefined} [max]
+*/
+  constructor(kind: string, name: string | undefined, description: string | undefined, group: string | undefined, required_payment_details: any, fee?: string, min?: string, max?: string);
+}
+/**
+*/
+export class WasmPayoutDetails {
+  free(): void;
+/**
+* @param {string} currency_code
+* @param {(WasmPayoutMethod)[]} methods
+* @param {string | undefined} [min]
+* @param {string | undefined} [max]
+*/
+  constructor(currency_code: string, methods: (WasmPayoutMethod)[], min?: string, max?: string);
+}
+/**
+*/
+export class WasmPayoutMethod {
+  free(): void;
+/**
+* @param {string} kind
+* @param {bigint} estimated_settlement_time
+* @param {string | undefined} name
+* @param {string | undefined} description
+* @param {string | undefined} group
+* @param {any} required_payment_details
+* @param {string | undefined} [fee]
+* @param {string | undefined} [min]
+* @param {string | undefined} [max]
+*/
+  constructor(kind: string, estimated_settlement_time: bigint, name: string | undefined, description: string | undefined, group: string | undefined, required_payment_details: any, fee?: string, min?: string, max?: string);
+}
+/**
+*/
 export class WasmPortableDid {
   free(): void;
 /**
@@ -131,6 +290,19 @@ export class WasmPortableDid {
 * @returns {string}
 */
   to_json_string(): string;
+}
+/**
+*/
+export class WasmPresentationDefinition {
+  free(): void;
+/**
+* @param {string} id
+* @param {string | undefined} name
+* @param {string | undefined} purpose
+* @param {(WasmInputDescriptor)[]} input_descriptors
+* @param {(WasmSubmissionRequirement)[] | undefined} [submission_requirements]
+*/
+  constructor(id: string, name: string | undefined, purpose: string | undefined, input_descriptors: (WasmInputDescriptor)[], submission_requirements?: (WasmSubmissionRequirement)[]);
 }
 /**
 */
@@ -169,6 +341,31 @@ export class WasmService {
 * @param {(string)[]} service_endpoint
 */
   constructor(id: string, type: string, service_endpoint: (string)[]);
+}
+/**
+*/
+export class WasmSubmissionRequirement {
+  free(): void;
+/**
+* @param {WasmSubmissionRequirementRule} rule
+* @param {string | undefined} [from]
+* @param {(WasmSubmissionRequirement)[] | undefined} [from_nested]
+* @param {string | undefined} [name]
+* @param {string | undefined} [purpose]
+* @param {number | undefined} [count]
+* @param {number | undefined} [min]
+* @param {number | undefined} [max]
+*/
+  constructor(rule: WasmSubmissionRequirementRule, from?: string, from_nested?: (WasmSubmissionRequirement)[], name?: string, purpose?: string, count?: number, min?: number, max?: number);
+}
+/**
+*/
+export class WasmSubmissionRequirementRule {
+  free(): void;
+/**
+* @param {string} rule
+*/
+  constructor(rule: string);
 }
 /**
 */
