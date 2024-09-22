@@ -1,7 +1,9 @@
 pub mod balance;
 pub mod offering;
 
-use crate::errors::Result;
+use std::{fmt, str::FromStr};
+
+use crate::errors::{Result, TbdexError};
 use serde::{Deserialize, Serialize};
 use type_safe_id::{DynamicType, TypeSafeId};
 
@@ -10,6 +12,27 @@ use type_safe_id::{DynamicType, TypeSafeId};
 pub enum ResourceKind {
     Offering,
     Balance,
+}
+
+impl FromStr for ResourceKind {
+    type Err = TbdexError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "offering" => Ok(ResourceKind::Offering),
+            "balance" => Ok(ResourceKind::Balance),
+            _ => Err(TbdexError::Parse(format!("invalid resource kind {}", s))),
+        }
+    }
+}
+
+impl fmt::Display for ResourceKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ResourceKind::Offering => write!(f, "offering"),
+            ResourceKind::Balance => write!(f, "balance"),
+        }
+    }
 }
 
 impl ResourceKind {
