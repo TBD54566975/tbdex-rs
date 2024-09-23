@@ -67,6 +67,9 @@ export class WasmConstraints {
 * @param {(WasmField)[]} fields
 */
   constructor(fields: (WasmField)[]);
+/**
+*/
+  readonly fields: (WasmField)[];
 }
 /**
 */
@@ -110,6 +113,27 @@ export class WasmField {
 * @param {WasmOptionality | undefined} [predicate]
 */
   constructor(id: string | undefined, name: string | undefined, path: (string)[], purpose?: string, filter?: WasmFilter, optional?: boolean, predicate?: WasmOptionality);
+/**
+*/
+  readonly filter: WasmFilter | undefined;
+/**
+*/
+  readonly id: string | undefined;
+/**
+*/
+  readonly name: string | undefined;
+/**
+*/
+  readonly optional: boolean | undefined;
+/**
+*/
+  readonly path: (string)[];
+/**
+*/
+  readonly predicate: WasmOptionality | undefined;
+/**
+*/
+  readonly purpose: string | undefined;
 }
 /**
 */
@@ -122,6 +146,18 @@ export class WasmFilter {
 * @param {WasmFilter | undefined} [contains]
 */
   constructor(type?: string, pattern?: string, const_value?: string, contains?: WasmFilter);
+/**
+*/
+  readonly const_value: string | undefined;
+/**
+*/
+  readonly contains: WasmFilter | undefined;
+/**
+*/
+  readonly pattern: string | undefined;
+/**
+*/
+  readonly type: string | undefined;
 }
 /**
 */
@@ -143,6 +179,18 @@ export class WasmInputDescriptor {
 * @param {WasmConstraints} constraints
 */
   constructor(id: string, name: string | undefined, purpose: string | undefined, constraints: WasmConstraints);
+/**
+*/
+  readonly constraints: WasmConstraints;
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly name: string | undefined;
+/**
+*/
+  readonly purpose: string | undefined;
 }
 /**
 */
@@ -255,6 +303,9 @@ export class WasmOptionality {
 * @param {string} optionality
 */
   constructor(optionality: string);
+/**
+*/
+  readonly optionality: string;
 }
 /**
 */
@@ -420,6 +471,21 @@ export class WasmPresentationDefinition {
 * @param {(WasmSubmissionRequirement)[] | undefined} [submission_requirements]
 */
   constructor(id: string, name: string | undefined, purpose: string | undefined, input_descriptors: (WasmInputDescriptor)[], submission_requirements?: (WasmSubmissionRequirement)[]);
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly input_descriptors: (WasmInputDescriptor)[];
+/**
+*/
+  readonly name: string | undefined;
+/**
+*/
+  readonly purpose: string | undefined;
+/**
+*/
+  readonly submission_requirements: (WasmSubmissionRequirement)[] | undefined;
 }
 /**
 */
@@ -491,6 +557,30 @@ export class WasmSubmissionRequirement {
 * @param {number | undefined} [max]
 */
   constructor(rule: WasmSubmissionRequirementRule, from?: string, from_nested?: (WasmSubmissionRequirement)[], name?: string, purpose?: string, count?: number, min?: number, max?: number);
+/**
+*/
+  readonly count: number | undefined;
+/**
+*/
+  readonly from: string | undefined;
+/**
+*/
+  readonly from_nested: (WasmSubmissionRequirement)[] | undefined;
+/**
+*/
+  readonly max: number | undefined;
+/**
+*/
+  readonly min: number | undefined;
+/**
+*/
+  readonly name: string | undefined;
+/**
+*/
+  readonly purpose: string | undefined;
+/**
+*/
+  readonly rule: WasmSubmissionRequirementRule;
 }
 /**
 */
@@ -500,6 +590,9 @@ export class WasmSubmissionRequirementRule {
 * @param {string} rule
 */
   constructor(rule: string);
+/**
+*/
+  readonly rule: string;
 }
 /**
 */

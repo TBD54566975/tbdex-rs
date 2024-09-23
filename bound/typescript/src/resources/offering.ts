@@ -1,6 +1,7 @@
 import { ResourceMetadata } from ".";
 import { catchTbdexError } from "../errors";
 import wasm from "../wasm";
+import { PresentationDefinition } from "../web5/presentation-definition";
 
 // TODO consider extending "Resource" class type
 export class Offering {
@@ -34,11 +35,11 @@ export class Offering {
     );
   }
 
-  static fromJSON(json: string): Offering {
+  static fromJSONString(json: string): Offering {
     try {
       return Offering.fromWASM(wasm.WasmOffering.from_json_string(json));
-    } catch(error) {
-      throw catchTbdexError(error)
+    } catch (error) {
+      throw catchTbdexError(error);
     }
   }
 
@@ -54,9 +55,9 @@ export class Offering {
 
   verify() {
     try {
-      this.toWASM().verify()
-    } catch(error) {
-      throw catchTbdexError(error)
+      this.toWASM().verify();
+    } catch (error) {
+      throw catchTbdexError(error);
     }
   }
 }
@@ -66,7 +67,7 @@ export class OfferingData {
   readonly payoutUnitsPerPayinUnit: string;
   readonly payin: PayinDetails;
   readonly payout: PayoutDetails;
-  readonly requiredClaims?: any;
+  readonly requiredClaims?: PresentationDefinition;
   readonly cancellation: CancellationDetails;
 
   constructor(
@@ -75,7 +76,7 @@ export class OfferingData {
     payin: PayinDetails,
     payout: PayoutDetails,
     cancellation: CancellationDetails,
-    requiredClaims?: any
+    requiredClaims?: PresentationDefinition
   ) {
     this.description = description;
     this.payoutUnitsPerPayinUnit = payoutUnitsPerPayinUnit;
@@ -92,7 +93,9 @@ export class OfferingData {
       PayinDetails.fromWASM(wasmData.payin),
       PayoutDetails.fromWASM(wasmData.payout),
       CancellationDetails.fromWASM(wasmData.cancellation),
-      undefined // todo
+      wasmData.required_claims
+        ? PresentationDefinition.fromWASM(wasmData.required_claims)
+        : undefined
     );
   }
 
@@ -102,7 +105,7 @@ export class OfferingData {
       this.payoutUnitsPerPayinUnit,
       this.payin.toWASM(),
       this.payout.toWASM(),
-      this.requiredClaims, // todo
+      this.requiredClaims?.toWASM(),
       this.cancellation.toWASM()
     );
   }
