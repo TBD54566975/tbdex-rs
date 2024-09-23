@@ -241,7 +241,6 @@ mod tests {
     #[derive(Debug, serde::Deserialize)]
     pub struct TestVector<T> {
         pub input: String,
-        pub output: T,
     }
 
     #[test]
