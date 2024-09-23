@@ -251,6 +251,10 @@ export class WasmOffering {
 */
   static from_json_string(json: string): WasmOffering;
 /**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
 */
   verify(): void;
 /**

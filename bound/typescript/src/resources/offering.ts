@@ -43,6 +43,14 @@ export class Offering {
     }
   }
 
+  toJSONString(): string {
+    try {
+      return this.toWASM().to_json_string();
+    } catch (error) {
+      throw catchTbdexError(error);
+    }
+  }
+
   static create(from: string, data: OfferingData, protocol?: string): Offering {
     try {
       return Offering.fromWASM(
@@ -62,6 +70,7 @@ export class Offering {
   }
 }
 
+// TODO consider using type's instead of class's like we used to
 export class OfferingData {
   readonly description: string;
   readonly payoutUnitsPerPayinUnit: string;

@@ -4,7 +4,7 @@ use crate::{
     web5::presentation_definition::WasmPresentationDefinition,
 };
 use tbdex::{
-    json::FromJson,
+    json::{FromJson, ToJson},
     resources::offering::{
         CancellationDetails, Offering, OfferingData, PayinDetails, PayinMethod, PayoutDetails,
         PayoutMethod,
@@ -44,6 +44,10 @@ impl WasmOffering {
         Ok(Self {
             inner: Offering::from_json_string(json).map_err(map_err)?,
         })
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        Ok(self.inner.to_json_string().map_err(map_err)?)
     }
 
     pub fn verify(&self) -> Result<()> {
