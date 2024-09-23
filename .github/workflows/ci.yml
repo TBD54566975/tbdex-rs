@@ -24,105 +24,34 @@ env:
   TBDEX_SDK_LOG_LEVEL: debug
 
 jobs:
-  build_aarch64_apple_darwin:
-    runs-on: macos-latest
-    name: Build aarch64-apple-darwin target
+  test:
+    permissions:
+      id-token: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Run Build Script
-        run: |
-          cd bindings/tbdex_uniffi/libtargets/aarch64_apple_darwin
-          ./build
-          if cargo tree | grep -q ring; then
-            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
-            exit 1
-          fi
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v4.0.0
+      - uses: actions/checkout@v4
         with:
-          name: aarch64-apple-darwin-dylib
-          path: bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib
-
-  build_x86_64_apple_darwin:
-    runs-on: macos-12
-    name: Build x86_64-apple-darwin target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Run Build Script
+          submodules: true
+      - name: Install Rust 1.74.0
+        run: rustup toolchain install 1.74.0
+      - name: Set Rust 1.74.0 as default
+        run: rustup default 1.74.0
+      - name: Test
         run: |
-          cd bindings/tbdex_uniffi/libtargets/x86_64_apple_darwin
-          ./build
-          if cargo tree | grep -q ring; then
-            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
-            exit 1
-          fi
-      - name: Upload .dylib
-        uses: actions/upload-artifact@v4.0.0
+          rustup component add llvm-tools-preview
+          cargo install grcov
+          cargo test --package tbdex
+        env:
+          RUSTFLAGS: -Cinstrument-coverage
+          LLVM_PROFILE_FILE: tbdex-rs-%p-%m.profraw
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v4.5.0
         with:
-          name: x86_64-apple-darwin-dylib
-          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_apple_darwin.dylib
-
-  build_x86_64_unknown_linux_gnu:
-    runs-on: ubuntu-latest
-    name: Build x86_64-unknown-linux-gnu target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run Build Script
-        run: |
-          cd bindings/tbdex_uniffi/libtargets/x86_64_unknown_linux_gnu
-          ./build
-          if cargo tree | grep -q ring; then
-            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
-            exit 1
-          fi
-      - name: Upload .so
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: x86_64-unknown-linux-gnu-so
-          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_unknown_linux_gnu.so
-
-  build_x86_64_unknown_linux_musl:
-    runs-on: ubuntu-latest
-    name: Build x86_64-unknown-linux-musl target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run Build Script
-        run: |
-          cd bindings/tbdex_uniffi/libtargets/x86_64_unknown_linux_musl
-          ./build
-          if cargo tree | grep -q ring; then
-            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
-            exit 1
-          fi
-      - name: Upload .so
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: x86_64-unknown-linux-musl-so
-          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_unknown_linux_musl.so
-
-  build_x86_64_pc_windows_msvc:
-    runs-on: windows-latest
-    name: Build x86_64-pc-windows-msvc target
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        run: rustup toolchain install stable
-      - name: Add MSVC target
-        run: rustup target add x86_64-pc-windows-msvc
-      - name: Build the library
-        run: |
-          cargo build --target x86_64-pc-windows-msvc --release --package tbdex_uniffi
-          mkdir -p bound/kt/src/main/resources
-          cp target/x86_64-pc-windows-msvc/release/tbdex_uniffi.dll bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
-      - name: Upload .dll
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: x86_64-pc-windows-msvc-dll
-          path: bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
+          use_oidc: true
+          files: '*.profraw'
 
   lint:
     runs-on: ubuntu-latest
@@ -150,6 +79,120 @@ jobs:
       - name: Test
         run: just test
 
+  build_aarch64_apple_darwin:
+    runs-on: macos-latest
+    name: Build aarch64-apple-darwin target
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.74.0
+        run: rustup toolchain install 1.74.0
+      - name: Set Rust 1.74.0 as default
+        run: rustup default 1.74.0
+      - name: Run Build Script
+        run: |
+          cd bindings/tbdex_uniffi/libtargets/aarch64_apple_darwin
+          ./build
+          if cargo tree | grep -q ring; then
+            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
+            exit 1
+          fi
+      - name: Upload .dylib
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: aarch64-apple-darwin-dylib
+          path: bound/kt/src/main/resources/libtbdex_uniffi_aarch64_apple_darwin.dylib
+
+  build_x86_64_apple_darwin:
+    runs-on: macos-12
+    name: Build x86_64-apple-darwin target
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.74.0
+        run: rustup toolchain install 1.74.0
+      - name: Set Rust 1.74.0 as default
+        run: rustup default 1.74.0
+      - name: Run Build Script
+        run: |
+          cd bindings/tbdex_uniffi/libtargets/x86_64_apple_darwin
+          ./build
+          if cargo tree | grep -q ring; then
+            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
+            exit 1
+          fi
+      - name: Upload .dylib
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: x86_64-apple-darwin-dylib
+          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_apple_darwin.dylib
+
+  build_x86_64_unknown_linux_gnu:
+    runs-on: ubuntu-latest
+    name: Build x86_64-unknown-linux-gnu target
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.74.0
+        run: rustup toolchain install 1.74.0
+      - name: Set Rust 1.74.0 as default
+        run: rustup default 1.74.0
+      - name: Run Build Script
+        run: |
+          cd bindings/tbdex_uniffi/libtargets/x86_64_unknown_linux_gnu
+          ./build
+          if cargo tree | grep -q ring; then
+            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
+            exit 1
+          fi
+      - name: Upload .so
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: x86_64-unknown-linux-gnu-so
+          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_unknown_linux_gnu.so
+
+  build_x86_64_unknown_linux_musl:
+    runs-on: ubuntu-latest
+    name: Build x86_64-unknown-linux-musl target
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.74.0
+        run: rustup toolchain install 1.74.0
+      - name: Set Rust 1.74.0 as default
+        run: rustup default 1.74.0
+      - name: Run Build Script
+        run: |
+          cd bindings/tbdex_uniffi/libtargets/x86_64_unknown_linux_musl
+          ./build
+          if cargo tree | grep -q ring; then
+            echo "::error title=ring library found in compiled binary::The ring library has unclear licensing and we are not sure if it can be put in the compiled binary"
+            exit 1
+          fi
+      - name: Upload .so
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: x86_64-unknown-linux-musl-so
+          path: bound/kt/src/main/resources/libtbdex_uniffi_x86_64_unknown_linux_musl.so
+
+  build_x86_64_pc_windows_msvc:
+    runs-on: windows-latest
+    name: Build x86_64-pc-windows-msvc target
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.74.0
+        run: rustup toolchain install 1.74.0
+      - name: Set Rust 1.74.0 as default
+        run: rustup default 1.74.0
+      - name: Add MSVC target
+        run: rustup target add x86_64-pc-windows-msvc
+      - name: Build the library
+        run: |
+          cargo build --target x86_64-pc-windows-msvc --release --package tbdex_uniffi
+          mkdir -p bound/kt/src/main/resources
+          cp target/x86_64-pc-windows-msvc/release/tbdex_uniffi.dll bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
+      - name: Upload .dll
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: x86_64-pc-windows-msvc-dll
+          path: bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
+
   kotlin-build-test-deploy-snapshot:
     needs:
       - build_aarch64_apple_darwin
@@ -168,7 +211,7 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-     # Cache Maven repo
+      # Cache Maven repo
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -181,7 +224,11 @@ jobs:
         run: |
           # Version resolution: use provided
           if [ -n "${{ github.event.inputs.version }}" ]; then
-            resolvedVersion=${{ github.event.inputs.version }}
+            if [[ "${{ github.event.inputs.version }}" != *-SNAPSHOT ]]; then
+              resolvedVersion="${{ github.event.inputs.version }}-SNAPSHOT"
+            else
+              resolvedVersion="${{ github.event.inputs.version }}"
+            fi
           # Otherwise, construct a version for deployment in form X.Y.Z-commit-$shortSHA-SNAPSHOT
           else
             longSHA=$(git rev-parse --verify HEAD)
@@ -193,8 +240,7 @@ jobs:
           echo "Resolved SNAPSHOT Version: $resolvedVersion"
           echo "resolved_version=$resolvedVersion" >> $GITHUB_OUTPUT
 
-      # Package up the native binaries
-      #TODO Centralize this block as we re-use it via copy/paste right now
+      # Download and package the native binaries
       - name: Download MacOS aarch64 Native Library
         uses: actions/download-artifact@v4.1.7
         with:
@@ -221,7 +267,7 @@ jobs:
           name: x86_64-pc-windows-msvc-dll
           path: bound/kt/src/main/resources/
 
-      - name: Build and Test Kotlin Project
+      - name: Deploy Snapshot / Verify
         run: |
 
           # cd into the Kotlin project
@@ -309,6 +355,8 @@ jobs:
           cache: true
       - name: Setup
         run: just setup
+      - name: Install latest stable Rust
+        run: rustup install stable && rustup default stable
       - name: Install Nextest
         run: cargo install cargo-nextest
       - name: Create nextest.toml
@@ -326,8 +374,8 @@ jobs:
           sed -i '' 's/<testsuite name="tbdex"/<testsuite name="TbdexTestVectorsProtocolTest"/' target/nextest/ci/junit.xml
       - name: Move Test Results
         run: mv target/nextest/ci/junit.xml test-results/rust-test-results.xml
-      - name: Upload Rust Test Results
-        uses: actions/upload-artifact@v3
+      - name: Upload Rust Test Vector Results
+        uses: actions/upload-artifact@v4.0.0
         with:
           name: rust-test-results
           path: test-results/rust-test-results.xml
