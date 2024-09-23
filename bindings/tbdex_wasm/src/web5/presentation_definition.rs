@@ -19,6 +19,12 @@ impl From<WasmPresentationDefinition> for PresentationDefinition {
     }
 }
 
+impl From<PresentationDefinition> for WasmPresentationDefinition {
+    fn from(value: PresentationDefinition) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmPresentationDefinition {
     #[wasm_bindgen(constructor)]

@@ -5,9 +5,9 @@ import { Offering } from "../src/resources/offering";
 describe('test vectors', () => {
   it("should parse offering", () => {
     const input = OfferingVector.input
-    const offering = Offering.fromJsonString(input)
+    const offering = Offering.fromJSON(input)
 
-    expect(offering.inner).to.deep.equal(OfferingVector.output)
+    expect(offering).to.deep.equal(OfferingVector.output)
 
     offering.verify()
   })

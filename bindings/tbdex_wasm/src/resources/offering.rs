@@ -1,8 +1,8 @@
+use super::WasmResourceMetadata;
 use crate::{
     errors::{map_err, Result},
     web5::presentation_definition::WasmPresentationDefinition,
 };
-use serde_wasm_bindgen::from_value;
 use tbdex::{
     json::FromJson,
     resources::offering::{
@@ -19,6 +19,17 @@ pub struct WasmOffering {
 
 #[wasm_bindgen]
 impl WasmOffering {
+    #[wasm_bindgen(constructor)]
+    pub fn new(metadata: WasmResourceMetadata, data: WasmOfferingData, signature: String) -> Self {
+        Self {
+            inner: Offering {
+                metadata: metadata.into(),
+                data: data.into(),
+                signature,
+            },
+        }
+    }
+
     pub fn create(
         from: &str,
         data: WasmOfferingData,
@@ -38,6 +49,21 @@ impl WasmOffering {
     pub fn verify(&self) -> Result<()> {
         self.inner.verify().map_err(map_err)
     }
+
+    #[wasm_bindgen(getter)]
+    pub fn metadata(&self) -> WasmResourceMetadata {
+        self.inner.metadata.clone().into()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn data(&self) -> WasmOfferingData {
+        self.inner.data.clone().into()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn signature(&self) -> String {
+        self.inner.signature.clone()
+    }
 }
 
 #[wasm_bindgen]
@@ -48,6 +74,12 @@ pub struct WasmOfferingData {
 impl From<WasmOfferingData> for OfferingData {
     fn from(value: WasmOfferingData) -> Self {
         value.inner
+    }
+}
+
+impl From<OfferingData> for WasmOfferingData {
+    fn from(value: OfferingData) -> Self {
+        Self { inner: value }
     }
 }
 
@@ -71,6 +103,42 @@ impl WasmOfferingData {
                 required_claims: required_claims.and_then(|rc| Some(rc.into())),
                 cancellation: cancellation.into(),
             },
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn description(&self) -> String {
+        self.inner.description.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn payout_units_per_payin_unit(&self) -> String {
+        self.inner.payout_units_per_payin_unit.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn payin(&self) -> WasmPayinDetails {
+        WasmPayinDetails {
+            inner: self.inner.payin.clone(),
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn payout(&self) -> WasmPayoutDetails {
+        WasmPayoutDetails {
+            inner: self.inner.payout.clone(),
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn required_claims(&self) -> Option<WasmPresentationDefinition> {
+        self.inner.required_claims.clone().map(|rc| rc.into())
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn cancellation(&self) -> WasmCancellationDetails {
+        WasmCancellationDetails {
+            inner: self.inner.cancellation.clone(),
         }
     }
 }
@@ -104,6 +172,31 @@ impl WasmPayinDetails {
             },
         }
     }
+
+    #[wasm_bindgen(getter)]
+    pub fn currency_code(&self) -> String {
+        self.inner.currency_code.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn methods(&self) -> Vec<WasmPayinMethod> {
+        self.inner
+            .methods
+            .clone()
+            .into_iter()
+            .map(|m| m.into())
+            .collect()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn min(&self) -> Option<String> {
+        self.inner.min.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn max(&self) -> Option<String> {
+        self.inner.max.clone()
+    }
 }
 
 #[wasm_bindgen]
@@ -114,6 +207,12 @@ pub struct WasmPayinMethod {
 impl From<WasmPayinMethod> for PayinMethod {
     fn from(value: WasmPayinMethod) -> Self {
         value.inner
+    }
+}
+
+impl From<PayinMethod> for WasmPayinMethod {
+    fn from(value: PayinMethod) -> Self {
+        Self { inner: value }
     }
 }
 
@@ -134,7 +233,7 @@ impl WasmPayinMethod {
             None
         } else {
             Some(
-                from_value::<serde_json::Value>(required_payment_details)
+                serde_wasm_bindgen::from_value::<serde_json::Value>(required_payment_details)
                     .map_err(|err| JsValue::from(err.to_string()))?,
             )
         };
@@ -150,6 +249,52 @@ impl WasmPayinMethod {
                 max,
             },
         })
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn kind(&self) -> String {
+        self.inner.kind.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn name(&self) -> Option<String> {
+        self.inner.name.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn description(&self) -> Option<String> {
+        self.inner.description.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn group(&self) -> Option<String> {
+        self.inner.group.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn required_payment_details(&self) -> Result<JsValue> {
+        match &self.inner.required_payment_details {
+            None => Ok(JsValue::undefined()),
+            Some(required_payment_details) => {
+                serde_wasm_bindgen::to_value(required_payment_details)
+                    .map_err(|err| JsValue::from(err.to_string()))
+            }
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn fee(&self) -> Option<String> {
+        self.inner.fee.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn min(&self) -> Option<String> {
+        self.inner.min.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn max(&self) -> Option<String> {
+        self.inner.max.clone()
     }
 }
 
@@ -182,6 +327,31 @@ impl WasmPayoutDetails {
             },
         }
     }
+
+    #[wasm_bindgen(getter)]
+    pub fn currency_code(&self) -> String {
+        self.inner.currency_code.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn methods(&self) -> Vec<WasmPayoutMethod> {
+        self.inner
+            .methods
+            .clone()
+            .into_iter()
+            .map(|m| m.into())
+            .collect()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn min(&self) -> Option<String> {
+        self.inner.min.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn max(&self) -> Option<String> {
+        self.inner.max.clone()
+    }
 }
 
 #[wasm_bindgen]
@@ -192,6 +362,12 @@ pub struct WasmPayoutMethod {
 impl From<WasmPayoutMethod> for PayoutMethod {
     fn from(value: WasmPayoutMethod) -> Self {
         value.inner
+    }
+}
+
+impl From<PayoutMethod> for WasmPayoutMethod {
+    fn from(value: PayoutMethod) -> Self {
+        Self { inner: value }
     }
 }
 
@@ -213,7 +389,7 @@ impl WasmPayoutMethod {
             None
         } else {
             Some(
-                from_value::<serde_json::Value>(required_payment_details)
+                serde_wasm_bindgen::from_value::<serde_json::Value>(required_payment_details)
                     .map_err(|err| JsValue::from(err.to_string()))?,
             )
         };
@@ -231,6 +407,57 @@ impl WasmPayoutMethod {
                 estimated_settlement_time,
             },
         })
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn kind(&self) -> String {
+        self.inner.kind.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn estimated_settlement_time(&self) -> i64 {
+        self.inner.estimated_settlement_time
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn name(&self) -> Option<String> {
+        self.inner.name.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn description(&self) -> Option<String> {
+        self.inner.description.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn group(&self) -> Option<String> {
+        self.inner.group.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn required_payment_details(&self) -> Result<JsValue> {
+        match &self.inner.required_payment_details {
+            None => Ok(JsValue::undefined()),
+            Some(required_payment_details) => {
+                serde_wasm_bindgen::to_value(required_payment_details)
+                    .map_err(|err| JsValue::from(err.to_string()))
+            }
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn fee(&self) -> Option<String> {
+        self.inner.fee.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn min(&self) -> Option<String> {
+        self.inner.min.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn max(&self) -> Option<String> {
+        self.inner.max.clone()
     }
 }
 
@@ -256,5 +483,20 @@ impl WasmCancellationDetails {
                 terms,
             },
         }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn enabled(&self) -> bool {
+        self.inner.enabled
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn terms_url(&self) -> Option<String> {
+        self.inner.terms_url.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn terms(&self) -> Option<String> {
+        self.inner.terms.clone()
     }
 }

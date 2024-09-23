@@ -31,7 +31,7 @@ impl WasmResourceKind {
         Ok(WasmResourceKind { inner })
     }
 
-    #[wasm_bindgen]
+    #[wasm_bindgen(getter)]
     pub fn kind(&self) -> String {
         self.inner.to_string()
     }
@@ -75,5 +75,35 @@ impl WasmResourceMetadata {
                 updated_at,
             },
         }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn kind(&self) -> WasmResourceKind {
+        self.inner.kind.clone().into()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn from(&self) -> String {
+        self.inner.from.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn id(&self) -> String {
+        self.inner.id.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn protocol(&self) -> String {
+        self.inner.protocol.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn created_at(&self) -> String {
+        self.inner.created_at.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn updated_at(&self) -> Option<String> {
+        self.inner.updated_at.clone()
     }
 }

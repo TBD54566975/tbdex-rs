@@ -49,6 +49,15 @@ export class WasmCancellationDetails {
 * @param {string | undefined} [terms]
 */
   constructor(enabled: boolean, terms_url?: string, terms?: string);
+/**
+*/
+  readonly enabled: boolean;
+/**
+*/
+  readonly terms: string | undefined;
+/**
+*/
+  readonly terms_url: string | undefined;
 }
 /**
 */
@@ -176,6 +185,12 @@ export class WasmJwk {
 export class WasmOffering {
   free(): void;
 /**
+* @param {WasmResourceMetadata} metadata
+* @param {WasmOfferingData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmResourceMetadata, data: WasmOfferingData, signature: string);
+/**
 * @param {string} from
 * @param {WasmOfferingData} data
 * @param {string | undefined} [protocol]
@@ -190,6 +205,15 @@ export class WasmOffering {
 /**
 */
   verify(): void;
+/**
+*/
+  readonly data: WasmOfferingData;
+/**
+*/
+  readonly metadata: WasmResourceMetadata;
+/**
+*/
+  readonly signature: string;
 }
 /**
 */
@@ -204,6 +228,24 @@ export class WasmOfferingData {
 * @param {WasmCancellationDetails} cancellation
 */
   constructor(description: string, payout_units_per_payin_unit: string, payin: WasmPayinDetails, payout: WasmPayoutDetails, required_claims: WasmPresentationDefinition | undefined, cancellation: WasmCancellationDetails);
+/**
+*/
+  readonly cancellation: WasmCancellationDetails;
+/**
+*/
+  readonly description: string;
+/**
+*/
+  readonly payin: WasmPayinDetails;
+/**
+*/
+  readonly payout: WasmPayoutDetails;
+/**
+*/
+  readonly payout_units_per_payin_unit: string;
+/**
+*/
+  readonly required_claims: WasmPresentationDefinition | undefined;
 }
 /**
 */
@@ -225,6 +267,18 @@ export class WasmPayinDetails {
 * @param {string | undefined} [max]
 */
   constructor(currency_code: string, methods: (WasmPayinMethod)[], min?: string, max?: string);
+/**
+*/
+  readonly currency_code: string;
+/**
+*/
+  readonly max: string | undefined;
+/**
+*/
+  readonly methods: (WasmPayinMethod)[];
+/**
+*/
+  readonly min: string | undefined;
 }
 /**
 */
@@ -241,6 +295,30 @@ export class WasmPayinMethod {
 * @param {string | undefined} [max]
 */
   constructor(kind: string, name: string | undefined, description: string | undefined, group: string | undefined, required_payment_details: any, fee?: string, min?: string, max?: string);
+/**
+*/
+  readonly description: string | undefined;
+/**
+*/
+  readonly fee: string | undefined;
+/**
+*/
+  readonly group: string | undefined;
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly max: string | undefined;
+/**
+*/
+  readonly min: string | undefined;
+/**
+*/
+  readonly name: string | undefined;
+/**
+*/
+  readonly required_payment_details: any;
 }
 /**
 */
@@ -253,6 +331,18 @@ export class WasmPayoutDetails {
 * @param {string | undefined} [max]
 */
   constructor(currency_code: string, methods: (WasmPayoutMethod)[], min?: string, max?: string);
+/**
+*/
+  readonly currency_code: string;
+/**
+*/
+  readonly max: string | undefined;
+/**
+*/
+  readonly methods: (WasmPayoutMethod)[];
+/**
+*/
+  readonly min: string | undefined;
 }
 /**
 */
@@ -270,6 +360,33 @@ export class WasmPayoutMethod {
 * @param {string | undefined} [max]
 */
   constructor(kind: string, estimated_settlement_time: bigint, name: string | undefined, description: string | undefined, group: string | undefined, required_payment_details: any, fee?: string, min?: string, max?: string);
+/**
+*/
+  readonly description: string | undefined;
+/**
+*/
+  readonly estimated_settlement_time: bigint;
+/**
+*/
+  readonly fee: string | undefined;
+/**
+*/
+  readonly group: string | undefined;
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly max: string | undefined;
+/**
+*/
+  readonly min: string | undefined;
+/**
+*/
+  readonly name: string | undefined;
+/**
+*/
+  readonly required_payment_details: any;
 }
 /**
 */
@@ -313,9 +430,8 @@ export class WasmResourceKind {
 */
   constructor(kind: string);
 /**
-* @returns {string}
 */
-  kind(): string;
+  readonly kind: string;
 }
 /**
 */
@@ -330,6 +446,24 @@ export class WasmResourceMetadata {
 * @param {string | undefined} [updated_at]
 */
   constructor(kind: WasmResourceKind, from: string, id: string, protocol: string, created_at: string, updated_at?: string);
+/**
+*/
+  readonly created_at: string;
+/**
+*/
+  readonly from: string;
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly kind: WasmResourceKind;
+/**
+*/
+  readonly protocol: string;
+/**
+*/
+  readonly updated_at: string | undefined;
 }
 /**
 */

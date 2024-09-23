@@ -1,21 +1,52 @@
+import { ResourceMetadata } from ".";
 import { catchTbdexError } from "../errors";
 import wasm from "../wasm";
 
+// TODO consider extending "Resource" class type
 export class Offering {
-  inner: wasm.WasmOffering;
+  readonly metadata: ResourceMetadata;
+  readonly data: OfferingData;
+  readonly signature: string;
 
-  static create(from: string, data: OfferingData, protocol?: string): Offering {
+  constructor(
+    metadata: ResourceMetadata,
+    data: OfferingData,
+    signature: string
+  ) {
+    this.metadata = metadata;
+    this.data = data;
+    this.signature = signature;
+  }
+
+  static fromWASM(wasmOffering: wasm.WasmOffering): Offering {
+    return new Offering(
+      ResourceMetadata.fromWASM(wasmOffering.metadata),
+      OfferingData.fromWASM(wasmOffering.data),
+      wasmOffering.signature
+    );
+  }
+
+  toWASM(): wasm.WasmOffering {
+    return new wasm.WasmOffering(
+      this.metadata.toWASM(),
+      this.data.toWASM(),
+      this.signature
+    );
+  }
+
+  static fromJSON(json: string): Offering {
     try {
-      return new Offering(wasm.WasmOffering.create(from, data.toWasm(), protocol));
-    } catch (error) {
-      throw catchTbdexError(error);
+      return Offering.fromWASM(wasm.WasmOffering.from_json_string(json));
+    } catch(error) {
+      throw catchTbdexError(error)
     }
   }
 
-  static fromJsonString(json: string): Offering {
+  static create(from: string, data: OfferingData, protocol?: string): Offering {
     try {
-      let inner = wasm.WasmOffering.from_json_string(json)
-      return new Offering(inner);
+      return Offering.fromWASM(
+        wasm.WasmOffering.create(from, data.toWASM(), protocol)
+      );
     } catch (error) {
       throw catchTbdexError(error);
     }
@@ -23,86 +54,106 @@ export class Offering {
 
   verify() {
     try {
-      this.inner.verify()
-    } catch (error) {
+      this.toWASM().verify()
+    } catch(error) {
       throw catchTbdexError(error)
     }
-  }
-
-  // TODO replace with static fromWasm()
-  constructor(inner: wasm.WasmOffering) {
-    this.inner = inner;
   }
 }
 
 export class OfferingData {
-  description: string;
-  payoutUnitsPerPayinUnit: string;
-  payin: PayinDetails;
-  payout: PayoutDetails;
-  requiredClaims?: any;
-  cancellation: CancellationDetails;
+  readonly description: string;
+  readonly payoutUnitsPerPayinUnit: string;
+  readonly payin: PayinDetails;
+  readonly payout: PayoutDetails;
+  readonly requiredClaims?: any;
+  readonly cancellation: CancellationDetails;
 
   constructor(
     description: string,
     payoutUnitsPerPayinUnit: string,
     payin: PayinDetails,
     payout: PayoutDetails,
-    requiredClaims: any | undefined,
-    cancellation: CancellationDetails
+    cancellation: CancellationDetails,
+    requiredClaims?: any
   ) {
     this.description = description;
     this.payoutUnitsPerPayinUnit = payoutUnitsPerPayinUnit;
     this.payin = payin;
     this.payout = payout;
-    this.requiredClaims = requiredClaims;
     this.cancellation = cancellation;
+    this.requiredClaims = requiredClaims;
   }
 
-  toWasm(): wasm.WasmOfferingData {
+  static fromWASM(wasmData: wasm.WasmOfferingData): OfferingData {
+    return new OfferingData(
+      wasmData.description,
+      wasmData.payout_units_per_payin_unit,
+      PayinDetails.fromWASM(wasmData.payin),
+      PayoutDetails.fromWASM(wasmData.payout),
+      CancellationDetails.fromWASM(wasmData.cancellation),
+      undefined // todo
+    );
+  }
+
+  toWASM(): wasm.WasmOfferingData {
     return new wasm.WasmOfferingData(
       this.description,
       this.payoutUnitsPerPayinUnit,
-      this.payin.toWasm(),
-      this.payout.toWasm(),
-      this.requiredClaims,
-      this.cancellation.toWasm()
+      this.payin.toWASM(),
+      this.payout.toWASM(),
+      this.requiredClaims, // todo
+      this.cancellation.toWASM()
     );
   }
 }
 
 export class PayinDetails {
-  currencyCode: string;
-  min?: string;
-  max?: string;
-  methods: PayinMethod[];
+  readonly currencyCode: string;
+  readonly min?: string;
+  readonly max?: string;
+  readonly methods: PayinMethod[];
 
-  constructor(currencyCode: string, methods: PayinMethod[], min?: string, max?: string) {
+  constructor(
+    currencyCode: string,
+    methods: PayinMethod[],
+    min?: string,
+    max?: string
+  ) {
     this.currencyCode = currencyCode;
+    this.methods = methods;
     this.min = min;
     this.max = max;
-    this.methods = methods;
   }
 
-  toWasm(): wasm.WasmPayinDetails {
+  static fromWASM(wasmPayin: wasm.WasmPayinDetails): PayinDetails {
+    return new PayinDetails(
+      wasmPayin.currency_code,
+      wasmPayin.methods.map(PayinMethod.fromWASM),
+      wasmPayin.min,
+      wasmPayin.max
+    );
+  }
+
+  toWASM(): wasm.WasmPayinDetails {
     return new wasm.WasmPayinDetails(
       this.currencyCode,
-      this.methods.map(method => method.toWasm()),
+      this.methods.map((method) => method.toWASM()),
       this.min,
-      this.max,
+      this.max
     );
   }
 }
 
 export class PayinMethod {
-  kind: string;
-  name?: string;
-  description?: string;
-  group?: string;
-  requiredPaymentDetails?: any;
-  fee?: string;
-  min?: string;
-  max?: string;
+  readonly kind: string;
+  readonly name?: string;
+  readonly description?: string;
+  readonly group?: string;
+  readonly requiredPaymentDetails?: any;
+  readonly fee?: string;
+  readonly min?: string;
+  readonly max?: string;
 
   constructor(
     kind: string,
@@ -124,7 +175,20 @@ export class PayinMethod {
     this.max = max;
   }
 
-  toWasm(): wasm.WasmPayinMethod {
+  static fromWASM(wasmMethod: wasm.WasmPayinMethod): PayinMethod {
+    return new PayinMethod(
+      wasmMethod.kind,
+      wasmMethod.name,
+      wasmMethod.description,
+      wasmMethod.group,
+      wasmMethod.required_payment_details,
+      wasmMethod.fee,
+      wasmMethod.min,
+      wasmMethod.max
+    );
+  }
+
+  toWASM(): wasm.WasmPayinMethod {
     return new wasm.WasmPayinMethod(
       this.kind,
       this.name,
@@ -139,38 +203,52 @@ export class PayinMethod {
 }
 
 export class PayoutDetails {
-  currencyCode: string;
-  min?: string;
-  max?: string;
-  methods: PayoutMethod[];
+  readonly currencyCode: string;
+  readonly min?: string;
+  readonly max?: string;
+  readonly methods: PayoutMethod[];
 
-  constructor(currencyCode: string, methods: PayoutMethod[], min?: string, max?: string) {
+  constructor(
+    currencyCode: string,
+    methods: PayoutMethod[],
+    min?: string,
+    max?: string
+  ) {
     this.currencyCode = currencyCode;
+    this.methods = methods;
     this.min = min;
     this.max = max;
-    this.methods = methods;
   }
 
-  toWasm(): wasm.WasmPayoutDetails {
+  static fromWASM(wasmPayout: wasm.WasmPayoutDetails): PayoutDetails {
+    return new PayoutDetails(
+      wasmPayout.currency_code,
+      wasmPayout.methods.map(PayoutMethod.fromWASM),
+      wasmPayout.min,
+      wasmPayout.max
+    );
+  }
+
+  toWASM(): wasm.WasmPayoutDetails {
     return new wasm.WasmPayoutDetails(
       this.currencyCode,
-      this.methods.map(method => method.toWasm()),
+      this.methods.map((method) => method.toWASM()),
       this.min,
-      this.max,
+      this.max
     );
   }
 }
 
 export class PayoutMethod {
-  kind: string;
-  name?: string;
-  description?: string;
-  group?: string;
-  requiredPaymentDetails?: any;
-  fee?: string;
-  min?: string;
-  max?: string;
-  estimatedSettlementTime: number;
+  readonly kind: string;
+  readonly name?: string;
+  readonly description?: string;
+  readonly group?: string;
+  readonly requiredPaymentDetails?: any;
+  readonly fee?: string;
+  readonly min?: string;
+  readonly max?: string;
+  readonly estimatedSettlementTime: number;
 
   constructor(
     kind: string,
@@ -181,9 +259,10 @@ export class PayoutMethod {
     requiredPaymentDetails?: any,
     fee?: string,
     min?: string,
-    max?: string,
+    max?: string
   ) {
     this.kind = kind;
+    this.estimatedSettlementTime = estimatedSettlementTime;
     this.name = name;
     this.description = description;
     this.group = group;
@@ -191,10 +270,23 @@ export class PayoutMethod {
     this.fee = fee;
     this.min = min;
     this.max = max;
-    this.estimatedSettlementTime = estimatedSettlementTime;
   }
 
-  toWasm(): wasm.WasmPayoutMethod {
+  static fromWASM(wasmMethod: wasm.WasmPayoutMethod): PayoutMethod {
+    return new PayoutMethod(
+      wasmMethod.kind,
+      Number(wasmMethod.estimated_settlement_time),
+      wasmMethod.name,
+      wasmMethod.description,
+      wasmMethod.group,
+      wasmMethod.required_payment_details,
+      wasmMethod.fee,
+      wasmMethod.min,
+      wasmMethod.max
+    );
+  }
+
+  toWASM(): wasm.WasmPayoutMethod {
     return new wasm.WasmPayoutMethod(
       this.kind,
       BigInt(this.estimatedSettlementTime),
@@ -204,15 +296,15 @@ export class PayoutMethod {
       this.requiredPaymentDetails,
       this.fee,
       this.min,
-      this.max,
+      this.max
     );
   }
 }
 
 export class CancellationDetails {
-  enabled: boolean;
-  termsUrl?: string;
-  terms?: string;
+  readonly enabled: boolean;
+  readonly termsUrl?: string;
+  readonly terms?: string;
 
   constructor(enabled: boolean, termsUrl?: string, terms?: string) {
     this.enabled = enabled;
@@ -220,7 +312,21 @@ export class CancellationDetails {
     this.terms = terms;
   }
 
-  toWasm(): wasm.WasmCancellationDetails {
-    return new wasm.WasmCancellationDetails(this.enabled, this.termsUrl, this.terms);
+  static fromWASM(
+    wasmCancellation: wasm.WasmCancellationDetails
+  ): CancellationDetails {
+    return new CancellationDetails(
+      wasmCancellation.enabled,
+      wasmCancellation.terms_url,
+      wasmCancellation.terms
+    );
+  }
+
+  toWASM(): wasm.WasmCancellationDetails {
+    return new wasm.WasmCancellationDetails(
+      this.enabled,
+      this.termsUrl,
+      this.terms
+    );
   }
 }
