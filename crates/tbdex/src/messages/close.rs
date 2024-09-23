@@ -8,10 +8,19 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
+/// Represents a Close message in the tbDEX protocol.
+///
+/// A Close message is sent by a PFI to Alice to signal the termination of an exchange,
+/// either because the exchange was completed or because it cannot be fulfilled.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Close {
+    /// Metadata about the message, including sender, recipient, and protocol information.
     pub metadata: MessageMetadata,
+
+    /// The public data part of the Close message, which includes the reason for closure.
     pub data: CloseData,
+
+    /// The signature verifying the authenticity and integrity of the Close message.
     pub signature: String,
 }
 
@@ -19,6 +28,20 @@ impl ToJson for Close {}
 impl FromJson for Close {}
 
 impl Close {
+    /// Creates a new Close message.
+    ///
+    /// # Arguments
+    ///
+    /// * `to` - The DID of the recipient (Alice).
+    /// * `from` - The DID of the sender (the PFI).
+    /// * `exchange_id` - The exchange ID shared between Alice and the PFI.
+    /// * `data` - The data containing the reason for closing the exchange.
+    /// * `protocol` - Optional protocol version; defaults to the current version if not provided.
+    /// * `external_id` - Optional external ID for additional identification.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `Close` containing the metadata, data, and an empty signature.
     pub fn create(
         to: &str,
         from: &str,
@@ -47,6 +70,15 @@ impl Close {
         Ok(close)
     }
 
+    /// Signs the Close message using the provided Bearer DID.
+    ///
+    /// # Arguments
+    ///
+    /// * `bearer_did` - The DID to sign the Close message.
+    ///
+    /// # Returns
+    ///
+    /// An empty result, or an error if the signing process fails.
     pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
         self.signature = crate::signature::sign(
             bearer_did,
@@ -56,6 +88,14 @@ impl Close {
         Ok(())
     }
 
+    /// Verifies the validity of the Close message.
+    ///
+    /// This method ensures that the message adheres to its JSON schema
+    /// and verifies the signature to ensure authenticity and integrity.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -75,6 +115,9 @@ impl Close {
     }
 }
 
+/// Represents the data for a Close message in the tbDEX protocol.
+///
+/// This includes information about the reason for closing the exchange.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct CloseData {
     #[serde(skip_serializing_if = "Option::is_none")]

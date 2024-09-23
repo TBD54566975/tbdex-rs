@@ -8,10 +8,19 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
+/// Represents an Order Status message in the tbDEX protocol.
+///
+/// An Order Status message is sent from a PFI to Alice to communicate
+/// the current status of an ongoing order or exchange process.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct OrderStatus {
+    /// Metadata about the message, including sender, recipient, and protocol information.
     pub metadata: MessageMetadata,
+
+    /// The public data part of the Order Status, such as the current status of the order.
     pub data: OrderStatusData,
+
+    /// The signature verifying the authenticity and integrity of the Order Status message.
     pub signature: String,
 }
 
@@ -19,6 +28,20 @@ impl ToJson for OrderStatus {}
 impl FromJson for OrderStatus {}
 
 impl OrderStatus {
+    /// Creates a new Order Status message.
+    ///
+    /// # Arguments
+    ///
+    /// * `to` - The DID of the recipient (Alice).
+    /// * `from` - The DID of the sender (the PFI).
+    /// * `exchange_id` - The exchange ID shared between Alice and the PFI.
+    /// * `data` - The data containing the current status of the order.
+    /// * `protocol` - Optional protocol version; defaults to the current version if not provided.
+    /// * `external_id` - Optional external ID for additional identification.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `OrderStatus` containing the metadata, data, and an empty signature.
     pub fn create(
         to: &str,
         from: &str,
@@ -47,6 +70,15 @@ impl OrderStatus {
         Ok(order_status)
     }
 
+    /// Signs the Order Status message using the provided Bearer DID.
+    ///
+    /// # Arguments
+    ///
+    /// * `bearer_did` - The DID to sign the Order Status message.
+    ///
+    /// # Returns
+    ///
+    /// An empty result, or an error if the signing process fails.
     pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
         self.signature = crate::signature::sign(
             bearer_did,
@@ -56,6 +88,14 @@ impl OrderStatus {
         Ok(())
     }
 
+    /// Verifies the validity of the Order Status message.
+    ///
+    /// This method ensures that the message adheres to its JSON schema
+    /// and verifies the signature to ensure authenticity and integrity.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -75,30 +115,65 @@ impl OrderStatus {
     }
 }
 
+/// Represents the data for an Order Status message in the tbDEX protocol.
+///
+/// This includes the current status of the order and any optional details
+/// providing additional information about the status.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderStatusData {
+    /// The current status of the order (e.g., PayinPending, PayinSettled).
     pub status: Status,
+
+    /// Optional additional details about the current status.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub details: Option<String>,
 }
 
+/// Represents the possible statuses for an order in the tbDEX protocol.
+///
+/// Each status indicates a specific stage in the lifecycle of an order.
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Status {
+    /// Indicates that the PFI is awaiting payment from Alice.
     #[default]
     PayinPending,
+
+    /// Indicates that payment from Alice has been initiated.
     PayinInitiated,
+
+    /// Indicates that payment from Alice has been successfully settled into the PFI's account.
     PayinSettled,
+
+    /// Indicates that payment from Alice has failed.
     PayinFailed,
+
+    /// Indicates that payment from Alice was not received before the quote expired.
     PayinExpired,
+
+    /// Indicates that the payout to Alice is pending further processing.
     PayoutPending,
+
+    /// Indicates that the payout to Alice has been initiated.
     PayoutInitiated,
+
+    /// Indicates that the payout to Alice has been successfully settled.
     PayoutSettled,
+
+    /// Indicates that the payout to Alice has failed.
     PayoutFailed,
+
+    /// Indicates that a refund of Alice's payin is pending further processing.
     RefundPending,
+
+    /// Indicates that the refund of Alice's payin has been initiated.
     RefundInitiated,
+
+    /// Indicates that the refund of Alice's payin has been successfully settled.
     RefundSettled,
+
+    /// Indicates that the refund of Alice's payin has failed.
     RefundFailed,
 }
 

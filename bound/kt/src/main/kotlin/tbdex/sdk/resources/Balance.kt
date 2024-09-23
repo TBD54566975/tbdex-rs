@@ -7,6 +7,12 @@ import tbdex.sdk.rust.fromWeb5
 import tbdex.sdk.rust.BearerDid as RustCoreBearerDid
 import web5.sdk.dids.BearerDid
 
+/**
+ * Represents the data for a Balance resource in the tbDEX protocol.
+ *
+ * @property currencyCode The ISO 4217 currency code for the balance.
+ * @property available The available amount of the specified currency.
+ */
 data class BalanceData (
     val currencyCode: String,
     val available: String
@@ -22,13 +28,32 @@ data class BalanceData (
     }
 }
 
+/**
+ * Represents a Balance resource in the tbDEX protocol.
+ *
+ * A Balance resource communicates the amounts of each currency held by a PFI on behalf of a customer.
+ *
+ * @property metadata Metadata about the resource, including the sender and resource type.
+ * @property data The balance data, including currency code and available balance.
+ * @property signature The signature verifying the authenticity and integrity of the Balance resource.
+ * @property rustCoreBalance The underlying RustCore representation of the Balance resource.
+ */
 data class Balance private constructor(
     val metadata: ResourceMetadata,
     val data: BalanceData,
     val signature: String,
     internal val rustCoreBalance: RustCoreBalance
-){
+) {
     companion object {
+        /**
+         * Creates a new Balance resource.
+         *
+         * @param from The DID of the sender (the PFI).
+         * @param data The balance data containing the currency code and available balance.
+         * @param protocol Optional protocol version.
+         * @return The newly created Balance resource.
+         * @throws TbdexException if the creation process fails.
+         */
         fun create(
             from: String,
             data: BalanceData,
@@ -48,6 +73,13 @@ data class Balance private constructor(
             }
         }
 
+        /**
+         * Parses a Balance resource from a JSON string.
+         *
+         * @param json The JSON string representing the Balance resource.
+         * @return The deserialized Balance resource.
+         * @throws TbdexException if parsing fails.
+         */
         fun fromJsonString(json: String): Balance {
             try {
                 val rustCoreBalance = RustCoreBalance.fromJsonString(json)
@@ -74,6 +106,12 @@ data class Balance private constructor(
         }
     }
 
+    /**
+     * Serializes the Balance resource to a JSON string.
+     *
+     * @return The serialized JSON string of the Balance resource.
+     * @throws TbdexException if serialization fails.
+     */
     fun toJsonString(): String {
         try {
             return rustCoreBalance.toJsonString()
@@ -82,6 +120,12 @@ data class Balance private constructor(
         }
     }
 
+    /**
+     * Signs the Balance resource using the provided Bearer DID.
+     *
+     * @param bearerDid The Bearer DID used to sign the Balance resource.
+     * @throws TbdexException if the signing process fails.
+     */
     fun sign(bearerDid: BearerDid) {
         try {
             rustCoreBalance.sign(RustCoreBearerDid.fromWeb5(bearerDid))
@@ -90,6 +134,11 @@ data class Balance private constructor(
         }
     }
 
+    /**
+     * Verifies the Balance resource's signature and validity.
+     *
+     * @throws TbdexException if verification fails.
+     */
     fun verify() {
         try {
             rustCoreBalance.verify()

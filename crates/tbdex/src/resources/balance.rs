@@ -8,10 +8,19 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
+/// Represents a Balance resource in the tbDEX protocol.
+///
+/// A Balance resource is used to communicate the amount of a particular currency
+/// held by a PFI on behalf of a customer. It includes metadata, balance data, and a signature.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Balance {
+    /// Metadata about the resource, including sender, type of resource, and protocol information.
     pub metadata: ResourceMetadata,
+
+    /// The public data part of the Balance resource, including the currency and available balance.
     pub data: BalanceData,
+
+    /// The signature verifying the authenticity and integrity of the Balance resource.
     pub signature: String,
 }
 
@@ -19,6 +28,17 @@ impl ToJson for Balance {}
 impl FromJson for Balance {}
 
 impl Balance {
+    /// Creates a new Balance resource.
+    ///
+    /// # Arguments
+    ///
+    /// * `from` - The DID of the sender (the PFI).
+    /// * `data` - The data containing the currency code and available balance.
+    /// * `protocol` - Optional protocol version; defaults to the current version if not provided.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `Balance` containing the metadata, data, and an empty signature.
     pub fn create(from: &str, data: &BalanceData, protocol: Option<String>) -> Result<Self> {
         let now = Utc::now().to_rfc3339();
 
@@ -40,6 +60,15 @@ impl Balance {
         Ok(balance)
     }
 
+    /// Signs the Balance resource using the provided Bearer DID.
+    ///
+    /// # Arguments
+    ///
+    /// * `bearer_did` - The DID to sign the Balance resource.
+    ///
+    /// # Returns
+    ///
+    /// An empty result, or an error if the signing process fails.
     pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
         self.signature = crate::signature::sign(
             bearer_did,
@@ -49,6 +78,14 @@ impl Balance {
         Ok(())
     }
 
+    /// Verifies the validity of the Balance resource.
+    ///
+    /// This method ensures that the resource adheres to its JSON schema
+    /// and verifies the signature to ensure authenticity and integrity.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(RESOURCE_JSON_SCHEMA, self)?;
@@ -68,10 +105,16 @@ impl Balance {
     }
 }
 
+/// Represents the data for a Balance resource in the tbDEX protocol.
+///
+/// This includes the currency code (ISO 4217 format) and the available balance.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct BalanceData {
+    /// The currency code (ISO 4217 format) for the balance.
     pub currency_code: String,
+
+    /// The available amount of the currency.
     pub available: String,
 }
 

@@ -8,10 +8,19 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
+/// Represents a Cancel message in the tbDEX protocol.
+///
+/// A Cancel message is sent by Alice to a PFI to terminate an exchange that has not been completed,
+/// typically when Alice decides to back out of the transaction or request a refund.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct Cancel {
+    /// Metadata about the message, including sender, recipient, and protocol information.
     pub metadata: MessageMetadata,
+
+    /// The public data part of the Cancel message, which includes the reason for cancellation.
     pub data: CancelData,
+
+    /// The signature verifying the authenticity and integrity of the Cancel message.
     pub signature: String,
 }
 
@@ -19,6 +28,20 @@ impl ToJson for Cancel {}
 impl FromJson for Cancel {}
 
 impl Cancel {
+    /// Creates a new Cancel message.
+    ///
+    /// # Arguments
+    ///
+    /// * `to` - The DID of the recipient (the PFI).
+    /// * `from` - The DID of the sender (Alice).
+    /// * `exchange_id` - The exchange ID shared between Alice and the PFI.
+    /// * `data` - The data containing the reason for canceling the exchange.
+    /// * `protocol` - Optional protocol version; defaults to the current version if not provided.
+    /// * `external_id` - Optional external ID for additional identification.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of `Cancel` containing the metadata, data, and an empty signature.
     pub fn create(
         to: &str,
         from: &str,
@@ -47,6 +70,15 @@ impl Cancel {
         Ok(cancel)
     }
 
+    /// Signs the Cancel message using the provided Bearer DID.
+    ///
+    /// # Arguments
+    ///
+    /// * `bearer_did` - The DID to sign the Cancel message.
+    ///
+    /// # Returns
+    ///
+    /// An empty result, or an error if the signing process fails.
     pub fn sign(&mut self, bearer_did: &BearerDid) -> Result<()> {
         self.signature = crate::signature::sign(
             bearer_did,
@@ -56,6 +88,14 @@ impl Cancel {
         Ok(())
     }
 
+    /// Verifies the validity of the Cancel message.
+    ///
+    /// This method ensures that the message adheres to its JSON schema
+    /// and verifies the signature to ensure authenticity and integrity.
+    ///
+    /// # Returns
+    ///
+    /// An empty result if verification succeeds, or an error if verification fails.
     pub fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
@@ -75,8 +115,12 @@ impl Cancel {
     }
 }
 
+/// Represents the data for a Cancel message in the tbDEX protocol.
+///
+/// This includes an optional reason explaining why the exchange is being canceled.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct CancelData {
+    /// An optional human-readable reason for canceling the exchange.
     pub reason: Option<String>,
 }
 

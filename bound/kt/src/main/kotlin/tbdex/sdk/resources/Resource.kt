@@ -3,11 +3,22 @@ package tbdex.sdk.resources
 import tbdex.sdk.rust.ResourceKind as RustCoreResourceKind
 import tbdex.sdk.rust.ResourceMetadataData as RustCoreResourceMetadata
 
+/**
+ * Represents the different kinds of resources in the tbDEX protocol.
+ *
+ * A resource can be either an OFFERING or a BALANCE.
+ */
 enum class ResourceKind {
-    OFFERING,
-    BALANCE;
+    OFFERING,   // Represents an offering resource in the tbDEX protocol
+    BALANCE;    // Represents a balance resource in the tbDEX protocol
 
     companion object {
+        /**
+         * Converts a RustCore resource kind into a Kotlin `ResourceKind`.
+         *
+         * @param rustCore The RustCore representation of the resource kind.
+         * @return The Kotlin `ResourceKind`.
+         */
         internal fun fromRustCore(rustCore: RustCoreResourceKind): ResourceKind {
             return when (rustCore) {
                 RustCoreResourceKind.BALANCE -> BALANCE
@@ -17,6 +28,18 @@ enum class ResourceKind {
     }
 }
 
+/**
+ * Represents metadata associated with a tbDEX resource.
+ *
+ * Metadata provides information about the resource, such as its type, origin, creation time, and protocol version.
+ *
+ * @property kind The kind of resource (e.g., OFFERING, BALANCE).
+ * @property from The DID of the sender of the resource.
+ * @property id The unique identifier for the resource.
+ * @property protocol The version of the tbDEX protocol in use.
+ * @property createdAt The timestamp when the resource was created (in ISO 8601 format).
+ * @property updatedAt The optional timestamp of the last update to the resource (in ISO 8601 format).
+ */
 data class ResourceMetadata (
     val kind: ResourceKind,
     val from: String,
