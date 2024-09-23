@@ -60,15 +60,15 @@ class TbdexTestVectorsProtocolTest {
         )
     }
 
-//    @Test
-//    fun parse_offering() {
-//        testVector(
-//            "parse-offering.json",
-//            Offering.Companion::fromJsonString,
-//            { it.toJsonString() },
-//            { it.verify() }
-//        )
-//    }
+    @Test
+    fun parse_offering() {
+        testVector(
+            "parse-offering.json",
+            Offering.Companion::fromJsonString,
+            { it.toJsonString() },
+            { it.verify() }
+        )
+    }
 
     // TODO: uncomment when quote test vector is updated
 //    @Test

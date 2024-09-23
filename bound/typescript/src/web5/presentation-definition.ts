@@ -33,18 +33,15 @@ export namespace PresentationDefinition {
       ),
     };
 
-    if (wasmPresentationDefinition.name !== undefined) {
+    if (wasmPresentationDefinition.name !== undefined)
       presentationDefinition.name = wasmPresentationDefinition.name;
-    }
-    if (wasmPresentationDefinition.purpose !== undefined) {
+    if (wasmPresentationDefinition.purpose !== undefined)
       presentationDefinition.purpose = wasmPresentationDefinition.purpose;
-    }
-    if (wasmPresentationDefinition.submission_requirements !== undefined) {
+    if (wasmPresentationDefinition.submission_requirements !== undefined)
       presentationDefinition.submission_requirements =
         wasmPresentationDefinition.submission_requirements.map(
           SubmissionRequirement.fromWASM
         );
-    }
 
     return presentationDefinition;
   };
@@ -77,12 +74,10 @@ export namespace InputDescriptor {
       constraints: Constraints.fromWASM(wasmInputDescriptor.constraints),
     };
 
-    if (wasmInputDescriptor.name !== undefined) {
+    if (wasmInputDescriptor.name !== undefined)
       inputDescriptor.name = wasmInputDescriptor.name;
-    }
-    if (wasmInputDescriptor.purpose !== undefined) {
+    if (wasmInputDescriptor.purpose !== undefined)
       inputDescriptor.purpose = wasmInputDescriptor.purpose;
-    }
 
     return inputDescriptor;
   };
@@ -140,9 +135,8 @@ export namespace Field {
     if (wasmField.filter !== undefined)
       field.filter = Filter.fromWASM(wasmField.filter);
     if (wasmField.optional !== undefined) field.optional = wasmField.optional;
-    if (wasmField.predicate !== undefined) {
+    if (wasmField.predicate !== undefined)
       field.predicate = Optionality.fromWASM(wasmField.predicate);
-    }
 
     return field;
   };
@@ -232,11 +226,10 @@ export namespace SubmissionRequirement {
     };
 
     if (wasmReq.from !== undefined) submissionRequirement.from = wasmReq.from;
-    if (wasmReq.from_nested !== undefined) {
+    if (wasmReq.from_nested !== undefined)
       submissionRequirement.from_nested = wasmReq.from_nested.map(
         SubmissionRequirement.fromWASM
       );
-    }
     if (wasmReq.name !== undefined) submissionRequirement.name = wasmReq.name;
     if (wasmReq.purpose !== undefined)
       submissionRequirement.purpose = wasmReq.purpose;

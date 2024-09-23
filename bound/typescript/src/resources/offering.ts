@@ -97,11 +97,10 @@ export namespace OfferingData {
       cancellation: cancellationDetails,
     };
 
-    if (wasmOfferingData.required_claims !== undefined) {
+    if (wasmOfferingData.required_claims !== undefined)
       offeringData.requiredClaims = PresentationDefinition.fromWASM(
         wasmOfferingData.required_claims
       );
-    }
 
     return offeringData;
   };

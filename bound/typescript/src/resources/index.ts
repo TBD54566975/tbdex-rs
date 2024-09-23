@@ -15,17 +15,18 @@ export namespace ResourceMetadata {
   export const fromWASM = (
     wasmMetadata: wasm.WasmResourceMetadata
   ): ResourceMetadata => {
-    return {
+    const metadata: ResourceMetadata = {
       from: wasmMetadata.from,
       kind: wasmMetadata.kind.kind as ResourceKind, // casting to ResourceKind
       id: wasmMetadata.id,
       createdAt: wasmMetadata.created_at,
       protocol: wasmMetadata.protocol,
-      updatedAt:
-        wasmMetadata.updated_at !== undefined
-          ? wasmMetadata.updated_at
-          : undefined,
     };
+
+    if (wasmMetadata.updated_at !== undefined)
+      metadata.updatedAt = wasmMetadata.updated_at;
+
+    return metadata;
   };
 
   export const toWASM = (
