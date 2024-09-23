@@ -29,8 +29,8 @@ export class Offering {
 
   toWASM(): wasm.WasmOffering {
     return new wasm.WasmOffering(
-      this.metadata.toWASM(),
-      this.data.toWASM(),
+      ResourceMetadata.toWASM(this.metadata),
+      OfferingData.toWASM(this.data),
       this.signature
     );
   }
@@ -54,7 +54,7 @@ export class Offering {
   static create(from: string, data: OfferingData, protocol?: string): Offering {
     try {
       return Offering.fromWASM(
-        wasm.WasmOffering.create(from, data.toWASM(), protocol)
+        wasm.WasmOffering.create(from, OfferingData.toWASM(data), protocol)
       );
     } catch (error) {
       throw catchTbdexError(error);
@@ -70,275 +70,255 @@ export class Offering {
   }
 }
 
-// TODO consider using type's instead of class's like we used to
-export class OfferingData {
-  readonly description: string;
-  readonly payoutUnitsPerPayinUnit: string;
-  readonly payin: PayinDetails;
-  readonly payout: PayoutDetails;
-  readonly requiredClaims?: PresentationDefinition;
-  readonly cancellation: CancellationDetails;
+export type OfferingData = {
+  description: string;
+  payoutUnitsPerPayinUnit: string;
+  payin: PayinDetails;
+  payout: PayoutDetails;
+  requiredClaims?: PresentationDefinition;
+  cancellation: CancellationDetails;
+};
 
-  constructor(
-    description: string,
-    payoutUnitsPerPayinUnit: string,
-    payin: PayinDetails,
-    payout: PayoutDetails,
-    cancellation: CancellationDetails,
-    requiredClaims?: PresentationDefinition
-  ) {
-    this.description = description;
-    this.payoutUnitsPerPayinUnit = payoutUnitsPerPayinUnit;
-    this.payin = payin;
-    this.payout = payout;
-    this.cancellation = cancellation;
-    this.requiredClaims = requiredClaims;
-  }
-
-  static fromWASM(wasmData: wasm.WasmOfferingData): OfferingData {
-    return new OfferingData(
-      wasmData.description,
-      wasmData.payout_units_per_payin_unit,
-      PayinDetails.fromWASM(wasmData.payin),
-      PayoutDetails.fromWASM(wasmData.payout),
-      CancellationDetails.fromWASM(wasmData.cancellation),
-      wasmData.required_claims
-        ? PresentationDefinition.fromWASM(wasmData.required_claims)
-        : undefined
+export namespace OfferingData {
+  export const fromWASM = (
+    wasmOfferingData: wasm.WasmOfferingData
+  ): OfferingData => {
+    const payinDetails = PayinDetails.fromWASM(wasmOfferingData.payin);
+    const payoutDetails = PayoutDetails.fromWASM(wasmOfferingData.payout);
+    const cancellationDetails = CancellationDetails.fromWASM(
+      wasmOfferingData.cancellation
     );
-  }
 
-  toWASM(): wasm.WasmOfferingData {
+    const offeringData: OfferingData = {
+      description: wasmOfferingData.description,
+      payoutUnitsPerPayinUnit: wasmOfferingData.payout_units_per_payin_unit,
+      payin: payinDetails,
+      payout: payoutDetails,
+      cancellation: cancellationDetails,
+    };
+
+    if (wasmOfferingData.required_claims !== undefined) {
+      offeringData.requiredClaims = PresentationDefinition.fromWASM(
+        wasmOfferingData.required_claims
+      );
+    }
+
+    return offeringData;
+  };
+
+  export const toWASM = (offeringData: OfferingData): wasm.WasmOfferingData => {
     return new wasm.WasmOfferingData(
-      this.description,
-      this.payoutUnitsPerPayinUnit,
-      this.payin.toWASM(),
-      this.payout.toWASM(),
-      this.requiredClaims?.toWASM(),
-      this.cancellation.toWASM()
+      offeringData.description,
+      offeringData.payoutUnitsPerPayinUnit,
+      PayinDetails.toWASM(offeringData.payin),
+      PayoutDetails.toWASM(offeringData.payout),
+      offeringData.requiredClaims
+        ? PresentationDefinition.toWASM(offeringData.requiredClaims)
+        : undefined,
+      CancellationDetails.toWASM(offeringData.cancellation)
     );
-  }
+  };
 }
 
-export class PayinDetails {
-  readonly currencyCode: string;
-  readonly min?: string;
-  readonly max?: string;
-  readonly methods: PayinMethod[];
+export type PayinDetails = {
+  currencyCode: string;
+  min?: string;
+  max?: string;
+  methods: PayinMethod[];
+};
 
-  constructor(
-    currencyCode: string,
-    methods: PayinMethod[],
-    min?: string,
-    max?: string
-  ) {
-    this.currencyCode = currencyCode;
-    this.methods = methods;
-    this.min = min;
-    this.max = max;
-  }
+export namespace PayinDetails {
+  export const fromWASM = (
+    wasmPayinDetails: wasm.WasmPayinDetails
+  ): PayinDetails => {
+    const methods = wasmPayinDetails.methods.map(PayinMethod.fromWASM);
 
-  static fromWASM(wasmPayin: wasm.WasmPayinDetails): PayinDetails {
-    return new PayinDetails(
-      wasmPayin.currency_code,
-      wasmPayin.methods.map(PayinMethod.fromWASM),
-      wasmPayin.min,
-      wasmPayin.max
-    );
-  }
+    const payinDetails: PayinDetails = {
+      currencyCode: wasmPayinDetails.currency_code,
+      methods: methods,
+    };
 
-  toWASM(): wasm.WasmPayinDetails {
+    if (wasmPayinDetails.min !== undefined)
+      payinDetails.min = wasmPayinDetails.min;
+    if (wasmPayinDetails.max !== undefined)
+      payinDetails.max = wasmPayinDetails.max;
+
+    return payinDetails;
+  };
+
+  export const toWASM = (payinDetails: PayinDetails): wasm.WasmPayinDetails => {
     return new wasm.WasmPayinDetails(
-      this.currencyCode,
-      this.methods.map((method) => method.toWASM()),
-      this.min,
-      this.max
+      payinDetails.currencyCode,
+      payinDetails.methods.map(PayinMethod.toWASM),
+      payinDetails.min,
+      payinDetails.max
     );
-  }
+  };
 }
 
-export class PayinMethod {
-  readonly kind: string;
-  readonly name?: string;
-  readonly description?: string;
-  readonly group?: string;
-  readonly requiredPaymentDetails?: any;
-  readonly fee?: string;
-  readonly min?: string;
-  readonly max?: string;
+export type PayinMethod = {
+  kind: string;
+  name?: string;
+  description?: string;
+  group?: string;
+  requiredPaymentDetails?: any;
+  fee?: string;
+  min?: string;
+  max?: string;
+};
 
-  constructor(
-    kind: string,
-    name?: string,
-    description?: string,
-    group?: string,
-    requiredPaymentDetails?: any,
-    fee?: string,
-    min?: string,
-    max?: string
-  ) {
-    this.kind = kind;
-    this.name = name;
-    this.description = description;
-    this.group = group;
-    this.requiredPaymentDetails = requiredPaymentDetails;
-    this.fee = fee;
-    this.min = min;
-    this.max = max;
-  }
+export namespace PayinMethod {
+  const mapToObject = (map: Map<any, any>): any => {
+    const obj: any = {};
+    for (const [key, value] of map) {
+      obj[key] = value instanceof Map ? mapToObject(value) : value;
+    }
+    return obj;
+  };
 
-  static fromWASM(wasmMethod: wasm.WasmPayinMethod): PayinMethod {
-    return new PayinMethod(
-      wasmMethod.kind,
-      wasmMethod.name,
-      wasmMethod.description,
-      wasmMethod.group,
-      wasmMethod.required_payment_details,
-      wasmMethod.fee,
-      wasmMethod.min,
-      wasmMethod.max
-    );
-  }
+  export const fromWASM = (wasmMethod: wasm.WasmPayinMethod): PayinMethod => {
+    const method: PayinMethod = {
+      kind: wasmMethod.kind,
+      requiredPaymentDetails: mapToObject(wasmMethod.required_payment_details),
+    };
 
-  toWASM(): wasm.WasmPayinMethod {
+    if (wasmMethod.name !== undefined) method.name = wasmMethod.name;
+    if (wasmMethod.description !== undefined)
+      method.description = wasmMethod.description;
+    if (wasmMethod.group !== undefined) method.group = wasmMethod.group;
+    if (wasmMethod.fee !== undefined) method.fee = wasmMethod.fee;
+    if (wasmMethod.min !== undefined) method.min = wasmMethod.min;
+    if (wasmMethod.max !== undefined) method.max = wasmMethod.max;
+
+    return method;
+  };
+
+  export const toWASM = (method: PayinMethod): wasm.WasmPayinMethod => {
     return new wasm.WasmPayinMethod(
-      this.kind,
-      this.name,
-      this.description,
-      this.group,
-      this.requiredPaymentDetails,
-      this.fee,
-      this.min,
-      this.max
+      method.kind,
+      method.name,
+      method.description,
+      method.group,
+      method.requiredPaymentDetails,
+      method.fee,
+      method.min,
+      method.max
     );
-  }
+  };
 }
 
-export class PayoutDetails {
-  readonly currencyCode: string;
-  readonly min?: string;
-  readonly max?: string;
-  readonly methods: PayoutMethod[];
+export type PayoutDetails = {
+  currencyCode: string;
+  min?: string;
+  max?: string;
+  methods: PayoutMethod[];
+};
 
-  constructor(
-    currencyCode: string,
-    methods: PayoutMethod[],
-    min?: string,
-    max?: string
-  ) {
-    this.currencyCode = currencyCode;
-    this.methods = methods;
-    this.min = min;
-    this.max = max;
-  }
+export namespace PayoutDetails {
+  export const fromWASM = (
+    wasmPayoutDetails: wasm.WasmPayoutDetails
+  ): PayoutDetails => {
+    const methods = wasmPayoutDetails.methods.map(PayoutMethod.fromWASM);
 
-  static fromWASM(wasmPayout: wasm.WasmPayoutDetails): PayoutDetails {
-    return new PayoutDetails(
-      wasmPayout.currency_code,
-      wasmPayout.methods.map(PayoutMethod.fromWASM),
-      wasmPayout.min,
-      wasmPayout.max
-    );
-  }
+    const payoutDetails: PayoutDetails = {
+      currencyCode: wasmPayoutDetails.currency_code,
+      methods: methods,
+    };
 
-  toWASM(): wasm.WasmPayoutDetails {
+    if (wasmPayoutDetails.min !== undefined)
+      payoutDetails.min = wasmPayoutDetails.min;
+    if (wasmPayoutDetails.max !== undefined)
+      payoutDetails.max = wasmPayoutDetails.max;
+
+    return payoutDetails;
+  };
+
+  export const toWASM = (
+    payoutDetails: PayoutDetails
+  ): wasm.WasmPayoutDetails => {
     return new wasm.WasmPayoutDetails(
-      this.currencyCode,
-      this.methods.map((method) => method.toWASM()),
-      this.min,
-      this.max
+      payoutDetails.currencyCode,
+      payoutDetails.methods.map(PayoutMethod.toWASM),
+      payoutDetails.min,
+      payoutDetails.max
     );
-  }
+  };
 }
 
-export class PayoutMethod {
-  readonly kind: string;
-  readonly name?: string;
-  readonly description?: string;
-  readonly group?: string;
-  readonly requiredPaymentDetails?: any;
-  readonly fee?: string;
-  readonly min?: string;
-  readonly max?: string;
-  readonly estimatedSettlementTime: number;
+export type PayoutMethod = {
+  kind: string;
+  estimatedSettlementTime: number;
+  name?: string;
+  description?: string;
+  group?: string;
+  requiredPaymentDetails?: any;
+  fee?: string;
+  min?: string;
+  max?: string;
+};
 
-  constructor(
-    kind: string,
-    estimatedSettlementTime: number,
-    name?: string,
-    description?: string,
-    group?: string,
-    requiredPaymentDetails?: any,
-    fee?: string,
-    min?: string,
-    max?: string
-  ) {
-    this.kind = kind;
-    this.estimatedSettlementTime = estimatedSettlementTime;
-    this.name = name;
-    this.description = description;
-    this.group = group;
-    this.requiredPaymentDetails = requiredPaymentDetails;
-    this.fee = fee;
-    this.min = min;
-    this.max = max;
-  }
+export namespace PayoutMethod {
+  export const fromWASM = (wasmMethod: wasm.WasmPayoutMethod): PayoutMethod => {
+    const method: PayoutMethod = {
+      kind: wasmMethod.kind,
+      estimatedSettlementTime: Number(wasmMethod.estimated_settlement_time),
+    };
 
-  static fromWASM(wasmMethod: wasm.WasmPayoutMethod): PayoutMethod {
-    return new PayoutMethod(
-      wasmMethod.kind,
-      Number(wasmMethod.estimated_settlement_time),
-      wasmMethod.name,
-      wasmMethod.description,
-      wasmMethod.group,
-      wasmMethod.required_payment_details,
-      wasmMethod.fee,
-      wasmMethod.min,
-      wasmMethod.max
-    );
-  }
+    if (wasmMethod.name !== undefined) method.name = wasmMethod.name;
+    if (wasmMethod.description !== undefined)
+      method.description = wasmMethod.description;
+    if (wasmMethod.group !== undefined) method.group = wasmMethod.group;
+    if (wasmMethod.fee !== undefined) method.fee = wasmMethod.fee;
+    if (wasmMethod.min !== undefined) method.min = wasmMethod.min;
+    if (wasmMethod.max !== undefined) method.max = wasmMethod.max;
 
-  toWASM(): wasm.WasmPayoutMethod {
+    return method;
+  };
+
+  export const toWASM = (method: PayoutMethod): wasm.WasmPayoutMethod => {
     return new wasm.WasmPayoutMethod(
-      this.kind,
-      BigInt(this.estimatedSettlementTime),
-      this.name,
-      this.description,
-      this.group,
-      this.requiredPaymentDetails,
-      this.fee,
-      this.min,
-      this.max
+      method.kind,
+      BigInt(method.estimatedSettlementTime),
+      method.name,
+      method.description,
+      method.group,
+      method.requiredPaymentDetails,
+      method.fee,
+      method.min,
+      method.max
     );
-  }
+  };
 }
 
-export class CancellationDetails {
-  readonly enabled: boolean;
-  readonly termsUrl?: string;
-  readonly terms?: string;
+export type CancellationDetails = {
+  enabled: boolean;
+  termsUrl?: string;
+  terms?: string;
+};
 
-  constructor(enabled: boolean, termsUrl?: string, terms?: string) {
-    this.enabled = enabled;
-    this.termsUrl = termsUrl;
-    this.terms = terms;
-  }
+export namespace CancellationDetails {
+  export const fromWASM = (
+    wasmCancellationDetails: wasm.WasmCancellationDetails
+  ): CancellationDetails => {
+    const cancellationDetails: CancellationDetails = {
+      enabled: wasmCancellationDetails.enabled,
+    };
 
-  static fromWASM(
-    wasmCancellation: wasm.WasmCancellationDetails
-  ): CancellationDetails {
-    return new CancellationDetails(
-      wasmCancellation.enabled,
-      wasmCancellation.terms_url,
-      wasmCancellation.terms
-    );
-  }
+    if (wasmCancellationDetails.terms_url !== undefined)
+      cancellationDetails.termsUrl = wasmCancellationDetails.terms_url;
+    if (wasmCancellationDetails.terms !== undefined)
+      cancellationDetails.terms = wasmCancellationDetails.terms;
 
-  toWASM(): wasm.WasmCancellationDetails {
+    return cancellationDetails;
+  };
+
+  export const toWASM = (
+    cancellationDetails: CancellationDetails
+  ): wasm.WasmCancellationDetails => {
     return new wasm.WasmCancellationDetails(
-      this.enabled,
-      this.termsUrl,
-      this.terms
+      cancellationDetails.enabled,
+      cancellationDetails.termsUrl,
+      cancellationDetails.terms
     );
-  }
+  };
 }

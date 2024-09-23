@@ -2,49 +2,42 @@ import wasm from "../wasm";
 
 export type ResourceKind = "offering" | "balance";
 
-export class ResourceMetadata {
-  readonly from: string;
-  readonly kind: ResourceKind;
-  readonly id: string;
-  readonly createdAt: string;
-  readonly updatedAt?: string;
-  readonly protocol: string; // todo previously `{number}`
+export type ResourceMetadata = {
+  from: string;
+  kind: ResourceKind;
+  id: string;
+  createdAt: string;
+  protocol: string; // previously `${number}`
+  updatedAt?: string;
+};
 
-  constructor(
-    from: string,
-    kind: ResourceKind,
-    id: string,
-    createdAt: string,
-    protocol: string, // todo previously `${number}`
-    updatedAt?: string
-  ) {
-    this.from = from;
-    this.kind = kind;
-    this.id = id;
-    this.createdAt = createdAt;
-    this.protocol = protocol;
-    this.updatedAt = updatedAt;
-  }
+export namespace ResourceMetadata {
+  export const fromWASM = (
+    wasmMetadata: wasm.WasmResourceMetadata
+  ): ResourceMetadata => {
+    return {
+      from: wasmMetadata.from,
+      kind: wasmMetadata.kind.kind as ResourceKind, // casting to ResourceKind
+      id: wasmMetadata.id,
+      createdAt: wasmMetadata.created_at,
+      protocol: wasmMetadata.protocol,
+      updatedAt:
+        wasmMetadata.updated_at !== undefined
+          ? wasmMetadata.updated_at
+          : undefined,
+    };
+  };
 
-  static fromWASM(wasmMetadata: wasm.WasmResourceMetadata): ResourceMetadata {
-    return new ResourceMetadata(
-      wasmMetadata.from,
-      wasmMetadata.kind.kind as ResourceKind, // todo casting?
-      wasmMetadata.id,
-      wasmMetadata.created_at,
-      wasmMetadata.protocol,
-      wasmMetadata.updated_at
-    );
-  }
-
-  toWASM(): wasm.WasmResourceMetadata {
+  export const toWASM = (
+    metadata: ResourceMetadata
+  ): wasm.WasmResourceMetadata => {
     return new wasm.WasmResourceMetadata(
-      new wasm.WasmResourceKind(this.kind),
-      this.from,
-      this.id,
-      this.protocol,
-      this.createdAt,
-      this.updatedAt
+      new wasm.WasmResourceKind(metadata.kind),
+      metadata.from,
+      metadata.id,
+      metadata.protocol,
+      metadata.createdAt,
+      metadata.updatedAt
     );
-  }
+  };
 }
