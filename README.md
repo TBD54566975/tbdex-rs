@@ -230,30 +230,30 @@ rfq.sign(&bearer_did).unwrap();
 ### Create and sign new RFQ
 
 ```kotlin
-    // Create the Bearer DID (you might need a proper function to generate the DID)
-    val bearerDid = BearerDid.create() // Assuming BearerDid has a create() method similar to Rust
+// Create the Bearer DID (you might need a proper function to generate the DID)
+val bearerDid = BearerDid.create() // Assuming BearerDid has a create() method similar to Rust
 
-    // Create the RFQ message
-    val rfq = Rfq.create(
-        to = "did:test:pfi",
-        from = bearerDid.uri,
-        createRfqData = CreateRfqData(
-            offeringId = "offering_123",
-            payin = CreateSelectedPayinMethod(
-                kind = "BTC",
-                paymentDetails = mapOf("tmp" to "payment-details"),
-                amount = "101"
-            ),
-            payout = CreateSelectedPayoutMethod(
-                kind = "BTC",
-                paymentDetails = mapOf("tmp" to "payment-details")
-            ),
-            claims = listOf("some-claim")
-        )
+// Create the RFQ message
+val rfq = Rfq.create(
+    to = "did:test:pfi",
+    from = bearerDid.uri,
+    createRfqData = CreateRfqData(
+        offeringId = "offering_123",
+        payin = CreateSelectedPayinMethod(
+            kind = "BTC",
+            paymentDetails = mapOf("tmp" to "payment-details"),
+            amount = "101"
+        ),
+        payout = CreateSelectedPayoutMethod(
+            kind = "BTC",
+            paymentDetails = mapOf("tmp" to "payment-details")
+        ),
+        claims = listOf("some-claim")
     )
+)
 
-    // Sign the RFQ with the Bearer DID
-    rfq.sign(bearerDid)
+// Sign the RFQ with the Bearer DID
+rfq.sign(bearerDid)
 ```
 
 ### Decode and verify RFQ
