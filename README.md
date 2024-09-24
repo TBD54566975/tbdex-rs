@@ -1,9 +1,9 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B588%2Fgithub.com%2FTBD54566975%2Ftbdex-rs.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B588%2Fgithub.com%2FTBD54566975%2Ftbdex-rs?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B588%2Fgithub.com%2FTBD54566975%2Ftbdex-rs.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B588%2Fgithub.com%2FTBD54566975%2Ftbdex-rs?ref=badge_shield&issueType=security)
 
-# Tbdex SDK Mono Repo
+# tbDEX SDK Mono Repo
 
-This monorepo houses the core components of the Tbdex platform containing the core Rust code with Kotlin bindings. Tbdex is a protocol for discovering liquidity and exchanging assets such as fiat money, real world goods, stablecoins or bitcoin. The tbDEX protocol utilizes Decentralized Identitifers (DIDs) and Verifiable Credentials (VCs) to establish the provenance of identity in the real world. The protocol has no opinion on anonymity as a feature or consequence of transactions. Instead, it allows willing counterparties to negotiate and establish the minimum information acceptable for an exchange.
+This monorepo houses the core components of the tbDEX platform containing the core Rust code with Kotlin bindings. tbDEX is a protocol for discovering liquidity and exchanging assets such as fiat money, real world goods, stablecoins or bitcoin. The tbDEX protocol utilizes Decentralized Identitifers (DIDs) and Verifiable Credentials (VCs) to establish the provenance of identity in the real world. The protocol has no opinion on anonymity as a feature or consequence of transactions. Instead, it allows willing counterparties to negotiate and establish the minimum information acceptable for an exchange.
 
 
 ## Table of Contents
@@ -30,7 +30,7 @@ This monorepo houses the core components of the Tbdex platform containing the co
 
 
 ## Features
-Comprehensive Tbdex Message Support: Includes all tbDEX resources and message types:
+Comprehensive tbDEX Message Support: Includes all tbDEX resources and message types:
 - Resources:
     - Offering: A resource created by a Participating Financial Institution (PFI) to define the terms and requirements for exchanging a specific currency pair. It includes details like exchange rates, payment methods, and any required credentials or claims.
 
@@ -93,7 +93,7 @@ adding the dependency in a variety of build tools including Maven and Gradle are
 
 ## Getting Started
 
-To start developing applications and services with the Tbdex RS SDK, the following steps will guide
+To start developing applications and services with the tbDEX RS SDK, the following steps will guide
 you through setting up your local development environment.
 
 tbDEX is available
@@ -105,7 +105,7 @@ For detailed documentation on usage refer to the
 guides can be found at the [TBD Developer site](https://developer.tbd.website/docs/) to enhance
 your understanding of the underlying concepts and how to implement them effectively.
 
-To dive deeper into the actual tbdex protocol refer to the
+To dive deeper into the actual tbDEX protocol refer to the
 [Tbdex protocol documentation](https://github.com/TBD54566975/tbdex/blob/main/specs/protocol/README.md).
 
 ### Cloning
@@ -169,7 +169,7 @@ $> just build
 The binding process follows these key steps:
 
 1. **Core Rust Development**
-   All the core logic for working with the base tbdex resources and messages, and cryptographic signing and verification is implemented in Rust. Rust is chosen as the core layer for its memory safety, performance, and cross-platform capabilities.
+   All the core logic for working with the base tbDEX resources and messages, and cryptographic signing and verification is implemented in Rust. Rust is chosen as the core layer for its memory safety, performance, and cross-platform capabilities.
 
 2. **Building the Kotlin Bindings**  
    The Kotlin bindings are generated from the core Rust code and live in the `bound/kt` directory. These bindings allow Kotlin applications to access the functionality of the core Rust libraries through idiomatic Kotlin APIs.
@@ -182,7 +182,7 @@ For the full detailed API design and usage examples, refer to the [API Design Do
 
 ## Basic Usage
 
-The SDK allows developers to work with tbdex resources and messages along with cryptographic signing and verification. Below are the key use cases:
+The SDK allows developers to work with tbDEX resources and messages along with cryptographic signing and verification. Below are the key use cases:
 
 ## Rust Examples
 ### Create and sign new RFQ
