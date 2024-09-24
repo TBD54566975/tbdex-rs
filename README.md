@@ -188,33 +188,33 @@ The SDK allows developers to work with tbdex resources and messages along with c
 ### Create and sign new RFQ
 
 ```rust
-        /// Create the Bearer DID (you might need a proper function to generate the DID)
-        let bearer_did = DidJwk::create(None).unwrap();
+/// Create the Bearer DID (you might need a proper function to generate the DID)
+let bearer_did = DidJwk::create(None).unwrap();
 
-        /// Create the RFQ message
-        let mut rfq = Rfq::create(
-            "did:test:pfi",
-            &bearer_did.did.uri,
-            &CreateRfqData {
-                offering_id: "offering_123".to_string(),
-                payin: CreateSelectedPayinMethod {
-                    kind: "BTC".to_string(),
-                    payment_details: Some(serde_json::json!({"tmp": "payment-details"})),
-                    amount: "101".to_string(),
-                },
-                payout: CreateSelectedPayoutMethod {
-                    kind: "BTC".to_string(),
-                    payment_details: Some(serde_json::json!({"tmp": "payment-details"})),
-                },
-                claims: vec!["some-claim".to_string()],
-            },
-            None,
-            None,
-        )
-        .unwrap();
+/// Create the RFQ message
+let mut rfq = Rfq::create(
+    "did:test:pfi",
+    &bearer_did.did.uri,
+    &CreateRfqData {
+        offering_id: "offering_123".to_string(),
+        payin: CreateSelectedPayinMethod {
+            kind: "BTC".to_string(),
+            payment_details: Some(serde_json::json!({"tmp": "payment-details"})),
+            amount: "101".to_string(),
+        },
+        payout: CreateSelectedPayoutMethod {
+            kind: "BTC".to_string(),
+            payment_details: Some(serde_json::json!({"tmp": "payment-details"})),
+        },
+        claims: vec!["some-claim".to_string()],
+    },
+    None,
+    None,
+)
+.unwrap();
 
-        // Sign the RFQ with the Bearer DID
-        rfq.sign(&bearer_did).unwrap();
+// Sign the RFQ with the Bearer DID
+rfq.sign(&bearer_did).unwrap();
 ```
 
 ### Decode and verify RFQ
