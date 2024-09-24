@@ -289,35 +289,67 @@ export namespace PayoutMethod {
   };
 }
 
+// export type CancellationDetails = {
+//   enabled: boolean;
+//   termsUrl?: string;
+//   terms?: string;
+// };
+
+// export namespace CancellationDetails {
+// export const fromWASM = (
+//   wasmCancellationDetails: wasm.WasmCancellationDetails
+// ): CancellationDetails => {
+//   const cancellationDetails: CancellationDetails = {
+//     enabled: wasmCancellationDetails.enabled,
+//   };
+
+//   if (wasmCancellationDetails.terms_url !== undefined)
+//     cancellationDetails.termsUrl = wasmCancellationDetails.terms_url;
+//   if (wasmCancellationDetails.terms !== undefined)
+//     cancellationDetails.terms = wasmCancellationDetails.terms;
+
+//   return cancellationDetails;
+// };
+
+// export const toWASM = (
+//   cancellationDetails: CancellationDetails
+// ): wasm.WasmCancellationDetails => {
+//   return new wasm.WasmCancellationDetails(
+//     cancellationDetails.enabled,
+//     cancellationDetails.termsUrl,
+//     cancellationDetails.terms
+//   );
+// };
+// }
+
 export type CancellationDetails = {
   enabled: boolean;
-  termsUrl?: string;
   terms?: string;
+  termsUrl?: string;
 };
 
 export namespace CancellationDetails {
-  export const fromWASM = (
-    wasmCancellationDetails: wasm.WasmCancellationDetails
-  ): CancellationDetails => {
-    const cancellationDetails: CancellationDetails = {
-      enabled: wasmCancellationDetails.enabled,
-    };
-
-    if (wasmCancellationDetails.terms_url !== undefined)
-      cancellationDetails.termsUrl = wasmCancellationDetails.terms_url;
-    if (wasmCancellationDetails.terms !== undefined)
-      cancellationDetails.terms = wasmCancellationDetails.terms;
-
-    return cancellationDetails;
-  };
-
   export const toWASM = (
-    cancellationDetails: CancellationDetails
+    obj: CancellationDetails
   ): wasm.WasmCancellationDetails => {
     return new wasm.WasmCancellationDetails(
-      cancellationDetails.enabled,
-      cancellationDetails.termsUrl,
-      cancellationDetails.terms
+      obj.enabled,
+      obj.termsUrl,
+      obj.terms
     );
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmCancellationDetails
+  ): CancellationDetails => {
+    const result: CancellationDetails = {
+      enabled: obj.enabled,
+    };
+
+    if (obj.terms !== undefined) result.terms = obj.terms;
+
+    if (obj.terms_url !== undefined) result.termsUrl = obj.terms_url;
+
+    return result;
   };
 }

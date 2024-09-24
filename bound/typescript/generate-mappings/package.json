@@ -1,0 +1,19 @@
+{
+  "type": "module",
+  "name": "generate-mappings",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --loader ts-node/esm src/main.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.6.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}

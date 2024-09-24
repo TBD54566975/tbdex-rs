@@ -3,7 +3,7 @@ use std::str::FromStr;
 use tbdex::resources::{ResourceKind, ResourceMetadata};
 use wasm_bindgen::prelude::wasm_bindgen;
 
-pub mod balance;
+// pub mod balance;
 pub mod offering;
 
 #[wasm_bindgen]
