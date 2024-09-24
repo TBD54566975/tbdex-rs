@@ -1,4 +1,4 @@
-import wasm from "../wasm";
+import wasm from "./wasm";
 
 export type PresentationDefinition = {
   id: string;

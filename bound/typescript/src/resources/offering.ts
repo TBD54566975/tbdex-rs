@@ -1,7 +1,7 @@
 import { ResourceMetadata } from ".";
 import { catchTbdexError } from "../errors";
 import wasm from "../wasm";
-import { PresentationDefinition } from "../web5/presentation-definition";
+import { PresentationDefinition } from "../presentation-definition";
 
 // TODO consider extending "Resource" class type
 export class Offering {
