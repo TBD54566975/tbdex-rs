@@ -40,7 +40,7 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 
     rfq.verify()?;
 
-    let _ = post_json(
+    post_json(
         &create_exchange_endpoint,
         &CreateExchangeRequestBody {
             message: rfq.clone(),
@@ -60,7 +60,7 @@ pub fn submit_order(order: &Order) -> Result<()> {
 
     order.verify()?;
 
-    let _ = put_json(
+    put_json(
         &submit_order_endpoint,
         &UpdateExchangeRequestBody {
             message: WalletUpdateMessage::Order(Arc::new(order.clone())),
@@ -79,7 +79,7 @@ pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
 
     cancel.verify()?;
 
-    let _ = put_json(
+    put_json(
         &submit_cancel_endpoint,
         &UpdateExchangeRequestBody {
             message: WalletUpdateMessage::Cancel(Arc::new(cancel.clone())),
