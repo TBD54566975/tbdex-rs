@@ -33,7 +33,7 @@
   },
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
-    "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js && cp dist/bundle.js src/wasm/generated.js && cp dist/tbdex_wasm.d.ts src/wasm/generated.d.ts",
+    "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js && cp dist/bundle.js src/wasm/generated.js && cp dist/tbdex_wasm.d.ts src/wasm/generated.d.ts && (cd ./generate-mappings && npm run generate)",
     "build": "tsc && cp -r src/wasm dist/bound/typescript/src",
     "test:node": "npm run build && node tests/bundle-node.js && mocha",
     "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner"

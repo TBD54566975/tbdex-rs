@@ -1,4 +1,4 @@
-import wasm from "./wasm";
+import wasm from "./";
 
 export type CancellationDetails = {
   enabled: boolean;
@@ -274,7 +274,7 @@ export type PayinMethod = {
   max?: string;
   min?: string;
   name?: string;
-  requiredPaymentDetails: any;
+  requiredPaymentDetails?: any; // todo here
 };
 
 export namespace PayinMethod {
@@ -294,8 +294,14 @@ export namespace PayinMethod {
   export const fromWASM = (obj: wasm.WasmPayinMethod): PayinMethod => {
     const result: PayinMethod = {
       kind: obj.kind,
-      requiredPaymentDetails: obj.required_payment_details,
+      // todo here
+      // requiredPaymentDetails: mapToObject(obj.required_payment_details),
+      // requiredPaymentDetails: obj.required_payment_details,
     };
+
+    // todo here
+    if (obj.required_payment_details !== undefined)
+      result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
 
     if (obj.description !== undefined) result.description = obj.description;
 
@@ -344,21 +350,36 @@ export namespace PayoutDetails {
 }
 export type PayoutMethod = {
   description?: string;
-  estimatedSettlementTime: bigint;
+  // todo here
+  estimatedSettlementTime: number;
+  // estimatedSettlementTime: bigint;
   fee?: string;
   group?: string;
   kind: string;
   max?: string;
   min?: string;
   name?: string;
-  requiredPaymentDetails: any;
+  requiredPaymentDetails?: any; // todo here
+};
+
+// todo here
+const mapToObject = (map: Map<any, any>): any => {
+  if (!map) return undefined;
+
+  const obj: any = {};
+  for (const [key, value] of map) {
+    obj[key] = value instanceof Map ? mapToObject(value) : value;
+  }
+  return obj;
 };
 
 export namespace PayoutMethod {
   export const toWASM = (obj: PayoutMethod): wasm.WasmPayoutMethod => {
     return new wasm.WasmPayoutMethod(
       obj.kind,
-      obj.estimatedSettlementTime,
+      // todo here
+      BigInt(obj.estimatedSettlementTime),
+      // obj.estimatedSettlementTime,
       obj.name,
       obj.description,
       obj.group,
@@ -371,10 +392,18 @@ export namespace PayoutMethod {
 
   export const fromWASM = (obj: wasm.WasmPayoutMethod): PayoutMethod => {
     const result: PayoutMethod = {
-      estimatedSettlementTime: obj.estimated_settlement_time,
+      // todo here
+      estimatedSettlementTime: Number(obj.estimated_settlement_time),
+      // estimatedSettlementTime: obj.estimated_settlement_time,
       kind: obj.kind,
-      requiredPaymentDetails: obj.required_payment_details,
+      // todo here
+      // requiredPaymentDetails: mapToObject(obj.required_payment_details),
+      // requiredPaymentDetails: obj.required_payment_details,
     };
+
+    // todo here
+    if (obj.required_payment_details !== undefined)
+      result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
 
     if (obj.description !== undefined) result.description = obj.description;
 
@@ -432,23 +461,26 @@ export namespace PresentationDefinition {
     return result;
   };
 }
-export type ResourceKind = {
-  kind: string;
-};
 
-export namespace ResourceKind {
-  export const toWASM = (obj: ResourceKind): wasm.WasmResourceKind => {
-    return new wasm.WasmResourceKind(obj.kind);
-  };
+// todo here
+export type ResourceKind = "offering" | "balance";
+// export type ResourceKind = {
+//   kind: string;
+// };
 
-  export const fromWASM = (obj: wasm.WasmResourceKind): ResourceKind => {
-    const result: ResourceKind = {
-      kind: obj.kind,
-    };
+// export namespace ResourceKind {
+//   export const toWASM = (obj: ResourceKind): wasm.WasmResourceKind => {
+//     return new wasm.WasmResourceKind(obj.kind);
+//   };
 
-    return result;
-  };
-}
+//   export const fromWASM = (obj: wasm.WasmResourceKind): ResourceKind => {
+//     const result: ResourceKind = {
+//       kind: obj.kind,
+//     };
+
+//     return result;
+//   };
+// }
 export type ResourceMetadata = {
   createdAt: string;
   from: string;
@@ -461,7 +493,9 @@ export type ResourceMetadata = {
 export namespace ResourceMetadata {
   export const toWASM = (obj: ResourceMetadata): wasm.WasmResourceMetadata => {
     return new wasm.WasmResourceMetadata(
-      ResourceKind.toWASM(obj.kind),
+      // ResourceKind.toWASM(obj.kind),
+      // todo here
+      new wasm.WasmResourceKind(obj.kind),
       obj.from,
       obj.id,
       obj.protocol,
@@ -477,7 +511,9 @@ export namespace ResourceMetadata {
       createdAt: obj.created_at,
       from: obj.from,
       id: obj.id,
-      kind: ResourceKind.fromWASM(obj.kind),
+      // todo here
+      kind: obj.kind.kind as ResourceKind, // casting to ResourceKind
+      // kind: ResourceKind.fromWASM(obj.kind),
       protocol: obj.protocol,
     };
 

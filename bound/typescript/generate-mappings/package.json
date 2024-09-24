@@ -4,8 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node --loader ts-node/esm src/main.ts",
-    "build": "tsc"
+    "generate": "node --loader ts-node/esm src/main.ts"
   },
   "keywords": [],
   "author": "",
