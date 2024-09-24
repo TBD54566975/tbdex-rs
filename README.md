@@ -144,7 +144,7 @@ matter the underlying tooling used (ie. `rustc`, `cargo`, `mvn`, `java`, etc).
 To run, find a build target from the table below and use `just`:
 
 ```shell
-$> just [buildTarget]
+$> just [recipe]
 ```
 
 | Command       | Description |
