@@ -7,37 +7,6 @@ use wasm_bindgen::prelude::wasm_bindgen;
 pub mod offering;
 
 #[wasm_bindgen]
-pub struct WasmResourceKind {
-    inner: ResourceKind,
-}
-
-impl From<ResourceKind> for WasmResourceKind {
-    fn from(value: ResourceKind) -> Self {
-        Self { inner: value }
-    }
-}
-
-impl From<WasmResourceKind> for ResourceKind {
-    fn from(value: WasmResourceKind) -> Self {
-        value.inner
-    }
-}
-
-#[wasm_bindgen]
-impl WasmResourceKind {
-    #[wasm_bindgen(constructor)]
-    pub fn new(kind: &str) -> Result<WasmResourceKind> {
-        let inner = ResourceKind::from_str(kind).map_err(map_err)?;
-        Ok(WasmResourceKind { inner })
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn kind(&self) -> String {
-        self.inner.to_string()
-    }
-}
-
-#[wasm_bindgen]
 pub struct WasmResourceMetadata {
     inner: ResourceMetadata,
 }
@@ -58,28 +27,28 @@ impl From<WasmResourceMetadata> for ResourceMetadata {
 impl WasmResourceMetadata {
     #[wasm_bindgen(constructor)]
     pub fn new(
-        kind: WasmResourceKind,
+        kind: String,
         from: String,
         id: String,
         protocol: String,
         created_at: String,
         updated_at: Option<String>,
-    ) -> Self {
-        Self {
+    ) -> Result<WasmResourceMetadata> {
+        Ok(Self {
             inner: ResourceMetadata {
-                kind: kind.into(),
+                kind: ResourceKind::from_str(&kind).map_err(map_err)?,
                 from,
                 id,
                 protocol,
                 created_at,
                 updated_at,
             },
-        }
+        })
     }
 
     #[wasm_bindgen(getter)]
-    pub fn kind(&self) -> WasmResourceKind {
-        self.inner.kind.clone().into()
+    pub fn kind(&self) -> String {
+        self.inner.kind.to_string()
     }
 
     #[wasm_bindgen(getter)]

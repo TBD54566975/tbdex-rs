@@ -361,29 +361,17 @@ export class WasmPresentationDefinition {
 }
 /**
 */
-export class WasmResourceKind {
-  free(): void;
-/**
-* @param {string} kind
-*/
-  constructor(kind: string);
-/**
-*/
-  readonly kind: string;
-}
-/**
-*/
 export class WasmResourceMetadata {
   free(): void;
 /**
-* @param {WasmResourceKind} kind
+* @param {string} kind
 * @param {string} from
 * @param {string} id
 * @param {string} protocol
 * @param {string} created_at
 * @param {string | undefined} [updated_at]
 */
-  constructor(kind: WasmResourceKind, from: string, id: string, protocol: string, created_at: string, updated_at?: string);
+  constructor(kind: string, from: string, id: string, protocol: string, created_at: string, updated_at?: string);
 /**
 */
   readonly created_at: string;
@@ -395,7 +383,7 @@ export class WasmResourceMetadata {
   readonly id: string;
 /**
 */
-  readonly kind: WasmResourceKind;
+  readonly kind: string;
 /**
 */
   readonly protocol: string;

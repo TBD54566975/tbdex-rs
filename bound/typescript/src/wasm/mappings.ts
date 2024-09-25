@@ -1,5 +1,15 @@
 import wasm from "./";
 
+const mapToObject = (map: Map<any, any>): any => {
+  if (!map) return undefined;
+
+  const obj: any = {};
+  for (const [key, value] of map) {
+    obj[key] = value instanceof Map ? mapToObject(value) : value;
+  }
+  return obj;
+};
+
 export type CancellationDetails = {
   enabled: boolean;
   terms?: string;
@@ -8,29 +18,29 @@ export type CancellationDetails = {
 
 export namespace CancellationDetails {
   export const toWASM = (
-    obj: CancellationDetails
+    obj: CancellationDetails,
   ): wasm.WasmCancellationDetails => {
     return new wasm.WasmCancellationDetails(
       obj.enabled,
       obj.termsUrl,
-      obj.terms
+      obj.terms,
     );
   };
 
   export const fromWASM = (
-    obj: wasm.WasmCancellationDetails
+    obj: wasm.WasmCancellationDetails,
   ): CancellationDetails => {
     const result: CancellationDetails = {
       enabled: obj.enabled,
     };
 
     if (obj.terms !== undefined) result.terms = obj.terms;
-
     if (obj.terms_url !== undefined) result.termsUrl = obj.terms_url;
 
     return result;
   };
 }
+
 export type Constraints = {
   fields: Field[];
 };
@@ -48,6 +58,7 @@ export namespace Constraints {
     return result;
   };
 }
+
 export type Field = {
   filter?: Filter;
   id?: string;
@@ -67,7 +78,7 @@ export namespace Field {
       obj.purpose,
       obj.filter ? Filter.toWASM(obj.filter) : undefined,
       obj.optional,
-      obj.predicate ? Optionality.toWASM(obj.predicate) : undefined
+      obj.predicate ? Optionality.toWASM(obj.predicate) : undefined,
     );
   };
 
@@ -77,21 +88,17 @@ export namespace Field {
     };
 
     if (obj.filter !== undefined) result.filter = Filter.fromWASM(obj.filter);
-
     if (obj.id !== undefined) result.id = obj.id;
-
     if (obj.name !== undefined) result.name = obj.name;
-
     if (obj.optional !== undefined) result.optional = obj.optional;
-
     if (obj.predicate !== undefined)
       result.predicate = Optionality.fromWASM(obj.predicate);
-
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
 
     return result;
   };
 }
+
 export type Filter = {
   const?: string;
   contains?: Filter;
@@ -105,7 +112,7 @@ export namespace Filter {
       obj.type,
       obj.pattern,
       obj.const,
-      obj.contains ? Filter.toWASM(obj.contains) : undefined
+      obj.contains ? Filter.toWASM(obj.contains) : undefined,
     );
   };
 
@@ -113,17 +120,15 @@ export namespace Filter {
     const result: Filter = {};
 
     if (obj.const_value !== undefined) result.const = obj.const_value;
-
     if (obj.contains !== undefined)
       result.contains = Filter.fromWASM(obj.contains);
-
     if (obj.pattern !== undefined) result.pattern = obj.pattern;
-
     if (obj.type !== undefined) result.type = obj.type;
 
     return result;
   };
 }
+
 export type InputDescriptor = {
   constraints: Constraints;
   id: string;
@@ -137,7 +142,7 @@ export namespace InputDescriptor {
       obj.id,
       obj.name,
       obj.purpose,
-      Constraints.toWASM(obj.constraints)
+      Constraints.toWASM(obj.constraints),
     );
   };
 
@@ -148,12 +153,12 @@ export namespace InputDescriptor {
     };
 
     if (obj.name !== undefined) result.name = obj.name;
-
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
 
     return result;
   };
 }
+
 export type Offering = {
   data: OfferingData;
   metadata: ResourceMetadata;
@@ -165,7 +170,7 @@ export namespace Offering {
     return new wasm.WasmOffering(
       ResourceMetadata.toWASM(obj.metadata),
       OfferingData.toWASM(obj.data),
-      obj.signature
+      obj.signature,
     );
   };
 
@@ -179,6 +184,7 @@ export namespace Offering {
     return result;
   };
 }
+
 export type OfferingData = {
   cancellation: CancellationDetails;
   description: string;
@@ -198,7 +204,7 @@ export namespace OfferingData {
       obj.requiredClaims
         ? PresentationDefinition.toWASM(obj.requiredClaims)
         : undefined,
-      CancellationDetails.toWASM(obj.cancellation)
+      CancellationDetails.toWASM(obj.cancellation),
     );
   };
 
@@ -213,12 +219,13 @@ export namespace OfferingData {
 
     if (obj.required_claims !== undefined)
       result.requiredClaims = PresentationDefinition.fromWASM(
-        obj.required_claims
+        obj.required_claims,
       );
 
     return result;
   };
 }
+
 export type Optionality = {
   optionality: string;
 };
@@ -236,6 +243,7 @@ export namespace Optionality {
     return result;
   };
 }
+
 export type PayinDetails = {
   currencyCode: string;
   max?: string;
@@ -249,7 +257,7 @@ export namespace PayinDetails {
       obj.currencyCode,
       obj.methods?.map(PayinMethod.toWASM),
       obj.min,
-      obj.max
+      obj.max,
     );
   };
 
@@ -260,12 +268,12 @@ export namespace PayinDetails {
     };
 
     if (obj.max !== undefined) result.max = obj.max;
-
     if (obj.min !== undefined) result.min = obj.min;
 
     return result;
   };
 }
+
 export type PayinMethod = {
   description?: string;
   fee?: string;
@@ -274,7 +282,7 @@ export type PayinMethod = {
   max?: string;
   min?: string;
   name?: string;
-  requiredPaymentDetails?: any; // todo here
+  requiredPaymentDetails?: any;
 };
 
 export namespace PayinMethod {
@@ -287,37 +295,28 @@ export namespace PayinMethod {
       obj.requiredPaymentDetails,
       obj.fee,
       obj.min,
-      obj.max
+      obj.max,
     );
   };
 
   export const fromWASM = (obj: wasm.WasmPayinMethod): PayinMethod => {
     const result: PayinMethod = {
       kind: obj.kind,
-      // todo here
-      // requiredPaymentDetails: mapToObject(obj.required_payment_details),
-      // requiredPaymentDetails: obj.required_payment_details,
     };
 
-    // todo here
+    if (obj.description !== undefined) result.description = obj.description;
+    if (obj.fee !== undefined) result.fee = obj.fee;
+    if (obj.group !== undefined) result.group = obj.group;
+    if (obj.max !== undefined) result.max = obj.max;
+    if (obj.min !== undefined) result.min = obj.min;
+    if (obj.name !== undefined) result.name = obj.name;
     if (obj.required_payment_details !== undefined)
       result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
-
-    if (obj.description !== undefined) result.description = obj.description;
-
-    if (obj.fee !== undefined) result.fee = obj.fee;
-
-    if (obj.group !== undefined) result.group = obj.group;
-
-    if (obj.max !== undefined) result.max = obj.max;
-
-    if (obj.min !== undefined) result.min = obj.min;
-
-    if (obj.name !== undefined) result.name = obj.name;
 
     return result;
   };
 }
+
 export type PayoutDetails = {
   currencyCode: string;
   max?: string;
@@ -331,7 +330,7 @@ export namespace PayoutDetails {
       obj.currencyCode,
       obj.methods?.map(PayoutMethod.toWASM),
       obj.min,
-      obj.max
+      obj.max,
     );
   };
 
@@ -342,84 +341,58 @@ export namespace PayoutDetails {
     };
 
     if (obj.max !== undefined) result.max = obj.max;
-
     if (obj.min !== undefined) result.min = obj.min;
 
     return result;
   };
 }
+
 export type PayoutMethod = {
   description?: string;
-  // todo here
   estimatedSettlementTime: number;
-  // estimatedSettlementTime: bigint;
   fee?: string;
   group?: string;
   kind: string;
   max?: string;
   min?: string;
   name?: string;
-  requiredPaymentDetails?: any; // todo here
-};
-
-// todo here
-const mapToObject = (map: Map<any, any>): any => {
-  if (!map) return undefined;
-
-  const obj: any = {};
-  for (const [key, value] of map) {
-    obj[key] = value instanceof Map ? mapToObject(value) : value;
-  }
-  return obj;
+  requiredPaymentDetails?: any;
 };
 
 export namespace PayoutMethod {
   export const toWASM = (obj: PayoutMethod): wasm.WasmPayoutMethod => {
     return new wasm.WasmPayoutMethod(
       obj.kind,
-      // todo here
       BigInt(obj.estimatedSettlementTime),
-      // obj.estimatedSettlementTime,
       obj.name,
       obj.description,
       obj.group,
       obj.requiredPaymentDetails,
       obj.fee,
       obj.min,
-      obj.max
+      obj.max,
     );
   };
 
   export const fromWASM = (obj: wasm.WasmPayoutMethod): PayoutMethod => {
     const result: PayoutMethod = {
-      // todo here
       estimatedSettlementTime: Number(obj.estimated_settlement_time),
-      // estimatedSettlementTime: obj.estimated_settlement_time,
       kind: obj.kind,
-      // todo here
-      // requiredPaymentDetails: mapToObject(obj.required_payment_details),
-      // requiredPaymentDetails: obj.required_payment_details,
     };
 
-    // todo here
+    if (obj.description !== undefined) result.description = obj.description;
+    if (obj.fee !== undefined) result.fee = obj.fee;
+    if (obj.group !== undefined) result.group = obj.group;
+    if (obj.max !== undefined) result.max = obj.max;
+    if (obj.min !== undefined) result.min = obj.min;
+    if (obj.name !== undefined) result.name = obj.name;
     if (obj.required_payment_details !== undefined)
       result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
-
-    if (obj.description !== undefined) result.description = obj.description;
-
-    if (obj.fee !== undefined) result.fee = obj.fee;
-
-    if (obj.group !== undefined) result.group = obj.group;
-
-    if (obj.max !== undefined) result.max = obj.max;
-
-    if (obj.min !== undefined) result.min = obj.min;
-
-    if (obj.name !== undefined) result.name = obj.name;
 
     return result;
   };
 }
+
 export type PresentationDefinition = {
   id: string;
   input_descriptors: InputDescriptor[];
@@ -430,19 +403,19 @@ export type PresentationDefinition = {
 
 export namespace PresentationDefinition {
   export const toWASM = (
-    obj: PresentationDefinition
+    obj: PresentationDefinition,
   ): wasm.WasmPresentationDefinition => {
     return new wasm.WasmPresentationDefinition(
       obj.id,
       obj.name,
       obj.purpose,
       obj.input_descriptors?.map(InputDescriptor.toWASM),
-      obj.submission_requirements?.map(SubmissionRequirement.toWASM)
+      obj.submission_requirements?.map(SubmissionRequirement.toWASM),
     );
   };
 
   export const fromWASM = (
-    obj: wasm.WasmPresentationDefinition
+    obj: wasm.WasmPresentationDefinition,
   ): PresentationDefinition => {
     const result: PresentationDefinition = {
       id: obj.id,
@@ -450,42 +423,21 @@ export namespace PresentationDefinition {
     };
 
     if (obj.name !== undefined) result.name = obj.name;
-
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
-
     if (obj.submission_requirements !== undefined)
       result.submission_requirements = obj.submission_requirements?.map(
-        SubmissionRequirement.fromWASM
+        SubmissionRequirement.fromWASM,
       );
 
     return result;
   };
 }
 
-// todo here
-export type ResourceKind = "offering" | "balance";
-// export type ResourceKind = {
-//   kind: string;
-// };
-
-// export namespace ResourceKind {
-//   export const toWASM = (obj: ResourceKind): wasm.WasmResourceKind => {
-//     return new wasm.WasmResourceKind(obj.kind);
-//   };
-
-//   export const fromWASM = (obj: wasm.WasmResourceKind): ResourceKind => {
-//     const result: ResourceKind = {
-//       kind: obj.kind,
-//     };
-
-//     return result;
-//   };
-// }
 export type ResourceMetadata = {
   createdAt: string;
   from: string;
   id: string;
-  kind: ResourceKind;
+  kind: string;
   protocol: string;
   updatedAt?: string;
 };
@@ -493,27 +445,23 @@ export type ResourceMetadata = {
 export namespace ResourceMetadata {
   export const toWASM = (obj: ResourceMetadata): wasm.WasmResourceMetadata => {
     return new wasm.WasmResourceMetadata(
-      // ResourceKind.toWASM(obj.kind),
-      // todo here
-      new wasm.WasmResourceKind(obj.kind),
+      obj.kind,
       obj.from,
       obj.id,
       obj.protocol,
       obj.createdAt,
-      obj.updatedAt
+      obj.updatedAt,
     );
   };
 
   export const fromWASM = (
-    obj: wasm.WasmResourceMetadata
+    obj: wasm.WasmResourceMetadata,
   ): ResourceMetadata => {
     const result: ResourceMetadata = {
       createdAt: obj.created_at,
       from: obj.from,
       id: obj.id,
-      // todo here
-      kind: obj.kind.kind as ResourceKind, // casting to ResourceKind
-      // kind: ResourceKind.fromWASM(obj.kind),
+      kind: obj.kind,
       protocol: obj.protocol,
     };
 
@@ -522,6 +470,7 @@ export namespace ResourceMetadata {
     return result;
   };
 }
+
 export type SubmissionRequirement = {
   count?: number;
   from?: string;
@@ -535,7 +484,7 @@ export type SubmissionRequirement = {
 
 export namespace SubmissionRequirement {
   export const toWASM = (
-    obj: SubmissionRequirement
+    obj: SubmissionRequirement,
   ): wasm.WasmSubmissionRequirement => {
     return new wasm.WasmSubmissionRequirement(
       SubmissionRequirementRule.toWASM(obj.rule),
@@ -545,48 +494,43 @@ export namespace SubmissionRequirement {
       obj.purpose,
       obj.count,
       obj.min,
-      obj.max
+      obj.max,
     );
   };
 
   export const fromWASM = (
-    obj: wasm.WasmSubmissionRequirement
+    obj: wasm.WasmSubmissionRequirement,
   ): SubmissionRequirement => {
     const result: SubmissionRequirement = {
       rule: SubmissionRequirementRule.fromWASM(obj.rule),
     };
 
     if (obj.count !== undefined) result.count = obj.count;
-
     if (obj.from !== undefined) result.from = obj.from;
-
     if (obj.from_nested !== undefined)
       result.from_nested = obj.from_nested?.map(SubmissionRequirement.fromWASM);
-
     if (obj.max !== undefined) result.max = obj.max;
-
     if (obj.min !== undefined) result.min = obj.min;
-
     if (obj.name !== undefined) result.name = obj.name;
-
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
 
     return result;
   };
 }
+
 export type SubmissionRequirementRule = {
   rule: string;
 };
 
 export namespace SubmissionRequirementRule {
   export const toWASM = (
-    obj: SubmissionRequirementRule
+    obj: SubmissionRequirementRule,
   ): wasm.WasmSubmissionRequirementRule => {
     return new wasm.WasmSubmissionRequirementRule(obj.rule);
   };
 
   export const fromWASM = (
-    obj: wasm.WasmSubmissionRequirementRule
+    obj: wasm.WasmSubmissionRequirementRule,
   ): SubmissionRequirementRule => {
     const result: SubmissionRequirementRule = {
       rule: obj.rule,
@@ -595,6 +539,7 @@ export namespace SubmissionRequirementRule {
     return result;
   };
 }
+
 export type TbdexError = {
   isWeb5Error: boolean;
   message: string;
