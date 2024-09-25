@@ -30,16 +30,6 @@ impl WasmOffering {
         }
     }
 
-    pub fn create(
-        from: &str,
-        data: WasmOfferingData,
-        protocol: Option<String>,
-    ) -> Result<WasmOffering> {
-        Ok(Self {
-            inner: Offering::create(from, &data.into(), protocol).map_err(map_err)?,
-        })
-    }
-
     pub fn from_json_string(json: &str) -> Result<WasmOffering> {
         Ok(Self {
             inner: Offering::from_json_string(json).map_err(map_err)?,
@@ -48,6 +38,16 @@ impl WasmOffering {
 
     pub fn to_json_string(&self) -> Result<String> {
         Ok(self.inner.to_json_string().map_err(map_err)?)
+    }
+
+    pub fn create(
+        from: &str,
+        data: WasmOfferingData,
+        protocol: Option<String>,
+    ) -> Result<WasmOffering> {
+        Ok(Self {
+            inner: Offering::create(from, &data.into(), protocol).map_err(map_err)?,
+        })
     }
 
     pub fn verify(&self) -> Result<()> {

@@ -4,13 +4,19 @@ export class TbdexError extends Error {
   constructor(variant: string, message: string) {
     super(message);
     this.variant = variant;
-    this.name = 'TbdexError'; 
+    this.name = "TbdexError";
   }
 }
 
-export const catchTbdexError = (error: any): Error => {
-  if (error && typeof error === 'object' && error.is_tbdex_error) {
-    return new TbdexError(error.variant, error.message);
-  } 
-  return error
-}
+export const withError = <T>(fn: (...args: any[]) => T) => {
+  return (...args: any[]): T => {
+    try {
+      return fn(...args);
+    } catch (error: any) {
+      if (error && typeof error === "object" && error.is_tbdex_error) {
+        throw new TbdexError(error.variant, error.message);
+      }
+      throw error;
+    }
+  };
+};
