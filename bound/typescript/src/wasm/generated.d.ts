@@ -5,10 +5,18 @@
 export class WasmBearerDid {
   free(): void;
 /**
+* @param {WasmDid} did
+* @param {WasmDocument} document
+*/
+  constructor(did: WasmDid, document: WasmDocument);
+/**
 * @param {WasmPortableDid} portable_did
 * @returns {WasmBearerDid}
 */
   static from_portable_did(portable_did: WasmPortableDid): WasmBearerDid;
+/**
+*/
+  readonly did: WasmDid;
 /**
 */
   readonly document: WasmDocument;
@@ -44,6 +52,46 @@ export class WasmConstraints {
 /**
 */
   readonly fields: (WasmField)[];
+}
+/**
+*/
+export class WasmDid {
+  free(): void;
+/**
+* @param {string} uri
+* @param {string} url
+* @param {string} method
+* @param {string} id
+* @param {any} params
+* @param {string | undefined} [path]
+* @param {string | undefined} [query]
+* @param {string | undefined} [fragment]
+*/
+  constructor(uri: string, url: string, method: string, id: string, params: any, path?: string, query?: string, fragment?: string);
+/**
+*/
+  readonly fragment: string | undefined;
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly method: string;
+/**
+*/
+  readonly params: any;
+/**
+*/
+  readonly path: string | undefined;
+/**
+*/
+  readonly query: string | undefined;
+/**
+*/
+  readonly uri: string;
+/**
+*/
+  readonly url: string;
 }
 /**
 */

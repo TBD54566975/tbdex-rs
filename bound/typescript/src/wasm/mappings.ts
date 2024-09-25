@@ -11,16 +11,21 @@ const mapToObject = (map: Map<any, any>): any => {
 };
 
 export type BearerDid = {
+  did: Did;
   document: Document;
 };
 
 export namespace BearerDid {
   export const toWASM = (obj: BearerDid): wasm.WasmBearerDid => {
-    return new wasm.WasmBearerDid();
+    return new wasm.WasmBearerDid(
+      Did.toWASM(obj.did),
+      Document.toWASM(obj.document),
+    );
   };
 
   export const fromWASM = (obj: wasm.WasmBearerDid): BearerDid => {
     const result: BearerDid = {
+      did: Did.fromWASM(obj.did),
       document: Document.fromWASM(obj.document),
     };
 
@@ -72,6 +77,48 @@ export namespace Constraints {
     const result: Constraints = {
       fields: obj.fields?.map(Field.fromWASM),
     };
+
+    return result;
+  };
+}
+
+export type Did = {
+  fragment?: string;
+  id: string;
+  method: string;
+  params?: any;
+  path?: string;
+  query?: string;
+  uri: string;
+  url: string;
+};
+
+export namespace Did {
+  export const toWASM = (obj: Did): wasm.WasmDid => {
+    return new wasm.WasmDid(
+      obj.uri,
+      obj.url,
+      obj.method,
+      obj.id,
+      obj.params,
+      obj.path,
+      obj.query,
+      obj.fragment,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmDid): Did => {
+    const result: Did = {
+      id: obj.id,
+      method: obj.method,
+      uri: obj.uri,
+      url: obj.url,
+    };
+
+    if (obj.fragment !== undefined) result.fragment = obj.fragment;
+    if (obj.params !== undefined) result.params = mapToObject(obj.params);
+    if (obj.path !== undefined) result.path = obj.path;
+    if (obj.query !== undefined) result.query = obj.query;
 
     return result;
   };

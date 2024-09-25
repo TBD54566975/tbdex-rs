@@ -1,7 +1,11 @@
-use super::{document::WasmDocument, portable_did::WasmPortableDid};
+use std::sync::Arc;
+
+use super::{did::WasmDid, document::WasmDocument, portable_did::WasmPortableDid};
 use crate::errors::{map_web5_err, Result};
 use wasm_bindgen::prelude::wasm_bindgen;
-use web5::dids::bearer_did::BearerDid;
+use web5::{
+    crypto::key_managers::in_memory_key_manager::InMemoryKeyManager, dids::bearer_did::BearerDid,
+};
 
 #[wasm_bindgen]
 pub struct WasmBearerDid {
@@ -16,13 +20,16 @@ impl From<WasmBearerDid> for BearerDid {
 
 #[wasm_bindgen]
 impl WasmBearerDid {
-    // todo
-    // #[wasm_bindgen(constructor)]
-    // pub fn new(document: WasmDocument) -> Self {
-    //     Self {
-    //         inner: BearerDid
-    //     }
-    // }
+    #[wasm_bindgen(constructor)]
+    pub fn new(did: WasmDid, document: WasmDocument) -> Self {
+        Self {
+            inner: BearerDid {
+                did: did.into(),
+                document: document.into(),
+                key_manager: Arc::new(InMemoryKeyManager::new()), // todo
+            },
+        }
+    }
 
     #[wasm_bindgen]
     pub fn from_portable_did(portable_did: WasmPortableDid) -> Result<WasmBearerDid> {
@@ -35,9 +42,10 @@ impl WasmBearerDid {
 
     // todo signer for get_signer
 
-    // todo
-    // #[wasm_bindgen(getter)]
-    // pub fn did
+    #[wasm_bindgen(getter)]
+    pub fn did(&self) -> WasmDid {
+        self.inner.did.clone().into()
+    }
 
     #[wasm_bindgen(getter)]
     pub fn document(&self) -> WasmDocument {
