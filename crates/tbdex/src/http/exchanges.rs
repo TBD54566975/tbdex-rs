@@ -238,6 +238,7 @@ mod tests {
     use super::*;
     use std::fs;
 
+    #[allow(dead_code)]
     #[derive(Debug, serde::Deserialize)]
     pub struct TestVector<T> {
         pub input: String,
