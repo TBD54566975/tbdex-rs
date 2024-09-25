@@ -102,7 +102,7 @@
         <version.com.fasterxml.jackson>2.17.0</version.com.fasterxml.jackson>
         <version.net.java.dev.jna>5.12.0</version.net.java.dev.jna>
         <version.org.jetbrains.kotlinx.kotlinx.coroutines.core>1.8.1</version.org.jetbrains.kotlinx.kotlinx.coroutines.core>
-        <version.xyz.block.web5>4.0.0-alpha-1</version.xyz.block.web5>
+        <version.xyz.block.web5>4.0.0</version.xyz.block.web5>
 
         <!-- Versioning for Test Dependencies -->
         <version.org.junit.jupiter>5.10.1</version.org.junit.jupiter>
