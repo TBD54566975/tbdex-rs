@@ -1,6 +1,6 @@
 use super::{
     did::WasmDid, document::WasmDocument, key_managers::WasmKeyManager,
-    portable_did::WasmPortableDid,
+    portable_did::WasmPortableDid, signers::WasmSigner,
 };
 use crate::errors::{map_web5_err, Result};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -39,7 +39,14 @@ impl WasmBearerDid {
 
     // todo key exporter for to_portable_did
 
-    // todo signer for get_signer
+    #[wasm_bindgen]
+    pub fn get_signer(&self, verification_method_id: &str) -> Result<WasmSigner> {
+        Ok(self
+            .inner
+            .get_signer(verification_method_id)
+            .map_err(map_web5_err)?
+            .into())
+    }
 
     #[wasm_bindgen(getter)]
     pub fn did(&self) -> WasmDid {

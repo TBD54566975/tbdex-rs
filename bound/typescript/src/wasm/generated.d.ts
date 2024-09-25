@@ -16,6 +16,11 @@ export class WasmBearerDid {
 */
   static from_portable_did(portable_did: WasmPortableDid): WasmBearerDid;
 /**
+* @param {string} verification_method_id
+* @returns {WasmSigner}
+*/
+  get_signer(verification_method_id: string): WasmSigner;
+/**
 */
   readonly did: WasmDid;
 /**
