@@ -1,5 +1,7 @@
 import { WasmClass } from "./wasm.js";
 
+const EXCLUDE = ["Offering", "KeyManager", "BearerDid"];
+
 export const generateToWASM = (wasmClass: WasmClass): string => `
   export const toWASM = (
     obj: ${wasmClass.className}
@@ -101,23 +103,26 @@ export const generateMappingsCode = (wasmClasses: WasmClass[]): string => `
   }
 
   ${wasmClasses
-    .map(
-      (wasmClass) => `
-      export type ${wasmClass.className} = {
-        ${wasmClass.members
-          .map((m) => {
-            if (m.type === "bigint")
-              return `${m.tsName}${m.isNullable ? "?" : ""}: number`;
-            else return `${m.tsName}${m.isNullable ? "?" : ""}: ${m.type}`;
-          })
-          .join("\n")}
-      }
+    .map((wasmClass) => {
+      // todo
+      if (EXCLUDE.includes(wasmClass.className)) return;
 
-      export namespace ${wasmClass.className} {
-        ${generateToWASM(wasmClass)}
-        ${generateFromWASM(wasmClass)}
-      }
-    `
-    )
+      return `
+        export type ${wasmClass.className} = {
+          ${wasmClass.members
+            .map((m) => {
+              if (m.type === "bigint")
+                return `${m.tsName}${m.isNullable ? "?" : ""}: number`;
+              else return `${m.tsName}${m.isNullable ? "?" : ""}: ${m.type}`;
+            })
+            .join("\n")}
+        }
+
+        export namespace ${wasmClass.className} {
+          ${generateToWASM(wasmClass)}
+          ${generateFromWASM(wasmClass)}
+        }
+      `;
+    })
     .join("\n")}
 `;

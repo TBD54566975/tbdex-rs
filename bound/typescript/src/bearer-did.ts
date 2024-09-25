@@ -1,22 +1,25 @@
 import { withError } from "./errors";
+import { KeyManager } from "./key-managers";
 import { WasmBearerDid } from "./wasm/generated";
 import { Did, Document, PortableDid } from "./wasm/mappings";
 
 export class BearerDid {
   readonly did: Did;
   readonly document: Document;
-  // todo did and key_manager
+  readonly keyManager: KeyManager;
 
-  constructor(did: Did, document: Document) {
+  constructor(did: Did, document: Document, keyManager: KeyManager) {
     this.did = did;
     this.document = document;
+    this.keyManager = keyManager;
   }
 
   private static fromWASM = withError(
     (wasmBearerDid: WasmBearerDid): BearerDid => {
       return new BearerDid(
         Did.fromWASM(wasmBearerDid.did),
-        Document.fromWASM(wasmBearerDid.document)
+        Document.fromWASM(wasmBearerDid.document),
+        KeyManager.fromWASM(wasmBearerDid.key_manager)
       );
     }
   );
@@ -24,7 +27,8 @@ export class BearerDid {
   private toWASM = withError((): WasmBearerDid => {
     return new WasmBearerDid(
       Did.toWASM(this.did),
-      Document.toWASM(this.document)
+      Document.toWASM(this.document),
+      KeyManager.toWASM(this.keyManager)
     );
   });
 

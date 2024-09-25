@@ -7,8 +7,9 @@ export class WasmBearerDid {
 /**
 * @param {WasmDid} did
 * @param {WasmDocument} document
+* @param {WasmKeyManager} key_manager
 */
-  constructor(did: WasmDid, document: WasmDocument);
+  constructor(did: WasmDid, document: WasmDocument, key_manager: WasmKeyManager);
 /**
 * @param {WasmPortableDid} portable_did
 * @returns {WasmBearerDid}
@@ -20,6 +21,9 @@ export class WasmBearerDid {
 /**
 */
   readonly document: WasmDocument;
+/**
+*/
+  readonly key_manager: WasmKeyManager;
 }
 /**
 */
@@ -273,6 +277,20 @@ export class WasmJwk {
 /**
 */
   readonly y: string | undefined;
+}
+/**
+*/
+export class WasmKeyManager {
+  free(): void;
+/**
+* @param {{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk }} foreign_key_manager
+*/
+  constructor(foreign_key_manager: { importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk });
+/**
+* @param {WasmJwk} private_jwk
+* @returns {WasmJwk}
+*/
+  import_private_jwk(private_jwk: WasmJwk): WasmJwk;
 }
 /**
 */

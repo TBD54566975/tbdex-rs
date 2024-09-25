@@ -10,29 +10,6 @@ const mapToObject = (map: Map<any, any>): any => {
   return obj;
 };
 
-export type BearerDid = {
-  did: Did;
-  document: Document;
-};
-
-export namespace BearerDid {
-  export const toWASM = (obj: BearerDid): wasm.WasmBearerDid => {
-    return new wasm.WasmBearerDid(
-      Did.toWASM(obj.did),
-      Document.toWASM(obj.document),
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmBearerDid): BearerDid => {
-    const result: BearerDid = {
-      did: Did.fromWASM(obj.did),
-      document: Document.fromWASM(obj.document),
-    };
-
-    return result;
-  };
-}
-
 export type CancellationDetails = {
   enabled: boolean;
   terms?: string;
@@ -307,32 +284,6 @@ export namespace Jwk {
     if (obj.alg !== undefined) result.alg = obj.alg;
     if (obj.d !== undefined) result.d = obj.d;
     if (obj.y !== undefined) result.y = obj.y;
-
-    return result;
-  };
-}
-
-export type Offering = {
-  data: OfferingData;
-  metadata: ResourceMetadata;
-  signature: string;
-};
-
-export namespace Offering {
-  export const toWASM = (obj: Offering): wasm.WasmOffering => {
-    return new wasm.WasmOffering(
-      ResourceMetadata.toWASM(obj.metadata),
-      OfferingData.toWASM(obj.data),
-      obj.signature,
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmOffering): Offering => {
-    const result: Offering = {
-      data: OfferingData.fromWASM(obj.data),
-      metadata: ResourceMetadata.fromWASM(obj.metadata),
-      signature: obj.signature,
-    };
 
     return result;
   };
