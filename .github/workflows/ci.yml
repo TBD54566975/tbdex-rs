@@ -185,15 +185,14 @@ jobs:
       - name: Build the library
         run: |
           cargo build --target x86_64-pc-windows-msvc --release --package tbdex_uniffi
-          if not exist bound/kt/src/main/resources (
-          mkdir bound/kt/src/main/resources
-          )
-          copy target/x86_64-pc-windows-msvc/release/tbdex_uniffi.dll bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
+          [ ! -d "bound/kt/src/main/resources" ] && mkdir -p bound/kt/src/main/resources
+          cp target/x86_64-pc-windows-msvc/release/tbdex_uniffi.dll bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
       - name: Upload .dll
         uses: actions/upload-artifact@v4.0.0
         with:
           name: x86_64-pc-windows-msvc-dll
           path: bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
+
 
   kotlin-build-test-deploy-snapshot:
     needs:
