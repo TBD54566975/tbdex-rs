@@ -175,7 +175,7 @@ jobs:
     runs-on: windows-latest
     name: Build x86_64-pc-windows-msvc target
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install Rust 1.74.0
         run: rustup toolchain install 1.74.0
       - name: Set Rust 1.74.0 as default
@@ -183,6 +183,7 @@ jobs:
       - name: Add MSVC target
         run: rustup target add x86_64-pc-windows-msvc
       - name: Build the library
+        shell: bash
         run: |
           cargo build --target x86_64-pc-windows-msvc --release --package tbdex_uniffi
           mkdir -p bound/kt/src/main/resources
