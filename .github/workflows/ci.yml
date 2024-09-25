@@ -175,18 +175,19 @@ jobs:
     runs-on: windows-latest
     name: Build x86_64-pc-windows-msvc target
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Rust 1.74.0
-        run: rustup toolchain install 1.74.0
-      - name: Set Rust 1.74.0 as default
-        run: rustup default 1.74.0
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        run: rustup toolchain install stable
       - name: Add MSVC target
         run: rustup target add x86_64-pc-windows-msvc
       - name: Build the library
         run: |
           cargo build --target x86_64-pc-windows-msvc --release --package tbdex_uniffi
-          [ ! -d "bound/kt/src/main/resources" ] && mkdir -p bound/kt/src/main/resources
+          if (-not (Test-Path -Path "bound/kt/src/main/resources")) {
+            New-Item -ItemType Directory -Path "bound/kt/src/main/resources"
+          }
           cp target/x86_64-pc-windows-msvc/release/tbdex_uniffi.dll bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
+        shell: powershell
       - name: Upload .dll
         uses: actions/upload-artifact@v4.0.0
         with:
