@@ -15,7 +15,7 @@ export class BearerDid {
     this.keyManager = keyManager;
   }
 
-  private static fromWASM = withError(
+  static fromWASM = withError(
     (wasmBearerDid: WasmBearerDid): BearerDid => {
       return new BearerDid(
         Did.fromWASM(wasmBearerDid.did),
@@ -25,7 +25,7 @@ export class BearerDid {
     }
   );
 
-  private toWASM = withError((): WasmBearerDid => {
+  toWASM = withError((): WasmBearerDid => {
     return new WasmBearerDid(
       Did.toWASM(this.did),
       Document.toWASM(this.document),

@@ -1,3 +1,4 @@
+import { BearerDid } from "../bearer-did";
 import { withError } from "../errors";
 import wasm from "../wasm";
 import { OfferingData, ResourceMetadata } from "../wasm/mappings";
@@ -51,6 +52,13 @@ export class Offering {
       );
     }
   );
+
+  sign = withError((bearerDid: BearerDid): Offering => {
+    const wasmOffering = this.toWASM();
+    wasmOffering.sign(bearerDid.toWASM());
+
+    return new Offering(this.metadata, this.data, wasmOffering.signature);
+  });
 
   verify = withError(() => {
     this.toWASM().verify();

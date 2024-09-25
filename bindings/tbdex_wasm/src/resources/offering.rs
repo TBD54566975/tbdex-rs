@@ -1,7 +1,7 @@
 use super::WasmResourceMetadata;
 use crate::{
     errors::{map_err, Result},
-    web5::presentation_definition::WasmPresentationDefinition,
+    web5::{bearer_did::WasmBearerDid, presentation_definition::WasmPresentationDefinition},
 };
 use tbdex::{
     json::{FromJson, ToJson},
@@ -48,6 +48,10 @@ impl WasmOffering {
         Ok(Self {
             inner: Offering::create(from, &data.into(), protocol).map_err(map_err)?,
         })
+    }
+
+    pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
+        self.inner.sign(&bearer_did.into()).map_err(map_err)
     }
 
     pub fn verify(&self) -> Result<()> {

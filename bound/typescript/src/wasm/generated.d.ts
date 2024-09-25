@@ -329,6 +329,10 @@ export class WasmOffering {
 */
   static create(from: string, data: WasmOfferingData, protocol?: string): WasmOffering;
 /**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
 */
   verify(): void;
 /**
