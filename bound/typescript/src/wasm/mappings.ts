@@ -10,6 +10,24 @@ const mapToObject = (map: Map<any, any>): any => {
   return obj;
 };
 
+export type BearerDid = {
+  document: Document;
+};
+
+export namespace BearerDid {
+  export const toWASM = (obj: BearerDid): wasm.WasmBearerDid => {
+    return new wasm.WasmBearerDid();
+  };
+
+  export const fromWASM = (obj: wasm.WasmBearerDid): BearerDid => {
+    const result: BearerDid = {
+      document: Document.fromWASM(obj.document),
+    };
+
+    return result;
+  };
+}
+
 export type CancellationDetails = {
   enabled: boolean;
   terms?: string;
@@ -54,6 +72,65 @@ export namespace Constraints {
     const result: Constraints = {
       fields: obj.fields?.map(Field.fromWASM),
     };
+
+    return result;
+  };
+}
+
+export type Document = {
+  alsoKnownAs?: string[];
+  assertionMethod?: string[];
+  authentication?: string[];
+  capabilityDelegation?: string[];
+  capabilityInvocation?: string[];
+  context?: string[];
+  controller?: string[];
+  id: string;
+  keyAgreement?: string[];
+  service?: Service[];
+  verificationMethod: VerificationMethod[];
+};
+
+export namespace Document {
+  export const toWASM = (obj: Document): wasm.WasmDocument => {
+    return new wasm.WasmDocument(
+      obj.id,
+      obj.context,
+      obj.controller,
+      obj.alsoKnownAs,
+      obj.verificationMethod?.map(VerificationMethod.toWASM),
+      obj.authentication,
+      obj.assertionMethod,
+      obj.keyAgreement,
+      obj.capabilityInvocation,
+      obj.capabilityDelegation,
+      obj.service?.map(Service.toWASM),
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmDocument): Document => {
+    const result: Document = {
+      id: obj.id,
+      verificationMethod: obj.verification_method?.map(
+        VerificationMethod.fromWASM,
+      ),
+    };
+
+    if (obj.also_known_as !== undefined) result.alsoKnownAs = obj.also_known_as;
+    if (obj.assertion_method !== undefined)
+      result.assertionMethod = obj.assertion_method;
+    if (obj.authentication !== undefined)
+      result.authentication = obj.authentication;
+    if (obj.capability_delegation !== undefined)
+      result.capabilityDelegation = obj.capability_delegation;
+    if (obj.capability_invocation !== undefined)
+      result.capabilityInvocation = obj.capability_invocation;
+    if (obj.context !== undefined) result.context = obj.context;
+    if (obj.controller !== undefined) result.controller = obj.controller;
+    if (obj.key_agreement !== undefined)
+      result.keyAgreement = obj.key_agreement;
+    if (obj.service !== undefined)
+      result.service = obj.service?.map(Service.fromWASM);
 
     return result;
   };
@@ -154,6 +231,35 @@ export namespace InputDescriptor {
 
     if (obj.name !== undefined) result.name = obj.name;
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
+
+    return result;
+  };
+}
+
+export type Jwk = {
+  alg?: string;
+  crv: string;
+  d?: string;
+  kty: string;
+  x: string;
+  y?: string;
+};
+
+export namespace Jwk {
+  export const toWASM = (obj: Jwk): wasm.WasmJwk => {
+    return new wasm.WasmJwk(obj.alg, obj.kty, obj.crv, obj.d, obj.x, obj.y);
+  };
+
+  export const fromWASM = (obj: wasm.WasmJwk): Jwk => {
+    const result: Jwk = {
+      crv: obj.crv,
+      kty: obj.kty,
+      x: obj.x,
+    };
+
+    if (obj.alg !== undefined) result.alg = obj.alg;
+    if (obj.d !== undefined) result.d = obj.d;
+    if (obj.y !== undefined) result.y = obj.y;
 
     return result;
   };
@@ -393,6 +499,32 @@ export namespace PayoutMethod {
   };
 }
 
+export type PortableDid = {
+  didUri: string;
+  document: Document;
+  privateKeys: Jwk[];
+};
+
+export namespace PortableDid {
+  export const toWASM = (obj: PortableDid): wasm.WasmPortableDid => {
+    return new wasm.WasmPortableDid(
+      obj.didUri,
+      Document.toWASM(obj.document),
+      obj.privateKeys?.map(Jwk.toWASM),
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmPortableDid): PortableDid => {
+    const result: PortableDid = {
+      didUri: obj.did_uri,
+      document: Document.fromWASM(obj.document),
+      privateKeys: obj.private_keys?.map(Jwk.fromWASM),
+    };
+
+    return result;
+  };
+}
+
 export type PresentationDefinition = {
   id: string;
   input_descriptors: InputDescriptor[];
@@ -466,6 +598,28 @@ export namespace ResourceMetadata {
     };
 
     if (obj.updated_at !== undefined) result.updatedAt = obj.updated_at;
+
+    return result;
+  };
+}
+
+export type Service = {
+  id: string;
+  serviceEndpoint: string[];
+  type: string;
+};
+
+export namespace Service {
+  export const toWASM = (obj: Service): wasm.WasmService => {
+    return new wasm.WasmService(obj.id, obj.type, obj.serviceEndpoint);
+  };
+
+  export const fromWASM = (obj: wasm.WasmService): Service => {
+    const result: Service = {
+      id: obj.id,
+      serviceEndpoint: obj.service_endpoint,
+      type: obj.type,
+    };
 
     return result;
   };
@@ -556,6 +710,39 @@ export namespace TbdexError {
       isWeb5Error: obj.is_web5_error,
       message: obj.message,
       variant: obj.variant,
+    };
+
+    return result;
+  };
+}
+
+export type VerificationMethod = {
+  controller: string;
+  id: string;
+  publicKeyJwk: Jwk;
+  type: string;
+};
+
+export namespace VerificationMethod {
+  export const toWASM = (
+    obj: VerificationMethod,
+  ): wasm.WasmVerificationMethod => {
+    return new wasm.WasmVerificationMethod(
+      obj.id,
+      obj.type,
+      obj.controller,
+      Jwk.toWASM(obj.publicKeyJwk),
+    );
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmVerificationMethod,
+  ): VerificationMethod => {
+    const result: VerificationMethod = {
+      controller: obj.controller,
+      id: obj.id,
+      publicKeyJwk: Jwk.fromWASM(obj.public_key_jwk),
+      type: obj.type,
     };
 
     return result;

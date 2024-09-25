@@ -6,7 +6,9 @@ describe("test vectors", () => {
   it("should parse offering", () => {
     const input = OfferingVector.input;
     const offering = Offering.fromJSONString(input);
-    expect(offering).to.deep.equal(OfferingVector.output);
+    expect(offering.metadata).to.deep.equal(OfferingVector.output.metadata);
+    expect(offering.data).to.deep.equal(OfferingVector.output.data);
+    expect(offering.signature).to.equal(OfferingVector.output.signature);
 
     const offeringJSONString = offering.toJSONString();
     const offeringJSON = JSON.parse(offeringJSONString);

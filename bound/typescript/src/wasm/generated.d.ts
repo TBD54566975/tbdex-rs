@@ -2,6 +2,19 @@
 /* eslint-disable */
 /**
 */
+export class WasmBearerDid {
+  free(): void;
+/**
+* @param {WasmPortableDid} portable_did
+* @returns {WasmBearerDid}
+*/
+  static from_portable_did(portable_did: WasmPortableDid): WasmBearerDid;
+/**
+*/
+  readonly document: WasmDocument;
+}
+/**
+*/
 export class WasmCancellationDetails {
   free(): void;
 /**
@@ -31,6 +44,67 @@ export class WasmConstraints {
 /**
 */
   readonly fields: (WasmField)[];
+}
+/**
+*/
+export class WasmDocument {
+  free(): void;
+/**
+* @param {string} id
+* @param {(string)[] | undefined} context
+* @param {(string)[] | undefined} controller
+* @param {(string)[] | undefined} also_known_as
+* @param {(WasmVerificationMethod)[]} verification_method
+* @param {(string)[] | undefined} [authentication]
+* @param {(string)[] | undefined} [assertion_method]
+* @param {(string)[] | undefined} [key_agreement]
+* @param {(string)[] | undefined} [capability_invocation]
+* @param {(string)[] | undefined} [capability_delegation]
+* @param {(WasmService)[] | undefined} [service]
+*/
+  constructor(id: string, context: (string)[] | undefined, controller: (string)[] | undefined, also_known_as: (string)[] | undefined, verification_method: (WasmVerificationMethod)[], authentication?: (string)[], assertion_method?: (string)[], key_agreement?: (string)[], capability_invocation?: (string)[], capability_delegation?: (string)[], service?: (WasmService)[]);
+/**
+* @param {string} json
+* @returns {WasmDocument}
+*/
+  static from_json_string(json: string): WasmDocument;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+*/
+  readonly also_known_as: (string)[] | undefined;
+/**
+*/
+  readonly assertion_method: (string)[] | undefined;
+/**
+*/
+  readonly authentication: (string)[] | undefined;
+/**
+*/
+  readonly capability_delegation: (string)[] | undefined;
+/**
+*/
+  readonly capability_invocation: (string)[] | undefined;
+/**
+*/
+  readonly context: (string)[] | undefined;
+/**
+*/
+  readonly controller: (string)[] | undefined;
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly key_agreement: (string)[] | undefined;
+/**
+*/
+  readonly service: (WasmService)[] | undefined;
+/**
+*/
+  readonly verification_method: (WasmVerificationMethod)[];
 }
 /**
 */
@@ -118,6 +192,42 @@ export class WasmInputDescriptor {
 }
 /**
 */
+export class WasmJwk {
+  free(): void;
+/**
+* @param {string | undefined} alg
+* @param {string} kty
+* @param {string} crv
+* @param {string | undefined} d
+* @param {string} x
+* @param {string | undefined} [y]
+*/
+  constructor(alg: string | undefined, kty: string, crv: string, d: string | undefined, x: string, y?: string);
+/**
+* @returns {string}
+*/
+  compute_thumbprint(): string;
+/**
+*/
+  readonly alg: string | undefined;
+/**
+*/
+  readonly crv: string;
+/**
+*/
+  readonly d: string | undefined;
+/**
+*/
+  readonly kty: string;
+/**
+*/
+  readonly x: string;
+/**
+*/
+  readonly y: string | undefined;
+}
+/**
+*/
 export class WasmOffering {
   free(): void;
 /**
@@ -127,13 +237,6 @@ export class WasmOffering {
 */
   constructor(metadata: WasmResourceMetadata, data: WasmOfferingData, signature: string);
 /**
-* @param {string} from
-* @param {WasmOfferingData} data
-* @param {string | undefined} [protocol]
-* @returns {WasmOffering}
-*/
-  static create(from: string, data: WasmOfferingData, protocol?: string): WasmOffering;
-/**
 * @param {string} json
 * @returns {WasmOffering}
 */
@@ -142,6 +245,13 @@ export class WasmOffering {
 * @returns {string}
 */
   to_json_string(): string;
+/**
+* @param {string} from
+* @param {WasmOfferingData} data
+* @param {string | undefined} [protocol]
+* @returns {WasmOffering}
+*/
+  static create(from: string, data: WasmOfferingData, protocol?: string): WasmOffering;
 /**
 */
   verify(): void;
@@ -333,6 +443,35 @@ export class WasmPayoutMethod {
 }
 /**
 */
+export class WasmPortableDid {
+  free(): void;
+/**
+* @param {string} did_uri
+* @param {WasmDocument} document
+* @param {(WasmJwk)[]} private_keys
+*/
+  constructor(did_uri: string, document: WasmDocument, private_keys: (WasmJwk)[]);
+/**
+* @param {string} json
+* @returns {WasmPortableDid}
+*/
+  static from_json_string(json: string): WasmPortableDid;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+*/
+  readonly did_uri: string;
+/**
+*/
+  readonly document: WasmDocument;
+/**
+*/
+  readonly private_keys: (WasmJwk)[];
+}
+/**
+*/
 export class WasmPresentationDefinition {
   free(): void;
 /**
@@ -390,6 +529,26 @@ export class WasmResourceMetadata {
 /**
 */
   readonly updated_at: string | undefined;
+}
+/**
+*/
+export class WasmService {
+  free(): void;
+/**
+* @param {string} id
+* @param {string} type
+* @param {(string)[]} service_endpoint
+*/
+  constructor(id: string, type: string, service_endpoint: (string)[]);
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly service_endpoint: (string)[];
+/**
+*/
+  readonly type: string;
 }
 /**
 */
@@ -456,6 +615,30 @@ export class WasmTbdexError {
 /**
 */
   readonly variant: string;
+}
+/**
+*/
+export class WasmVerificationMethod {
+  free(): void;
+/**
+* @param {string} id
+* @param {string} type
+* @param {string} controller
+* @param {WasmJwk} public_key_jwk
+*/
+  constructor(id: string, type: string, controller: string, public_key_jwk: WasmJwk);
+/**
+*/
+  readonly controller: string;
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly public_key_jwk: WasmJwk;
+/**
+*/
+  readonly type: string;
 }
 /**
  * Load the WebAssembly module in the background, if it has not already been loaded.

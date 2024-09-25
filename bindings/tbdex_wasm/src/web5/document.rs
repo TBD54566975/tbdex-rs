@@ -19,6 +19,12 @@ impl From<WasmDocument> for Document {
     }
 }
 
+impl From<Document> for WasmDocument {
+    fn from(value: Document) -> Self {
+        WasmDocument { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmDocument {
     #[wasm_bindgen(constructor)]
@@ -69,6 +75,69 @@ impl WasmDocument {
     pub fn to_json_string(&self) -> Result<String> {
         Ok(self.inner.to_json_string().map_err(map_web5_err)?)
     }
+
+    #[wasm_bindgen(getter)]
+    pub fn id(&self) -> String {
+        self.inner.id.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn context(&self) -> Option<Vec<String>> {
+        self.inner.context.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn controller(&self) -> Option<Vec<String>> {
+        self.inner.controller.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn also_known_as(&self) -> Option<Vec<String>> {
+        self.inner.also_known_as.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn verification_method(&self) -> Vec<WasmVerificationMethod> {
+        self.inner
+            .verification_method
+            .clone()
+            .into_iter()
+            .map(|vm| vm.into())
+            .collect()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn authentication(&self) -> Option<Vec<String>> {
+        self.inner.authentication.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn assertion_method(&self) -> Option<Vec<String>> {
+        self.inner.assertion_method.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn key_agreement(&self) -> Option<Vec<String>> {
+        self.inner.key_agreement.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn capability_invocation(&self) -> Option<Vec<String>> {
+        self.inner.capability_invocation.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn capability_delegation(&self) -> Option<Vec<String>> {
+        self.inner.capability_delegation.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn service(&self) -> Option<Vec<WasmService>> {
+        self.inner
+            .service
+            .clone()
+            .map(|services| services.into_iter().map(|s| s.into()).collect())
+    }
 }
 
 #[wasm_bindgen]
@@ -79,6 +148,12 @@ pub struct WasmVerificationMethod {
 impl From<WasmVerificationMethod> for VerificationMethod {
     fn from(value: WasmVerificationMethod) -> Self {
         value.inner
+    }
+}
+
+impl From<VerificationMethod> for WasmVerificationMethod {
+    fn from(value: VerificationMethod) -> Self {
+        Self { inner: value }
     }
 }
 
@@ -95,6 +170,26 @@ impl WasmVerificationMethod {
             },
         }
     }
+
+    #[wasm_bindgen(getter)]
+    pub fn id(&self) -> String {
+        self.inner.id.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn r#type(&self) -> String {
+        self.inner.r#type.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn controller(&self) -> String {
+        self.inner.controller.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn public_key_jwk(&self) -> WasmJwk {
+        self.inner.public_key_jwk.clone().into()
+    }
 }
 
 #[wasm_bindgen]
@@ -105,6 +200,12 @@ pub struct WasmService {
 impl From<WasmService> for Service {
     fn from(value: WasmService) -> Self {
         value.inner
+    }
+}
+
+impl From<Service> for WasmService {
+    fn from(value: Service) -> Self {
+        Self { inner: value }
     }
 }
 
@@ -119,5 +220,20 @@ impl WasmService {
                 service_endpoint,
             },
         }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn id(&self) -> String {
+        self.inner.id.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn r#type(&self) -> String {
+        self.inner.r#type.clone()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn service_endpoint(&self) -> Vec<String> {
+        self.inner.service_endpoint.clone()
     }
 }
