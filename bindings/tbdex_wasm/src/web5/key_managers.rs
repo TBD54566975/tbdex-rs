@@ -1,5 +1,8 @@
 use super::jwk::WasmJwk;
-use crate::errors::{map_web5_err, Result};
+use crate::{
+    errors::{map_web5_err, Result},
+    web5::signers::WasmSigner,
+};
 use std::sync::Arc;
 use wasm_bindgen::prelude::wasm_bindgen;
 use web5::crypto::key_managers::KeyManager;
@@ -7,17 +10,15 @@ use web5::crypto::key_managers::KeyManager;
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(
-        // typescript_type = "{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner }"
-        typescript_type = "{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk }"
+        typescript_type = "{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner }"
     )]
     pub type ForeignKeyManager;
 
     #[wasm_bindgen(method)]
     fn import_private_jwk(this: &ForeignKeyManager, private_jwk: WasmJwk) -> WasmJwk;
 
-    // todo
-    // #[wasm_bindgen(method)]
-    // fn get_signer(this: &ForeignKeyManager, public_jwk: WasmJwk) -> WasmSigner;
+    #[wasm_bindgen(method)]
+    fn get_signer(this: &ForeignKeyManager, public_jwk: WasmJwk) -> WasmSigner;
 }
 
 pub struct ConcreteForeignKeyManager(ForeignKeyManager);
@@ -43,7 +44,7 @@ impl KeyManager for ConcreteForeignKeyManager {
         &self,
         public_jwk: web5::crypto::jwk::Jwk,
     ) -> web5::errors::Result<Arc<dyn web5::crypto::dsa::Signer>> {
-        todo!()
+        Ok(self.0.get_signer(public_jwk.into()).into())
     }
 }
 
@@ -82,5 +83,12 @@ impl WasmKeyManager {
             .into())
     }
 
-    // todo get_signer
+    #[wasm_bindgen]
+    pub fn get_signer(&self, public_jwk: WasmJwk) -> Result<WasmSigner> {
+        Ok(self
+            .inner
+            .get_signer(public_jwk.into())
+            .map_err(map_web5_err)?
+            .into())
+    }
 }

@@ -283,14 +283,19 @@ export class WasmJwk {
 export class WasmKeyManager {
   free(): void;
 /**
-* @param {{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk }} foreign_key_manager
+* @param {{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner }} foreign_key_manager
 */
-  constructor(foreign_key_manager: { importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk });
+  constructor(foreign_key_manager: { importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner });
 /**
 * @param {WasmJwk} private_jwk
 * @returns {WasmJwk}
 */
   import_private_jwk(private_jwk: WasmJwk): WasmJwk;
+/**
+* @param {WasmJwk} public_jwk
+* @returns {WasmSigner}
+*/
+  get_signer(public_jwk: WasmJwk): WasmSigner;
 }
 /**
 */
@@ -615,6 +620,20 @@ export class WasmService {
 /**
 */
   readonly type: string;
+}
+/**
+*/
+export class WasmSigner {
+  free(): void;
+/**
+* @param {{ sign: (payload: Uint8Array) => Uint8Array }} foreign_signer
+*/
+  constructor(foreign_signer: { sign: (payload: Uint8Array) => Uint8Array });
+/**
+* @param {Uint8Array} payload
+* @returns {Uint8Array}
+*/
+  sign(payload: Uint8Array): Uint8Array;
 }
 /**
 */
