@@ -8,15 +8,11 @@ export class TbdexError extends Error {
   }
 }
 
-export const withError = <T>(fn: (...args: any[]) => T) => {
-  return (...args: any[]): T => {
-    try {
-      return fn(...args);
-    } catch (error: any) {
-      if (error && typeof error === "object" && error.is_tbdex_error) {
-        throw new TbdexError(error.variant, error.message);
-      }
-      throw error;
-    }
-  };
+export const tbdexError = (error: any): Error => {
+  if (error && typeof error === "object" && error.is_tbdex_error) {
+    return new TbdexError(error.variant, error.message);
+  }
+
+  return error;
 };
+

@@ -1,5 +1,5 @@
 import { BearerDid } from "../bearer-did";
-import { withError } from "../errors";
+import { tbdexError } from "../errors";
 import wasm from "../wasm";
 import { OfferingData, ResourceMetadata } from "../wasm/mappings";
 
@@ -19,48 +19,76 @@ export class Offering {
     this.signature = signature;
   }
 
-  private static fromWASM = withError(
-    (wasmOffering: wasm.WasmOffering): Offering => {
+  private static fromWASM = (wasmOffering: wasm.WasmOffering): Offering => {
+    try {
       return new Offering(
         ResourceMetadata.fromWASM(wasmOffering.metadata),
         OfferingData.fromWASM(wasmOffering.data),
         wasmOffering.signature
       );
+    } catch (error) {
+      throw tbdexError(error);
     }
-  );
+  };
 
-  private toWASM = withError((): wasm.WasmOffering => {
-    return new wasm.WasmOffering(
-      ResourceMetadata.toWASM(this.metadata),
-      OfferingData.toWASM(this.data),
-      this.signature
-    );
-  });
+  private toWASM = (): wasm.WasmOffering => {
+    try {
+      return new wasm.WasmOffering(
+        ResourceMetadata.toWASM(this.metadata),
+        OfferingData.toWASM(this.data),
+        this.signature
+      );
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 
-  static fromJSONString = withError((json: string): Offering => {
-    return Offering.fromWASM(wasm.WasmOffering.from_json_string(json));
-  });
+  static fromJSONString = (json: string): Offering => {
+    try {
+      return Offering.fromWASM(wasm.WasmOffering.from_json_string(json));
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 
-  toJSONString = withError((): string => {
-    return this.toWASM().to_json_string();
-  });
+  toJSONString = (): string => {
+    try {
+      return this.toWASM().to_json_string();
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 
-  static create = withError(
-    (from: string, data: OfferingData, protocol?: string): Offering => {
+  static create = (
+    from: string,
+    data: OfferingData,
+    protocol?: string
+  ): Offering => {
+    try {
       return Offering.fromWASM(
         wasm.WasmOffering.create(from, OfferingData.toWASM(data), protocol)
       );
+    } catch (error) {
+      throw tbdexError(error);
     }
-  );
+  };
 
-  sign = withError((bearerDid: BearerDid): Offering => {
-    const wasmOffering = this.toWASM();
-    wasmOffering.sign(bearerDid.toWASM());
+  sign = (bearerDid: BearerDid): Offering => {
+    try {
+      const wasmOffering = this.toWASM();
+      wasmOffering.sign(bearerDid.toWASM());
 
-    return new Offering(this.metadata, this.data, wasmOffering.signature);
-  });
+      return new Offering(this.metadata, this.data, wasmOffering.signature);
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 
-  verify = withError(() => {
-    this.toWASM().verify();
-  });
+  verify = () => {
+    try {
+      this.toWASM().verify();
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 }

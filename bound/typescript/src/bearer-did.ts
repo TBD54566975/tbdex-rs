@@ -1,4 +1,4 @@
-import { withError } from "./errors";
+import { tbdexError } from "./errors";
 import { KeyManager } from "./key-managers";
 import { PortableDid } from "./portable-did";
 import { Signer } from "./signers";
@@ -16,31 +16,45 @@ export class BearerDid {
     this.keyManager = keyManager;
   }
 
-  static fromWASM = withError(
-    (wasmBearerDid: wasm.WasmBearerDid): BearerDid => {
+  static fromWASM = (wasmBearerDid: wasm.WasmBearerDid): BearerDid => {
+    try {
       return new BearerDid(
         Did.fromWASM(wasmBearerDid.did),
         Document.fromWASM(wasmBearerDid.document),
         KeyManager.fromWASM(wasmBearerDid.key_manager)
       );
+    } catch (error) {
+      throw tbdexError(error);
     }
-  );
+  };
 
-  toWASM = withError((): wasm.WasmBearerDid => {
-    return new wasm.WasmBearerDid(
-      Did.toWASM(this.did),
-      Document.toWASM(this.document),
-      KeyManager.toWASM(this.keyManager)
-    );
-  });
+  toWASM = (): wasm.WasmBearerDid => {
+    try {
+      return new wasm.WasmBearerDid(
+        Did.toWASM(this.did),
+        Document.toWASM(this.document),
+        KeyManager.toWASM(this.keyManager)
+      );
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 
-  static fromPortableDID = withError((portableDID: PortableDid): BearerDid => {
-    return BearerDid.fromWASM(
-      wasm.WasmBearerDid.from_portable_did(portableDID.toWASM())
-    );
-  });
+  static fromPortableDID = (portableDID: PortableDid): BearerDid => {
+    try {
+      return BearerDid.fromWASM(
+        wasm.WasmBearerDid.from_portable_did(portableDID.toWASM())
+      );
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 
-  getSigner = withError((verificationMethodId: string): Signer => {
-    return Signer.fromWASM(this.toWASM().get_signer(verificationMethodId));
-  });
+  getSigner = (verificationMethodId: string): Signer => {
+    try {
+      return Signer.fromWASM(this.toWASM().get_signer(verificationMethodId));
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
 }
