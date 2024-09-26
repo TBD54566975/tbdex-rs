@@ -6,6 +6,7 @@ use std::{fmt, str::FromStr};
 use crate::errors::{Result, TbdexError};
 use serde::{Deserialize, Serialize};
 use type_safe_id::{DynamicType, TypeSafeId};
+use uuid::Uuid;
 
 #[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -37,9 +38,8 @@ impl fmt::Display for ResourceKind {
 
 impl ResourceKind {
     pub fn typesafe_id(&self) -> Result<String> {
-        let serialized_kind = serde_json::to_string(&self)?;
-        let dynamic_type = DynamicType::new(serialized_kind.trim_matches('"'))?;
-        Ok(TypeSafeId::new_with_type(dynamic_type).to_string())
+        let dynamic_type = DynamicType::new(&self.to_string())?;
+        Ok(TypeSafeId::from_type_and_uuid(dynamic_type, Uuid::new_v4()).to_string())
     }
 }
 
