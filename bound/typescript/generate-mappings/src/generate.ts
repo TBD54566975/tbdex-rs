@@ -1,6 +1,6 @@
 import { WasmClass } from "./wasm.js";
 
-const EXCLUDE = ["Offering", "KeyManager", "BearerDid", "Signer"];
+const EXCLUDE = ["Offering", "KeyManager", "BearerDid", "Signer", "PortableDid"];
 
 export const generateToWASM = (wasmClass: WasmClass): string => `
   export const toWASM = (

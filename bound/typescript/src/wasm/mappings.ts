@@ -497,32 +497,6 @@ export namespace PayoutMethod {
   };
 }
 
-export type PortableDid = {
-  didUri: string;
-  document: Document;
-  privateKeys: Jwk[];
-};
-
-export namespace PortableDid {
-  export const toWASM = (obj: PortableDid): wasm.WasmPortableDid => {
-    return new wasm.WasmPortableDid(
-      obj.didUri,
-      Document.toWASM(obj.document),
-      obj.privateKeys?.map(Jwk.toWASM),
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmPortableDid): PortableDid => {
-    const result: PortableDid = {
-      didUri: obj.did_uri,
-      document: Document.fromWASM(obj.document),
-      privateKeys: obj.private_keys?.map(Jwk.fromWASM),
-    };
-
-    return result;
-  };
-}
-
 export type PresentationDefinition = {
   id: string;
   input_descriptors: InputDescriptor[];

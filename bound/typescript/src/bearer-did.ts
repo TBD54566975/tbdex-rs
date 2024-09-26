@@ -1,8 +1,9 @@
 import { withError } from "./errors";
 import { KeyManager } from "./key-managers";
+import { PortableDid } from "./portable-did";
 import { Signer } from "./signers";
 import wasm from "./wasm";
-import { Did, Document, PortableDid } from "./wasm/mappings";
+import { Did, Document } from "./wasm/mappings";
 
 export class BearerDid {
   readonly did: Did;
@@ -35,7 +36,7 @@ export class BearerDid {
 
   static fromPortableDID = withError((portableDID: PortableDid): BearerDid => {
     return BearerDid.fromWASM(
-      wasm.WasmBearerDid.from_portable_did(PortableDid.toWASM(portableDID))
+      wasm.WasmBearerDid.from_portable_did(portableDID.toWASM())
     );
   });
 
