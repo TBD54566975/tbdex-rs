@@ -288,9 +288,9 @@ export class WasmJwk {
 export class WasmKeyManager {
   free(): void;
 /**
-* @param {{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner }} foreign_key_manager
+* @param {{ import_private_jwk: (private_jwk: WasmJwk) => WasmJwk, get_signer: (public_jwk: WasmJwk) => WasmSigner }} foreign_key_manager
 */
-  constructor(foreign_key_manager: { importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner });
+  constructor(foreign_key_manager: { import_private_jwk: (private_jwk: WasmJwk) => WasmJwk, get_signer: (public_jwk: WasmJwk) => WasmSigner });
 /**
 * @param {WasmJwk} private_jwk
 * @returns {WasmJwk}

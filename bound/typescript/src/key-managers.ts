@@ -10,11 +10,11 @@ export type KeyManager = {
 export namespace KeyManager {
   export const toWASM = (keyManager: KeyManager): wasm.WasmKeyManager => {
     const foreignKeyManager = {
-      importPrivateJwk: (privateJwk: wasm.WasmJwk): wasm.WasmJwk => {
+      import_private_jwk: (privateJwk: wasm.WasmJwk): wasm.WasmJwk => {
         const publicJwk = keyManager.importPrivateJwk(Jwk.fromWASM(privateJwk));
         return Jwk.toWASM(publicJwk);
       },
-      getSigner: (publicJwk: wasm.WasmJwk): wasm.WasmSigner => {
+      get_signer: (publicJwk: wasm.WasmJwk): wasm.WasmSigner => {
         return Signer.toWASM(keyManager.getSigner(Jwk.fromWASM(publicJwk)));
       },
     };

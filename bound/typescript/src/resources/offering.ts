@@ -7,7 +7,7 @@ import { OfferingData, ResourceMetadata } from "../wasm/mappings";
 export class Offering {
   readonly metadata: ResourceMetadata;
   readonly data: OfferingData;
-  readonly signature: string;
+  signature: string;
 
   constructor(
     metadata: ResourceMetadata,
@@ -73,12 +73,11 @@ export class Offering {
     }
   };
 
-  sign = (bearerDid: BearerDid): Offering => {
+  sign = (bearerDid: BearerDid) => {
     try {
       const wasmOffering = this.toWASM();
       wasmOffering.sign(bearerDid.toWASM());
-
-      return new Offering(this.metadata, this.data, wasmOffering.signature);
+      this.signature = wasmOffering.signature;
     } catch (error) {
       throw tbdexError(error);
     }

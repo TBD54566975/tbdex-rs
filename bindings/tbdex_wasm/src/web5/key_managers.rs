@@ -10,7 +10,7 @@ use web5::crypto::key_managers::KeyManager;
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(
-        typescript_type = "{ importPrivateJwk: (privateJwk: WasmJwk) => WasmJwk, getSigner: (publicJwk: WasmJwk) => WasmSigner }"
+        typescript_type = "{ import_private_jwk: (private_jwk: WasmJwk) => WasmJwk, get_signer: (public_jwk: WasmJwk) => WasmSigner }"
     )]
     pub type ForeignKeyManager;
 
