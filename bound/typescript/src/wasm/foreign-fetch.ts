@@ -169,12 +169,21 @@ const fetchSyncBrowser = (
     });
   }
 
+  xhr.overrideMimeType("text/plain; charset=x-user-defined");
+
   xhr.send(fetchOptions?.body ? new Uint8Array(fetchOptions.body) : null);
+
+  const responseText = xhr.responseText;
+  const length = responseText.length;
+  const body = new Uint8Array(length);
+  for (let i = 0; i < length; i++) {
+    body[i] = responseText.charCodeAt(i) & 0xff;
+  }
 
   const response: Response = {
     statusCode: xhr.status,
     headers: xhr.getAllResponseHeaders(),
-    body: new Uint8Array(xhr.response),
+    body: body,
   };
 
   return response;
