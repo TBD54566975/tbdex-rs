@@ -13,22 +13,18 @@ if (isNode) {
 
       const workerCode = `
         const { parentPort } = require('worker_threads');
-        const { setTimeout } = require('timers/promises');
         const sharedArray = new Int32Array(require('worker_threads').workerData.sharedBuffer);
 
-        parentPort.on('message', async (message) => {
-          console.log(\`Worker received: \${message}\`);
+        parentPort.on('message', async (url) => {
+          try {
+            const response = await fetch(url);
+            const statusCode = response.status;
 
-          // Simulate async operation with a delay
-          console.log('Worker: starting async task');
-          await setTimeout(2000); // Simulate async work
-          console.log('Worker: async task completed');
-
-          // Signal completion by setting atomic value
-          Atomics.store(sharedArray, 0, 1); // Set the value to 1
-          Atomics.notify(sharedArray, 0); // Notify waiting threads
-
-          parentPort.postMessage('Hello from Worker Thread');
+            Atomics.store(sharedArray, 0, statusCode);
+            Atomics.notify(sharedArray, 0);
+          } catch (error) {
+            console.error('Worker fetch error:', error);
+          }
         });
       `;
 
@@ -38,35 +34,26 @@ if (isNode) {
           workerData: { sharedBuffer },
         });
 
-        worker.postMessage("Hello from Main Thread");
+        worker.postMessage("https://example.com");
 
-        console.log("Main thread: waiting for worker...");
         Atomics.wait(sharedArray, 0, 0);
 
-        worker.on("message", (message) => {
-          console.log(`Main thread received: ${message}`);
-        });
-
-        console.log("Main thread: worker has completed its async task");
+        const statusCode = Atomics.load(sharedArray, 0);
+        console.log("fetch response status code", statusCode);
       }
     })
     .catch((err) => console.error("Failed to load Node module:", err));
 } else {
   const workerCode = `
     onmessage = async (event) => {
+      const url = event.data;
       try {
-        console.log(\`Worker received: \${event.data}\`);
-
-        // Simulate async operation with a delay
-        console.log('Worker: starting async task');
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate async work
-        console.log('Worker: async task completed');
-
-        // Send message back to main thread
-        postMessage('Hello from Worker Thread');
+        const response = await fetch(url);
+        const statusCode = response.status;
+        postMessage(statusCode); 
       } catch (error) {
-        console.error('Worker error:', error);
-        postMessage('Worker encountered an error');
+        console.error('Worker fetch error:', error);
+        postMessage({ status: 'Error', message: error.message });
       }
     };
   `;
@@ -77,8 +64,7 @@ if (isNode) {
   const waitForWorker = () => {
     return new Promise((resolve) => {
       worker.onmessage = (event) => {
-        console.log(`Main thread received: ${event.data}`);
-        console.log("Main thread: worker has completed its async task");
+        console.log("fetch response status code", event.data);
         resolve(undefined);
       };
     });
@@ -86,15 +72,9 @@ if (isNode) {
 
   const run = async () => {
     try {
-      console.log("Main thread: sent message to worker");
-      worker.postMessage("Hello from Main Thread");
-      console.log("Posted message...");
-
+      worker.postMessage("https://jsonplaceholder.typicode.com/todos/1");
       await waitForWorker();
-      console.log("Main thread: worker task completed, proceeding...");
       worker.terminate();
-
-      await new Promise((resolve) => setTimeout(resolve, 3000));
     } catch (err) {
       console.error(err);
     }

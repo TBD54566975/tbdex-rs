@@ -10,6 +10,11 @@ export default {
   browsers    : [
     playwrightLauncher({
       product: 'chromium',
+      // launchOptions: {
+      //   headless: false,      
+      //   devtools: true,       
+      //   persistent: true
+      // }
     }),
     playwrightLauncher({
       product: 'firefox',
