@@ -48,16 +48,22 @@ const fetchSyncNode = (url: string, options?: FetchOptions): Response => {
   const statusBuffer = new SharedArrayBuffer(4);
   const headersBuffer = new SharedArrayBuffer(1024);
   const bodyBuffer = new SharedArrayBuffer(1024 * 10);
+  const headersLengthBuffer = new SharedArrayBuffer(4);
+  const bodyLengthBuffer = new SharedArrayBuffer(4);
 
   const statusArray = new Int32Array(statusBuffer);
   const headersArray = new Uint8Array(headersBuffer);
   const bodyArray = new Uint8Array(bodyBuffer);
+  const headersLengthArray = new Int32Array(headersLengthBuffer);
+  const bodyLengthArray = new Int32Array(bodyLengthBuffer);
 
   const workerCode = `
     const { parentPort } = require('worker_threads');
     const statusArray = new Int32Array(require('worker_threads').workerData.statusBuffer);
     const headersArray = new Uint8Array(require('worker_threads').workerData.headersBuffer);
     const bodyArray = new Uint8Array(require('worker_threads').workerData.bodyBuffer);
+    const headersLengthArray = new Int32Array(require('worker_threads').workerData.headersLengthBuffer);
+    const bodyLengthArray = new Int32Array(require('worker_threads').workerData.bodyLengthBuffer);
 
     parentPort.on('message', async (options) => {
       try {
@@ -80,8 +86,14 @@ const fetchSyncNode = (url: string, options?: FetchOptions): Response => {
         const encodedHeaders = encoder.encode(responseHeaders);
         headersArray.set(encodedHeaders, 0); // Store headers starting at index 0
 
+        // Write header length
+        Atomics.store(headersLengthArray, 0, encodedHeaders.length); // Store headers length
+
         // Write body to the body buffer
         bodyArray.set(responseBody, 0); // Store body starting at index 0
+
+        // Write body length
+        Atomics.store(bodyLengthArray, 0, responseBody.length); // Store body length
 
         // Notify the main thread that the response is ready
         Atomics.notify(statusArray, 0);
@@ -103,6 +115,8 @@ const fetchSyncNode = (url: string, options?: FetchOptions): Response => {
         statusBuffer,
         headersBuffer,
         bodyBuffer,
+        headersLengthBuffer,
+        bodyLengthBuffer,
       },
     });
 
@@ -121,13 +135,14 @@ const fetchSyncNode = (url: string, options?: FetchOptions): Response => {
       throw new Error("Fetch request failed in the worker");
     }
 
+    const headersLength = Atomics.load(headersLengthArray, 0);
+    const bodyLength = Atomics.load(bodyLengthArray, 0);
+
     const decoder = new TextDecoder();
-    const decodedHeaders = decoder.decode(
-      headersArray.subarray(0, headersArray.indexOf(0))
-    );
+    const decodedHeaders = decoder.decode(headersArray.slice(0, headersLength));
     const headers = JSON.parse(decodedHeaders);
 
-    const body = bodyArray.slice(0, bodyArray.indexOf(0));
+    const body = bodyArray.slice(0, bodyLength);
 
     const response: Response = {
       statusCode,
@@ -156,7 +171,6 @@ const fetchSyncBrowser = (
 
   xhr.send(fetchOptions?.body ? new Uint8Array(fetchOptions.body) : null);
 
-  console.log("kw dbg", xhr.response);
   const response: Response = {
     statusCode: xhr.status,
     headers: xhr.getAllResponseHeaders(),
