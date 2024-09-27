@@ -1,7 +1,6 @@
 import wasm from "./generated";
 export { default } from "./generated";
+import { ForeignFetch } from "./foreign-fetch";
 
 wasm.loadWasmSync();
-
-import * as f from "./foreign-fetch";
-f;
+wasm.set_http_client(ForeignFetch);
