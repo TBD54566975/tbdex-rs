@@ -180,6 +180,28 @@ export namespace Document {
   };
 }
 
+export type FetchOptions = {
+  body?: Uint8Array;
+  headers?: any;
+  method?: string;
+};
+
+export namespace FetchOptions {
+  export const toWASM = (obj: FetchOptions): wasm.WasmFetchOptions => {
+    return new wasm.WasmFetchOptions(obj.method, obj.headers, obj.body);
+  };
+
+  export const fromWASM = (obj: wasm.WasmFetchOptions): FetchOptions => {
+    const result: FetchOptions = {};
+
+    if (obj.body !== undefined) result.body = obj.body;
+    if (obj.headers !== undefined) result.headers = mapToObject(obj.headers);
+    if (obj.method !== undefined) result.method = obj.method;
+
+    return result;
+  };
+}
+
 export type Field = {
   filter?: Filter;
   id?: string;
@@ -590,6 +612,29 @@ export namespace ResourceMetadata {
     };
 
     if (obj.updated_at !== undefined) result.updatedAt = obj.updated_at;
+
+    return result;
+  };
+}
+
+export type Response = {
+  body: Uint8Array;
+  headers?: any;
+  statusCode: number;
+};
+
+export namespace Response {
+  export const toWASM = (obj: Response): wasm.WasmResponse => {
+    return new wasm.WasmResponse(obj.statusCode, obj.headers, obj.body);
+  };
+
+  export const fromWASM = (obj: wasm.WasmResponse): Response => {
+    const result: Response = {
+      body: obj.body,
+      statusCode: obj.status_code,
+    };
+
+    if (obj.headers !== undefined) result.headers = mapToObject(obj.headers);
 
     return result;
   };

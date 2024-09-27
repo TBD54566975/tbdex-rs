@@ -1,6 +1,10 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {{ fetch: (url: string, options?: WasmFetchOptions) => WasmResponse }} foreign_fetch
+*/
+export function set_http_client(foreign_fetch: { fetch: (url: string, options?: WasmFetchOptions) => WasmResponse }): void;
+/**
 */
 export class WasmBalance {
   free(): void;
@@ -221,6 +225,26 @@ export class WasmDocument {
 /**
 */
   readonly verification_method: (WasmVerificationMethod)[];
+}
+/**
+*/
+export class WasmFetchOptions {
+  free(): void;
+/**
+* @param {string | undefined} method
+* @param {any} headers
+* @param {Uint8Array | undefined} [body]
+*/
+  constructor(method: string | undefined, headers: any, body?: Uint8Array);
+/**
+*/
+  readonly body: Uint8Array | undefined;
+/**
+*/
+  readonly headers: any;
+/**
+*/
+  readonly method: string | undefined;
 }
 /**
 */
@@ -668,6 +692,26 @@ export class WasmResourceMetadata {
 /**
 */
   readonly updated_at: string | undefined;
+}
+/**
+*/
+export class WasmResponse {
+  free(): void;
+/**
+* @param {number} status_code
+* @param {any} headers
+* @param {Uint8Array} body
+*/
+  constructor(status_code: number, headers: any, body: Uint8Array);
+/**
+*/
+  readonly body: Uint8Array;
+/**
+*/
+  readonly headers: any;
+/**
+*/
+  readonly status_code: number;
 }
 /**
 */

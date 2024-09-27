@@ -7,12 +7,15 @@ repository.workspace = true
 license-file.workspace = true
 
 [dependencies]
+http-std = { workspace = true }
+lazy_static = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde-wasm-bindgen = "0.6.5"
 tbdex = { path = "../../crates/tbdex" }
 wasm-bindgen = "0.2.93"
 web5 = { workspace = true }
+web-sys = { version = "0.3.70", features = ["console"] }
 
 [lib]
 crate-type = ["cdylib"]
