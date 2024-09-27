@@ -10,6 +10,26 @@ const mapToObject = (map: Map<any, any>): any => {
   return obj;
 };
 
+export type BalanceData = {
+  available: string;
+  currencyCode: string;
+};
+
+export namespace BalanceData {
+  export const toWASM = (obj: BalanceData): wasm.WasmBalanceData => {
+    return new wasm.WasmBalanceData(obj.currencyCode, obj.available);
+  };
+
+  export const fromWASM = (obj: wasm.WasmBalanceData): BalanceData => {
+    const result: BalanceData = {
+      available: obj.available,
+      currencyCode: obj.currency_code,
+    };
+
+    return result;
+  };
+}
+
 export type CancellationDetails = {
   enabled: boolean;
   terms?: string;

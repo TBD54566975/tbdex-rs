@@ -1,8 +1,10 @@
 import { expect } from "chai";
 import OfferingVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json" assert { type: "json" };
+import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-balance.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
+import { Balance } from "../src/resources/balance";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -39,6 +41,33 @@ describe("test vectors", () => {
 
       createdOffering.sign(bearerDID);
       createdOffering.verify();
+    });
+  });
+
+  describe("balance", () => {
+    it("should parse", () => {
+      const input = BalanceVector.input;
+      const balance = Balance.fromJSONString(input);
+      expect(balance.metadata).to.deep.equal(BalanceVector.output.metadata);
+      expect(balance.data).to.deep.equal(BalanceVector.output.data);
+      expect(balance.signature).to.equal(BalanceVector.output.signature);
+
+      const balanceJSONString = balance.toJSONString();
+      const balanceJSON = JSON.parse(balanceJSONString);
+      expect(balanceJSON).to.deep.equal(BalanceVector.output);
+
+      balance.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const createdBalance = Balance.create(
+        BalanceVector.output.metadata.from,
+        BalanceVector.output.data,
+        BalanceVector.output.metadata.protocol
+      );
+
+      createdBalance.sign(bearerDID);
+      createdBalance.verify();
     });
   });
 });

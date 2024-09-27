@@ -2,6 +2,65 @@
 /* eslint-disable */
 /**
 */
+export class WasmBalance {
+  free(): void;
+/**
+* @param {WasmResourceMetadata} metadata
+* @param {WasmBalanceData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmResourceMetadata, data: WasmBalanceData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmBalance}
+*/
+  static from_json_string(json: string): WasmBalance;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} from
+* @param {WasmBalanceData} data
+* @param {string | undefined} [protocol]
+* @returns {WasmBalance}
+*/
+  static create(from: string, data: WasmBalanceData, protocol?: string): WasmBalance;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmBalanceData;
+/**
+*/
+  readonly metadata: WasmResourceMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmBalanceData {
+  free(): void;
+/**
+* @param {string} currency_code
+* @param {string} available
+*/
+  constructor(currency_code: string, available: string);
+/**
+*/
+  readonly available: string;
+/**
+*/
+  readonly currency_code: string;
+}
+/**
+*/
 export class WasmBearerDid {
   free(): void;
 /**

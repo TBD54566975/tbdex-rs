@@ -3,8 +3,76 @@ use crate::{
     errors::{map_err, Result},
     web5::bearer_did::WasmBearerDid,
 };
-use tbdex::resources::balance::{Balance, BalanceData};
+use tbdex::{
+    json::{FromJson, ToJson},
+    resources::balance::{Balance, BalanceData},
+};
 use wasm_bindgen::prelude::wasm_bindgen;
+
+#[wasm_bindgen]
+pub struct WasmBalance {
+    inner: Balance,
+}
+
+#[wasm_bindgen]
+impl WasmBalance {
+    #[wasm_bindgen(constructor)]
+    pub fn new(metadata: WasmResourceMetadata, data: WasmBalanceData, signature: String) -> Self {
+        Self {
+            inner: Balance {
+                metadata: metadata.into(),
+                data: data.into(),
+                signature,
+            },
+        }
+    }
+
+    pub fn from_json_string(json: &str) -> Result<WasmBalance> {
+        Ok(Self {
+            inner: Balance::from_json_string(json).map_err(map_err)?,
+        })
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        Ok(self.inner.to_json_string().map_err(map_err)?)
+    }
+
+    #[wasm_bindgen]
+    pub fn create(
+        from: &str,
+        data: WasmBalanceData,
+        protocol: Option<String>,
+    ) -> Result<WasmBalance> {
+        Ok(WasmBalance {
+            inner: Balance::create(from, &BalanceData::from(data), protocol).map_err(map_err)?,
+        })
+    }
+
+    #[wasm_bindgen]
+    pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
+        Ok(self.inner.sign(&bearer_did.into()).map_err(map_err)?)
+    }
+
+    #[wasm_bindgen]
+    pub fn verify(&self) -> Result<()> {
+        Ok(self.inner.verify().map_err(map_err)?)
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn metadata(&self) -> WasmResourceMetadata {
+        self.inner.metadata.clone().into()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn data(&self) -> WasmBalanceData {
+        self.inner.data.clone().into()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn signature(&self) -> String {
+        self.inner.signature.clone()
+    }
+}
 
 #[wasm_bindgen]
 pub struct WasmBalanceData {
@@ -34,45 +102,14 @@ impl WasmBalanceData {
             },
         }
     }
-}
 
-#[wasm_bindgen]
-pub struct WasmBalance {
-    inner: Balance,
-}
-
-impl From<Balance> for WasmBalance {
-    fn from(value: Balance) -> Self {
-        Self { inner: value }
-    }
-}
-
-impl From<WasmBalance> for Balance {
-    fn from(value: WasmBalance) -> Self {
-        value.inner
-    }
-}
-
-#[wasm_bindgen]
-impl WasmBalance {
-    #[wasm_bindgen]
-    pub fn create(
-        from: &str,
-        data: WasmBalanceData,
-        protocol: Option<String>,
-    ) -> Result<WasmBalance> {
-        Ok(WasmBalance {
-            inner: Balance::create(from, &BalanceData::from(data), protocol).map_err(map_err)?,
-        })
+    #[wasm_bindgen(getter)]
+    pub fn currency_code(&self) -> String {
+        self.inner.currency_code.clone()
     }
 
-    #[wasm_bindgen]
-    pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
-        Ok(self.inner.sign(&bearer_did.into()).map_err(map_err)?)
-    }
-
-    #[wasm_bindgen]
-    pub fn verify(&self) -> Result<()> {
-        Ok(self.inner.verify().map_err(map_err)?)
+    #[wasm_bindgen(getter)]
+    pub fn available(&self) -> String {
+        self.inner.available.clone()
     }
 }
