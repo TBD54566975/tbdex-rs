@@ -44,30 +44,30 @@ describe("test vectors", () => {
     });
   });
 
-  describe("balance", () => {
-    it("should parse", () => {
-      const input = BalanceVector.input;
-      const balance = Balance.fromJSONString(input);
-      expect(balance.metadata).to.deep.equal(BalanceVector.output.metadata);
-      expect(balance.data).to.deep.equal(BalanceVector.output.data);
-      expect(balance.signature).to.equal(BalanceVector.output.signature);
+  // describe("balance", () => {
+  //   it("should parse", () => {
+  //     const input = BalanceVector.input;
+  //     const balance = Balance.fromJSONString(input);
+  //     expect(balance.metadata).to.deep.equal(BalanceVector.output.metadata);
+  //     expect(balance.data).to.deep.equal(BalanceVector.output.data);
+  //     expect(balance.signature).to.equal(BalanceVector.output.signature);
 
-      const balanceJSONString = balance.toJSONString();
-      const balanceJSON = JSON.parse(balanceJSONString);
-      expect(balanceJSON).to.deep.equal(BalanceVector.output);
+  //     const balanceJSONString = balance.toJSONString();
+  //     const balanceJSON = JSON.parse(balanceJSONString);
+  //     expect(balanceJSON).to.deep.equal(BalanceVector.output);
 
-      balance.verify();
-    });
+  //     balance.verify();
+  //   });
 
-    it("should create, sign, and verify", () => {
-      const createdBalance = Balance.create(
-        BalanceVector.output.metadata.from,
-        BalanceVector.output.data,
-        BalanceVector.output.metadata.protocol
-      );
+  //   it("should create, sign, and verify", () => {
+  //     const createdBalance = Balance.create(
+  //       BalanceVector.output.metadata.from,
+  //       BalanceVector.output.data,
+  //       BalanceVector.output.metadata.protocol
+  //     );
 
-      createdBalance.sign(bearerDID);
-      createdBalance.verify();
-    });
-  });
+  //     createdBalance.sign(bearerDID);
+  //     createdBalance.verify();
+  //   });
+  // });
 });

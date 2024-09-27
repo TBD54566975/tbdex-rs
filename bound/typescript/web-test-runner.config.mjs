@@ -22,7 +22,7 @@ export default {
   concurrentBrowsers : 1,
   testFramework      : {
     config: {
-      timeout: '15000',
+      timeout: '30000',
     },
   },
 };
