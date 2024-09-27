@@ -1,147 +1,167 @@
 import wasm from ".";
-import { Response } from "./mappings";
+import { FetchOptions, Response } from "./mappings";
+
+let workerThreads: any | undefined;
+
+const IS_NODEJS =
+  typeof process !== "undefined" &&
+  process.versions != null &&
+  process.versions.node != null;
+
+if (IS_NODEJS) {
+  try {
+    workerThreads = await import("worker_threads");
+  } catch (err) {
+    console.error("Failed to load worker_threads in Node.js environment:", err);
+  }
+}
 
 export const ForeignFetch = {
   fetch: (
     url: string,
     wasmFetchOptions?: wasm.WasmFetchOptions
   ): wasm.WasmResponse => {
-    // TODO use the below proof of concept code to execute a fetch synchronously, but async within the worker thread,
-    // TODO and then return the wasm.WasmResponse
-    throw new Error("TODO!");
+    return fetchSync(url, wasmFetchOptions);
   },
 };
 
-const isNode =
-  typeof process !== "undefined" &&
-  process.versions != null &&
-  process.versions.node != null;
+const fetchSync = (
+  url: string,
+  wasmFetchOptions?: wasm.WasmFetchOptions
+): wasm.WasmResponse => {
+  if (IS_NODEJS) {
+    const response = fetchSyncNode(
+      url,
+      wasmFetchOptions ? FetchOptions.fromWASM(wasmFetchOptions) : undefined
+    );
+    return Response.toWASM(response);
+  } else {
+    const response = fetchSyncBrowser(
+      url,
+      wasmFetchOptions ? FetchOptions.fromWASM(wasmFetchOptions) : undefined
+    );
+    return Response.toWASM(response);
+  }
+};
 
-if (isNode) {
-  import("worker_threads")
-    .then((module) => {
-      const sharedBuffer = new SharedArrayBuffer(4);
-      const sharedArray = new Int32Array(sharedBuffer);
+const fetchSyncNode = (url: string, options?: FetchOptions): Response => {
+  const statusBuffer = new SharedArrayBuffer(4);
+  const headersBuffer = new SharedArrayBuffer(1024);
+  const bodyBuffer = new SharedArrayBuffer(1024 * 10);
 
-      const workerCode = `
-        const { parentPort } = require('worker_threads');
-        const sharedArray = new Int32Array(require('worker_threads').workerData.sharedBuffer);
+  const statusArray = new Int32Array(statusBuffer);
+  const headersArray = new Uint8Array(headersBuffer);
+  const bodyArray = new Uint8Array(bodyBuffer);
 
-        parentPort.on('message', async (options) => {
-          try {
-            const { method, headers, body } = options;
-
-            const response = await fetch(options.url, {
-              method: method || 'GET',
-              headers: headers,
-              body: body ? Buffer.from(body) : undefined
-            });
-
-            const responseBody = new Uint8Array(await response.arrayBuffer());
-            const wasmResponse = {
-              status_code: response.status,
-              headers: Array.from(response.headers.entries()), // Convert headers to array
-              body: responseBody
-            };
-
-            // Store the status code in shared memory
-            Atomics.store(sharedArray, 0, response.status);
-
-            // Send the body and headers in a separate message
-            parentPort.postMessage({
-              headers: wasmResponse.headers,
-              body: wasmResponse.body
-            });
-
-            // Notify the main thread that the status code is ready
-            Atomics.notify(sharedArray, 0);
-          } catch (error) {
-            console.error('Worker fetch error:', error);
-            Atomics.store(sharedArray, 0, -1); // Indicate failure
-            Atomics.notify(sharedArray, 0);
-          }
-        });
-        `;
-
-      if (module.isMainThread) {
-        const worker = new module.Worker(workerCode, {
-          eval: true,
-          workerData: { sharedBuffer },
-        });
-
-        const fetchOptions = new wasm.WasmFetchOptions(
-          "POST",
-          { "Content-Type": "application/json" },
-          new Uint8Array(Buffer.from(JSON.stringify({ key: "value" })))
-        );
-
-        worker.postMessage({
-          url: "https://httpbin.org/post",
-          method: fetchOptions.method,
-          headers: fetchOptions.headers,
-          body: fetchOptions.body,
-        });
-
-        Atomics.wait(sharedArray, 0, 0);
-
-        const statusCode = Atomics.load(sharedArray, 0);
-
-        if (statusCode === -1) {
-          console.error("Fetch request failed in the worker");
-        } else {
-          console.log("Fetch response status code:", statusCode);
-
-          worker.on("message", (message) => {
-            const { headers, body } = message;
-            const wasmResponse = new wasm.WasmResponse(
-              statusCode,
-              headers,
-              body
-            );
-
-            console.log("Response:", wasmResponse);
-            console.log("Response:", Response.fromWASM(wasmResponse));
-          });
-        }
-      }
-    })
-    .catch((err) => console.error("Failed to load Node module:", err));
-} else {
   const workerCode = `
-    onmessage = async (event) => {
-      const url = event.data;
+    const { parentPort } = require('worker_threads');
+    const statusArray = new Int32Array(require('worker_threads').workerData.statusBuffer);
+    const headersArray = new Uint8Array(require('worker_threads').workerData.headersBuffer);
+    const bodyArray = new Uint8Array(require('worker_threads').workerData.bodyBuffer);
+
+    parentPort.on('message', async (options) => {
       try {
-        const response = await fetch(url);
-        const statusCode = response.status;
-        postMessage(statusCode);
+        const { method, headers, body } = options;
+
+        const response = await fetch(options.url, {
+          method: method || 'GET',
+          headers: headers,
+          body: body ? Buffer.from(body) : undefined
+        });
+
+        const responseBody = new Uint8Array(await response.arrayBuffer());
+        const responseHeaders = JSON.stringify(Array.from(response.headers.entries())); // Convert headers to JSON
+
+        // Write status code to shared buffer
+        Atomics.store(statusArray, 0, response.status);
+
+        // Write headers to the headers buffer
+        const encoder = new TextEncoder();
+        const encodedHeaders = encoder.encode(responseHeaders);
+        headersArray.set(encodedHeaders, 0); // Store headers starting at index 0
+
+        // Write body to the body buffer
+        bodyArray.set(responseBody, 0); // Store body starting at index 0
+
+        // Notify the main thread that the response is ready
+        Atomics.notify(statusArray, 0);
       } catch (error) {
         console.error('Worker fetch error:', error);
-        postMessage({ status: 'Error', message: error.message });
+        Atomics.store(statusArray, 0, -1); // Indicate failure
+        Atomics.notify(statusArray, 0);
       }
-    };
+    });
   `;
 
-  const blob = new Blob([workerCode], { type: "application/javascript" });
-  const worker = new Worker(URL.createObjectURL(blob));
+  if (workerThreads === undefined)
+    throw Error("worker_threads must be imported");
 
-  const waitForWorker = () => {
-    return new Promise((resolve) => {
-      worker.onmessage = (event) => {
-        console.log("fetch response status code", event.data);
-        resolve(undefined);
-      };
+  if (workerThreads.isMainThread) {
+    const worker = new workerThreads.Worker(workerCode, {
+      eval: true,
+      workerData: {
+        statusBuffer,
+        headersBuffer,
+        bodyBuffer,
+      },
     });
-  };
 
-  const run = async () => {
-    try {
-      worker.postMessage("https://jsonplaceholder.typicode.com/todos/1");
-      await waitForWorker();
-      worker.terminate();
-    } catch (err) {
-      console.error(err);
+    worker.postMessage({
+      url: url,
+      method: options?.method,
+      headers: options?.headers,
+      body: options?.body,
+    });
+
+    Atomics.wait(statusArray, 0, 0);
+
+    const statusCode = Atomics.load(statusArray, 0);
+
+    if (statusCode === -1) {
+      throw new Error("Fetch request failed in the worker");
     }
+
+    const decoder = new TextDecoder();
+    const decodedHeaders = decoder.decode(
+      headersArray.subarray(0, headersArray.indexOf(0))
+    );
+    const headers = JSON.parse(decodedHeaders);
+
+    const body = bodyArray.slice(0, bodyArray.indexOf(0));
+
+    const response: Response = {
+      statusCode,
+      headers,
+      body,
+    };
+
+    return response;
+  }
+
+  throw Error("must be main thread");
+};
+
+const fetchSyncBrowser = (
+  url: string,
+  fetchOptions?: FetchOptions
+): Response => {
+  const xhr = new XMLHttpRequest();
+  xhr.open(fetchOptions?.method || "GET", url, false);
+
+  if (fetchOptions?.headers) {
+    Object.entries(fetchOptions.headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value as string);
+    });
+  }
+
+  xhr.send(fetchOptions?.body ? new Uint8Array(fetchOptions.body) : null);
+
+  console.log("kw dbg", xhr.response);
+  const response: Response = {
+    statusCode: xhr.status,
+    headers: xhr.getAllResponseHeaders(),
+    body: new Uint8Array(xhr.response),
   };
 
-  await run();
-}
+  return response;
+};
