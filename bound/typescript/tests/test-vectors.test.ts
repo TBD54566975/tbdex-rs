@@ -2,6 +2,7 @@ import { expect } from "chai";
 import OfferingVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json" assert { type: "json" };
 import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-balance.json" assert { type: "json" };
 import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
+import RfqOmitPrivateDataVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq-omit-private-data.json" assert { type: "json" };
 import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json" assert { type: "json" };
 import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json" assert { type: "json" };
 import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json" assert { type: "json" };
@@ -95,6 +96,22 @@ describe("test vectors", () => {
       const rfqJSONString = rfq.toJSONString();
       const rfqJSON = JSON.parse(rfqJSONString);
       expect(rfqJSON).to.deep.equal(RfqVector.output);
+
+      rfq.verify();
+    });
+
+    it("should parse with private data omitted", () => {
+      const input = RfqOmitPrivateDataVector.input;
+      const rfq = Rfq.fromJSONString(input);
+      expect(rfq.metadata).to.deep.equal(
+        RfqOmitPrivateDataVector.output.metadata
+      );
+      expect(rfq.data).to.deep.equal(RfqOmitPrivateDataVector.output.data);
+      expect(rfq.signature).to.equal(RfqOmitPrivateDataVector.output.signature);
+
+      const rfqJSONString = rfq.toJSONString();
+      const rfqJSON = JSON.parse(rfqJSONString);
+      expect(rfqJSON).to.deep.equal(RfqOmitPrivateDataVector.output);
 
       rfq.verify();
     });
