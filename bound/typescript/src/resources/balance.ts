@@ -18,7 +18,7 @@ export class Balance {
     this.signature = signature;
   }
 
-  private static fromWASM = (wasmBalance: wasm.WasmBalance): Balance => {
+  static fromWASM = (wasmBalance: wasm.WasmBalance): Balance => {
     try {
       return new Balance(
         ResourceMetadata.fromWASM(wasmBalance.metadata),
@@ -30,7 +30,7 @@ export class Balance {
     }
   };
 
-  private toWASM = (): wasm.WasmBalance => {
+  toWASM = (): wasm.WasmBalance => {
     try {
       return new wasm.WasmBalance(
         ResourceMetadata.toWASM(this.metadata),

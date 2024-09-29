@@ -127,6 +127,66 @@ export class WasmConstraints {
 }
 /**
 */
+export class WasmCreateRfqData {
+  free(): void;
+/**
+* @param {string} offering_id
+* @param {WasmCreateSelectedPayinMethod} payin
+* @param {WasmCreateSelectedPayoutMethod} payout
+* @param {Array<any>} claims
+*/
+  constructor(offering_id: string, payin: WasmCreateSelectedPayinMethod, payout: WasmCreateSelectedPayoutMethod, claims: Array<any>);
+/**
+*/
+  readonly claims: Array<any>;
+/**
+*/
+  readonly offering_id: string;
+/**
+*/
+  readonly payin: WasmCreateSelectedPayinMethod;
+/**
+*/
+  readonly payout: WasmCreateSelectedPayoutMethod;
+}
+/**
+*/
+export class WasmCreateSelectedPayinMethod {
+  free(): void;
+/**
+* @param {string} kind
+* @param {any} payment_details
+* @param {string} amount
+*/
+  constructor(kind: string, payment_details: any, amount: string);
+/**
+*/
+  readonly amount: string;
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly payment_details: any;
+}
+/**
+*/
+export class WasmCreateSelectedPayoutMethod {
+  free(): void;
+/**
+* @param {string} kind
+* @param {any} payment_details
+*/
+  constructor(kind: string, payment_details: any);
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly payment_details: any;
+}
+/**
+*/
 export class WasmDid {
   free(): void;
 /**
@@ -703,6 +763,18 @@ export class WasmPresentationDefinition {
 }
 /**
 */
+export class WasmPrivatePaymentDetails {
+  free(): void;
+/**
+* @param {any} payment_details
+*/
+  constructor(payment_details: any);
+/**
+*/
+  readonly payment_details: any;
+}
+/**
+*/
 export class WasmResourceMetadata {
   free(): void;
 /**
@@ -752,6 +824,149 @@ export class WasmResponse {
 /**
 */
   readonly status_code: number;
+}
+/**
+*/
+export class WasmRfq {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmRfqData} data
+* @param {WasmRfqPrivateData | undefined} private_data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmRfqData, private_data: WasmRfqPrivateData | undefined, signature: string);
+/**
+* @param {string} json
+* @returns {WasmRfq}
+*/
+  static from_json_string(json: string): WasmRfq;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {WasmCreateRfqData} create_rfq_data
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmRfq}
+*/
+  static create(to: string, from: string, create_rfq_data: WasmCreateRfqData, protocol?: string, external_id?: string): WasmRfq;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+* @param {WasmOffering} offering
+*/
+  verify_offering_requirements(offering: WasmOffering): void;
+/**
+*/
+  verify_all_private_data(): void;
+/**
+*/
+  verify_present_private_data(): void;
+/**
+*/
+  readonly data: WasmRfqData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly private_data: WasmRfqPrivateData | undefined;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmRfqData {
+  free(): void;
+/**
+* @param {string} offering_id
+* @param {WasmSelectedPayinMethod} payin
+* @param {WasmSelectedPayoutMethod} payout
+* @param {string | undefined} [claims_hash]
+*/
+  constructor(offering_id: string, payin: WasmSelectedPayinMethod, payout: WasmSelectedPayoutMethod, claims_hash?: string);
+/**
+*/
+  readonly claims_hash: string | undefined;
+/**
+*/
+  readonly offering_id: string;
+/**
+*/
+  readonly payin: WasmSelectedPayinMethod;
+/**
+*/
+  readonly payout: WasmSelectedPayoutMethod;
+}
+/**
+*/
+export class WasmRfqPrivateData {
+  free(): void;
+/**
+* @param {string} salt
+* @param {WasmPrivatePaymentDetails | undefined} [payin]
+* @param {WasmPrivatePaymentDetails | undefined} [payout]
+* @param {Array<any> | undefined} [claims]
+*/
+  constructor(salt: string, payin?: WasmPrivatePaymentDetails, payout?: WasmPrivatePaymentDetails, claims?: Array<any>);
+/**
+*/
+  readonly claims: Array<any> | undefined;
+/**
+*/
+  readonly payin: WasmPrivatePaymentDetails | undefined;
+/**
+*/
+  readonly payout: WasmPrivatePaymentDetails | undefined;
+/**
+*/
+  readonly salt: string;
+}
+/**
+*/
+export class WasmSelectedPayinMethod {
+  free(): void;
+/**
+* @param {string} kind
+* @param {string | undefined} payment_details_hash
+* @param {string} amount
+*/
+  constructor(kind: string, payment_details_hash: string | undefined, amount: string);
+/**
+*/
+  readonly amount: string;
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly payment_details_hash: string | undefined;
+}
+/**
+*/
+export class WasmSelectedPayoutMethod {
+  free(): void;
+/**
+* @param {string} kind
+* @param {string | undefined} [payment_details_hash]
+*/
+  constructor(kind: string, payment_details_hash?: string);
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly payment_details_hash: string | undefined;
 }
 /**
 */

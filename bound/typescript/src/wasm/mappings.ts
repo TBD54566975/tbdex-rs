@@ -79,6 +79,96 @@ export namespace Constraints {
   };
 }
 
+export type CreateRfqData = {
+  claims: Array<any>;
+  offeringId: string;
+  payin: CreateSelectedPayinMethod;
+  payout: CreateSelectedPayoutMethod;
+};
+
+export namespace CreateRfqData {
+  export const toWASM = (obj: CreateRfqData): wasm.WasmCreateRfqData => {
+    return new wasm.WasmCreateRfqData(
+      obj.offeringId,
+      CreateSelectedPayinMethod.toWASM(obj.payin),
+      CreateSelectedPayoutMethod.toWASM(obj.payout),
+      obj.claims,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmCreateRfqData): CreateRfqData => {
+    const result: CreateRfqData = {
+      claims: obj.claims,
+      offeringId: obj.offering_id,
+      payin: CreateSelectedPayinMethod.fromWASM(obj.payin),
+      payout: CreateSelectedPayoutMethod.fromWASM(obj.payout),
+    };
+
+    return result;
+  };
+}
+
+export type CreateSelectedPayinMethod = {
+  amount: string;
+  kind: string;
+  paymentDetails?: any;
+};
+
+export namespace CreateSelectedPayinMethod {
+  export const toWASM = (
+    obj: CreateSelectedPayinMethod,
+  ): wasm.WasmCreateSelectedPayinMethod => {
+    return new wasm.WasmCreateSelectedPayinMethod(
+      obj.kind,
+      obj.paymentDetails,
+      obj.amount,
+    );
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmCreateSelectedPayinMethod,
+  ): CreateSelectedPayinMethod => {
+    const result: CreateSelectedPayinMethod = {
+      amount: obj.amount,
+      kind: obj.kind,
+    };
+
+    if (obj.payment_details !== undefined)
+      result.paymentDetails = mapToObject(obj.payment_details);
+
+    return result;
+  };
+}
+
+export type CreateSelectedPayoutMethod = {
+  kind: string;
+  paymentDetails?: any;
+};
+
+export namespace CreateSelectedPayoutMethod {
+  export const toWASM = (
+    obj: CreateSelectedPayoutMethod,
+  ): wasm.WasmCreateSelectedPayoutMethod => {
+    return new wasm.WasmCreateSelectedPayoutMethod(
+      obj.kind,
+      obj.paymentDetails,
+    );
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmCreateSelectedPayoutMethod,
+  ): CreateSelectedPayoutMethod => {
+    const result: CreateSelectedPayoutMethod = {
+      kind: obj.kind,
+    };
+
+    if (obj.payment_details !== undefined)
+      result.paymentDetails = mapToObject(obj.payment_details);
+
+    return result;
+  };
+}
+
 export type Did = {
   fragment?: string;
   id: string;
@@ -621,6 +711,29 @@ export namespace PresentationDefinition {
   };
 }
 
+export type PrivatePaymentDetails = {
+  paymentDetails?: any;
+};
+
+export namespace PrivatePaymentDetails {
+  export const toWASM = (
+    obj: PrivatePaymentDetails,
+  ): wasm.WasmPrivatePaymentDetails => {
+    return new wasm.WasmPrivatePaymentDetails(obj.paymentDetails);
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmPrivatePaymentDetails,
+  ): PrivatePaymentDetails => {
+    const result: PrivatePaymentDetails = {};
+
+    if (obj.payment_details !== undefined)
+      result.paymentDetails = mapToObject(obj.payment_details);
+
+    return result;
+  };
+}
+
 export type ResourceMetadata = {
   createdAt: string;
   from: string;
@@ -677,6 +790,157 @@ export namespace Response {
     };
 
     if (obj.headers !== undefined) result.headers = mapToObject(obj.headers);
+
+    return result;
+  };
+}
+
+export type Rfq = {
+  data: RfqData;
+  metadata: MessageMetadata;
+  privateData?: RfqPrivateData;
+  signature: string;
+};
+
+export namespace Rfq {
+  export const toWASM = (obj: Rfq): wasm.WasmRfq => {
+    return new wasm.WasmRfq(
+      MessageMetadata.toWASM(obj.metadata),
+      RfqData.toWASM(obj.data),
+      obj.privateData ? RfqPrivateData.toWASM(obj.privateData) : undefined,
+      obj.signature,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmRfq): Rfq => {
+    const result: Rfq = {
+      data: RfqData.fromWASM(obj.data),
+      metadata: MessageMetadata.fromWASM(obj.metadata),
+      signature: obj.signature,
+    };
+
+    if (obj.private_data !== undefined)
+      result.privateData = RfqPrivateData.fromWASM(obj.private_data);
+
+    return result;
+  };
+}
+
+export type RfqData = {
+  claimsHash?: string;
+  offeringId: string;
+  payin: SelectedPayinMethod;
+  payout: SelectedPayoutMethod;
+};
+
+export namespace RfqData {
+  export const toWASM = (obj: RfqData): wasm.WasmRfqData => {
+    return new wasm.WasmRfqData(
+      obj.offeringId,
+      SelectedPayinMethod.toWASM(obj.payin),
+      SelectedPayoutMethod.toWASM(obj.payout),
+      obj.claimsHash,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmRfqData): RfqData => {
+    const result: RfqData = {
+      offeringId: obj.offering_id,
+      payin: SelectedPayinMethod.fromWASM(obj.payin),
+      payout: SelectedPayoutMethod.fromWASM(obj.payout),
+    };
+
+    if (obj.claims_hash !== undefined) result.claimsHash = obj.claims_hash;
+
+    return result;
+  };
+}
+
+export type RfqPrivateData = {
+  claims?: Array<any>;
+  payin?: PrivatePaymentDetails;
+  payout?: PrivatePaymentDetails;
+  salt: string;
+};
+
+export namespace RfqPrivateData {
+  export const toWASM = (obj: RfqPrivateData): wasm.WasmRfqPrivateData => {
+    return new wasm.WasmRfqPrivateData(
+      obj.salt,
+      obj.payin ? PrivatePaymentDetails.toWASM(obj.payin) : undefined,
+      obj.payout ? PrivatePaymentDetails.toWASM(obj.payout) : undefined,
+      obj.claims,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmRfqPrivateData): RfqPrivateData => {
+    const result: RfqPrivateData = {
+      salt: obj.salt,
+    };
+
+    if (obj.claims !== undefined) result.claims = obj.claims;
+    if (obj.payin !== undefined)
+      result.payin = PrivatePaymentDetails.fromWASM(obj.payin);
+    if (obj.payout !== undefined)
+      result.payout = PrivatePaymentDetails.fromWASM(obj.payout);
+
+    return result;
+  };
+}
+
+export type SelectedPayinMethod = {
+  amount: string;
+  kind: string;
+  paymentDetailsHash?: string;
+};
+
+export namespace SelectedPayinMethod {
+  export const toWASM = (
+    obj: SelectedPayinMethod,
+  ): wasm.WasmSelectedPayinMethod => {
+    return new wasm.WasmSelectedPayinMethod(
+      obj.kind,
+      obj.paymentDetailsHash,
+      obj.amount,
+    );
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmSelectedPayinMethod,
+  ): SelectedPayinMethod => {
+    const result: SelectedPayinMethod = {
+      amount: obj.amount,
+      kind: obj.kind,
+    };
+
+    if (obj.payment_details_hash !== undefined)
+      result.paymentDetailsHash = obj.payment_details_hash;
+
+    return result;
+  };
+}
+
+export type SelectedPayoutMethod = {
+  kind: string;
+  paymentDetailsHash?: string;
+};
+
+export namespace SelectedPayoutMethod {
+  export const toWASM = (
+    obj: SelectedPayoutMethod,
+  ): wasm.WasmSelectedPayoutMethod => {
+    return new wasm.WasmSelectedPayoutMethod(obj.kind, obj.paymentDetailsHash);
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmSelectedPayoutMethod,
+  ): SelectedPayoutMethod => {
+    const result: SelectedPayoutMethod = {
+      kind: obj.kind,
+    };
+
+    if (obj.payment_details_hash !== undefined)
+      result.paymentDetailsHash = obj.payment_details_hash;
 
     return result;
   };

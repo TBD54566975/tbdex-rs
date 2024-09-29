@@ -1,10 +1,13 @@
 import { expect } from "chai";
 import OfferingVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json" assert { type: "json" };
 import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-balance.json" assert { type: "json" };
+import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
 import { Balance } from "../src/resources/balance";
+import { Rfq } from "../src/messages/rfq";
+import { CreateRfqData } from "../src/wasm/mappings";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -33,14 +36,14 @@ describe("test vectors", () => {
     });
 
     it("should create, sign, and verify", () => {
-      const createdOffering = Offering.create(
+      const offering = Offering.create(
         OfferingVector.output.metadata.from,
         OfferingVector.output.data,
         OfferingVector.output.metadata.protocol
       );
 
-      createdOffering.sign(bearerDID);
-      createdOffering.verify();
+      offering.sign(bearerDID);
+      offering.verify();
     });
   });
 
@@ -60,14 +63,56 @@ describe("test vectors", () => {
     });
 
     it("should create, sign, and verify", () => {
-      const createdBalance = Balance.create(
+      const balance = Balance.create(
         BalanceVector.output.metadata.from,
         BalanceVector.output.data,
         BalanceVector.output.metadata.protocol
       );
 
-      createdBalance.sign(bearerDID);
-      createdBalance.verify();
+      balance.sign(bearerDID);
+      balance.verify();
+    });
+  });
+
+  describe("rfq", () => {
+    it("should parse", () => {
+      const input = RfqVector.input;
+      const rfq = Rfq.fromJSONString(input);
+      expect(rfq.metadata).to.deep.equal(RfqVector.output.metadata);
+      expect(rfq.data).to.deep.equal(RfqVector.output.data);
+      expect(rfq.signature).to.equal(RfqVector.output.signature);
+
+      const balanceJSONString = rfq.toJSONString();
+      const balanceJSON = JSON.parse(balanceJSONString);
+      expect(balanceJSON).to.deep.equal(RfqVector.output);
+
+      rfq.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const createRfqData: CreateRfqData = {
+        claims: RfqVector.output.privateData.claims,
+        offeringId: RfqVector.output.data.offeringId,
+        payin: {
+          amount: RfqVector.output.data.payin.amount,
+          kind: RfqVector.output.data.payin.kind,
+          paymentDetails: RfqVector.output.privateData.payin.paymentDetails,
+        },
+        payout: {
+          kind: RfqVector.output.data.payout.kind,
+          paymentDetails: RfqVector.output.privateData.payout.paymentDetails,
+        },
+      };
+
+      const rfq = Rfq.create(
+        RfqVector.output.metadata.to,
+        RfqVector.output.metadata.from,
+        createRfqData,
+        RfqVector.output.metadata.protocol
+      );
+
+      rfq.sign(bearerDID);
+      rfq.verify();
     });
   });
 });

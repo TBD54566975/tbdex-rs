@@ -19,7 +19,7 @@ export class Offering {
     this.signature = signature;
   }
 
-  private static fromWASM = (wasmOffering: wasm.WasmOffering): Offering => {
+  static fromWASM = (wasmOffering: wasm.WasmOffering): Offering => {
     try {
       return new Offering(
         ResourceMetadata.fromWASM(wasmOffering.metadata),
@@ -31,7 +31,7 @@ export class Offering {
     }
   };
 
-  private toWASM = (): wasm.WasmOffering => {
+  toWASM = (): wasm.WasmOffering => {
     try {
       return new wasm.WasmOffering(
         ResourceMetadata.toWASM(this.metadata),

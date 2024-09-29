@@ -8,6 +8,7 @@ license-file.workspace = true
 
 [dependencies]
 http-std = { workspace = true }
+js-sys = "0.3.70"
 lazy_static = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
