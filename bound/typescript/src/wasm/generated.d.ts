@@ -689,6 +689,68 @@ export class WasmOrderInstructionsData {
 }
 /**
 */
+export class WasmOrderStatus {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmOrderStatusData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmOrderStatusData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmOrderStatus}
+*/
+  static from_json_string(json: string): WasmOrderStatus;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {string} exchange_id
+* @param {WasmOrderStatusData} data
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmOrderStatus}
+*/
+  static create(to: string, from: string, exchange_id: string, data: WasmOrderStatusData, protocol?: string, external_id?: string): WasmOrderStatus;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmOrderStatusData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmOrderStatusData {
+  free(): void;
+/**
+* @param {string} status
+* @param {string | undefined} [details]
+*/
+  constructor(status: string, details?: string);
+/**
+*/
+  readonly details: string | undefined;
+/**
+*/
+  readonly status: string;
+}
+/**
+*/
 export class WasmPayinDetails {
   free(): void;
 /**

@@ -4,6 +4,7 @@ import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/p
 import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
 import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json" assert { type: "json" };
 import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json" assert { type: "json" };
+import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -12,6 +13,7 @@ import { Rfq } from "../src/messages/rfq";
 import { CreateRfqData } from "../src/wasm/mappings";
 import { Quote } from "../src/messages/quote";
 import { Order } from "../src/messages/order";
+import { OrderStatus } from "../src/messages/order-status";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -150,6 +152,34 @@ describe("test vectors", () => {
     });
   });
 
+  describe("order", () => {
+    it("should parse", () => {
+      const input = OrderVector.input;
+      const order = Order.fromJSONString(input);
+      expect(order.metadata).to.deep.equal(OrderVector.output.metadata);
+      expect(order.data).to.deep.equal(OrderVector.output.data);
+      expect(order.signature).to.equal(OrderVector.output.signature);
+
+      const orderJSONString = order.toJSONString();
+      const orderJSON = JSON.parse(orderJSONString);
+      expect(orderJSON).to.deep.equal(OrderVector.output);
+
+      order.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const order = Order.create(
+        OrderVector.output.metadata.to,
+        OrderVector.output.metadata.from,
+        OrderVector.output.metadata.exchangeId,
+        OrderVector.output.metadata.protocol
+      );
+
+      order.sign(bearerDID);
+      order.verify();
+    });
+  });
+
   describe("order instructions", () => {
     it("should parse", () => {
       // todo create test vector
@@ -157,6 +187,41 @@ describe("test vectors", () => {
 
     it("should create, sign, and verify", () => {
       // todo create test vector
+    });
+  });
+
+  // todo cancel
+
+  describe("order status", () => {
+    it("should parse", () => {
+      const input = OrderStatusVector.input;
+      const orderStatus = OrderStatus.fromJSONString(input);
+      expect(orderStatus.metadata).to.deep.equal(
+        OrderStatusVector.output.metadata
+      );
+      expect(orderStatus.data).to.deep.equal(OrderStatusVector.output.data);
+      expect(orderStatus.signature).to.equal(
+        OrderStatusVector.output.signature
+      );
+
+      const orderStatusJSONString = orderStatus.toJSONString();
+      const orderStatusJSON = JSON.parse(orderStatusJSONString);
+      expect(orderStatusJSON).to.deep.equal(OrderStatusVector.output);
+
+      orderStatus.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const orderStatus = OrderStatus.create(
+        OrderStatusVector.output.metadata.to,
+        OrderStatusVector.output.metadata.from,
+        OrderStatusVector.output.metadata.exchangeId,
+        OrderStatusVector.output.data,
+        OrderStatusVector.output.metadata.protocol
+      );
+
+      orderStatus.sign(bearerDID);
+      orderStatus.verify();
     });
   });
 });

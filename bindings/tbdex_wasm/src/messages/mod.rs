@@ -4,6 +4,7 @@ use tbdex::messages::{MessageKind, MessageMetadata};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod order_instructions;
+pub mod order_status;
 pub mod order;
 pub mod quote;
 pub mod rfq;

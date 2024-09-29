@@ -563,6 +563,27 @@ export namespace OrderInstructionsData {
   };
 }
 
+export type OrderStatusData = {
+  details?: string;
+  status: string;
+};
+
+export namespace OrderStatusData {
+  export const toWASM = (obj: OrderStatusData): wasm.WasmOrderStatusData => {
+    return new wasm.WasmOrderStatusData(obj.status, obj.details);
+  };
+
+  export const fromWASM = (obj: wasm.WasmOrderStatusData): OrderStatusData => {
+    const result: OrderStatusData = {
+      status: obj.status,
+    };
+
+    if (obj.details !== undefined) result.details = obj.details;
+
+    return result;
+  };
+}
+
 export type PayinDetails = {
   currencyCode: string;
   max?: string;
