@@ -22,7 +22,7 @@ dependencies {
 
     // For local development dependency.
     // Install the dependency locally by running `mvn install` in the `bound/kt` directory
-     implementation("xyz.block:tbdex:0.0.0-main-kweihe-local-SNAPSHOT")
+    // implementation("xyz.block:tbdex:0.0.0-main-SNAPSHOT")
 
     // For a snapshot from maven
     // Update the short git commit SHA below
