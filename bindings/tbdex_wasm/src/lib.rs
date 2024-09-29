@@ -1,4 +1,5 @@
 // pub mod http;
+pub mod messages;
 pub mod resources;
 pub mod web5;
 

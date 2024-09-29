@@ -18,8 +18,9 @@ use order_status::OrderStatus;
 use quote::Quote;
 use rfq::Rfq;
 use serde::{de::Visitor, Deserialize, Deserializer, Serialize};
-use std::{str::FromStr, sync::Arc};
+use std::{fmt, str::FromStr, sync::Arc};
 use type_safe_id::{DynamicType, TypeSafeId};
+use uuid::Uuid;
 
 #[derive(Debug, Default, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -32,14 +33,6 @@ pub enum MessageKind {
     Cancel,
     OrderStatus,
     Close,
-}
-
-impl MessageKind {
-    pub fn typesafe_id(&self) -> Result<String> {
-        let serialized_kind = serde_json::to_string(&self)?;
-        let dynamic_type = DynamicType::new(serialized_kind.trim_matches('"'))?;
-        Ok(TypeSafeId::new_with_type(dynamic_type).to_string())
-    }
 }
 
 impl FromStr for MessageKind {
@@ -56,6 +49,27 @@ impl FromStr for MessageKind {
             "close" => Ok(MessageKind::Close),
             _ => Err(TbdexError::Parse(format!("unknown message kind {}", s))),
         }
+    }
+}
+
+impl fmt::Display for MessageKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &MessageKind::Rfq => write!(f, "rfq"),
+            &MessageKind::Quote => write!(f, "quote"),
+            &MessageKind::Order => write!(f, "order"),
+            &MessageKind::OrderInstructions => write!(f, "orderinstructions"),
+            &MessageKind::Cancel => write!(f, "cancel"),
+            &MessageKind::OrderStatus => write!(f, "orderstatus"),
+            &MessageKind::Close => write!(f, "close"),
+        }
+    }
+}
+
+impl MessageKind {
+    pub fn typesafe_id(&self) -> Result<String> {
+        let dynamic_type = DynamicType::new(&self.to_string())?;
+        Ok(TypeSafeId::from_type_and_uuid(dynamic_type, Uuid::new_v4()).to_string())
     }
 }
 

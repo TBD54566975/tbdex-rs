@@ -331,6 +331,48 @@ export namespace Jwk {
   };
 }
 
+export type MessageMetadata = {
+  createdAt: string;
+  exchangeId: string;
+  externalId?: string;
+  from: string;
+  id: string;
+  kind: string;
+  protocol: string;
+  to: string;
+};
+
+export namespace MessageMetadata {
+  export const toWASM = (obj: MessageMetadata): wasm.WasmMessageMetadata => {
+    return new wasm.WasmMessageMetadata(
+      obj.from,
+      obj.to,
+      obj.kind,
+      obj.id,
+      obj.exchangeId,
+      obj.externalId,
+      obj.protocol,
+      obj.createdAt,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmMessageMetadata): MessageMetadata => {
+    const result: MessageMetadata = {
+      createdAt: obj.created_at,
+      exchangeId: obj.exchange_id,
+      from: obj.from,
+      id: obj.id,
+      kind: obj.kind,
+      protocol: obj.protocol,
+      to: obj.to,
+    };
+
+    if (obj.external_id !== undefined) result.externalId = obj.external_id;
+
+    return result;
+  };
+}
+
 export type OfferingData = {
   cancellation: CancellationDetails;
   description: string;

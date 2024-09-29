@@ -387,6 +387,46 @@ export class WasmKeyManager {
 }
 /**
 */
+export class WasmMessageMetadata {
+  free(): void;
+/**
+* @param {string} from
+* @param {string} to
+* @param {string} kind
+* @param {string} id
+* @param {string} exchange_id
+* @param {string | undefined} external_id
+* @param {string} protocol
+* @param {string} created_at
+*/
+  constructor(from: string, to: string, kind: string, id: string, exchange_id: string, external_id: string | undefined, protocol: string, created_at: string);
+/**
+*/
+  readonly created_at: string;
+/**
+*/
+  readonly exchange_id: string;
+/**
+*/
+  readonly external_id: string | undefined;
+/**
+*/
+  readonly from: string;
+/**
+*/
+  readonly id: string;
+/**
+*/
+  readonly kind: string;
+/**
+*/
+  readonly protocol: string;
+/**
+*/
+  readonly to: string;
+}
+/**
+*/
 export class WasmOffering {
   free(): void;
 /**

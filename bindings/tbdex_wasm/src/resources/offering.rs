@@ -17,6 +17,12 @@ pub struct WasmOffering {
     inner: Offering,
 }
 
+impl From<WasmOffering> for Offering {
+    fn from(value: WasmOffering) -> Self {
+        value.inner
+    }
+}
+
 #[wasm_bindgen]
 impl WasmOffering {
     #[wasm_bindgen(constructor)]
