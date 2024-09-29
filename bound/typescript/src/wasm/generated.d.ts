@@ -173,6 +173,68 @@ export class WasmCancellationDetails {
 }
 /**
 */
+export class WasmClose {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmCloseData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmCloseData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmClose}
+*/
+  static from_json_string(json: string): WasmClose;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {string} exchange_id
+* @param {WasmCloseData} data
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmClose}
+*/
+  static create(to: string, from: string, exchange_id: string, data: WasmCloseData, protocol?: string, external_id?: string): WasmClose;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmCloseData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmCloseData {
+  free(): void;
+/**
+* @param {string | undefined} [reason]
+* @param {boolean | undefined} [success]
+*/
+  constructor(reason?: string, success?: boolean);
+/**
+*/
+  readonly reason: string | undefined;
+/**
+*/
+  readonly success: boolean | undefined;
+}
+/**
+*/
 export class WasmConstraints {
   free(): void;
 /**

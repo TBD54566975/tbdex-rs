@@ -6,6 +6,7 @@ import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/par
 import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json" assert { type: "json" };
 import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json" assert { type: "json" };
 import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
+import CloseVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-close.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -16,6 +17,7 @@ import { Quote } from "../src/messages/quote";
 import { Order } from "../src/messages/order";
 import { Cancel } from "../src/messages/cancel";
 import { OrderStatus } from "../src/messages/order-status";
+import { Close } from "../src/messages/close";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -251,6 +253,35 @@ describe("test vectors", () => {
 
       orderStatus.sign(bearerDID);
       orderStatus.verify();
+    });
+  });
+
+  describe("close", () => {
+    it("should parse", () => {
+      const input = CloseVector.input;
+      const close = Close.fromJSONString(input);
+      expect(close.metadata).to.deep.equal(CloseVector.output.metadata);
+      expect(close.data).to.deep.equal(CloseVector.output.data);
+      expect(close.signature).to.equal(CloseVector.output.signature);
+
+      const closeJSONString = close.toJSONString();
+      const closeJSON = JSON.parse(closeJSONString);
+      expect(closeJSON).to.deep.equal(CloseVector.output);
+
+      close.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const close = Close.create(
+        CloseVector.output.metadata.to,
+        CloseVector.output.metadata.from,
+        CloseVector.output.metadata.exchangeId,
+        CloseVector.output.data,
+        CloseVector.output.metadata.protocol
+      );
+
+      close.sign(bearerDID);
+      close.verify();
     });
   });
 });

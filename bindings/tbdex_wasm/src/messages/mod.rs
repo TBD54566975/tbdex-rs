@@ -4,6 +4,7 @@ use tbdex::messages::{MessageKind, MessageMetadata};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod cancel;
+pub mod close;
 pub mod order_instructions;
 pub mod order_status;
 pub mod order;

@@ -79,6 +79,26 @@ export namespace CancellationDetails {
   };
 }
 
+export type CloseData = {
+  reason?: string;
+  success?: boolean;
+};
+
+export namespace CloseData {
+  export const toWASM = (obj: CloseData): wasm.WasmCloseData => {
+    return new wasm.WasmCloseData(obj.reason, obj.success);
+  };
+
+  export const fromWASM = (obj: wasm.WasmCloseData): CloseData => {
+    const result: CloseData = {};
+
+    if (obj.reason !== undefined) result.reason = obj.reason;
+    if (obj.success !== undefined) result.success = obj.success;
+
+    return result;
+  };
+}
+
 export type Constraints = {
   fields: Field[];
 };
