@@ -27,7 +27,7 @@ export class Rfq {
     this.signature = signature;
   }
 
-  private static fromWASM = (wasmRfq: wasm.WasmRfq): Rfq => {
+  static fromWASM = (wasmRfq: wasm.WasmRfq): Rfq => {
     try {
       const privateData = wasmRfq.private_data
         ? RfqPrivateData.fromWASM(wasmRfq.private_data)
@@ -44,7 +44,7 @@ export class Rfq {
     }
   };
 
-  private toWASM = (): wasm.WasmRfq => {
+  toWASM = (): wasm.WasmRfq => {
     try {
       const wasmPrivateData = this.privateData
         ? RfqPrivateData.toWASM(this.privateData)

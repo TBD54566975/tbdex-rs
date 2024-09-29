@@ -734,6 +734,65 @@ export namespace PrivatePaymentDetails {
   };
 }
 
+export type QuoteData = {
+  expiresAt: string;
+  payin: QuoteDetails;
+  payout: QuoteDetails;
+  payoutUnitsPerPayinUnit: string;
+};
+
+export namespace QuoteData {
+  export const toWASM = (obj: QuoteData): wasm.WasmQuoteData => {
+    return new wasm.WasmQuoteData(
+      obj.expiresAt,
+      obj.payoutUnitsPerPayinUnit,
+      QuoteDetails.toWASM(obj.payin),
+      QuoteDetails.toWASM(obj.payout),
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmQuoteData): QuoteData => {
+    const result: QuoteData = {
+      expiresAt: obj.expires_at,
+      payin: QuoteDetails.fromWASM(obj.payin),
+      payout: QuoteDetails.fromWASM(obj.payout),
+      payoutUnitsPerPayinUnit: obj.payout_units_per_payin_unit,
+    };
+
+    return result;
+  };
+}
+
+export type QuoteDetails = {
+  currencyCode: string;
+  fee?: string;
+  subtotal: string;
+  total: string;
+};
+
+export namespace QuoteDetails {
+  export const toWASM = (obj: QuoteDetails): wasm.WasmQuoteDetails => {
+    return new wasm.WasmQuoteDetails(
+      obj.currencyCode,
+      obj.subtotal,
+      obj.total,
+      obj.fee,
+    );
+  };
+
+  export const fromWASM = (obj: wasm.WasmQuoteDetails): QuoteDetails => {
+    const result: QuoteDetails = {
+      currencyCode: obj.currency_code,
+      subtotal: obj.subtotal,
+      total: obj.total,
+    };
+
+    if (obj.fee !== undefined) result.fee = obj.fee;
+
+    return result;
+  };
+}
+
 export type ResourceMetadata = {
   createdAt: string;
   from: string;
@@ -790,37 +849,6 @@ export namespace Response {
     };
 
     if (obj.headers !== undefined) result.headers = mapToObject(obj.headers);
-
-    return result;
-  };
-}
-
-export type Rfq = {
-  data: RfqData;
-  metadata: MessageMetadata;
-  privateData?: RfqPrivateData;
-  signature: string;
-};
-
-export namespace Rfq {
-  export const toWASM = (obj: Rfq): wasm.WasmRfq => {
-    return new wasm.WasmRfq(
-      MessageMetadata.toWASM(obj.metadata),
-      RfqData.toWASM(obj.data),
-      obj.privateData ? RfqPrivateData.toWASM(obj.privateData) : undefined,
-      obj.signature,
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmRfq): Rfq => {
-    const result: Rfq = {
-      data: RfqData.fromWASM(obj.data),
-      metadata: MessageMetadata.fromWASM(obj.metadata),
-      signature: obj.signature,
-    };
-
-    if (obj.private_data !== undefined)
-      result.privateData = RfqPrivateData.fromWASM(obj.private_data);
 
     return result;
   };

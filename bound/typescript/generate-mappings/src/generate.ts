@@ -11,6 +11,8 @@ const EXCLUDE = [
   "Balance",
 
   // messages
+  "Rfq",
+  "Quote"
 ];
 
 export const generateToWASM = (wasmClass: WasmClass): string => `

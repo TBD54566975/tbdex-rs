@@ -2,12 +2,14 @@ import { expect } from "chai";
 import OfferingVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-offering.json" assert { type: "json" };
 import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-balance.json" assert { type: "json" };
 import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
+import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
 import { Balance } from "../src/resources/balance";
 import { Rfq } from "../src/messages/rfq";
 import { CreateRfqData } from "../src/wasm/mappings";
+import { Quote } from "../src/messages/quote";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -82,9 +84,9 @@ describe("test vectors", () => {
       expect(rfq.data).to.deep.equal(RfqVector.output.data);
       expect(rfq.signature).to.equal(RfqVector.output.signature);
 
-      const balanceJSONString = rfq.toJSONString();
-      const balanceJSON = JSON.parse(balanceJSONString);
-      expect(balanceJSON).to.deep.equal(RfqVector.output);
+      const rfqJSONString = rfq.toJSONString();
+      const rfqJSON = JSON.parse(rfqJSONString);
+      expect(rfqJSON).to.deep.equal(RfqVector.output);
 
       rfq.verify();
     });
@@ -113,6 +115,36 @@ describe("test vectors", () => {
 
       rfq.sign(bearerDID);
       rfq.verify();
+    });
+  });
+
+  describe("quote", () => {
+    it("should parse", () => {
+      // TODO test vector needs updating, needs the `paymentInstruction`'s on the payin & payout removed
+      // const input = QuoteVector.input;
+      // const quote = Quote.fromJSONString(input);
+      // expect(quote.metadata).to.deep.equal(QuoteVector.output.metadata);
+      // expect(quote.data).to.deep.equal(QuoteVector.output.data);
+      // expect(quote.signature).to.equal(QuoteVector.output.signature);
+      //
+      // const quoteJSONString = quote.toJSONString();
+      // const quoteJSON = JSON.parse(quoteJSONString);
+      // expect(quoteJSON).to.deep.equal(QuoteVector.output);
+      //
+      // quote.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const quote = Quote.create(
+        QuoteVector.output.metadata.to,
+        QuoteVector.output.metadata.from,
+        QuoteVector.output.metadata.exchangeId,
+        QuoteVector.output.data,
+        QuoteVector.output.metadata.protocol
+      );
+
+      quote.sign(bearerDID);
+      quote.verify();
     });
   });
 });

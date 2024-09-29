@@ -775,6 +775,100 @@ export class WasmPrivatePaymentDetails {
 }
 /**
 */
+export class WasmQuote {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmQuoteData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmQuoteData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmQuote}
+*/
+  static from_json_string(json: string): WasmQuote;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {string} exchange_id
+* @param {WasmQuoteData} data
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmQuote}
+*/
+  static create(to: string, from: string, exchange_id: string, data: WasmQuoteData, protocol?: string, external_id?: string): WasmQuote;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmQuoteData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmQuoteData {
+  free(): void;
+/**
+* @param {string} expires_at
+* @param {string} payout_units_per_payin_unit
+* @param {WasmQuoteDetails} payin
+* @param {WasmQuoteDetails} payout
+*/
+  constructor(expires_at: string, payout_units_per_payin_unit: string, payin: WasmQuoteDetails, payout: WasmQuoteDetails);
+/**
+*/
+  readonly expires_at: string;
+/**
+*/
+  readonly payin: WasmQuoteDetails;
+/**
+*/
+  readonly payout: WasmQuoteDetails;
+/**
+*/
+  readonly payout_units_per_payin_unit: string;
+}
+/**
+*/
+export class WasmQuoteDetails {
+  free(): void;
+/**
+* @param {string} currency_code
+* @param {string} subtotal
+* @param {string} total
+* @param {string | undefined} [fee]
+*/
+  constructor(currency_code: string, subtotal: string, total: string, fee?: string);
+/**
+*/
+  readonly currency_code: string;
+/**
+*/
+  readonly fee: string | undefined;
+/**
+*/
+  readonly subtotal: string;
+/**
+*/
+  readonly total: string;
+}
+/**
+*/
 export class WasmResourceMetadata {
   free(): void;
 /**

@@ -3,6 +3,7 @@ use std::str::FromStr;
 use tbdex::messages::{MessageKind, MessageMetadata};
 use wasm_bindgen::prelude::wasm_bindgen;
 
+pub mod quote;
 pub mod rfq;
 
 #[wasm_bindgen]
