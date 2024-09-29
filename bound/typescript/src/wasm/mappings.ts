@@ -30,6 +30,24 @@ export namespace BalanceData {
   };
 }
 
+export type CancelData = {
+  reason?: string;
+};
+
+export namespace CancelData {
+  export const toWASM = (obj: CancelData): wasm.WasmCancelData => {
+    return new wasm.WasmCancelData(obj.reason);
+  };
+
+  export const fromWASM = (obj: wasm.WasmCancelData): CancelData => {
+    const result: CancelData = {};
+
+    if (obj.reason !== undefined) result.reason = obj.reason;
+
+    return result;
+  };
+}
+
 export type CancellationDetails = {
   enabled: boolean;
   terms?: string;

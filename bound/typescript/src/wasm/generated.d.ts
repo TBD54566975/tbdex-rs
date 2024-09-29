@@ -95,6 +95,64 @@ export class WasmBearerDid {
 }
 /**
 */
+export class WasmCancel {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmCancelData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmCancelData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmCancel}
+*/
+  static from_json_string(json: string): WasmCancel;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {string} exchange_id
+* @param {WasmCancelData} data
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmCancel}
+*/
+  static create(to: string, from: string, exchange_id: string, data: WasmCancelData, protocol?: string, external_id?: string): WasmCancel;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmCancelData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmCancelData {
+  free(): void;
+/**
+* @param {string | undefined} [reason]
+*/
+  constructor(reason?: string);
+/**
+*/
+  readonly reason: string | undefined;
+}
+/**
+*/
 export class WasmCancellationDetails {
   free(): void;
 /**

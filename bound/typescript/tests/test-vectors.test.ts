@@ -4,6 +4,7 @@ import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/p
 import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
 import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json" assert { type: "json" };
 import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json" assert { type: "json" };
+import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json" assert { type: "json" };
 import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
@@ -13,6 +14,7 @@ import { Rfq } from "../src/messages/rfq";
 import { CreateRfqData } from "../src/wasm/mappings";
 import { Quote } from "../src/messages/quote";
 import { Order } from "../src/messages/order";
+import { Cancel } from "../src/messages/cancel";
 import { OrderStatus } from "../src/messages/order-status";
 
 describe("test vectors", () => {
@@ -190,7 +192,34 @@ describe("test vectors", () => {
     });
   });
 
-  // todo cancel
+  describe("cancel", () => {
+    it("should parse", () => {
+      const input = CancelVector.input;
+      const cancel = Cancel.fromJSONString(input);
+      expect(cancel.metadata).to.deep.equal(CancelVector.output.metadata);
+      expect(cancel.data).to.deep.equal(CancelVector.output.data);
+      expect(cancel.signature).to.equal(CancelVector.output.signature);
+
+      const cancelJSONString = cancel.toJSONString();
+      const cancelJSON = JSON.parse(cancelJSONString);
+      expect(cancelJSON).to.deep.equal(CancelVector.output);
+
+      cancel.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const cancel = Cancel.create(
+        CancelVector.output.metadata.to,
+        CancelVector.output.metadata.from,
+        CancelVector.output.metadata.exchangeId,
+        CancelVector.output.data,
+        CancelVector.output.metadata.protocol
+      );
+
+      cancel.sign(bearerDID);
+      cancel.verify();
+    });
+  });
 
   describe("order status", () => {
     it("should parse", () => {
