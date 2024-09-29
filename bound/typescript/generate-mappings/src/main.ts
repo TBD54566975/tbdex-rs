@@ -15,6 +15,6 @@ const inputCode = tsCode;
 const wasmClasses = readWasmClasses(inputCode);
 const outputCode = generateMappingsCode(wasmClasses);
 fs.writeFileSync(
-  path.resolve(__dirname, "../mappings.ts"),
+  path.resolve(__dirname, "../generated-mappings.ts"),
   outputCode
 );

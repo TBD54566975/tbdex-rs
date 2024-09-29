@@ -3,7 +3,7 @@ import { KeyManager } from "./key-managers";
 import { PortableDid } from "./portable-did";
 import { Signer } from "./signers";
 import wasm from "./wasm";
-import { Did, Document } from "./wasm/mappings";
+import { Did, Document } from "./wasm/generated-mappings";
 
 export class BearerDid {
   readonly did: Did;

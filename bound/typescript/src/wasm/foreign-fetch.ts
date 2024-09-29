@@ -1,5 +1,5 @@
 import wasm from ".";
-import { FetchOptions, Response } from "./mappings";
+import { FetchOptions, Response } from "./generated-mappings";
 
 let workerThreads: any | undefined;
 

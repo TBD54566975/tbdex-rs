@@ -13,7 +13,7 @@ import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
 import { Balance } from "../src/resources/balance";
 import { Rfq } from "../src/messages/rfq";
-import { CreateRfqData } from "../src/wasm/mappings";
+import { CreateRfqData } from "../src/wasm/generated-mappings";
 import { Quote } from "../src/messages/quote";
 import { Order } from "../src/messages/order";
 import { Cancel } from "../src/messages/cancel";

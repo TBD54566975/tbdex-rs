@@ -7,7 +7,7 @@ import {
   RfqData,
   RfqPrivateData,
   CreateRfqData,
-} from "../wasm/mappings";
+} from "../wasm/generated-mappings";
 
 export class Rfq {
   readonly metadata: MessageMetadata;

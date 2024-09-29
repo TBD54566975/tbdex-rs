@@ -1,6 +1,6 @@
 import { Signer } from "./signers";
 import wasm from "./wasm";
-import { Jwk } from "./wasm/mappings";
+import { Jwk } from "./wasm/generated-mappings";
 
 export type KeyManager = {
   importPrivateJwk(privateJwk: Jwk): Jwk;

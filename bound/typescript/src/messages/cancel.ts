@@ -1,7 +1,7 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { MessageMetadata, CancelData } from "../wasm/mappings";
+import { MessageMetadata, CancelData } from "../wasm/generated-mappings";
 
 export class Cancel {
   readonly metadata: MessageMetadata;

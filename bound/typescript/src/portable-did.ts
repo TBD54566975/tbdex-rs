@@ -1,5 +1,5 @@
 import wasm from "./wasm";
-import { Document, Jwk } from "./wasm/mappings";
+import { Document, Jwk } from "./wasm/generated-mappings";
 
 export class PortableDid {
   readonly uri: string;

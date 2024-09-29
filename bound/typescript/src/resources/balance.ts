@@ -1,7 +1,7 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { BalanceData, ResourceMetadata } from "../wasm/mappings";
+import { BalanceData, ResourceMetadata } from "../wasm/generated-mappings";
 
 export class Balance {
   readonly metadata: ResourceMetadata;

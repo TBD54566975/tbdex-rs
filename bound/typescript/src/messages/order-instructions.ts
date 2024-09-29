@@ -1,7 +1,7 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { MessageMetadata, OrderInstructionsData } from "../wasm/mappings";
+import { MessageMetadata, OrderInstructionsData } from "../wasm/generated-mappings";
 
 export class OrderInstructions {
   readonly metadata: MessageMetadata;

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "generate": "node --loader ts-node/esm src/main.ts && prettier --write mappings.ts && mv mappings.ts ../src/wasm"
+    "generate": "node --loader ts-node/esm src/main.ts && prettier --write generated-mappings.ts && mv generated-mappings.ts ../src/wasm"
   },
   "keywords": [],
   "author": "",

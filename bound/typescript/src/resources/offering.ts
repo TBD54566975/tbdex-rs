@@ -1,7 +1,7 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { OfferingData, ResourceMetadata } from "../wasm/mappings";
+import { OfferingData, ResourceMetadata } from "../wasm/generated-mappings";
 
 // TODO consider extending "Resource" class type
 export class Offering {
