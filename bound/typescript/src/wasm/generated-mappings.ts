@@ -1,4 +1,4 @@
-import wasm from ".";
+import wasm from "./";
 
 const mapToObject = (map: Map<any, any>): any => {
   if (!map) return undefined;
