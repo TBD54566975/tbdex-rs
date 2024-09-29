@@ -522,6 +522,20 @@ export namespace Optionality {
   };
 }
 
+export type OrderData = {};
+
+export namespace OrderData {
+  export const toWASM = (obj: OrderData): wasm.WasmOrderData => {
+    return new wasm.WasmOrderData();
+  };
+
+  export const fromWASM = (obj: wasm.WasmOrderData): OrderData => {
+    const result: OrderData = {};
+
+    return result;
+  };
+}
+
 export type PayinDetails = {
   currencyCode: string;
   max?: string;

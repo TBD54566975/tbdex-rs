@@ -574,6 +574,59 @@ export class WasmOptionality {
 }
 /**
 */
+export class WasmOrder {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmOrderData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmOrderData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmOrder}
+*/
+  static from_json_string(json: string): WasmOrder;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {string} exchange_id
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmOrder}
+*/
+  static create(to: string, from: string, exchange_id: string, protocol?: string, external_id?: string): WasmOrder;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmOrderData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmOrderData {
+  free(): void;
+/**
+*/
+  constructor();
+}
+/**
+*/
 export class WasmPayinDetails {
   free(): void;
 /**

@@ -12,7 +12,12 @@ const EXCLUDE = [
 
   // messages
   "Rfq",
-  "Quote"
+  "Quote",
+  "Order",
+  "OrderInstructions",
+  "Cancel",
+  "OrderStatus",
+  "Close",
 ];
 
 export const generateToWASM = (wasmClass: WasmClass): string => `

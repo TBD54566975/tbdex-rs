@@ -3,6 +3,7 @@ import OfferingVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/
 import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-balance.json" assert { type: "json" };
 import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
 import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json" assert { type: "json" };
+import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -10,6 +11,7 @@ import { Balance } from "../src/resources/balance";
 import { Rfq } from "../src/messages/rfq";
 import { CreateRfqData } from "../src/wasm/mappings";
 import { Quote } from "../src/messages/quote";
+import { Order } from "../src/messages/order";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -145,6 +147,34 @@ describe("test vectors", () => {
 
       quote.sign(bearerDID);
       quote.verify();
+    });
+  });
+
+  describe("order", () => {
+    it("should parse", () => {
+      const input = OrderVector.input;
+      const order = Order.fromJSONString(input);
+      expect(order.metadata).to.deep.equal(OrderVector.output.metadata);
+      expect(order.data).to.deep.equal(OrderVector.output.data);
+      expect(order.signature).to.equal(OrderVector.output.signature);
+
+      const orderJSONString = order.toJSONString();
+      const orderJSON = JSON.parse(orderJSONString);
+      expect(orderJSON).to.deep.equal(OrderVector.output);
+
+      order.verify();
+    });
+
+    it("should create, sign, and verify", () => {
+      const order = Order.create(
+        OrderVector.output.metadata.to,
+        OrderVector.output.metadata.from,
+        OrderVector.output.metadata.exchangeId,
+        OrderVector.output.metadata.protocol
+      );
+
+      order.sign(bearerDID);
+      order.verify();
     });
   });
 });
