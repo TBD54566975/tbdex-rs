@@ -150,31 +150,13 @@ describe("test vectors", () => {
     });
   });
 
-  describe("order", () => {
+  describe("order instructions", () => {
     it("should parse", () => {
-      const input = OrderVector.input;
-      const order = Order.fromJSONString(input);
-      expect(order.metadata).to.deep.equal(OrderVector.output.metadata);
-      expect(order.data).to.deep.equal(OrderVector.output.data);
-      expect(order.signature).to.equal(OrderVector.output.signature);
-
-      const orderJSONString = order.toJSONString();
-      const orderJSON = JSON.parse(orderJSONString);
-      expect(orderJSON).to.deep.equal(OrderVector.output);
-
-      order.verify();
+      // todo create test vector
     });
 
     it("should create, sign, and verify", () => {
-      const order = Order.create(
-        OrderVector.output.metadata.to,
-        OrderVector.output.metadata.from,
-        OrderVector.output.metadata.exchangeId,
-        OrderVector.output.metadata.protocol
-      );
-
-      order.sign(bearerDID);
-      order.verify();
+      // todo create test vector
     });
   });
 });

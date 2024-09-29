@@ -627,6 +627,68 @@ export class WasmOrderData {
 }
 /**
 */
+export class WasmOrderInstructions {
+  free(): void;
+/**
+* @param {WasmMessageMetadata} metadata
+* @param {WasmOrderInstructionsData} data
+* @param {string} signature
+*/
+  constructor(metadata: WasmMessageMetadata, data: WasmOrderInstructionsData, signature: string);
+/**
+* @param {string} json
+* @returns {WasmOrderInstructions}
+*/
+  static from_json_string(json: string): WasmOrderInstructions;
+/**
+* @returns {string}
+*/
+  to_json_string(): string;
+/**
+* @param {string} to
+* @param {string} from
+* @param {string} exchange_id
+* @param {WasmOrderInstructionsData} data
+* @param {string | undefined} [protocol]
+* @param {string | undefined} [external_id]
+* @returns {WasmOrderInstructions}
+*/
+  static create(to: string, from: string, exchange_id: string, data: WasmOrderInstructionsData, protocol?: string, external_id?: string): WasmOrderInstructions;
+/**
+* @param {WasmBearerDid} bearer_did
+*/
+  sign(bearer_did: WasmBearerDid): void;
+/**
+*/
+  verify(): void;
+/**
+*/
+  readonly data: WasmOrderInstructionsData;
+/**
+*/
+  readonly metadata: WasmMessageMetadata;
+/**
+*/
+  readonly signature: string;
+}
+/**
+*/
+export class WasmOrderInstructionsData {
+  free(): void;
+/**
+* @param {WasmPaymentInstruction} payin
+* @param {WasmPaymentInstruction} payout
+*/
+  constructor(payin: WasmPaymentInstruction, payout: WasmPaymentInstruction);
+/**
+*/
+  readonly payin: WasmPaymentInstruction;
+/**
+*/
+  readonly payout: WasmPaymentInstruction;
+}
+/**
+*/
 export class WasmPayinDetails {
   free(): void;
 /**
@@ -688,6 +750,22 @@ export class WasmPayinMethod {
 /**
 */
   readonly required_payment_details: any;
+}
+/**
+*/
+export class WasmPaymentInstruction {
+  free(): void;
+/**
+* @param {string | undefined} [link]
+* @param {string | undefined} [instruction]
+*/
+  constructor(link?: string, instruction?: string);
+/**
+*/
+  readonly instruction: string | undefined;
+/**
+*/
+  readonly link: string | undefined;
 }
 /**
 */

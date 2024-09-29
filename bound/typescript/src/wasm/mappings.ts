@@ -536,6 +536,33 @@ export namespace OrderData {
   };
 }
 
+export type OrderInstructionsData = {
+  payin: PaymentInstruction;
+  payout: PaymentInstruction;
+};
+
+export namespace OrderInstructionsData {
+  export const toWASM = (
+    obj: OrderInstructionsData,
+  ): wasm.WasmOrderInstructionsData => {
+    return new wasm.WasmOrderInstructionsData(
+      PaymentInstruction.toWASM(obj.payin),
+      PaymentInstruction.toWASM(obj.payout),
+    );
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmOrderInstructionsData,
+  ): OrderInstructionsData => {
+    const result: OrderInstructionsData = {
+      payin: PaymentInstruction.fromWASM(obj.payin),
+      payout: PaymentInstruction.fromWASM(obj.payout),
+    };
+
+    return result;
+  };
+}
+
 export type PayinDetails = {
   currencyCode: string;
   max?: string;
@@ -604,6 +631,30 @@ export namespace PayinMethod {
     if (obj.name !== undefined) result.name = obj.name;
     if (obj.required_payment_details !== undefined)
       result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
+
+    return result;
+  };
+}
+
+export type PaymentInstruction = {
+  instruction?: string;
+  link?: string;
+};
+
+export namespace PaymentInstruction {
+  export const toWASM = (
+    obj: PaymentInstruction,
+  ): wasm.WasmPaymentInstruction => {
+    return new wasm.WasmPaymentInstruction(obj.link, obj.instruction);
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmPaymentInstruction,
+  ): PaymentInstruction => {
+    const result: PaymentInstruction = {};
+
+    if (obj.instruction !== undefined) result.instruction = obj.instruction;
+    if (obj.link !== undefined) result.link = obj.link;
 
     return result;
   };
