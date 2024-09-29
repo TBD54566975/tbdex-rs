@@ -6,15 +6,9 @@ import { playwrightLauncher } from '@web/test-runner-playwright'
 export default {
   files       : ['./tests/compiled/browser/**/*.test.js'],
   playwright  : true,
-  // nodeResolve : true,
   browsers    : [
     playwrightLauncher({
       product: 'chromium',
-      // launchOptions: {
-      //   headless: false,      
-      //   devtools: true,       
-      //   persistent: true
-      // }
     }),
     playwrightLauncher({
       product: 'firefox',
