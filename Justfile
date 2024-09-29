@@ -16,9 +16,6 @@ setup:
     cargo install wasm-pack --version 0.13.0
   fi
 
-wasm: setup
-  (cd bindings/tbdex_wasm; wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg)
-
 # Build a release variant
 build: setup
   cargo build --release
@@ -53,3 +50,14 @@ test-bound: setup
 
 test-kotlin: setup
   cd bound/kt && mvn clean verify
+
+wasm: setup
+  (cd bindings/tbdex_wasm; wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg)
+
+test-typescript: setup
+  #!/bin/bash
+  cd bound/typescript
+  npm install
+  npm run clean
+  npm run build:wasm
+  npm run test

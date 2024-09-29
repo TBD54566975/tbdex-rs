@@ -381,3 +381,14 @@ jobs:
         with:
           name: rust-test-results
           path: test-results/rust-test-results.xml
+
+  test-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Lint
+        run: just test-typescript
