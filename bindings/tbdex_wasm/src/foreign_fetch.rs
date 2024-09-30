@@ -58,8 +58,9 @@ unsafe impl Sync for ConcreteForeignFetch {}
 impl Client for ConcreteForeignFetch {
     async fn fetch(&self, url: &str, options: Option<FetchOptions>) -> http_std::Result<Response> {
         let wasm_options = options.map(WasmFetchOptions::from);
+
         let wasm_response_promise = self.0.fetch(url, wasm_options);
-        let wasm_response_jsvalue = SendJsFuture(JsFuture::from(wasm_response_promise))
+        let response_jsvalue = SendJsFuture(JsFuture::from(wasm_response_promise))
             .await
             .map_err(|e| {
                 HttpStdError::Unknown(format!(
@@ -71,12 +72,12 @@ impl Client for ConcreteForeignFetch {
                 ))
             })?;
 
-        let wasm_response = serde_wasm_bindgen::from_value::<WasmResponse>(wasm_response_jsvalue)
-            .map_err(|e| {
-            HttpStdError::Unknown(format!("rust WasmResponse from JsValue error {}", e))
-        })?;
+        let response =
+            serde_wasm_bindgen::from_value::<Response>(response_jsvalue).map_err(|e| {
+                HttpStdError::Unknown(format!("rust WasmResponse from JsValue error {}", e))
+            })?;
 
-        Ok(wasm_response.into())
+        Ok(response)
     }
 }
 
