@@ -1,4 +1,5 @@
 use crate::errors::{Result, TbdexError};
+use futures::executor::block_on;
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -48,6 +49,6 @@ impl Order {
     pub fn verify(&self) -> Result<()> {
         let order = self.0.read().map_err(TbdexError::from_poison_error)?;
 
-        Ok(order.verify()?)
+        Ok(block_on(order.verify())?)
     }
 }

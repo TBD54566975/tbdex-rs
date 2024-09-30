@@ -5,6 +5,7 @@ use crate::{
     http_client::get_json,
     json_schemas::generated::DRAFT_07_JSON_SCHEMA,
 };
+use futures::executor::block_on;
 use generated::DEFINITIONS_JSON_SCHEMA;
 use jsonschema::{JSONSchema, SchemaResolver, SchemaResolverError};
 use serde::Serialize;
@@ -49,7 +50,7 @@ impl SchemaResolver for LocalSchemaResolver {
         if let Some(schema) = self.schemas.get(&LocalSchemaResolver::normalize_url(url)) {
             Ok(std::sync::Arc::new(schema.clone()))
         } else {
-            match get_json::<serde_json::Value>(url.as_str(), None) {
+            match block_on(get_json::<serde_json::Value>(url.as_str(), None)) {
                 Ok(schema) => Ok(Arc::new(schema)),
                 Err(err) => Err(SchemaResolverError::new(std::io::Error::new(
                     std::io::ErrorKind::NotFound,

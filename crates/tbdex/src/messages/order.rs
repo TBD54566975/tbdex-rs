@@ -96,7 +96,7 @@ impl Order {
     /// # Returns
     ///
     /// An empty result if verification succeeds, or an error if verification fails.
-    pub fn verify(&self) -> Result<()> {
+    pub async fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
@@ -108,7 +108,8 @@ impl Order {
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(&OrderData {})?,
             &self.signature,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }

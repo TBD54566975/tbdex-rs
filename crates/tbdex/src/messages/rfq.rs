@@ -114,7 +114,7 @@ impl Rfq {
     /// # Returns
     ///
     /// An empty result if verification succeeds, or an error if verification fails.
-    pub fn verify(&self) -> Result<()> {
+    pub async fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
@@ -131,7 +131,8 @@ impl Rfq {
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }
@@ -148,7 +149,7 @@ impl Rfq {
     /// # Returns
     ///
     /// An empty result if verification succeeds, or an error if verification fails.
-    pub fn verify_offering_requirements(&self, offering: &Offering) -> Result<()> {
+    pub async fn verify_offering_requirements(&self, offering: &Offering) -> Result<()> {
         // verify protocol version
         if offering.metadata.protocol != self.metadata.protocol {
             return Err(TbdexError::OfferingVerification(format!(
@@ -279,6 +280,7 @@ impl Rfq {
         if let Some(required_claims) = &offering.data.required_claims {
             let vc_jwts = required_claims
                 .select_credentials(&private_data.claims.clone().unwrap_or_default())
+                .await
                 .map_err(|_| {
                     TbdexError::OfferingVerification("failed to select credentials".to_string())
                 })?;
@@ -290,12 +292,14 @@ impl Rfq {
             }
 
             for vc_jwt in vc_jwts {
-                VerifiableCredential::from_vc_jwt(&vc_jwt, true).map_err(|_| {
-                    TbdexError::OfferingVerification(format!(
-                        "vc_jwt failed verifiction {}",
-                        vc_jwt
-                    ))
-                })?;
+                VerifiableCredential::from_vc_jwt(&vc_jwt, true)
+                    .await
+                    .map_err(|_| {
+                        TbdexError::OfferingVerification(format!(
+                            "vc_jwt failed verifiction {}",
+                            vc_jwt
+                        ))
+                    })?;
             }
         }
 

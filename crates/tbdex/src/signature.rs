@@ -24,7 +24,7 @@ pub fn sign(bearer_did: &BearerDid, metadata: &Value, data: &Value) -> Result<St
     Ok(jws.detached_compact_jws)
 }
 
-pub fn verify(metadata: &Value, data: &Value, detached_compact_jws: &str) -> Result<()> {
+pub async fn verify(metadata: &Value, data: &Value, detached_compact_jws: &str) -> Result<()> {
     // re-attach the payload
     let mut combined = Map::new();
     combined.insert("metadata".to_string(), metadata.clone());
@@ -41,7 +41,7 @@ pub fn verify(metadata: &Value, data: &Value, detached_compact_jws: &str) -> Res
     }
     let compact_jws = format!("{}.{}.{}", parts[0], payload, parts[2]);
 
-    let _ = Jws::from_compact_jws(&compact_jws, true)?;
+    let _ = Jws::from_compact_jws(&compact_jws, true).await?;
 
     Ok(())
 }

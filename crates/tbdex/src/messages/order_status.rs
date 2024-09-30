@@ -99,7 +99,7 @@ impl OrderStatus {
     /// # Returns
     ///
     /// An empty result if verification succeeds, or an error if verification fails.
-    pub fn verify(&self) -> Result<()> {
+    pub async fn verify(&self) -> Result<()> {
         // verify resource json schema
         crate::json_schemas::validate_from_str(MESSAGE_JSON_SCHEMA, self)?;
 
@@ -111,7 +111,8 @@ impl OrderStatus {
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }
