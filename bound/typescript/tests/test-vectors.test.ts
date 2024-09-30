@@ -32,7 +32,7 @@ describe("test vectors", () => {
   });
 
   describe("offering", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = OfferingVector.input;
       const offering = Offering.fromJSONString(input);
       expect(offering.metadata).to.deep.equal(OfferingVector.output.metadata);
@@ -43,10 +43,10 @@ describe("test vectors", () => {
       const offeringJSON = JSON.parse(offeringJSONString);
       expect(offeringJSON).to.deep.equal(OfferingVector.output);
 
-      offering.verify();
+      await offering.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const offering = Offering.create(
         OfferingVector.output.metadata.from,
         OfferingVector.output.data,
@@ -54,12 +54,12 @@ describe("test vectors", () => {
       );
 
       offering.sign(bearerDID);
-      offering.verify();
+      await offering.verify();
     });
   });
 
   describe("balance", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = BalanceVector.input;
       const balance = Balance.fromJSONString(input);
       expect(balance.metadata).to.deep.equal(BalanceVector.output.metadata);
@@ -70,10 +70,10 @@ describe("test vectors", () => {
       const balanceJSON = JSON.parse(balanceJSONString);
       expect(balanceJSON).to.deep.equal(BalanceVector.output);
 
-      balance.verify();
+      await balance.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const balance = Balance.create(
         BalanceVector.output.metadata.from,
         BalanceVector.output.data,
@@ -81,12 +81,12 @@ describe("test vectors", () => {
       );
 
       balance.sign(bearerDID);
-      balance.verify();
+      await balance.verify();
     });
   });
 
   describe("rfq", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = RfqVector.input;
       const rfq = Rfq.fromJSONString(input);
       expect(rfq.metadata).to.deep.equal(RfqVector.output.metadata);
@@ -97,10 +97,10 @@ describe("test vectors", () => {
       const rfqJSON = JSON.parse(rfqJSONString);
       expect(rfqJSON).to.deep.equal(RfqVector.output);
 
-      rfq.verify();
+      await rfq.verify();
     });
 
-    it("should parse with private data omitted", () => {
+    it("should parse with private data omitted", async () => {
       const input = RfqOmitPrivateDataVector.input;
       const rfq = Rfq.fromJSONString(input);
       expect(rfq.metadata).to.deep.equal(
@@ -113,10 +113,10 @@ describe("test vectors", () => {
       const rfqJSON = JSON.parse(rfqJSONString);
       expect(rfqJSON).to.deep.equal(RfqOmitPrivateDataVector.output);
 
-      rfq.verify();
+      await rfq.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const createRfqData: CreateRfqData = {
         claims: RfqVector.output.privateData.claims,
         offeringId: RfqVector.output.data.offeringId,
@@ -139,12 +139,12 @@ describe("test vectors", () => {
       );
 
       rfq.sign(bearerDID);
-      rfq.verify();
+      await rfq.verify();
     });
   });
 
   describe("quote", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       // TODO test vector needs updating, needs the `paymentInstruction`'s on the payin & payout removed
       // const input = QuoteVector.input;
       // const quote = Quote.fromJSONString(input);
@@ -156,10 +156,10 @@ describe("test vectors", () => {
       // const quoteJSON = JSON.parse(quoteJSONString);
       // expect(quoteJSON).to.deep.equal(QuoteVector.output);
       //
-      // quote.verify();
+      // await quote.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const quote = Quote.create(
         QuoteVector.output.metadata.to,
         QuoteVector.output.metadata.from,
@@ -169,12 +169,12 @@ describe("test vectors", () => {
       );
 
       quote.sign(bearerDID);
-      quote.verify();
+      await quote.verify();
     });
   });
 
   describe("order", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = OrderVector.input;
       const order = Order.fromJSONString(input);
       expect(order.metadata).to.deep.equal(OrderVector.output.metadata);
@@ -185,10 +185,10 @@ describe("test vectors", () => {
       const orderJSON = JSON.parse(orderJSONString);
       expect(orderJSON).to.deep.equal(OrderVector.output);
 
-      order.verify();
+      await order.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const order = Order.create(
         OrderVector.output.metadata.to,
         OrderVector.output.metadata.from,
@@ -197,22 +197,22 @@ describe("test vectors", () => {
       );
 
       order.sign(bearerDID);
-      order.verify();
+      await order.verify();
     });
   });
 
   describe("order instructions", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       // todo create test vector
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       // todo create test vector
     });
   });
 
   describe("cancel", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = CancelVector.input;
       const cancel = Cancel.fromJSONString(input);
       expect(cancel.metadata).to.deep.equal(CancelVector.output.metadata);
@@ -223,10 +223,10 @@ describe("test vectors", () => {
       const cancelJSON = JSON.parse(cancelJSONString);
       expect(cancelJSON).to.deep.equal(CancelVector.output);
 
-      cancel.verify();
+      await cancel.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const cancel = Cancel.create(
         CancelVector.output.metadata.to,
         CancelVector.output.metadata.from,
@@ -236,12 +236,12 @@ describe("test vectors", () => {
       );
 
       cancel.sign(bearerDID);
-      cancel.verify();
+      await cancel.verify();
     });
   });
 
   describe("order status", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = OrderStatusVector.input;
       const orderStatus = OrderStatus.fromJSONString(input);
       expect(orderStatus.metadata).to.deep.equal(
@@ -256,10 +256,10 @@ describe("test vectors", () => {
       const orderStatusJSON = JSON.parse(orderStatusJSONString);
       expect(orderStatusJSON).to.deep.equal(OrderStatusVector.output);
 
-      orderStatus.verify();
+      await orderStatus.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const orderStatus = OrderStatus.create(
         OrderStatusVector.output.metadata.to,
         OrderStatusVector.output.metadata.from,
@@ -269,12 +269,12 @@ describe("test vectors", () => {
       );
 
       orderStatus.sign(bearerDID);
-      orderStatus.verify();
+      await orderStatus.verify();
     });
   });
 
   describe("close", () => {
-    it("should parse", () => {
+    it("should parse", async () => {
       const input = CloseVector.input;
       const close = Close.fromJSONString(input);
       expect(close.metadata).to.deep.equal(CloseVector.output.metadata);
@@ -285,10 +285,10 @@ describe("test vectors", () => {
       const closeJSON = JSON.parse(closeJSONString);
       expect(closeJSON).to.deep.equal(CloseVector.output);
 
-      close.verify();
+      await close.verify();
     });
 
-    it("should create, sign, and verify", () => {
+    it("should create, sign, and verify", async () => {
       const close = Close.create(
         CloseVector.output.metadata.to,
         CloseVector.output.metadata.from,
@@ -298,7 +298,7 @@ describe("test vectors", () => {
       );
 
       close.sign(bearerDID);
-      close.verify();
+      await close.verify();
     });
   });
 });

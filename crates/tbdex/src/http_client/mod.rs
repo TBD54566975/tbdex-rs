@@ -36,8 +36,8 @@ fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<St
     Ok(jwt.compact_jws)
 }
 
-fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
-    let resolution_result = ResolutionResult::resolve(pfi_did_uri);
+async fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
+    let resolution_result = ResolutionResult::resolve(pfi_did_uri).await;
 
     let endpoint = match &resolution_result.document {
         None => {
@@ -97,7 +97,10 @@ fn add_pagination(
     format!("{}{}", endpoint, query_string)
 }
 
-pub(crate) fn get_json<T: DeserializeOwned>(url: &str, access_token: Option<String>) -> Result<T> {
+pub(crate) async fn get_json<T: DeserializeOwned>(
+    url: &str,
+    access_token: Option<String>,
+) -> Result<T> {
     let options = access_token.map(|access_token| FetchOptions {
         headers: Some(
             [(
@@ -109,7 +112,7 @@ pub(crate) fn get_json<T: DeserializeOwned>(url: &str, access_token: Option<Stri
         ),
         ..Default::default()
     });
-    let response = http_std::fetch(url, options)?;
+    let response = http_std::fetch(url, options).await?;
 
     if !(200..300).contains(&response.status_code) {
         return Err(TbdexError::Http(format!(
@@ -123,7 +126,7 @@ pub(crate) fn get_json<T: DeserializeOwned>(url: &str, access_token: Option<Stri
     Ok(json)
 }
 
-pub(crate) fn post_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
+pub(crate) async fn post_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
     let body = serde_json::to_vec(body)?;
 
     let response = http_std::fetch(
@@ -137,7 +140,8 @@ pub(crate) fn post_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
             ),
             body: Some(body),
         }),
-    )?;
+    )
+    .await?;
 
     if !(200..300).contains(&response.status_code) {
         return Err(TbdexError::Http(format!(
@@ -149,7 +153,7 @@ pub(crate) fn post_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn put_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
+pub(crate) async fn put_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
     let body = serde_json::to_vec(body)?;
 
     let response = http_std::fetch(
@@ -163,7 +167,8 @@ pub(crate) fn put_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
             ),
             body: Some(body),
         }),
-    )?;
+    )
+    .await?;
 
     if !(200..300).contains(&response.status_code) {
         return Err(TbdexError::Http(format!(

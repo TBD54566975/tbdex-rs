@@ -1,3 +1,4 @@
+use http_std::Error as HttpStdError;
 use serde::Serialize;
 use serde_wasm_bindgen::to_value;
 use tbdex::errors::TbdexError;
@@ -47,4 +48,8 @@ pub fn map_err(err: TbdexError) -> JsValue {
 
 pub fn map_web5_err(err: Web5Error) -> JsValue {
     map_err(TbdexError::Web5Error(err))
+}
+
+pub fn map_http_std_err(err: HttpStdError) -> JsValue {
+    map_err(TbdexError::HttpStdError(err))
 }

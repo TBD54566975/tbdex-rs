@@ -88,9 +88,9 @@ export class Cancel {
     }
   };
 
-  verify = () => {
+  verify = async () => {
     try {
-      this.toWASM().verify();
+      await this.toWASM().verify();
     } catch (error) {
       throw tbdexError(error);
     }

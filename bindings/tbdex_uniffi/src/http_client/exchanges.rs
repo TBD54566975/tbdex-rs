@@ -1,5 +1,6 @@
 use crate::{
     errors::Result,
+    get_rt,
     messages::{
         cancel::Cancel, close::Close, order::Order, order_instructions::OrderInstructions,
         order_status::OrderStatus, quote::Quote, rfq::Rfq,
@@ -48,17 +49,27 @@ impl Exchange {
 }
 
 pub fn create_exchange(rfq: Arc<Rfq>, reply_to: Option<String>) -> Result<()> {
-    tbdex::http_client::exchanges::create_exchange(&rfq.to_inner()?, reply_to)?;
+    let rt = get_rt()?;
+    rt.block_on(tbdex::http_client::exchanges::create_exchange(
+        &rfq.to_inner()?,
+        reply_to,
+    ))?;
     Ok(())
 }
 
 pub fn submit_order(order: Arc<Order>) -> Result<()> {
-    tbdex::http_client::exchanges::submit_order(&order.get_data()?)?;
+    let rt = get_rt()?;
+    rt.block_on(tbdex::http_client::exchanges::submit_order(
+        &order.get_data()?,
+    ))?;
     Ok(())
 }
 
 pub fn submit_cancel(cancel: Arc<Cancel>) -> Result<()> {
-    tbdex::http_client::exchanges::submit_cancel(&cancel.get_data()?)?;
+    let rt = get_rt()?;
+    rt.block_on(tbdex::http_client::exchanges::submit_cancel(
+        &cancel.get_data()?,
+    ))?;
     Ok(())
 }
 
@@ -67,11 +78,12 @@ pub fn get_exchange(
     bearer_did: Arc<BearerDid>,
     exchange_id: String,
 ) -> Result<Exchange> {
-    let inner_exchange = tbdex::http_client::exchanges::get_exchange(
+    let rt = get_rt()?;
+    let inner_exchange = rt.block_on(tbdex::http_client::exchanges::get_exchange(
         &pfi_did_uri,
         &bearer_did.0.clone(),
         &exchange_id,
-    )?;
+    ))?;
 
     Ok(Exchange::from_inner(inner_exchange))
 }
@@ -81,10 +93,11 @@ pub fn get_exchange_ids(
     bearer_did: Arc<BearerDid>,
     query_params: Option<GetExchangeIdsQueryParams>,
 ) -> Result<Vec<String>> {
-    let exchange_ids = tbdex::http_client::exchanges::get_exchange_ids(
+    let rt = get_rt()?;
+    let exchange_ids = rt.block_on(tbdex::http_client::exchanges::get_exchange_ids(
         &pfi_did_uri,
         &bearer_did.0.clone(),
         query_params,
-    )?;
+    ))?;
     Ok(exchange_ids)
 }

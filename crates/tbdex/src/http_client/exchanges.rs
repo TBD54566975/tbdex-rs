@@ -34,11 +34,11 @@ pub struct Exchange {
     pub close: Option<Arc<Close>>,
 }
 
-pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
-    let service_endpoint = get_service_endpoint(&rfq.metadata.to)?;
+pub async fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
+    let service_endpoint = get_service_endpoint(&rfq.metadata.to).await?;
     let create_exchange_endpoint = format!("{}/exchanges", service_endpoint);
 
-    rfq.verify()?;
+    rfq.verify().await?;
 
     post_json(
         &create_exchange_endpoint,
@@ -46,60 +46,63 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
             message: rfq.clone(),
             reply_to,
         },
-    )?;
+    )
+    .await?;
 
     Ok(())
 }
 
-pub fn submit_order(order: &Order) -> Result<()> {
-    let service_endpoint = get_service_endpoint(&order.metadata.to)?;
+pub async fn submit_order(order: &Order) -> Result<()> {
+    let service_endpoint = get_service_endpoint(&order.metadata.to).await?;
     let submit_order_endpoint = format!(
         "{}/exchanges/{}",
         service_endpoint, order.metadata.exchange_id
     );
 
-    order.verify()?;
+    order.verify().await?;
 
     put_json(
         &submit_order_endpoint,
         &UpdateExchangeRequestBody {
             message: WalletUpdateMessage::Order(Arc::new(order.clone())),
         },
-    )?;
+    )
+    .await?;
 
     Ok(())
 }
 
-pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
-    let service_endpoint = get_service_endpoint(&cancel.metadata.to)?;
+pub async fn submit_cancel(cancel: &Cancel) -> Result<()> {
+    let service_endpoint = get_service_endpoint(&cancel.metadata.to).await?;
     let submit_cancel_endpoint = format!(
         "{}/exchanges/{}",
         service_endpoint, cancel.metadata.exchange_id
     );
 
-    cancel.verify()?;
+    cancel.verify().await?;
 
     put_json(
         &submit_cancel_endpoint,
         &UpdateExchangeRequestBody {
             message: WalletUpdateMessage::Cancel(Arc::new(cancel.clone())),
         },
-    )?;
+    )
+    .await?;
 
     Ok(())
 }
 
-pub fn get_exchange(
+pub async fn get_exchange(
     pfi_did_uri: &str,
     bearer_did: &BearerDid,
     exchange_id: &str,
 ) -> Result<Exchange> {
-    let service_endpoint = get_service_endpoint(pfi_did_uri)?;
+    let service_endpoint = get_service_endpoint(pfi_did_uri).await?;
     let get_exchange_endpoint = format!("{}/exchanges/{}", service_endpoint, exchange_id);
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
     let get_exchange_response_body =
-        get_json::<GetExchangeResponseBody>(&get_exchange_endpoint, Some(access_token))?;
+        get_json::<GetExchangeResponseBody>(&get_exchange_endpoint, Some(access_token)).await?;
 
     let mut exchange = Exchange::default();
 
@@ -142,12 +145,12 @@ pub struct GetExchangeIdsQueryParams {
     pub pagination_limit: Option<i64>,
 }
 
-pub fn get_exchange_ids(
+pub async fn get_exchange_ids(
     pfi_did: &str,
     requestor_did: &BearerDid,
     query_params: Option<GetExchangeIdsQueryParams>,
 ) -> Result<Vec<String>> {
-    let service_endpoint = get_service_endpoint(pfi_did)?;
+    let service_endpoint = get_service_endpoint(pfi_did).await?;
     let get_exchanges_endpoint = format!("{}/exchanges", service_endpoint);
 
     let get_exchanges_endpoint = if let Some(params) = query_params {
@@ -162,7 +165,7 @@ pub fn get_exchange_ids(
 
     let access_token = generate_access_token(pfi_did, requestor_did)?;
     let get_exchanges_response_body =
-        get_json::<GetExchangesResponseBody>(&get_exchanges_endpoint, Some(access_token))?;
+        get_json::<GetExchangesResponseBody>(&get_exchanges_endpoint, Some(access_token)).await?;
 
     Ok(get_exchanges_response_body.data)
 }

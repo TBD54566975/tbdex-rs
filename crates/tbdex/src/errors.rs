@@ -6,6 +6,8 @@ use web5::errors::Web5Error;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum TbdexError {
+    #[error("async runtime error {0}")]
+    AsyncRuntime(String),
     #[error("json error {0}")]
     Json(String),
     #[error("json schema error {0}")]

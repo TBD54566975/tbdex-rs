@@ -1,4 +1,7 @@
-use crate::errors::{Result, TbdexError};
+use crate::{
+    errors::{Result, TbdexError},
+    get_rt,
+};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -48,7 +51,7 @@ impl Cancel {
 
     pub fn verify(&self) -> Result<()> {
         let cancel = self.0.read().map_err(TbdexError::from_poison_error)?;
-
-        Ok(cancel.verify()?)
+        let rt = get_rt()?;
+        Ok(rt.block_on(cancel.verify())?)
     }
 }

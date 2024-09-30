@@ -64,8 +64,8 @@ impl WasmOrderStatus {
     }
 
     #[wasm_bindgen]
-    pub fn verify(&self) -> Result<()> {
-        self.inner.verify().map_err(map_err)
+    pub async fn verify(&self) -> Result<()> {
+        self.inner.verify().await.map_err(map_err)
     }
 
     #[wasm_bindgen(getter)]
