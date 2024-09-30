@@ -4,6 +4,49 @@ use std::{collections::HashMap, sync::Arc};
 use tbdex::errors::TbdexError;
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
+use js_sys::Promise;
+use wasm_bindgen_futures::JsFuture;
+
+// #[wasm_bindgen]
+// extern "C" {
+//     #[wasm_bindgen(
+//         typescript_type = "{ async fetch: (url: string, options?: WasmFetchOptions) => WasmResponse }"
+//     )]
+//     pub type ForeignFetchAsync;
+
+//     #[wasm_bindgen(method)]
+//     async fn fetch(
+//         this: &ForeignFetchAsync,
+//         url: &str,
+//         options: Option<WasmFetchOptions>,
+//     ) -> WasmResponse;
+// }
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(
+        typescript_type = "{ fetch: (url: string, options?: WasmFetchOptions) => Promise<WasmResponse> }"
+    )]
+    pub type ForeignFetchAsync;
+
+    #[wasm_bindgen(method)]
+    fn fetch(this: &ForeignFetchAsync, url: &str, options: Option<WasmFetchOptions>) -> Promise;
+}
+
+#[wasm_bindgen]
+pub async fn proof_of_concept_foreign_fetch_async(foreign_fetch: ForeignFetchAsync) -> Result<()> {
+    let promise = foreign_fetch.fetch("https://example.com", None);
+    let response_js = JsFuture::from(promise).await?;
+    // let response: WasmResponse = response_js.into();
+
+    web_sys::console::log_1(&JsValue::from_str(&format!(
+        "http response code {:?}",
+        response_js
+    )));
+
+    Ok(())
+}
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(
@@ -13,6 +56,15 @@ extern "C" {
 
     #[wasm_bindgen(method)]
     fn fetch(this: &ForeignFetch, url: &str, options: Option<WasmFetchOptions>) -> WasmResponse;
+}
+
+#[wasm_bindgen]
+pub fn proof_of_concept_foreign_fetch(foreign_fetch: ForeignFetch) {
+    let response = foreign_fetch.fetch("https://example.com", None);
+    web_sys::console::log_1(&JsValue::from_str(&format!(
+        "http response code {}",
+        response.status_code()
+    )));
 }
 
 pub struct ConcreteForeignFetch(ForeignFetch);
