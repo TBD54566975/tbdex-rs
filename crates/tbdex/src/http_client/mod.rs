@@ -2,13 +2,8 @@ pub mod balances;
 pub mod exchanges;
 pub mod offerings;
 
-use crate::{
-    errors::{Result, TbdexError},
-    http::ErrorResponseBody,
-    jose::Signer,
-};
-use josekit::jwt::JwtPayload;
-use reqwest::{blocking::Client, Method, StatusCode};
+use crate::errors::{Result, TbdexError};
+use http_std::FetchOptions;
 use serde::{de::DeserializeOwned, Serialize};
 use std::time::{Duration, SystemTime};
 use uuid::Uuid;
@@ -20,33 +15,28 @@ use web5::{
         },
     },
     errors::Web5Error,
+    jose::{Jwt, JwtClaims},
 };
 
 fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<String> {
     let now = SystemTime::now();
     let exp = now + Duration::from_secs(60);
 
-    let mut payload = JwtPayload::new();
-    payload.set_audience(vec![pfi_did_uri]);
-    payload.set_issuer(&bearer_did.did.uri);
-    payload.set_issued_at(&now);
-    payload.set_expires_at(&exp);
-    payload.set_jwt_id(Uuid::new_v4().to_string());
-
-    // default to first VM
-    let key_id = bearer_did.document.verification_method[0].id.clone();
-    let web5_signer = bearer_did.get_signer(&key_id)?;
-    let jose_signer = Signer {
-        kid: key_id,
-        web5_signer,
+    let claims = &JwtClaims {
+        aud: Some(vec![pfi_did_uri.to_string()]),
+        iss: Some(bearer_did.did.uri.clone()),
+        iat: Some(now),
+        exp: Some(exp),
+        jti: Some(Uuid::new_v4().to_string()),
+        ..Default::default()
     };
+    // TODO default to first vm
+    let jwt = Jwt::from_claims(claims, bearer_did, None)?;
 
-    let access_token = jose_signer.sign_jwt(&payload)?;
-
-    Ok(access_token)
+    Ok(jwt.compact_jws)
 }
 
-pub(crate) fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
+fn get_service_endpoint(pfi_did_uri: &str) -> Result<String> {
     let resolution_result = ResolutionResult::resolve(pfi_did_uri);
 
     let endpoint = match &resolution_result.document {
@@ -107,65 +97,80 @@ fn add_pagination(
     format!("{}{}", endpoint, query_string)
 }
 
-fn send_request<T: Serialize, U: DeserializeOwned>(
-    url: &str,
-    method: Method,
-    body: Option<&T>,
-    access_token: Option<String>,
-) -> Result<Option<U>> {
-    let client = Client::new();
-    let mut request = client.request(method.clone(), url);
-
-    if let Some(token) = &access_token {
-        request = request.bearer_auth(token);
-    }
-
-    if let Some(body) = &body {
-        request = request.json(body);
-    }
-
-    let response = request.send()?;
-
-    let response_status = response.status();
-    let response_text = response.text()?;
-
-    crate::log_dbg!(|| {
-        format!(
-            "httpclient sent request {} {}, has access token {}, with body {}, \
-            response status {}, response text {}",
-            method,
-            url,
-            access_token.is_some(),
-            match &body {
-                Some(b) => serde_json::to_string_pretty(b)
-                    .unwrap_or_else(|_| String::from("error serializing the body")),
-                None => String::default(),
-            },
-            response_status,
-            match serde_json::from_str::<serde_json::Value>(&response_text) {
-                Ok(json) =>
-                    serde_json::to_string_pretty(&json).unwrap_or_else(|_| response_text.clone()),
-                Err(_) => response_text.clone(),
-            }
-        )
+pub(crate) fn get_json<T: DeserializeOwned>(url: &str, access_token: Option<String>) -> Result<T> {
+    let options = access_token.map(|access_token| FetchOptions {
+        headers: Some(
+            [(
+                "Authorization".to_string(),
+                format!("Bearer {}", access_token),
+            )]
+            .into_iter()
+            .collect(),
+        ),
+        ..Default::default()
     });
+    let response = http_std::fetch(url, options)?;
 
-    if !response_status.is_success() {
-        if response_status.as_u16() >= 400 {
-            let error_response_body = serde_json::from_str::<ErrorResponseBody>(&response_text)?;
-            return Err(error_response_body.into());
-        }
-
-        return Err(TbdexError::HttpClient(format!(
-            "unsuccessful http response {} {}",
-            response_status, response_text
+    if !(200..300).contains(&response.status_code) {
+        return Err(TbdexError::Http(format!(
+            "http error status code {} for url {}",
+            response.status_code, url
         )));
     }
 
-    if response_status == StatusCode::ACCEPTED {
-        return Ok(None);
+    let json = serde_json::from_slice::<T>(&response.body)?;
+
+    Ok(json)
+}
+
+pub(crate) fn post_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
+    let body = serde_json::to_vec(body)?;
+
+    let response = http_std::fetch(
+        url,
+        Some(FetchOptions {
+            method: Some(http_std::Method::Post),
+            headers: Some(
+                [("Content-Type".to_string(), "application/json".to_string())]
+                    .into_iter()
+                    .collect(),
+            ),
+            body: Some(body),
+        }),
+    )?;
+
+    if !(200..300).contains(&response.status_code) {
+        return Err(TbdexError::Http(format!(
+            "http error status code {} for url {}",
+            response.status_code, url
+        )));
     }
 
-    let response_body = serde_json::from_str::<U>(&response_text)?;
-    Ok(Some(response_body))
+    Ok(())
+}
+
+pub(crate) fn put_json<T: Serialize>(url: &str, body: &T) -> Result<()> {
+    let body = serde_json::to_vec(body)?;
+
+    let response = http_std::fetch(
+        url,
+        Some(FetchOptions {
+            method: Some(http_std::Method::Put),
+            headers: Some(
+                [("Content-Type".to_string(), "application/json".to_string())]
+                    .into_iter()
+                    .collect(),
+            ),
+            body: Some(body),
+        }),
+    )?;
+
+    if !(200..300).contains(&response.status_code) {
+        return Err(TbdexError::Http(format!(
+            "http error status code {} for url {}",
+            response.status_code, url
+        )));
+    }
+
+    Ok(())
 }

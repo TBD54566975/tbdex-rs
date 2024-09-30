@@ -1,11 +1,6 @@
 [workspace]
-members = [ 
-    "bindings/tbdex_uniffi",
-    "crates/tbdex",
-]
-default-members = [
-    "crates/tbdex",
-]
+members = ["bindings/tbdex_uniffi", "bindings/tbdex_wasm", "crates/tbdex"]
+default-members = ["crates/tbdex"]
 resolver = "2"
 
 [workspace.package]
@@ -14,8 +9,11 @@ repository = "https://github.com/TBD54566975/tbdex-rs.git"
 license-file = "LICENSE"
 
 [workspace.dependencies]
+lazy_static = "1.5.0"
 serde = { version = "1.0.193", features = ["derive", "rc"] }
 serde_json = "1.0.108"
 thiserror = "1.0.50"
-web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "e2851a074c46c9891810bb32ab4b5f93ae7c807c" }
-web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "e2851a074c46c9891810bb32ab4b5f93ae7c807c" }
+http-std = { git = "https://github.com/TBD54566975/web5-rs", rev = "005bd3c04574039ad7c3e41eeefae877b9895104" }
+web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "005bd3c04574039ad7c3e41eeefae877b9895104" }
+web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "005bd3c04574039ad7c3e41eeefae877b9895104" }
+

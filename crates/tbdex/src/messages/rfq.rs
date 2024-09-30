@@ -13,9 +13,7 @@ use chrono::Utc;
 use rand::{rngs::OsRng, RngCore};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use web5::{
-    credentials::verifiable_credential_1_1::VerifiableCredential, dids::bearer_did::BearerDid,
-};
+use web5::{credentials::VerifiableCredential, dids::bearer_did::BearerDid};
 
 /// Represents an RFQ (Request For Quote) message in the tbDEX protocol.
 ///
@@ -130,7 +128,6 @@ impl Rfq {
 
         // verify signature
         crate::signature::verify(
-            &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,

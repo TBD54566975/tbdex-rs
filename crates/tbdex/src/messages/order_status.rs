@@ -1,5 +1,8 @@
+use std::{fmt, str::FromStr};
+
 use super::{MessageKind, MessageMetadata, Result};
 use crate::{
+    errors::TbdexError,
     json::{FromJson, ToJson},
     json_schemas::generated::{MESSAGE_JSON_SCHEMA, ORDER_STATUS_DATA_JSON_SCHEMA},
     DEFAULT_PROTOCOL_VERSION,
@@ -105,7 +108,6 @@ impl OrderStatus {
 
         // verify signature
         crate::signature::verify(
-            &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
@@ -175,6 +177,50 @@ pub enum Status {
 
     /// Indicates that the refund of Alice's payin has failed.
     RefundFailed,
+}
+
+impl FromStr for Status {
+    type Err = TbdexError;
+
+    fn from_str(s: &str) -> Result<Self> {
+        match s {
+            "PAYIN_PENDING" => Ok(Status::PayinPending),
+            "PAYIN_INITIATED" => Ok(Status::PayinInitiated),
+            "PAYIN_SETTLED" => Ok(Status::PayinSettled),
+            "PAYIN_FAILED" => Ok(Status::PayinFailed),
+            "PAYIN_EXPIRED" => Ok(Status::PayinExpired),
+            "PAYOUT_PENDING" => Ok(Status::PayoutPending),
+            "PAYOUT_INITIATED" => Ok(Status::PayoutInitiated),
+            "PAYOUT_SETTLED" => Ok(Status::PayoutSettled),
+            "PAYOUT_FAILED" => Ok(Status::PayoutFailed),
+            "REFUND_PENDING" => Ok(Status::RefundPending),
+            "REFUND_INITIATED" => Ok(Status::RefundInitiated),
+            "REFUND_SETTLED" => Ok(Status::RefundSettled),
+            "REFUND_FAILED" => Ok(Status::RefundFailed),
+            _ => Err(TbdexError::Parse(format!("unknown status {}", s))),
+        }
+    }
+}
+
+impl fmt::Display for Status {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = match self {
+            Status::PayinPending => "PAYIN_PENDING",
+            Status::PayinInitiated => "PAYIN_INITIATED",
+            Status::PayinSettled => "PAYIN_SETTLED",
+            Status::PayinFailed => "PAYIN_FAILED",
+            Status::PayinExpired => "PAYIN_EXPIRED",
+            Status::PayoutPending => "PAYOUT_PENDING",
+            Status::PayoutInitiated => "PAYOUT_INITIATED",
+            Status::PayoutSettled => "PAYOUT_SETTLED",
+            Status::PayoutFailed => "PAYOUT_FAILED",
+            Status::RefundPending => "REFUND_PENDING",
+            Status::RefundInitiated => "REFUND_INITIATED",
+            Status::RefundSettled => "REFUND_SETTLED",
+            Status::RefundFailed => "REFUND_FAILED",
+        };
+        write!(f, "{}", s)
+    }
 }
 
 #[cfg(test)]

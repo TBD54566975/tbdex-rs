@@ -97,7 +97,6 @@ impl Offering {
 
         // verify signature
         crate::signature::verify(
-            &self.metadata.from,
             &serde_json::to_value(self.metadata.clone())?,
             &serde_json::to_value(self.data.clone())?,
             &self.signature,
@@ -299,6 +298,7 @@ mod tests {
                     name: None,
                     purpose: None,
                     input_descriptors: vec![],
+                    submission_requirements: None,
                 }),
                 cancellation: CancellationDetails {
                     enabled: false,

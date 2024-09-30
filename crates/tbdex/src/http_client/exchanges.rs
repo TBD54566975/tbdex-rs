@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
-use super::{add_pagination, get_service_endpoint, send_request, Result};
-use crate::errors::TbdexError;
+use super::{add_pagination, get_json, get_service_endpoint, post_json, put_json, Result};
 use crate::http::exchanges::GetExchangesResponseBody;
 use crate::{
     http::exchanges::{
@@ -14,7 +13,6 @@ use crate::{
         order_status::OrderStatus, quote::Quote, rfq::Rfq, Message,
     },
 };
-use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web5::dids::bearer_did::BearerDid;
 
@@ -42,14 +40,12 @@ pub fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
 
     rfq.verify()?;
 
-    send_request::<CreateExchangeRequestBody, ()>(
+    post_json(
         &create_exchange_endpoint,
-        Method::POST,
-        Some(&CreateExchangeRequestBody {
+        &CreateExchangeRequestBody {
             message: rfq.clone(),
             reply_to,
-        }),
-        None,
+        },
     )?;
 
     Ok(())
@@ -64,13 +60,11 @@ pub fn submit_order(order: &Order) -> Result<()> {
 
     order.verify()?;
 
-    send_request::<UpdateExchangeRequestBody, ()>(
+    put_json(
         &submit_order_endpoint,
-        Method::PUT,
-        Some(&UpdateExchangeRequestBody {
+        &UpdateExchangeRequestBody {
             message: WalletUpdateMessage::Order(Arc::new(order.clone())),
-        }),
-        None,
+        },
     )?;
 
     Ok(())
@@ -85,13 +79,11 @@ pub fn submit_cancel(cancel: &Cancel) -> Result<()> {
 
     cancel.verify()?;
 
-    send_request::<UpdateExchangeRequestBody, ()>(
+    put_json(
         &submit_cancel_endpoint,
-        Method::PUT,
-        Some(&UpdateExchangeRequestBody {
+        &UpdateExchangeRequestBody {
             message: WalletUpdateMessage::Cancel(Arc::new(cancel.clone())),
-        }),
-        None,
+        },
     )?;
 
     Ok(())
@@ -106,20 +98,12 @@ pub fn get_exchange(
     let get_exchange_endpoint = format!("{}/exchanges/{}", service_endpoint, exchange_id);
 
     let access_token = generate_access_token(pfi_did_uri, bearer_did)?;
-
-    let response = send_request::<(), GetExchangeResponseBody>(
-        &get_exchange_endpoint,
-        Method::GET,
-        None,
-        Some(access_token),
-    )?
-    .ok_or(TbdexError::HttpClient(
-        "get exchange response cannot be null".to_string(),
-    ))?;
+    let get_exchange_response_body =
+        get_json::<GetExchangeResponseBody>(&get_exchange_endpoint, Some(access_token))?;
 
     let mut exchange = Exchange::default();
 
-    for message in response.data {
+    for message in get_exchange_response_body.data {
         match message {
             Message::Rfq(rfq) => {
                 exchange.rfq = rfq;
@@ -177,16 +161,8 @@ pub fn get_exchange_ids(
     };
 
     let access_token = generate_access_token(pfi_did, requestor_did)?;
+    let get_exchanges_response_body =
+        get_json::<GetExchangesResponseBody>(&get_exchanges_endpoint, Some(access_token))?;
 
-    let response = send_request::<(), GetExchangesResponseBody>(
-        &get_exchanges_endpoint,
-        Method::GET,
-        None,
-        Some(access_token),
-    )?
-    .ok_or(TbdexError::HttpClient(
-        "get exchanges response cannot be null".to_string(),
-    ))?;
-
-    Ok(response.data)
+    Ok(get_exchanges_response_body.data)
 }

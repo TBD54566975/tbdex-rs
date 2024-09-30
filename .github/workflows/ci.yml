@@ -51,7 +51,7 @@ jobs:
         uses: codecov/codecov-action@v4.5.0
         with:
           use_oidc: true
-          files: '*.profraw'
+          files: "*.profraw"
 
   lint:
     runs-on: ubuntu-latest
@@ -194,7 +194,6 @@ jobs:
           name: x86_64-pc-windows-msvc-dll
           path: bound/kt/src/main/resources/tbdex_uniffi_x86_64_pc_windows_msvc.dll
 
-
   kotlin-build-test-deploy-snapshot:
     needs:
       - build_aarch64_apple_darwin
@@ -312,7 +311,7 @@ jobs:
     needs: kotlin-build-test-deploy-snapshot
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, macos-12, windows-latest ]
+        os: [ubuntu-latest, macos-latest, macos-12, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -381,3 +380,21 @@ jobs:
         with:
           name: rust-test-results
           path: test-results/rust-test-results.xml
+
+  test-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+      - name: Lint
+        # NOTE: only currently testing nodejs in the CI, not the browser
+        run: |
+          cd bound/typescript
+          (cd generate-mappings/; npm install)
+          npm install
+          npm run clean
+          npm run build:wasm
+          npm run test:node

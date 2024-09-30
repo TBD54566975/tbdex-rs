@@ -1,10 +1,8 @@
-use josekit::JoseError as JosekitError;
-use reqwest::Error as ReqwestError;
+use crate::http::ErrorResponseBody;
+use http_std::Error as HttpStdError;
 use serde_json::Error as SerdeJsonError;
 use type_safe_id::Error as TypeIdError;
 use web5::errors::Web5Error;
-
-use crate::http::ErrorResponseBody;
 
 #[derive(thiserror::Error, Debug, Clone, PartialEq)]
 pub enum TbdexError {
@@ -28,6 +26,8 @@ pub enum TbdexError {
     HttpClient(String),
 
     #[error(transparent)]
+    HttpStdError(#[from] HttpStdError),
+    #[error(transparent)]
     Web5Error(#[from] Web5Error),
     #[error(transparent)]
     ErrorResponseBody(#[from] ErrorResponseBody),
@@ -42,18 +42,6 @@ impl From<SerdeJsonError> for TbdexError {
 impl From<TypeIdError> for TbdexError {
     fn from(err: TypeIdError) -> Self {
         TbdexError::TypeId(err.to_string())
-    }
-}
-
-impl From<JosekitError> for TbdexError {
-    fn from(err: JosekitError) -> Self {
-        TbdexError::Jose(err.to_string())
-    }
-}
-
-impl From<ReqwestError> for TbdexError {
-    fn from(err: ReqwestError) -> Self {
-        TbdexError::Http(err.to_string())
     }
 }
 

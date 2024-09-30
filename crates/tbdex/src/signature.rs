@@ -1,11 +1,8 @@
 use crate::errors::{Result, TbdexError};
-use crate::jose::{Signer, Verifier};
 use base64::{engine::general_purpose, Engine};
 use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
-use web5::dids::bearer_did::BearerDid;
-use web5::dids::resolution::resolution_result::ResolutionResult;
-use web5::errors::Web5Error;
+use web5::{dids::bearer_did::BearerDid, jose::Jws};
 
 fn compute_digest(value: &Value) -> Result<Vec<u8>> {
     let canonical_string = serde_jcs::to_string(value)?;
@@ -21,24 +18,13 @@ pub fn sign(bearer_did: &BearerDid, metadata: &Value, data: &Value) -> Result<St
 
     let digest = compute_digest(&Value::Object(combined))?;
 
-    // default to first VM
-    let key_id = bearer_did.document.verification_method[0].id.clone();
-    let web5_signer = bearer_did.get_signer(&key_id)?;
-    let jose_signer = Signer {
-        kid: key_id,
-        web5_signer,
-    };
-    let detached_compact_jws = jose_signer.sign_detached_compact_jws(&digest)?;
+    // TODO verification method defaults to first
+    let jws = Jws::from_payload(&digest, bearer_did, None)?;
 
-    Ok(detached_compact_jws)
+    Ok(jws.detached_compact_jws)
 }
 
-pub fn verify(
-    did_uri: &str,
-    metadata: &Value,
-    data: &Value,
-    detached_compact_jws: &str,
-) -> Result<()> {
+pub fn verify(metadata: &Value, data: &Value, detached_compact_jws: &str) -> Result<()> {
     // re-attach the payload
     let mut combined = Map::new();
     combined.insert("metadata".to_string(), metadata.clone());
@@ -53,19 +39,9 @@ pub fn verify(
             parts.len()
         )));
     }
-    let message = format!("{}.{}.{}", parts[0], payload, parts[2]);
+    let compact_jws = format!("{}.{}.{}", parts[0], payload, parts[2]);
 
-    let resolution_result = ResolutionResult::resolve(did_uri);
-    match resolution_result.resolution_metadata.error {
-        Some(e) => Err(TbdexError::Web5Error(Web5Error::Resolution(e))),
-        None => {
-            let document = resolution_result.document.ok_or(TbdexError::Jose(
-                "did resolution result must contain document".to_string(),
-            ))?;
+    let _ = Jws::from_compact_jws(&compact_jws, true)?;
 
-            Verifier::verify_compact_jws(document, message)?;
-
-            Ok(())
-        }
-    }
+    Ok(())
 }
