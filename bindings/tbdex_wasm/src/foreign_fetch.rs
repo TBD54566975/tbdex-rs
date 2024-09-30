@@ -73,10 +73,7 @@ impl Client for ConcreteForeignFetch {
 
         let wasm_response = serde_wasm_bindgen::from_value::<WasmResponse>(wasm_response_jsvalue)
             .map_err(|e| {
-            HttpStdError::Unknown(format!(
-                "rust WasmResponse from JsValue error {}",
-                e.to_string()
-            ))
+            HttpStdError::Unknown(format!("rust WasmResponse from JsValue error {}", e))
         })?;
 
         Ok(wasm_response.into())

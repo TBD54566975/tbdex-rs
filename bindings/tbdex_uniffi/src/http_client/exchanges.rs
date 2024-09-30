@@ -1,11 +1,11 @@
 use crate::{
     errors::Result,
+    get_rt,
     messages::{
         cancel::Cancel, close::Close, order::Order, order_instructions::OrderInstructions,
         order_status::OrderStatus, quote::Quote, rfq::Rfq,
     },
 };
-use futures::executor::block_on;
 use std::sync::{Arc, RwLock};
 use tbdex::http_client::exchanges::{Exchange as InnerExchange, GetExchangeIdsQueryParams};
 use web5_uniffi_wrapper::dids::bearer_did::BearerDid;
@@ -49,7 +49,8 @@ impl Exchange {
 }
 
 pub fn create_exchange(rfq: Arc<Rfq>, reply_to: Option<String>) -> Result<()> {
-    block_on(tbdex::http_client::exchanges::create_exchange(
+    let rt = get_rt()?;
+    rt.block_on(tbdex::http_client::exchanges::create_exchange(
         &rfq.to_inner()?,
         reply_to,
     ))?;
@@ -57,14 +58,16 @@ pub fn create_exchange(rfq: Arc<Rfq>, reply_to: Option<String>) -> Result<()> {
 }
 
 pub fn submit_order(order: Arc<Order>) -> Result<()> {
-    block_on(tbdex::http_client::exchanges::submit_order(
+    let rt = get_rt()?;
+    rt.block_on(tbdex::http_client::exchanges::submit_order(
         &order.get_data()?,
     ))?;
     Ok(())
 }
 
 pub fn submit_cancel(cancel: Arc<Cancel>) -> Result<()> {
-    block_on(tbdex::http_client::exchanges::submit_cancel(
+    let rt = get_rt()?;
+    rt.block_on(tbdex::http_client::exchanges::submit_cancel(
         &cancel.get_data()?,
     ))?;
     Ok(())
@@ -75,7 +78,8 @@ pub fn get_exchange(
     bearer_did: Arc<BearerDid>,
     exchange_id: String,
 ) -> Result<Exchange> {
-    let inner_exchange = block_on(tbdex::http_client::exchanges::get_exchange(
+    let rt = get_rt()?;
+    let inner_exchange = rt.block_on(tbdex::http_client::exchanges::get_exchange(
         &pfi_did_uri,
         &bearer_did.0.clone(),
         &exchange_id,
@@ -89,7 +93,8 @@ pub fn get_exchange_ids(
     bearer_did: Arc<BearerDid>,
     query_params: Option<GetExchangeIdsQueryParams>,
 ) -> Result<Vec<String>> {
-    let exchange_ids = block_on(tbdex::http_client::exchanges::get_exchange_ids(
+    let rt = get_rt()?;
+    let exchange_ids = rt.block_on(tbdex::http_client::exchanges::get_exchange_ids(
         &pfi_did_uri,
         &bearer_did.0.clone(),
         query_params,

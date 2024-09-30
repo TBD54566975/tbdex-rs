@@ -1,5 +1,7 @@
-use crate::errors::{Result, TbdexError};
-use futures::executor::block_on;
+use crate::{
+    errors::{Result, TbdexError},
+    get_rt,
+};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -50,7 +52,8 @@ impl Balance {
 
     pub fn verify(&self) -> Result<()> {
         let inner_balance = self.0.read().map_err(TbdexError::from_poison_error)?;
-        block_on(inner_balance.verify())?;
+        let rt = get_rt()?;
+        rt.block_on(inner_balance.verify())?;
         Ok(())
     }
 }

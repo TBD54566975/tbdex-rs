@@ -1,8 +1,8 @@
 use crate::{
     errors::{Result, TbdexError},
+    get_rt,
     resources::offering::Offering,
 };
-use futures::executor::block_on;
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -73,16 +73,14 @@ impl Rfq {
 
     pub fn verify(&self) -> Result<()> {
         let rfq = self.0.read().map_err(TbdexError::from_poison_error)?;
-
-        Ok(block_on(rfq.verify())?)
+        let rt = get_rt()?;
+        Ok(rt.block_on(rfq.verify())?)
     }
 
     pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<()> {
         let rfq = self.0.read().map_err(TbdexError::from_poison_error)?;
-
-        Ok(block_on(
-            rfq.verify_offering_requirements(&offering.to_inner()?),
-        )?)
+        let rt = get_rt()?;
+        Ok(rt.block_on(rfq.verify_offering_requirements(&offering.to_inner()?))?)
     }
 
     pub fn verify_all_private_data(&self) -> Result<()> {

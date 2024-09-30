@@ -1,5 +1,7 @@
-use crate::errors::{Result, TbdexError};
-use futures::executor::block_on;
+use crate::{
+    errors::{Result, TbdexError},
+    get_rt,
+};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -49,7 +51,7 @@ impl Quote {
 
     pub fn verify(&self) -> Result<()> {
         let quote = self.0.read().map_err(TbdexError::from_poison_error)?;
-
-        Ok(block_on(quote.verify())?)
+        let rt = get_rt()?;
+        Ok(rt.block_on(quote.verify())?)
     }
 }

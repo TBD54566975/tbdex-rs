@@ -40,6 +40,7 @@ use crate::{
         offering::{data::Offering as OfferingData, Offering},
     },
 };
+use errors::Result;
 use tbdex::{
     http::{ErrorDetail as ErrorDetailData, ErrorResponseBody as ErrorResponseBodyData},
     http_client::exchanges::GetExchangeIdsQueryParams as GetExchangeIdsQueryParamsData,
@@ -64,6 +65,7 @@ use tbdex::{
         ResourceKind, ResourceMetadata as ResourceMetadataData,
     },
 };
+use tokio::runtime::Runtime;
 use web5::{
     crypto::jwk::Jwk as JwkData,
     dids::{
@@ -80,5 +82,15 @@ use web5_uniffi_wrapper::{
     dids::bearer_did::BearerDid,
     errors::Web5Error,
 };
+
+pub fn get_rt() -> Result<Runtime> {
+    let rt = Runtime::new().map_err(|e| {
+        tbdex::errors::TbdexError::AsyncRuntime(format!(
+            "unable to instantiate tokio runtime {}",
+            e
+        ))
+    })?;
+    Ok(rt)
+}
 
 uniffi::include_scaffolding!("tbdex");
