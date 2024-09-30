@@ -4,7 +4,7 @@ use js_sys::Promise;
 use std::{collections::HashMap, sync::Arc};
 use tbdex::errors::TbdexError;
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
-use wasm_bindgen_futures::JsFuture;
+use wasm_bindgen_futures::{spawn_local, JsFuture};
 
 #[wasm_bindgen]
 extern "C" {
@@ -27,6 +27,30 @@ pub async fn proof_of_concept_foreign_fetch_async(foreign_fetch: ForeignFetchAsy
         "http response code {:?}",
         response_js
     )));
+
+    Ok(())
+}
+
+#[wasm_bindgen]
+pub fn proof_of_concept_foreign_fetch_async_inside_sync(
+    foreign_fetch: ForeignFetchAsync,
+) -> Result<()> {
+    spawn_local(async move {
+        let promise = foreign_fetch.fetch("https://example.com", None);
+        let response_js = JsFuture::from(promise).await;
+
+        match response_js {
+            Ok(js) => {
+                web_sys::console::log_1(&JsValue::from_str(&format!(
+                    "http response code {:?}",
+                    js
+                )));
+            }
+            Err(e) => {
+                web_sys::console::error_1(&e);
+            }
+        }
+    });
 
     Ok(())
 }
