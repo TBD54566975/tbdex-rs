@@ -1,26 +1,10 @@
 use crate::errors::{map_err, Result};
 use http_std::{Client, FetchOptions, Method, Response};
+use js_sys::Promise;
 use std::{collections::HashMap, sync::Arc};
 use tbdex::errors::TbdexError;
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
-
-use js_sys::Promise;
 use wasm_bindgen_futures::JsFuture;
-
-// #[wasm_bindgen]
-// extern "C" {
-//     #[wasm_bindgen(
-//         typescript_type = "{ async fetch: (url: string, options?: WasmFetchOptions) => WasmResponse }"
-//     )]
-//     pub type ForeignFetchAsync;
-
-//     #[wasm_bindgen(method)]
-//     async fn fetch(
-//         this: &ForeignFetchAsync,
-//         url: &str,
-//         options: Option<WasmFetchOptions>,
-//     ) -> WasmResponse;
-// }
 
 #[wasm_bindgen]
 extern "C" {
