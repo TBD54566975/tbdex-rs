@@ -32,6 +32,7 @@ ENV LIBRARY_PATH="/usr/lib:/usr/local/lib"
 WORKDIR /usr/src/myapp
 COPY Cargo.toml ./
 COPY bindings/tbdex_uniffi ./bindings/tbdex_uniffi
+COPY bindings/tbdex_wasm ./bindings/tbdex_wasm
 COPY crates/tbdex ./crates/tbdex
 
 # Build the static lib (override the lib type)
