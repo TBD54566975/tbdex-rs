@@ -43,7 +43,7 @@ impl WasmOffering {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        Ok(self.inner.to_json_string().map_err(map_err)?)
+        self.inner.to_json_string().map_err(map_err)
     }
 
     pub fn create(
@@ -114,7 +114,7 @@ impl WasmOfferingData {
                 payout_units_per_payin_unit,
                 payin: payin.into(),
                 payout: payout.into(),
-                required_claims: required_claims.and_then(|rc| Some(rc.into())),
+                required_claims: required_claims.map(|rc| rc.into()),
                 cancellation: cancellation.into(),
             },
         }
@@ -232,6 +232,7 @@ impl From<PayinMethod> for WasmPayinMethod {
 
 #[wasm_bindgen]
 impl WasmPayinMethod {
+    #[allow(clippy::too_many_arguments)]
     #[wasm_bindgen(constructor)]
     pub fn new(
         kind: String,
@@ -387,6 +388,7 @@ impl From<PayoutMethod> for WasmPayoutMethod {
 
 #[wasm_bindgen]
 impl WasmPayoutMethod {
+    #[allow(clippy::too_many_arguments)]
     #[wasm_bindgen(constructor)]
     pub fn new(
         kind: String,

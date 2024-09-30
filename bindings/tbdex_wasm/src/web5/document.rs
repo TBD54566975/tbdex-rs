@@ -27,6 +27,7 @@ impl From<Document> for WasmDocument {
 
 #[wasm_bindgen]
 impl WasmDocument {
+    #[allow(clippy::too_many_arguments)]
     #[wasm_bindgen(constructor)]
     pub fn new(
         id: String,
@@ -56,10 +57,7 @@ impl WasmDocument {
                 key_agreement,
                 capability_invocation,
                 capability_delegation,
-                service: match service {
-                    None => None,
-                    Some(wss) => Some(wss.into_iter().map(|ws| ws.into()).collect()),
-                },
+                service: service.map(|wss| wss.into_iter().map(|ws| ws.into()).collect()),
             },
         }
     }
@@ -73,7 +71,7 @@ impl WasmDocument {
 
     #[wasm_bindgen]
     pub fn to_json_string(&self) -> Result<String> {
-        Ok(self.inner.to_json_string().map_err(map_web5_err)?)
+        self.inner.to_json_string().map_err(map_web5_err)
     }
 
     #[wasm_bindgen(getter)]

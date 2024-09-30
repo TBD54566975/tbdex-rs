@@ -28,7 +28,7 @@ impl WasmTbdexError {
 
     #[wasm_bindgen(getter)]
     pub fn is_web5_error(&self) -> bool {
-        self.is_tbdex_error.clone()
+        self.is_tbdex_error
     }
 }
 

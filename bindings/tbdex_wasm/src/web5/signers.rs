@@ -58,6 +58,6 @@ impl WasmSigner {
 
     #[wasm_bindgen]
     pub fn sign(&self, payload: &[u8]) -> Result<Vec<u8>> {
-        Ok(self.inner.sign(payload).map_err(map_web5_err)?)
+        self.inner.sign(payload).map_err(map_web5_err)
     }
 }

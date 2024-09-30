@@ -45,7 +45,7 @@ impl WasmRfq {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        Ok(self.inner.to_json_string().map_err(map_err)?)
+        self.inner.to_json_string().map_err(map_err)
     }
 
     #[wasm_bindgen]
@@ -70,30 +70,29 @@ impl WasmRfq {
 
     #[wasm_bindgen]
     pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
-        Ok(self.inner.sign(&bearer_did.into()).map_err(map_err)?)
+        self.inner.sign(&bearer_did.into()).map_err(map_err)
     }
 
     #[wasm_bindgen]
     pub fn verify(&self) -> Result<()> {
-        Ok(self.inner.verify().map_err(map_err)?)
+        self.inner.verify().map_err(map_err)
     }
 
     #[wasm_bindgen]
     pub fn verify_offering_requirements(&self, offering: WasmOffering) -> Result<()> {
-        Ok(self
-            .inner
+        self.inner
             .verify_offering_requirements(&offering.into())
-            .map_err(map_err)?)
+            .map_err(map_err)
     }
 
     #[wasm_bindgen]
     pub fn verify_all_private_data(&self) -> Result<()> {
-        Ok(self.inner.verify_all_private_data().map_err(map_err)?)
+        self.inner.verify_all_private_data().map_err(map_err)
     }
 
     #[wasm_bindgen]
     pub fn verify_present_private_data(&self) -> Result<()> {
-        Ok(self.inner.verify_present_private_data().map_err(map_err)?)
+        self.inner.verify_present_private_data().map_err(map_err)
     }
 
     #[wasm_bindgen(getter)]

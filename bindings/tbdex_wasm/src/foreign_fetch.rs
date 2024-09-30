@@ -28,14 +28,14 @@ unsafe impl Sync for ConcreteForeignFetch {}
 
 impl Client for ConcreteForeignFetch {
     fn fetch(&self, url: &str, options: Option<FetchOptions>) -> http_std::Result<Response> {
-        let wasm_options = options.and_then(|o| Some(WasmFetchOptions::from(o)));
+        let wasm_options = options.map(WasmFetchOptions::from);
         let wasm_response = self.0.fetch(url, wasm_options);
         Ok(wasm_response.into())
     }
 }
 
 #[wasm_bindgen]
-pub fn set_http_client(foreign_fetch: ForeignFetch) -> () {
+pub fn set_http_client(foreign_fetch: ForeignFetch) {
     http_std::set_client(Arc::new(ConcreteForeignFetch(foreign_fetch)))
 }
 
@@ -68,12 +68,10 @@ fn method_from_str(method: &str) -> Result<Method> {
         "GET" => Ok(Method::Get),
         "POST" => Ok(Method::Post),
         "PUT" => Ok(Method::Put),
-        _ => {
-            return Err(map_err(TbdexError::HttpClient(format!(
-                "unknown method {}",
-                method
-            ))))
-        }
+        _ => Err(map_err(TbdexError::HttpClient(format!(
+            "unknown method {}",
+            method
+        )))),
     }
 }
 
@@ -108,7 +106,7 @@ impl WasmFetchOptions {
 
     #[wasm_bindgen(getter)]
     pub fn method(&self) -> Option<String> {
-        self.inner.method.as_ref().and_then(|m| Some(m.to_string()))
+        self.inner.method.as_ref().map(|m| m.to_string())
     }
 
     #[wasm_bindgen(getter)]

@@ -22,6 +22,7 @@ impl From<Did> for WasmDid {
 
 #[wasm_bindgen]
 impl WasmDid {
+    #[allow(clippy::too_many_arguments)]
     #[wasm_bindgen(constructor)]
     pub fn new(
         uri: String,

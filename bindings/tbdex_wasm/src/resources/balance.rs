@@ -34,7 +34,7 @@ impl WasmBalance {
     }
 
     pub fn to_json_string(&self) -> Result<String> {
-        Ok(self.inner.to_json_string().map_err(map_err)?)
+        self.inner.to_json_string().map_err(map_err)
     }
 
     #[wasm_bindgen]
@@ -50,12 +50,12 @@ impl WasmBalance {
 
     #[wasm_bindgen]
     pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
-        Ok(self.inner.sign(&bearer_did.into()).map_err(map_err)?)
+        self.inner.sign(&bearer_did.into()).map_err(map_err)
     }
 
     #[wasm_bindgen]
     pub fn verify(&self) -> Result<()> {
-        Ok(self.inner.verify().map_err(map_err)?)
+        self.inner.verify().map_err(map_err)
     }
 
     #[wasm_bindgen(getter)]

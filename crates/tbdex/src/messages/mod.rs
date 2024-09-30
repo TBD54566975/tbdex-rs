@@ -55,13 +55,13 @@ impl FromStr for MessageKind {
 impl fmt::Display for MessageKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &MessageKind::Rfq => write!(f, "rfq"),
-            &MessageKind::Quote => write!(f, "quote"),
-            &MessageKind::Order => write!(f, "order"),
-            &MessageKind::OrderInstructions => write!(f, "orderinstructions"),
-            &MessageKind::Cancel => write!(f, "cancel"),
-            &MessageKind::OrderStatus => write!(f, "orderstatus"),
-            &MessageKind::Close => write!(f, "close"),
+            MessageKind::Rfq => write!(f, "rfq"),
+            MessageKind::Quote => write!(f, "quote"),
+            MessageKind::Order => write!(f, "order"),
+            MessageKind::OrderInstructions => write!(f, "orderinstructions"),
+            MessageKind::Cancel => write!(f, "cancel"),
+            MessageKind::OrderStatus => write!(f, "orderstatus"),
+            MessageKind::Close => write!(f, "close"),
         }
     }
 }

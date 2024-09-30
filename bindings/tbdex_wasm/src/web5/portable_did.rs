@@ -45,7 +45,7 @@ impl WasmPortableDid {
 
     #[wasm_bindgen]
     pub fn to_json_string(&self) -> Result<String> {
-        Ok(self.inner.to_json_string().map_err(map_web5_err)?)
+        self.inner.to_json_string().map_err(map_web5_err)
     }
 
     #[wasm_bindgen(getter)]

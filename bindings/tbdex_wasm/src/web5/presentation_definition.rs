@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use crate::errors::{map_web5_err, Result};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -44,7 +44,7 @@ impl WasmPresentationDefinition {
                 purpose,
                 input_descriptors: input_descriptors.into_iter().map(|i| i.into()).collect(),
                 submission_requirements: submission_requirements
-                    .and_then(|srs| Some(srs.into_iter().map(|sr| sr.into()).collect())),
+                    .map(|srs| srs.into_iter().map(|sr| sr.into()).collect()),
             },
         }
     }
@@ -216,9 +216,9 @@ impl WasmField {
                 name,
                 path,
                 purpose,
-                filter: filter.and_then(|f| Some(f.into())),
+                filter: filter.map(|f| f.into()),
                 optional,
-                predicate: predicate.and_then(|p| Some(p.into())),
+                predicate: predicate.map(|p| p.into()),
             },
         }
     }
@@ -296,7 +296,7 @@ impl WasmFilter {
                 r#type,
                 pattern,
                 const_value,
-                contains: contains.and_then(|c| Some(Box::new(c.into()))),
+                contains: contains.map(|c| Box::new(c.into())),
             },
         }
     }
@@ -342,12 +342,13 @@ impl From<Optionality> for WasmOptionality {
     }
 }
 
-impl ToString for WasmOptionality {
-    fn to_string(&self) -> String {
-        match self.inner {
-            Optionality::Required => "required".to_string(),
-            Optionality::Preferred => "preferred".to_string(),
-        }
+impl fmt::Display for WasmOptionality {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match self.inner {
+            Optionality::Required => "required",
+            Optionality::Preferred => "preferred",
+        };
+        write!(f, "{}", output)
     }
 }
 
@@ -396,6 +397,7 @@ impl From<SubmissionRequirement> for WasmSubmissionRequirement {
 
 #[wasm_bindgen]
 impl WasmSubmissionRequirement {
+    #[allow(clippy::too_many_arguments)]
     #[wasm_bindgen(constructor)]
     pub fn new(
         rule: WasmSubmissionRequirementRule,
@@ -411,8 +413,7 @@ impl WasmSubmissionRequirement {
             inner: SubmissionRequirement {
                 rule: rule.into(),
                 from,
-                from_nested: from_nested
-                    .and_then(|f| Some(f.into_iter().map(|f| f.into()).collect())),
+                from_nested: from_nested.map(|f| f.into_iter().map(|f| f.into()).collect()),
                 name,
                 purpose,
                 count,
@@ -485,12 +486,13 @@ impl From<SubmissionRequirementRule> for WasmSubmissionRequirementRule {
     }
 }
 
-impl ToString for WasmSubmissionRequirementRule {
-    fn to_string(&self) -> String {
-        match self.inner {
-            SubmissionRequirementRule::All => "all".to_string(),
-            SubmissionRequirementRule::Pick => "pick".to_string(),
-        }
+impl fmt::Display for WasmSubmissionRequirementRule {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match self.inner {
+            SubmissionRequirementRule::All => "all",
+            SubmissionRequirementRule::Pick => "pick",
+        };
+        write!(f, "{}", output)
     }
 }
 

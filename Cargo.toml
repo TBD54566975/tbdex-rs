@@ -16,3 +16,4 @@ thiserror = "1.0.50"
 http-std = { git = "https://github.com/TBD54566975/web5-rs", rev = "005bd3c04574039ad7c3e41eeefae877b9895104" }
 web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "005bd3c04574039ad7c3e41eeefae877b9895104" }
 web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "005bd3c04574039ad7c3e41eeefae877b9895104" }
+

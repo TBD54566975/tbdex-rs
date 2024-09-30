@@ -5,9 +5,9 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 pub mod cancel;
 pub mod close;
+pub mod order;
 pub mod order_instructions;
 pub mod order_status;
-pub mod order;
 pub mod quote;
 pub mod rfq;
 
@@ -30,6 +30,7 @@ impl From<WasmMessageMetadata> for MessageMetadata {
 
 #[wasm_bindgen]
 impl WasmMessageMetadata {
+    #[allow(clippy::too_many_arguments)]
     #[wasm_bindgen(constructor)]
     pub fn new(
         from: String,
