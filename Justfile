@@ -57,6 +57,7 @@ wasm: setup
 test-typescript: setup
   #!/bin/bash
   cd bound/typescript
+  (cd generate-mappings/; npm install)
   npm install
   npm run clean
   npm run build:wasm

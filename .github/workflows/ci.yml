@@ -393,6 +393,7 @@ jobs:
         # NOTE: only currently testing nodejs in the CI, not the browser
         run: |
           cd bound/typescript
+          (cd generate-mappings/; npm install)
           npm install
           npm run clean
           npm run build:wasm
