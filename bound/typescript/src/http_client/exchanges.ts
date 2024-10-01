@@ -1,3 +1,4 @@
+import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import { Cancel } from "../messages/cancel";
 import { Close } from "../messages/close";
@@ -7,6 +8,52 @@ import { OrderStatus } from "../messages/order-status";
 import { Quote } from "../messages/quote";
 import { Rfq } from "../messages/rfq";
 import wasm from "../wasm";
+
+export const createExchange = async (
+  rfq: Rfq,
+  replyTo?: string
+): Promise<void> => {
+  await wasm.create_exchange(rfq.toWASM(), replyTo);
+};
+
+export const submitOrder = async (order: Order): Promise<void> => {
+  await wasm.submit_order(order.toWASM());
+};
+
+export const submitCancel = async (cancel: Cancel): Promise<void> => {
+  await wasm.submit_order(cancel.toWASM());
+};
+
+export const getExchange = async (
+  pfiDidUri: string,
+  bearerDid: BearerDid,
+  exchangeId: string
+): Promise<Exchange> => {
+  const wasmExchange = await wasm.get_exchange(
+    pfiDidUri,
+    bearerDid.toWASM(),
+    exchangeId
+  );
+  return Exchange.fromWASM(wasmExchange);
+};
+
+export type GetExchangeIdsQueryParams = {
+  paginationLimit?: number;
+  paginationOffset?: number;
+};
+
+export const getExchangeIds = async (
+  pfiDidUri: string,
+  requestorDid: BearerDid,
+  options?: GetExchangeIdsQueryParams
+): Promise<string[]> => {
+  return await wasm.get_exchange_ids(
+    pfiDidUri,
+    requestorDid.toWASM(),
+    options?.paginationOffset ? BigInt(options.paginationOffset) : undefined,
+    options?.paginationLimit ? BigInt(options.paginationLimit) : undefined
+  );
+};
 
 export class Exchange {
   readonly rfq: Rfq;

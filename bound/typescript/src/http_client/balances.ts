@@ -6,6 +6,6 @@ export const getBalances = async (
   pfiDidUri: string,
   bearerDid: BearerDid
 ): Promise<Balance[]> => {
-  const wasmBalances = wasm.get_balances(pfiDidUri, bearerDid.toWASM());
-  return (await wasmBalances).map(Balance.fromWASM);
+  const wasmBalances = await wasm.get_balances(pfiDidUri, bearerDid.toWASM());
+  return wasmBalances.map(Balance.fromWASM);
 };

@@ -1,17 +1,87 @@
+use crate::{
+    errors::{map_err, Result},
+    messages::{
+        cancel::WasmCancel, close::WasmClose, order::WasmOrder,
+        order_instructions::WasmOrderInstructions, order_status::WasmOrderStatus, quote::WasmQuote,
+        rfq::WasmRfq,
+    },
+    web5::bearer_did::WasmBearerDid,
+};
 use std::sync::Arc;
-
-use tbdex::http_client::exchanges::Exchange;
+use tbdex::http_client::exchanges::{Exchange, GetExchangeIdsQueryParams};
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::messages::{
-    cancel::WasmCancel, close::WasmClose, order::WasmOrder,
-    order_instructions::WasmOrderInstructions, order_status::WasmOrderStatus, quote::WasmQuote,
-    rfq::WasmRfq,
-};
+#[wasm_bindgen]
+pub async fn create_exchange(rfq: WasmRfq, reply_to: Option<String>) -> Result<()> {
+    Ok(
+        tbdex::http_client::exchanges::create_exchange(&rfq.into(), reply_to)
+            .await
+            .map_err(map_err)?,
+    )
+}
+
+#[wasm_bindgen]
+pub async fn submit_order(order: WasmOrder) -> Result<()> {
+    Ok(tbdex::http_client::exchanges::submit_order(&order.into())
+        .await
+        .map_err(map_err)?)
+}
+
+#[wasm_bindgen]
+pub async fn submit_cancel(cancel: WasmCancel) -> Result<()> {
+    Ok(tbdex::http_client::exchanges::submit_cancel(&cancel.into())
+        .await
+        .map_err(map_err)?)
+}
+
+#[wasm_bindgen]
+pub async fn get_exchange(
+    pfi_did_uri: &str,
+    bearer_did: WasmBearerDid,
+    exchange_id: &str,
+) -> Result<WasmExchange> {
+    Ok(
+        tbdex::http_client::exchanges::get_exchange(pfi_did_uri, &bearer_did.into(), exchange_id)
+            .await
+            .map_err(map_err)?
+            .into(),
+    )
+}
+
+#[wasm_bindgen]
+pub async fn get_exchange_ids(
+    pfi_did_uri: &str,
+    requestor_did: WasmBearerDid,
+    pagination_offset: Option<i64>,
+    pagination_limit: Option<i64>,
+) -> Result<Vec<String>> {
+    Ok(tbdex::http_client::exchanges::get_exchange_ids(
+        pfi_did_uri,
+        &requestor_did.into(),
+        Some(GetExchangeIdsQueryParams {
+            pagination_offset,
+            pagination_limit,
+        }),
+    )
+    .await
+    .map_err(map_err)?)
+}
 
 #[wasm_bindgen]
 pub struct WasmExchange {
     inner: Exchange,
+}
+
+impl From<WasmExchange> for Exchange {
+    fn from(value: WasmExchange) -> Self {
+        value.inner
+    }
+}
+
+impl From<Exchange> for WasmExchange {
+    fn from(value: Exchange) -> Self {
+        Self { inner: value }
+    }
 }
 
 #[wasm_bindgen]
