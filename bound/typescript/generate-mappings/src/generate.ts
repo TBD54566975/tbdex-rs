@@ -97,8 +97,6 @@ export const generateFromWASM = (wasmClass: WasmClass): string => `
               -2
             )}.fromWASM)`;
           else code += `${member.type}.fromWASM(obj.${member.wasmName})`;
-        } else if (member.type === "any") {
-          code += `mapToObject(obj.${member.wasmName})`;
         } else {
           code += `obj.${member.wasmName}`;
         }
@@ -113,16 +111,6 @@ export const generateFromWASM = (wasmClass: WasmClass): string => `
 
 export const generateMappingsCode = (wasmClasses: WasmClass[]): string => `
   import wasm from "./"
-
-  const mapToObject = (map: Map<any, any>): any => {
-    if (!map) return undefined
-
-    const obj: any = {}
-    for (const [key, value] of map) {
-      obj[key] = value instanceof Map ? mapToObject(value) : value
-    }
-    return obj
-  }
 
   ${wasmClasses
     .map((wasmClass) => {

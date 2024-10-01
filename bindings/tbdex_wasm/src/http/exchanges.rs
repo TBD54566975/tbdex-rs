@@ -5,7 +5,10 @@ use tbdex::{
 };
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
-use crate::errors::{map_err, Result};
+use crate::{
+    errors::{map_err, Result},
+    js::convert_to_object,
+};
 
 #[wasm_bindgen]
 pub struct WasmGetExchangeResponseBody {
@@ -27,12 +30,9 @@ impl WasmGetExchangeResponseBody {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn data(&self) -> Result<Vec<JsValue>> {
-        self.inner
-            .data
-            .iter()
-            .map(|m| serde_wasm_bindgen::to_value(m).map_err(|e| e.into()))
-            .collect()
+    pub fn data(&self) -> Result<JsValue> {
+        let js_value = serde_wasm_bindgen::to_value(&self.inner.data)?;
+        Ok(convert_to_object(js_value)?)
     }
 
     pub fn from_json_string(json: &str) -> Result<WasmGetExchangeResponseBody> {

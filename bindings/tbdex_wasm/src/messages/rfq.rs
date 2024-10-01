@@ -1,6 +1,7 @@
 use super::WasmMessageMetadata;
 use crate::{
     errors::{map_err, Result},
+    js::convert_to_object,
     resources::offering::WasmOffering,
     web5::bearer_did::WasmBearerDid,
 };
@@ -361,10 +362,13 @@ impl WasmPrivatePaymentDetails {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn payment_details(&self) -> JsValue {
+    pub fn payment_details(&self) -> Result<JsValue> {
         match &self.inner.payment_details {
-            Some(pd) => serde_wasm_bindgen::to_value(pd).unwrap_or(JsValue::NULL),
-            None => JsValue::UNDEFINED,
+            Some(pd) => {
+                let value = serde_wasm_bindgen::to_value(pd)?;
+                Ok(convert_to_object(value)?)
+            }
+            None => Ok(JsValue::UNDEFINED),
         }
     }
 }
@@ -478,10 +482,13 @@ impl WasmCreateSelectedPayinMethod {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn payment_details(&self) -> JsValue {
+    pub fn payment_details(&self) -> Result<JsValue> {
         match &self.inner.payment_details {
-            Some(pd) => serde_wasm_bindgen::to_value(pd).unwrap_or(JsValue::NULL),
-            None => JsValue::UNDEFINED,
+            Some(pd) => {
+                let value = serde_wasm_bindgen::to_value(pd)?;
+                Ok(convert_to_object(value)?)
+            }
+            None => Ok(JsValue::UNDEFINED),
         }
     }
 
@@ -532,10 +539,13 @@ impl WasmCreateSelectedPayoutMethod {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn payment_details(&self) -> JsValue {
+    pub fn payment_details(&self) -> Result<JsValue> {
         match &self.inner.payment_details {
-            Some(pd) => serde_wasm_bindgen::to_value(pd).unwrap_or(JsValue::NULL),
-            None => JsValue::UNDEFINED,
+            Some(pd) => {
+                let value = serde_wasm_bindgen::to_value(pd)?;
+                Ok(convert_to_object(value)?)
+            }
+            None => Ok(JsValue::UNDEFINED),
         }
     }
 }

@@ -5,3 +5,4 @@ pub mod web5;
 
 pub mod errors;
 pub mod foreign_fetch;
+pub mod js;

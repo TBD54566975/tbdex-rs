@@ -379,7 +379,9 @@ describe("test vectors", () => {
           GetExchangeResponseBodyVector.output.data
         );
 
-        // todo verify each message
+        // const rfq = getExchangeResponseBody.data[0];
+        // expect(rfq instanceof Rfq).to.be.true;
+        // await (rfq as Rfq).verify();
       });
     });
   });
