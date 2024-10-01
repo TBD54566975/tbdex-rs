@@ -375,13 +375,35 @@ describe("test vectors", () => {
         const getExchangeResponseBody = GetExchangeResponseBody.fromJSONString(
           GetExchangeResponseBodyVector.input
         );
-        expect(getExchangeResponseBody.data).to.deep.equal(
-          GetExchangeResponseBodyVector.output.data
+        expect(getExchangeResponseBody.data.length).to.equal(
+          GetExchangeResponseBodyVector.output.data.length
         );
 
-        // const rfq = getExchangeResponseBody.data[0];
-        // expect(rfq instanceof Rfq).to.be.true;
-        // await (rfq as Rfq).verify();
+        const rfq = getExchangeResponseBody.data[0];
+        expect(rfq instanceof Rfq).to.be.true;
+        expect(rfq.metadata).to.deep.equal(
+          GetExchangeResponseBodyVector.output.data[0].metadata
+        );
+        expect(rfq.data).to.deep.equal(
+          GetExchangeResponseBodyVector.output.data[0].data
+        );
+        expect(rfq.signature).to.equal(
+          GetExchangeResponseBodyVector.output.data[0].signature
+        );
+        await (rfq as Rfq).verify();
+
+        const quote = getExchangeResponseBody.data[1];
+        expect(quote instanceof Quote).to.be.true;
+        expect(quote.metadata).to.deep.equal(
+          GetExchangeResponseBodyVector.output.data[1].metadata
+        );
+        expect(quote.data).to.deep.equal(
+          GetExchangeResponseBodyVector.output.data[1].data
+        );
+        expect(quote.signature).to.equal(
+          GetExchangeResponseBodyVector.output.data[1].signature
+        );
+        await (quote as Quote).verify();
       });
     });
   });
