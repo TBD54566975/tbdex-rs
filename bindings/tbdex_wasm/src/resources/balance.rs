@@ -14,6 +14,18 @@ pub struct WasmBalance {
     inner: Balance,
 }
 
+impl From<WasmBalance> for Balance {
+    fn from(value: WasmBalance) -> Self {
+        value.inner
+    }
+}
+
+impl From<Balance> for WasmBalance {
+    fn from(value: Balance) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmBalance {
     #[wasm_bindgen(constructor)]

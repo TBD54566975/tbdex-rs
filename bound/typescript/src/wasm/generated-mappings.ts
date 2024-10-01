@@ -390,6 +390,28 @@ export namespace Filter {
   };
 }
 
+export type GetBalancesResponseBody = {
+  data: Balance[];
+};
+
+export namespace GetBalancesResponseBody {
+  export const toWASM = (
+    obj: GetBalancesResponseBody,
+  ): wasm.WasmGetBalancesResponseBody => {
+    return new wasm.WasmGetBalancesResponseBody(obj.data?.map(Balance.toWASM));
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmGetBalancesResponseBody,
+  ): GetBalancesResponseBody => {
+    const result: GetBalancesResponseBody = {
+      data: obj.data?.map(Balance.fromWASM),
+    };
+
+    return result;
+  };
+}
+
 export type InputDescriptor = {
   constraints: Constraints;
   id: string;
