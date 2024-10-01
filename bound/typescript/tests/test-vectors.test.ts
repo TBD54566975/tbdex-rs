@@ -4,6 +4,7 @@ import BalanceVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/p
 import RfqVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq.json" assert { type: "json" };
 import RfqOmitPrivateDataVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-rfq-omit-private-data.json" assert { type: "json" };
 import QuoteVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json" assert { type: "json" };
+import OrderInstructionsVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderinstructions.json" assert { type: "json" };
 import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-order.json" assert { type: "json" };
 import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json" assert { type: "json" };
 import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
@@ -19,6 +20,7 @@ import { Order } from "../src/messages/order";
 import { Cancel } from "../src/messages/cancel";
 import { OrderStatus } from "../src/messages/order-status";
 import { Close } from "../src/messages/close";
+import { OrderInstructions } from "../src/messages/order-instructions";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -145,18 +147,17 @@ describe("test vectors", () => {
 
   describe("quote", () => {
     it("should parse", async () => {
-      // TODO test vector needs updating, needs the `paymentInstruction`'s on the payin & payout removed
-      // const input = QuoteVector.input;
-      // const quote = Quote.fromJSONString(input);
-      // expect(quote.metadata).to.deep.equal(QuoteVector.output.metadata);
-      // expect(quote.data).to.deep.equal(QuoteVector.output.data);
-      // expect(quote.signature).to.equal(QuoteVector.output.signature);
-      //
-      // const quoteJSONString = quote.toJSONString();
-      // const quoteJSON = JSON.parse(quoteJSONString);
-      // expect(quoteJSON).to.deep.equal(QuoteVector.output);
-      //
-      // await quote.verify();
+      const input = QuoteVector.input;
+      const quote = Quote.fromJSONString(input);
+      expect(quote.metadata).to.deep.equal(QuoteVector.output.metadata);
+      expect(quote.data).to.deep.equal(QuoteVector.output.data);
+      expect(quote.signature).to.equal(QuoteVector.output.signature);
+      
+      const quoteJSONString = quote.toJSONString();
+      const quoteJSON = JSON.parse(quoteJSONString);
+      expect(quoteJSON).to.deep.equal(QuoteVector.output);
+      
+      quote.verify();
     });
 
     it("should create, sign, and verify", async () => {
@@ -170,6 +171,35 @@ describe("test vectors", () => {
 
       quote.sign(bearerDID);
       await quote.verify();
+    });
+  });
+
+  describe("order instructions", () => {
+    it("should parse", async () => {
+      const input = OrderInstructionsVector.input;
+      const orderInstructions = OrderInstructions.fromJSONString(input);
+      expect(orderInstructions.metadata).to.deep.equal(OrderInstructionsVector.output.metadata);
+      expect(orderInstructions.data).to.deep.equal(OrderInstructionsVector.output.data);
+      expect(orderInstructions.signature).to.equal(OrderInstructionsVector.output.signature);
+  
+      const orderInstructionsJSONString = orderInstructions.toJSONString();
+      const orderInstructionsJSON = JSON.parse(orderInstructionsJSONString);
+      expect(orderInstructionsJSON).to.deep.equal(OrderInstructionsVector.output);
+  
+      await orderInstructions.verify();
+    });
+  
+    it("should create, sign, and verify", async () => {
+      const orderInstructions = OrderInstructions.create(
+        OrderInstructionsVector.output.metadata.to,
+        OrderInstructionsVector.output.metadata.from,
+        OrderInstructionsVector.output.metadata.exchangeId,
+        OrderInstructionsVector.output.data,
+        OrderInstructionsVector.output.metadata.protocol
+      );
+  
+      orderInstructions.sign(bearerDID);
+      await orderInstructions.verify();
     });
   });
 

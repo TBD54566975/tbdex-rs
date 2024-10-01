@@ -33,6 +33,16 @@ class TbdexTestVectorsProtocolTest {
     }
 
     @Test
+    fun parse_orderinstructions() {
+        testVector(
+            "parse-orderinstructions.json",
+            OrderInstructions.Companion::fromJsonString,
+            { it.toJsonString() },
+            { it.verify() }
+        )
+    }
+
+    @Test
     fun parse_rfq() {
         testVector("parse-rfq.json", { input ->
             val rfq = Rfq.fromJsonString(input)
@@ -70,16 +80,15 @@ class TbdexTestVectorsProtocolTest {
         )
     }
 
-    // TODO: uncomment when quote test vector is updated
-//    @Test
-//    fun parse_quote() {
-//        testVector(
-//            "parse-quote.json",
-//            Quote.Companion::fromJsonString,
-//            { it.toJsonString() },
-//            { it.verify() }
-//        )
-//    }
+    @Test
+    fun parse_quote() {
+        testVector(
+            "parse-quote.json",
+            Quote.Companion::fromJsonString,
+            { it.toJsonString() },
+            { it.verify() }
+        )
+    }
 
     @Test
     fun parse_close() {
