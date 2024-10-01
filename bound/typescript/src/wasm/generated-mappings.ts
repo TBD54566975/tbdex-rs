@@ -400,6 +400,28 @@ export namespace Filter {
   };
 }
 
+export type GetExchangeResponseBody = {
+  data: any[];
+};
+
+export namespace GetExchangeResponseBody {
+  export const toWASM = (
+    obj: GetExchangeResponseBody,
+  ): wasm.WasmGetExchangeResponseBody => {
+    return new wasm.WasmGetExchangeResponseBody(obj.data);
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmGetExchangeResponseBody,
+  ): GetExchangeResponseBody => {
+    const result: GetExchangeResponseBody = {
+      data: obj.data,
+    };
+
+    return result;
+  };
+}
+
 export type InputDescriptor = {
   constraints: Constraints;
   id: string;
