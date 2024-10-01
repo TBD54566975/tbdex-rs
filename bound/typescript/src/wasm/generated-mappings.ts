@@ -414,6 +414,28 @@ export namespace GetExchangeResponseBodyDataItem {
   };
 }
 
+export type GetExchangesResponseBody = {
+  data: string[];
+};
+
+export namespace GetExchangesResponseBody {
+  export const toWASM = (
+    obj: GetExchangesResponseBody,
+  ): wasm.WasmGetExchangesResponseBody => {
+    return new wasm.WasmGetExchangesResponseBody(obj.data);
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmGetExchangesResponseBody,
+  ): GetExchangesResponseBody => {
+    const result: GetExchangesResponseBody = {
+      data: obj.data,
+    };
+
+    return result;
+  };
+}
+
 export type InputDescriptor = {
   constraints: Constraints;
   id: string;

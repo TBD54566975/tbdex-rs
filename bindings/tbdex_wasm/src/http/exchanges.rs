@@ -1,14 +1,10 @@
+use crate::errors::{map_err, Result};
 use tbdex::{
-    http::exchanges::GetExchangeResponseBody,
+    http::exchanges::{GetExchangeResponseBody, GetExchangesResponseBody},
     json::{FromJson, ToJson},
     messages::{Message, MessageKind},
 };
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
-
-use crate::{
-    errors::{map_err, Result},
-    js::convert_to_object,
-};
 
 #[wasm_bindgen]
 pub struct WasmGetExchangeResponseBody {
@@ -80,5 +76,35 @@ impl WasmGetExchangeResponseBodyDataItem {
     #[wasm_bindgen(getter)]
     pub fn json(&self) -> String {
         self.json.clone()
+    }
+}
+
+#[wasm_bindgen]
+pub struct WasmGetExchangesResponseBody {
+    inner: GetExchangesResponseBody,
+}
+
+#[wasm_bindgen]
+impl WasmGetExchangesResponseBody {
+    #[wasm_bindgen(constructor)]
+    pub fn new(data: Vec<String>) -> Self {
+        Self {
+            inner: GetExchangesResponseBody { data },
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn data(&self) -> Vec<String> {
+        self.inner.data.clone()
+    }
+
+    pub fn from_json_string(json: &str) -> Result<WasmGetExchangesResponseBody> {
+        Ok(Self {
+            inner: GetExchangesResponseBody::from_json_string(json).map_err(map_err)?,
+        })
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        self.inner.to_json_string().map_err(map_err)
     }
 }

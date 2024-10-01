@@ -9,6 +9,7 @@ import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/pa
 import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
 import CloseVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-close.json" assert { type: "json" };
 import GetExchangeResponseBodyVector from "./parse-get-exchange-response-body.json" assert { type: "json" };
+import GetExchangeIdsResponseBodyVector from "./parse-get-exchange-ids-response-body.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -23,7 +24,10 @@ import { Close } from "../src/messages/close";
 import { Message } from "../src/messages";
 import { OrderInstructions } from "../src/messages/order-instructions";
 import { Resource } from "../src/resources";
-import { GetExchangeResponseBody } from "../src/http/exchanges";
+import {
+  GetExchangeResponseBody,
+  GetExchangesResponseBody,
+} from "../src/http/exchanges";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -404,6 +408,24 @@ describe("test vectors", () => {
           GetExchangeResponseBodyVector.output.data[1].signature
         );
         await (quote as Quote).verify();
+      });
+    });
+
+    describe("get exchange ids response body", () => {
+      it("should parse", async () => {
+        const getExchangesResponseBody =
+          GetExchangesResponseBody.fromJSONString(
+            GetExchangeIdsResponseBodyVector.input
+          );
+        expect(getExchangesResponseBody.data.length).to.equal(
+          GetExchangeIdsResponseBodyVector.output.data.length
+        );
+        expect(getExchangesResponseBody.data[0]).to.equal(
+          GetExchangeIdsResponseBodyVector.output.data[0]
+        );
+        expect(getExchangesResponseBody.data[1]).to.equal(
+          GetExchangeIdsResponseBodyVector.output.data[1]
+        );
       });
     });
   });
