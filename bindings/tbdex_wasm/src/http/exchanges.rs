@@ -5,6 +5,7 @@ use crate::{
 use tbdex::{
     http::exchanges::{
         CreateExchangeRequestBody, GetExchangeResponseBody, GetExchangesResponseBody,
+        UpdateExchangeRequestBody, WalletUpdateMessage,
     },
     json::{FromJson, ToJson},
     messages::{Message, MessageKind},
@@ -31,8 +32,8 @@ impl WasmGetExchangeResponseBody {
     }
 
     #[wasm_bindgen(getter)]
-    pub fn data(&self) -> Result<Vec<WasmGetExchangeResponseBodyDataItem>> {
-        let mut data: Vec<WasmGetExchangeResponseBodyDataItem> = Vec::new();
+    pub fn data(&self) -> Result<Vec<WasmJsonSerializedMessage>> {
+        let mut data: Vec<WasmJsonSerializedMessage> = Vec::new();
 
         for message in &self.inner.data {
             let kind = match message {
@@ -45,7 +46,7 @@ impl WasmGetExchangeResponseBody {
                 Message::Close(_) => MessageKind::Close.to_string(),
             };
 
-            data.push(WasmGetExchangeResponseBodyDataItem {
+            data.push(WasmJsonSerializedMessage {
                 kind,
                 json: message.to_json_string().map_err(map_err)?,
             });
@@ -66,13 +67,13 @@ impl WasmGetExchangeResponseBody {
 }
 
 #[wasm_bindgen]
-pub struct WasmGetExchangeResponseBodyDataItem {
+pub struct WasmJsonSerializedMessage {
     kind: String,
     json: String,
 }
 
 #[wasm_bindgen]
-impl WasmGetExchangeResponseBodyDataItem {
+impl WasmJsonSerializedMessage {
     #[wasm_bindgen(getter)]
     pub fn kind(&self) -> String {
         self.kind.clone()
@@ -144,6 +145,43 @@ impl WasmCreateExchangeRequestBody {
     pub fn from_json_string(json: &str) -> Result<WasmCreateExchangeRequestBody> {
         Ok(Self {
             inner: CreateExchangeRequestBody::from_json_string(json).map_err(map_err)?,
+        })
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        self.inner.to_json_string().map_err(map_err)
+    }
+}
+
+#[wasm_bindgen]
+pub struct WasmUpdateExchangeRequestBody {
+    inner: UpdateExchangeRequestBody,
+}
+
+#[wasm_bindgen]
+impl WasmUpdateExchangeRequestBody {
+    #[wasm_bindgen(constructor)]
+    pub fn new(message: JsValue) -> Result<WasmUpdateExchangeRequestBody> {
+        let message = serde_wasm_bindgen::from_value::<WalletUpdateMessage>(message)?;
+        Ok(Self {
+            inner: UpdateExchangeRequestBody { message },
+        })
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn data(&self) -> Result<WasmJsonSerializedMessage> {
+        let kind = match self.inner.message {
+            WalletUpdateMessage::Order(_) => MessageKind::Order.to_string(),
+            WalletUpdateMessage::Cancel(_) => MessageKind::Cancel.to_string(),
+        };
+        let json = self.inner.message.to_json_string().map_err(map_err)?;
+
+        Ok(WasmJsonSerializedMessage { kind, json })
+    }
+
+    pub fn from_json_string(json: &str) -> Result<WasmUpdateExchangeRequestBody> {
+        Ok(Self {
+            inner: UpdateExchangeRequestBody::from_json_string(json).map_err(map_err)?,
         })
     }
 

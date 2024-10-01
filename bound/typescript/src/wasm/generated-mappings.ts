@@ -390,30 +390,6 @@ export namespace Filter {
   };
 }
 
-export type GetExchangeResponseBodyDataItem = {
-  json: string;
-  kind: string;
-};
-
-export namespace GetExchangeResponseBodyDataItem {
-  export const toWASM = (
-    obj: GetExchangeResponseBodyDataItem,
-  ): wasm.WasmGetExchangeResponseBodyDataItem => {
-    return new wasm.WasmGetExchangeResponseBodyDataItem();
-  };
-
-  export const fromWASM = (
-    obj: wasm.WasmGetExchangeResponseBodyDataItem,
-  ): GetExchangeResponseBodyDataItem => {
-    const result: GetExchangeResponseBodyDataItem = {
-      json: obj.json,
-      kind: obj.kind,
-    };
-
-    return result;
-  };
-}
-
 export type InputDescriptor = {
   constraints: Constraints;
   id: string;
@@ -439,6 +415,30 @@ export namespace InputDescriptor {
 
     if (obj.name !== undefined) result.name = obj.name;
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
+
+    return result;
+  };
+}
+
+export type JsonSerializedMessage = {
+  json: string;
+  kind: string;
+};
+
+export namespace JsonSerializedMessage {
+  export const toWASM = (
+    obj: JsonSerializedMessage,
+  ): wasm.WasmJsonSerializedMessage => {
+    return new wasm.WasmJsonSerializedMessage();
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmJsonSerializedMessage,
+  ): JsonSerializedMessage => {
+    const result: JsonSerializedMessage = {
+      json: obj.json,
+      kind: obj.kind,
+    };
 
     return result;
   };

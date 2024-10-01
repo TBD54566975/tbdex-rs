@@ -11,6 +11,8 @@ import CloseVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/par
 import GetExchangeResponseBodyVector from "./parse-get-exchange-response-body.json" assert { type: "json" };
 import GetExchangeIdsResponseBodyVector from "./parse-get-exchange-ids-response-body.json" assert { type: "json" };
 import CreateExchangeRequestBodyVector from "./parse-create-exchange-request-body.json" assert { type: "json" };
+import UpdateExchangeRequestBodyOrderVector from "./parse-update-exchange-request-body-order.json" assert { type: "json" };
+import UpdateExchangeRequestBodyCancelVector from "./parse-update-exchange-request-body-cancel.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -29,6 +31,7 @@ import {
   CreateExchangeRequestBody,
   GetExchangeResponseBody,
   GetExchangesResponseBody,
+  UpdateExchangeRequestBody,
 } from "../src/http/exchanges";
 
 describe("test vectors", () => {
@@ -451,6 +454,44 @@ describe("test vectors", () => {
         );
 
         await createExchangeRequestBody.message.verify();
+      });
+    });
+
+    describe("update exchange request body", () => {
+      it("should parse order", async () => {
+        const updateExchangeRequestBody =
+          UpdateExchangeRequestBody.fromJSONString(
+            UpdateExchangeRequestBodyOrderVector.input
+          );
+
+        expect(updateExchangeRequestBody.message instanceof Order);
+        expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
+          UpdateExchangeRequestBodyOrderVector.output.message.metadata
+        );
+        expect(updateExchangeRequestBody.message.data).to.deep.equal(
+          UpdateExchangeRequestBodyOrderVector.output.message.data
+        );
+        expect(updateExchangeRequestBody.message.signature).to.deep.equal(
+          UpdateExchangeRequestBodyOrderVector.output.message.signature
+        );
+      });
+
+      it("should parse cancel", async () => {
+        const updateExchangeRequestBody =
+          UpdateExchangeRequestBody.fromJSONString(
+            UpdateExchangeRequestBodyCancelVector.input
+          );
+
+        expect(updateExchangeRequestBody.message instanceof Cancel);
+        expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
+          UpdateExchangeRequestBodyCancelVector.output.message.metadata
+        );
+        expect(updateExchangeRequestBody.message.data).to.deep.equal(
+          UpdateExchangeRequestBodyCancelVector.output.message.data
+        );
+        expect(updateExchangeRequestBody.message.signature).to.deep.equal(
+          UpdateExchangeRequestBodyCancelVector.output.message.signature
+        );
       });
     });
   });
