@@ -109,17 +109,17 @@ export class Rfq {
     }
   };
 
-  verify = () => {
+  verify = async () => {
     try {
-      this.toWASM().verify();
+      await this.toWASM().verify();
     } catch (error) {
       throw tbdexError(error);
     }
   };
 
-  verifyOfferingRequirements = (offering: Offering) => {
+  verifyOfferingRequirements = async (offering: Offering) => {
     try {
-      this.toWASM().verify_offering_requirements(offering.toWASM());
+      await this.toWASM().verify_offering_requirements(offering.toWASM());
     } catch (error) {
       throw tbdexError(error);
     }

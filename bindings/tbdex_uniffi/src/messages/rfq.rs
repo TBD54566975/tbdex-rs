@@ -1,5 +1,6 @@
 use crate::{
     errors::{Result, TbdexError},
+    get_rt,
     resources::offering::Offering,
 };
 use std::sync::{Arc, RwLock};
@@ -72,14 +73,14 @@ impl Rfq {
 
     pub fn verify(&self) -> Result<()> {
         let rfq = self.0.read().map_err(TbdexError::from_poison_error)?;
-
-        Ok(rfq.verify()?)
+        let rt = get_rt()?;
+        Ok(rt.block_on(rfq.verify())?)
     }
 
     pub fn verify_offering_requirements(&self, offering: Arc<Offering>) -> Result<()> {
         let rfq = self.0.read().map_err(TbdexError::from_poison_error)?;
-
-        Ok(rfq.verify_offering_requirements(&offering.to_inner()?)?)
+        let rt = get_rt()?;
+        Ok(rt.block_on(rfq.verify_offering_requirements(&offering.to_inner()?))?)
     }
 
     pub fn verify_all_private_data(&self) -> Result<()> {

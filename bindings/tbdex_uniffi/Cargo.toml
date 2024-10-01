@@ -9,6 +9,7 @@ license-file.workspace = true
 [dependencies]
 serde_json = { workspace = true }
 tbdex = { path = "../../crates/tbdex" }
+tokio = { version = "1.38.0", features = ["full"] }
 thiserror = { workspace = true }
 uniffi = { version = "0.27.1", features = ["cli"] }
 web5 = { workspace = true }

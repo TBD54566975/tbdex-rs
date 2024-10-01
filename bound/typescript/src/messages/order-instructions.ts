@@ -1,7 +1,10 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { MessageMetadata, OrderInstructionsData } from "../wasm/generated-mappings";
+import {
+  MessageMetadata,
+  OrderInstructionsData,
+} from "../wasm/generated-mappings";
 
 export class OrderInstructions {
   readonly metadata: MessageMetadata;
@@ -96,9 +99,9 @@ export class OrderInstructions {
     }
   };
 
-  verify = () => {
+  verify = async () => {
     try {
-      this.toWASM().verify();
+      await this.toWASM().verify();
     } catch (error) {
       throw tbdexError(error);
     }

@@ -1,18 +1,46 @@
-use crate::errors::{map_err, Result};
-use http_std::{Client, FetchOptions, Method, Response};
-use std::{collections::HashMap, sync::Arc};
-use tbdex::errors::TbdexError;
+use crate::errors::{map_http_std_err, Result};
+use async_trait::async_trait;
+use http_std::{Client, Error as HttpStdError, FetchOptions, Method, Response};
+use js_sys::Promise;
+use serde::Deserialize;
+use std::{
+    collections::HashMap,
+    future::Future,
+    pin::Pin,
+    str::FromStr,
+    sync::Arc,
+    task::{Context, Poll},
+};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+use wasm_bindgen_futures::JsFuture;
 
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(
-        typescript_type = "{ fetch: (url: string, options?: WasmFetchOptions) => WasmResponse }"
+        typescript_type = "{ fetch: (url: string, options?: WasmFetchOptions) => Promise<WasmResponse> }"
     )]
     pub type ForeignFetch;
 
     #[wasm_bindgen(method)]
-    fn fetch(this: &ForeignFetch, url: &str, options: Option<WasmFetchOptions>) -> WasmResponse;
+    fn fetch(this: &ForeignFetch, url: &str, options: Option<WasmFetchOptions>) -> Promise;
+}
+
+struct SendJsFuture(JsFuture);
+
+/**
+ * TODO
+ * [KW]:
+ *    this is not thread safe and could cause issues
+ *    the solution is to implement message passing across threads
+ */
+unsafe impl Send for SendJsFuture {}
+
+impl Future for SendJsFuture {
+    type Output = std::result::Result<JsValue, JsValue>;
+
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        unsafe { self.map_unchecked_mut(|s| &mut s.0) }.poll(cx)
+    }
 }
 
 pub struct ConcreteForeignFetch(ForeignFetch);
@@ -26,11 +54,30 @@ pub struct ConcreteForeignFetch(ForeignFetch);
 unsafe impl Send for ConcreteForeignFetch {}
 unsafe impl Sync for ConcreteForeignFetch {}
 
+#[async_trait]
 impl Client for ConcreteForeignFetch {
-    fn fetch(&self, url: &str, options: Option<FetchOptions>) -> http_std::Result<Response> {
+    async fn fetch(&self, url: &str, options: Option<FetchOptions>) -> http_std::Result<Response> {
         let wasm_options = options.map(WasmFetchOptions::from);
-        let wasm_response = self.0.fetch(url, wasm_options);
-        Ok(wasm_response.into())
+
+        let wasm_response_promise = self.0.fetch(url, wasm_options);
+        let response_jsvalue = SendJsFuture(JsFuture::from(wasm_response_promise))
+            .await
+            .map_err(|e| {
+                HttpStdError::Unknown(format!(
+                    "rust future resolution error {}",
+                    js_sys::JSON::stringify(&e)
+                        .unwrap_or_else(|_| JsValue::from_str("null").into())
+                        .as_string()
+                        .unwrap_or_else(|| "null".to_string())
+                ))
+            })?;
+
+        let response =
+            serde_wasm_bindgen::from_value::<Response>(response_jsvalue).map_err(|e| {
+                HttpStdError::Unknown(format!("rust WasmResponse from JsValue error {}", e))
+            })?;
+
+        Ok(response)
     }
 }
 
@@ -50,31 +97,6 @@ impl From<FetchOptions> for WasmFetchOptions {
     }
 }
 
-// TODO move to web5-rs
-// impl FromStr for Method {
-//     type Err = TbdexError;
-
-//     fn from_str(s: &str) -> Result<Self, Self::Err> {
-//         match s.to_ascii_uppercase().as_ref() {
-//             "GET" => Ok(Method::Get),
-//             "POST" => Ok(Method::Post),
-//             "PUT" => Ok(Method::Put),
-//             _ => return Err(TbdexError::HttpClient(format!("unknown method {}", s))),
-//         }
-//     }
-// }
-fn method_from_str(method: &str) -> Result<Method> {
-    match method.to_ascii_uppercase().as_ref() {
-        "GET" => Ok(Method::Get),
-        "POST" => Ok(Method::Post),
-        "PUT" => Ok(Method::Put),
-        _ => Err(map_err(TbdexError::HttpClient(format!(
-            "unknown method {}",
-            method
-        )))),
-    }
-}
-
 #[wasm_bindgen]
 impl WasmFetchOptions {
     #[wasm_bindgen(constructor)]
@@ -84,7 +106,7 @@ impl WasmFetchOptions {
         body: Option<Vec<u8>>,
     ) -> Result<WasmFetchOptions> {
         let method = if let Some(m) = method {
-            Some(method_from_str(&m)?)
+            Some(Method::from_str(&m).map_err(map_http_std_err)?)
         } else {
             None
         };
@@ -123,6 +145,7 @@ impl WasmFetchOptions {
     }
 }
 
+#[derive(Deserialize)]
 #[wasm_bindgen]
 pub struct WasmResponse {
     inner: Response,

@@ -1,4 +1,7 @@
-use crate::errors::{Result, TbdexError};
+use crate::{
+    errors::{Result, TbdexError},
+    get_rt,
+};
 use std::sync::{Arc, RwLock};
 use tbdex::{
     json::{FromJson, ToJson},
@@ -57,7 +60,8 @@ impl Offering {
 
     pub fn verify(&self) -> Result<()> {
         let inner_offering = self.0.read().map_err(TbdexError::from_poison_error)?;
-        inner_offering.verify()?;
+        let rt = get_rt()?;
+        rt.block_on(inner_offering.verify())?;
         Ok(())
     }
 }
