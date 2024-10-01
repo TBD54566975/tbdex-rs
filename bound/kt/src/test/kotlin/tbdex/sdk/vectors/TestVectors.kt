@@ -15,6 +15,7 @@ object TestVectors {
             "parse-cancel.json",
             "parse-offering.json",
             "parse-order.json",
+            "parse-orderinstructions.json",
             "parse-orderstatus.json",
             "parse-quote.json",
             "parse-rfq.json",
