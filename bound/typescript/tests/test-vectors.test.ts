@@ -19,6 +19,9 @@ import { Order } from "../src/messages/order";
 import { Cancel } from "../src/messages/cancel";
 import { OrderStatus } from "../src/messages/order-status";
 import { Close } from "../src/messages/close";
+import { Message } from "../src/messages";
+import { OrderInstructions } from "../src/messages/order-instructions";
+import { Resource } from "../src/resources";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -56,6 +59,12 @@ describe("test vectors", () => {
       offering.sign(bearerDID);
       await offering.verify();
     });
+
+    it("should be instance of resource", async () => {
+      const resource: Resource = Offering.fromJSONString(OfferingVector.input);
+      expect(resource instanceof Offering).to.be.true;
+      expect(resource instanceof Balance).to.be.false;
+    });
   });
 
   describe("balance", () => {
@@ -82,6 +91,12 @@ describe("test vectors", () => {
 
       balance.sign(bearerDID);
       await balance.verify();
+    });
+
+    it("should be instance of resource", async () => {
+      const resource: Resource = Balance.fromJSONString(BalanceVector.input);
+      expect(resource instanceof Balance).to.be.true;
+      expect(resource instanceof Offering).to.be.false;
     });
   });
 
@@ -141,6 +156,12 @@ describe("test vectors", () => {
       rfq.sign(bearerDID);
       await rfq.verify();
     });
+
+    it("should be instance of message", async () => {
+      const message: Message = Rfq.fromJSONString(RfqVector.input);
+      expect(message instanceof Rfq).to.be.true;
+      expect(message instanceof OrderStatus).to.be.false;
+    });
   });
 
   describe("quote", () => {
@@ -171,6 +192,12 @@ describe("test vectors", () => {
       quote.sign(bearerDID);
       await quote.verify();
     });
+
+    it("should be instance of message", async () => {
+      const message: Message = Quote.fromJSONString(QuoteVector.input);
+      expect(message instanceof Quote).to.be.true;
+      expect(message instanceof OrderStatus).to.be.false;
+    });
   });
 
   describe("order", () => {
@@ -199,6 +226,12 @@ describe("test vectors", () => {
       order.sign(bearerDID);
       await order.verify();
     });
+
+    it("should be instance of message", async () => {
+      const message: Message = Order.fromJSONString(OrderVector.input);
+      expect(message instanceof Order).to.be.true;
+      expect(message instanceof OrderStatus).to.be.false;
+    });
   });
 
   describe("order instructions", () => {
@@ -207,6 +240,10 @@ describe("test vectors", () => {
     });
 
     it("should create, sign, and verify", async () => {
+      // todo create test vector
+    });
+
+    it("should be instance of message", async () => {
       // todo create test vector
     });
   });
@@ -237,6 +274,12 @@ describe("test vectors", () => {
 
       cancel.sign(bearerDID);
       await cancel.verify();
+    });
+
+    it("should be instance of message", async () => {
+      const message: Message = Cancel.fromJSONString(CancelVector.input);
+      expect(message instanceof Cancel).to.be.true;
+      expect(message instanceof OrderStatus).to.be.false;
     });
   });
 
@@ -271,6 +314,14 @@ describe("test vectors", () => {
       orderStatus.sign(bearerDID);
       await orderStatus.verify();
     });
+
+    it("should be instance of message", async () => {
+      const message: Message = OrderStatus.fromJSONString(
+        OrderStatusVector.input
+      );
+      expect(message instanceof OrderStatus).to.be.true;
+      expect(message instanceof Cancel).to.be.false;
+    });
   });
 
   describe("close", () => {
@@ -299,6 +350,12 @@ describe("test vectors", () => {
 
       close.sign(bearerDID);
       await close.verify();
+    });
+
+    it("should be instance of message", async () => {
+      const message: Message = Close.fromJSONString(CloseVector.input);
+      expect(message instanceof Close).to.be.true;
+      expect(message instanceof Cancel).to.be.false;
     });
   });
 });
