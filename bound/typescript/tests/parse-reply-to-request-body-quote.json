@@ -1,0 +1,31 @@
+{
+  "input": "{\"message\":{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"quote\",\"id\":\"quote_01j94kj3y3fadbhfh507rx1zpf\",\"exchangeId\":\"rfq_01j94khzj7eeqsrhjt3anr0qe6\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T17:55:29.347473+00:00\"},\"data\":{\"expiresAt\":\"2024-08-02T04:26:08.239Z\",\"payoutUnitsPerPayinUnit\":\"1.0\",\"payin\":{\"currencyCode\":\"BTC\",\"subtotal\":\"1000.00\",\"total\":\"1001.00\"},\"payout\":{\"currencyCode\":\"KES\",\"subtotal\":\"1000.00\",\"total\":\"1001.00\"}},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..BUSxVfkXVfIRrh9jcgd7VXNaIifwHu89Y5ykk9qZBnvgm6fcKW0YkQuacA1PVPAF7pSvLYr1Hv6zGXzx6HSXAQ\"}}",
+  "output": {
+    "message": {
+      "metadata": {
+        "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+        "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+        "kind": "quote",
+        "id": "quote_01j94kj3y3fadbhfh507rx1zpf",
+        "exchangeId": "rfq_01j94khzj7eeqsrhjt3anr0qe6",
+        "protocol": "2.0",
+        "createdAt": "2024-10-01T17:55:29.347473+00:00"
+      },
+      "data": {
+        "expiresAt": "2024-08-02T04:26:08.239Z",
+        "payoutUnitsPerPayinUnit": "1.0",
+        "payin": {
+          "currencyCode": "BTC",
+          "subtotal": "1000.00",
+          "total": "1001.00"
+        },
+        "payout": {
+          "currencyCode": "KES",
+          "subtotal": "1000.00",
+          "total": "1001.00"
+        }
+      },
+      "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..BUSxVfkXVfIRrh9jcgd7VXNaIifwHu89Y5ykk9qZBnvgm6fcKW0YkQuacA1PVPAF7pSvLYr1Hv6zGXzx6HSXAQ"
+    }
+  }
+}

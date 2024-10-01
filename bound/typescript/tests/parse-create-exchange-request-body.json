@@ -1,0 +1,36 @@
+{
+  "input": "{\"message\":{\"metadata\":{\"from\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"to\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"kind\":\"rfq\",\"id\":\"rfq_01j94k5tfzf7pvevc2he3d24pg\",\"exchangeId\":\"rfq_01j94k5tfzf7pvevc2he3d24pg\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T17:48:46.463104+00:00\"},\"data\":{\"offeringId\":\"offering_01j94k5fqpedtryxeap5dk6q5r\",\"payin\":{\"kind\":\"USD_LEDGER\",\"amount\":\"101\"},\"payout\":{\"kind\":\"MOMO_MPESA\",\"paymentDetailsHash\":\"IIFKzjIKQ-tW27HOerDoMUw-hucrkSpuoINVmV3GVa4\"},\"claimsHash\":\"al23u7SBaaaNJXvzDQ6AaeEQa3f5TMlnLB_zkEulOKE\"},\"privateData\":{\"salt\":\"1PqdaeP7NM88IS_rZm2Usg\",\"payout\":{\"paymentDetails\":{\"phoneNumber\":\"867-5309\",\"reason\":\"cause\"}},\"claims\":[\"eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJpZCI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJTYW5jdGlvbkNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiZGlkOmRodDp5c3lva3duNm14bnppaGduaGtrZXNqaWc4Y2RiM3I5NGVxOGFicDNhN2U5MzV5NHMzYzR5IiwiaXNzdWFuY2VEYXRlIjoiMjAyNC0wNy0wMlQwNDoyNDoxNC4yNzYzMjUrMDA6MDAiLCJleHBpcmF0aW9uRGF0ZSI6bnVsbCwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZGh0OjFmczVobnhzZ3R4Z2RyNHd6cWkzOGNuajQ2YjF3aGhuOTRvandvNjZnOGhzYzVidDNmZ3kifX0sImlzcyI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSIsImp0aSI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInN1YiI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsIm5iZiI6MTcxOTg5NDI1NCwiaWF0IjoxNzE5ODk0MjU0fQ.c4ws9jR28jElo_uaW9l5OTL-IPMx4JxWl4De7l_BTk0qNhcFlRtR-U0b9087CUOdpNu25XGZzn-R_EVImRGgCw\"]},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSMwIn0..h-QqDg093m0WVAGXL7SPGpL1PYKVXkORcgk8kXAPEmZlqKLYTqqfcQFCZFK74Ij3WTuRsTYRui08qniA4nCuBg\"},\"replyTo\":\"http://localhost:8081/pfi-reply-to\"}",
+  "output": {
+    "message": {
+      "metadata": {
+        "from": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+        "to": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+        "kind": "rfq",
+        "id": "rfq_01j94k5tfzf7pvevc2he3d24pg",
+        "exchangeId": "rfq_01j94k5tfzf7pvevc2he3d24pg",
+        "protocol": "2.0",
+        "createdAt": "2024-10-01T17:48:46.463104+00:00"
+      },
+      "data": {
+        "offeringId": "offering_01j94k5fqpedtryxeap5dk6q5r",
+        "payin": { "kind": "USD_LEDGER", "amount": "101" },
+        "payout": {
+          "kind": "MOMO_MPESA",
+          "paymentDetailsHash": "IIFKzjIKQ-tW27HOerDoMUw-hucrkSpuoINVmV3GVa4"
+        },
+        "claimsHash": "al23u7SBaaaNJXvzDQ6AaeEQa3f5TMlnLB_zkEulOKE"
+      },
+      "privateData": {
+        "salt": "1PqdaeP7NM88IS_rZm2Usg",
+        "payout": {
+          "paymentDetails": { "phoneNumber": "867-5309", "reason": "cause" }
+        },
+        "claims": [
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJpZCI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJTYW5jdGlvbkNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiZGlkOmRodDp5c3lva3duNm14bnppaGduaGtrZXNqaWc4Y2RiM3I5NGVxOGFicDNhN2U5MzV5NHMzYzR5IiwiaXNzdWFuY2VEYXRlIjoiMjAyNC0wNy0wMlQwNDoyNDoxNC4yNzYzMjUrMDA6MDAiLCJleHBpcmF0aW9uRGF0ZSI6bnVsbCwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZGh0OjFmczVobnhzZ3R4Z2RyNHd6cWkzOGNuajQ2YjF3aGhuOTRvandvNjZnOGhzYzVidDNmZ3kifX0sImlzcyI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSIsImp0aSI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInN1YiI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsIm5iZiI6MTcxOTg5NDI1NCwiaWF0IjoxNzE5ODk0MjU0fQ.c4ws9jR28jElo_uaW9l5OTL-IPMx4JxWl4De7l_BTk0qNhcFlRtR-U0b9087CUOdpNu25XGZzn-R_EVImRGgCw"
+        ]
+      },
+      "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSMwIn0..h-QqDg093m0WVAGXL7SPGpL1PYKVXkORcgk8kXAPEmZlqKLYTqqfcQFCZFK74Ij3WTuRsTYRui08qniA4nCuBg"
+    },
+    "replyTo": "http://localhost:8081/pfi-reply-to"
+  }
+}
