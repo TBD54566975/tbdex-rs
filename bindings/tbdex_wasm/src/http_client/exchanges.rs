@@ -13,25 +13,23 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 pub async fn create_exchange(rfq: WasmRfq, reply_to: Option<String>) -> Result<()> {
-    Ok(
-        tbdex::http_client::exchanges::create_exchange(&rfq.into(), reply_to)
-            .await
-            .map_err(map_err)?,
-    )
+    tbdex::http_client::exchanges::create_exchange(&rfq.into(), reply_to)
+        .await
+        .map_err(map_err)
 }
 
 #[wasm_bindgen]
 pub async fn submit_order(order: WasmOrder) -> Result<()> {
-    Ok(tbdex::http_client::exchanges::submit_order(&order.into())
+    tbdex::http_client::exchanges::submit_order(&order.into())
         .await
-        .map_err(map_err)?)
+        .map_err(map_err)
 }
 
 #[wasm_bindgen]
 pub async fn submit_cancel(cancel: WasmCancel) -> Result<()> {
-    Ok(tbdex::http_client::exchanges::submit_cancel(&cancel.into())
+    tbdex::http_client::exchanges::submit_cancel(&cancel.into())
         .await
-        .map_err(map_err)?)
+        .map_err(map_err)
 }
 
 #[wasm_bindgen]
@@ -55,7 +53,7 @@ pub async fn get_exchange_ids(
     pagination_offset: Option<i64>,
     pagination_limit: Option<i64>,
 ) -> Result<Vec<String>> {
-    Ok(tbdex::http_client::exchanges::get_exchange_ids(
+    tbdex::http_client::exchanges::get_exchange_ids(
         pfi_did_uri,
         &requestor_did.into(),
         Some(GetExchangeIdsQueryParams {
@@ -64,7 +62,7 @@ pub async fn get_exchange_ids(
         }),
     )
     .await
-    .map_err(map_err)?)
+    .map_err(map_err)
 }
 
 #[wasm_bindgen]
