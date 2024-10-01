@@ -155,7 +155,6 @@ pub struct QuoteDetails {
     pub fee: Option<String>,
 }
 
-// TODO: Uncomment when we have parse_quote.json vector updated with no payment instructions
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {
     use super::*;
