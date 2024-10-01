@@ -146,17 +146,17 @@ describe("test vectors", () => {
   describe("quote", () => {
     it("should parse", () => {
       // TODO test vector needs updating, needs the `paymentInstruction`'s on the payin & payout removed
-      // const input = QuoteVector.input;
-      // const quote = Quote.fromJSONString(input);
-      // expect(quote.metadata).to.deep.equal(QuoteVector.output.metadata);
-      // expect(quote.data).to.deep.equal(QuoteVector.output.data);
-      // expect(quote.signature).to.equal(QuoteVector.output.signature);
-      //
-      // const quoteJSONString = quote.toJSONString();
-      // const quoteJSON = JSON.parse(quoteJSONString);
-      // expect(quoteJSON).to.deep.equal(QuoteVector.output);
-      //
-      // quote.verify();
+      const input = QuoteVector.input;
+      const quote = Quote.fromJSONString(input);
+      expect(quote.metadata).to.deep.equal(QuoteVector.output.metadata);
+      expect(quote.data).to.deep.equal(QuoteVector.output.data);
+      expect(quote.signature).to.equal(QuoteVector.output.signature);
+      
+      const quoteJSONString = quote.toJSONString();
+      const quoteJSON = JSON.parse(quoteJSONString);
+      expect(quoteJSON).to.deep.equal(QuoteVector.output);
+      
+      quote.verify();
     });
 
     it("should create, sign, and verify", () => {
