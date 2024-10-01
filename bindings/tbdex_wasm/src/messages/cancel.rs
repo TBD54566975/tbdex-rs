@@ -14,6 +14,18 @@ pub struct WasmCancel {
     inner: Cancel,
 }
 
+impl From<WasmCancel> for Cancel {
+    fn from(value: WasmCancel) -> Self {
+        value.inner
+    }
+}
+
+impl From<Cancel> for WasmCancel {
+    fn from(value: Cancel) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmCancel {
     #[wasm_bindgen(constructor)]

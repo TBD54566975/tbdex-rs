@@ -27,6 +27,7 @@ const EXCLUDE = [
   "ReplyToRequestBody",
   "GetOfferingsResponseBody",
   "GetBalancesResponseBody",
+  "Exchange"
 ];
 
 export const generateToWASM = (wasmClass: WasmClass): string => `

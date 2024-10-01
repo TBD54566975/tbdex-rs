@@ -14,6 +14,18 @@ pub struct WasmOrder {
     inner: Order,
 }
 
+impl From<WasmOrder> for Order {
+    fn from(value: WasmOrder) -> Self {
+        value.inner
+    }
+}
+
+impl From<Order> for WasmOrder {
+    fn from(value: Order) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmOrder {
     #[wasm_bindgen(constructor)]
