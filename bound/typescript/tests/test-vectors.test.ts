@@ -13,6 +13,10 @@ import GetExchangeIdsResponseBodyVector from "./parse-get-exchange-ids-response-
 import CreateExchangeRequestBodyVector from "./parse-create-exchange-request-body.json" assert { type: "json" };
 import UpdateExchangeRequestBodyOrderVector from "./parse-update-exchange-request-body-order.json" assert { type: "json" };
 import UpdateExchangeRequestBodyCancelVector from "./parse-update-exchange-request-body-cancel.json" assert { type: "json" };
+import ReplyToRequestBodyQuoteVector from "./parse-reply-to-request-body-quote.json" assert { type: "json" };
+import ReplyToRequestBodyOrderInstructionsVector from "./parse-reply-to-request-body-orderinstructions.json" assert { type: "json" };
+import ReplyToRequestBodyOrderStatusVector from "./parse-reply-to-request-body-orderstatus.json" assert { type: "json" };
+import ReplyToRequestBodyCloseVector from "./parse-reply-to-request-body-close.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -25,14 +29,15 @@ import { Cancel } from "../src/messages/cancel";
 import { OrderStatus } from "../src/messages/order-status";
 import { Close } from "../src/messages/close";
 import { Message } from "../src/messages";
-import { OrderInstructions } from "../src/messages/order-instructions";
 import { Resource } from "../src/resources";
 import {
   CreateExchangeRequestBody,
   GetExchangeResponseBody,
   GetExchangesResponseBody,
+  ReplyToRequestBody,
   UpdateExchangeRequestBody,
 } from "../src/http/exchanges";
+import { OrderInstructions } from "../src/messages/order-instructions";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -464,7 +469,7 @@ describe("test vectors", () => {
             UpdateExchangeRequestBodyOrderVector.input
           );
 
-        expect(updateExchangeRequestBody.message instanceof Order);
+        expect(updateExchangeRequestBody.message instanceof Order).to.be.true;
         expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
           UpdateExchangeRequestBodyOrderVector.output.message.metadata
         );
@@ -474,6 +479,8 @@ describe("test vectors", () => {
         expect(updateExchangeRequestBody.message.signature).to.deep.equal(
           UpdateExchangeRequestBodyOrderVector.output.message.signature
         );
+
+        await updateExchangeRequestBody.message.verify();
       });
 
       it("should parse cancel", async () => {
@@ -482,7 +489,7 @@ describe("test vectors", () => {
             UpdateExchangeRequestBodyCancelVector.input
           );
 
-        expect(updateExchangeRequestBody.message instanceof Cancel);
+        expect(updateExchangeRequestBody.message instanceof Cancel).to.be.true;
         expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
           UpdateExchangeRequestBodyCancelVector.output.message.metadata
         );
@@ -492,6 +499,87 @@ describe("test vectors", () => {
         expect(updateExchangeRequestBody.message.signature).to.deep.equal(
           UpdateExchangeRequestBodyCancelVector.output.message.signature
         );
+
+        await updateExchangeRequestBody.message.verify();
+      });
+    });
+
+    describe("reply to request body", () => {
+      it("should parse quote", async () => {
+        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+          ReplyToRequestBodyQuoteVector.input
+        );
+
+        expect(replyToRequestBody.message instanceof Quote).to.be.true;
+        expect(replyToRequestBody.message.metadata).to.deep.equal(
+          ReplyToRequestBodyQuoteVector.output.message.metadata
+        );
+        expect(replyToRequestBody.message.data).to.deep.equal(
+          ReplyToRequestBodyQuoteVector.output.message.data
+        );
+        expect(replyToRequestBody.message.signature).to.deep.equal(
+          ReplyToRequestBodyQuoteVector.output.message.signature
+        );
+
+        await replyToRequestBody.message.verify();
+      });
+
+      it("should parse order instructions", async () => {
+        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+          ReplyToRequestBodyOrderInstructionsVector.input
+        );
+
+        expect(replyToRequestBody.message instanceof OrderInstructions).to.be
+          .true;
+        expect(replyToRequestBody.message.metadata).to.deep.equal(
+          ReplyToRequestBodyOrderInstructionsVector.output.message.metadata
+        );
+        expect(replyToRequestBody.message.data).to.deep.equal(
+          ReplyToRequestBodyOrderInstructionsVector.output.message.data
+        );
+        expect(replyToRequestBody.message.signature).to.deep.equal(
+          ReplyToRequestBodyOrderInstructionsVector.output.message.signature
+        );
+
+        await replyToRequestBody.message.verify();
+      });
+
+      it("should parse order status", async () => {
+        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+          ReplyToRequestBodyOrderStatusVector.input
+        );
+
+        expect(replyToRequestBody.message instanceof OrderStatus).to.be.true;
+        expect(replyToRequestBody.message.metadata).to.deep.equal(
+          ReplyToRequestBodyOrderStatusVector.output.message.metadata
+        );
+        expect(replyToRequestBody.message.data).to.deep.equal(
+          ReplyToRequestBodyOrderStatusVector.output.message.data
+        );
+        expect(replyToRequestBody.message.signature).to.deep.equal(
+          ReplyToRequestBodyOrderStatusVector.output.message.signature
+        );
+
+        await replyToRequestBody.message.verify();
+      });
+
+      it("should parse close", async () => {
+        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+          ReplyToRequestBodyCloseVector.input
+        );
+
+        expect(replyToRequestBody.message instanceof Close).to.be.true;
+        expect(replyToRequestBody.message.metadata).to.deep.equal(
+          ReplyToRequestBodyCloseVector.output.message.metadata
+        );
+        expect(replyToRequestBody.message.data).to.deep.equal(
+          ReplyToRequestBodyCloseVector.output.message.data
+        );
+        expect(replyToRequestBody.message.signature).to.deep.equal(
+          ReplyToRequestBodyCloseVector.output.message.signature
+        );
+
+        await replyToRequestBody.message.verify();
       });
     });
   });

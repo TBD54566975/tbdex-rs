@@ -5,7 +5,7 @@ use crate::{
 use tbdex::{
     http::exchanges::{
         CreateExchangeRequestBody, GetExchangeResponseBody, GetExchangesResponseBody,
-        UpdateExchangeRequestBody, WalletUpdateMessage,
+        ReplyToMessage, ReplyToRequestBody, UpdateExchangeRequestBody, WalletUpdateMessage,
     },
     json::{FromJson, ToJson},
     messages::{Message, MessageKind},
@@ -182,6 +182,45 @@ impl WasmUpdateExchangeRequestBody {
     pub fn from_json_string(json: &str) -> Result<WasmUpdateExchangeRequestBody> {
         Ok(Self {
             inner: UpdateExchangeRequestBody::from_json_string(json).map_err(map_err)?,
+        })
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        self.inner.to_json_string().map_err(map_err)
+    }
+}
+
+#[wasm_bindgen]
+pub struct WasmReplyToRequestBody {
+    inner: ReplyToRequestBody,
+}
+
+#[wasm_bindgen]
+impl WasmReplyToRequestBody {
+    #[wasm_bindgen(constructor)]
+    pub fn new(message: JsValue) -> Result<WasmReplyToRequestBody> {
+        let message = serde_wasm_bindgen::from_value::<ReplyToMessage>(message)?;
+        Ok(Self {
+            inner: ReplyToRequestBody { message },
+        })
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn data(&self) -> Result<WasmJsonSerializedMessage> {
+        let kind = match self.inner.message {
+            ReplyToMessage::Quote(_) => MessageKind::Quote.to_string(),
+            ReplyToMessage::OrderInstructions(_) => MessageKind::OrderInstructions.to_string(),
+            ReplyToMessage::OrderStatus(_) => MessageKind::OrderStatus.to_string(),
+            ReplyToMessage::Close(_) => MessageKind::Close.to_string(),
+        };
+        let json = self.inner.message.to_json_string().map_err(map_err)?;
+
+        Ok(WasmJsonSerializedMessage { kind, json })
+    }
+
+    pub fn from_json_string(json: &str) -> Result<WasmReplyToRequestBody> {
+        Ok(Self {
+            inner: ReplyToRequestBody::from_json_string(json).map_err(map_err)?,
         })
     }
 
