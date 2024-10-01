@@ -1,6 +1,11 @@
-use crate::errors::{map_err, Result};
+use crate::{
+    errors::{map_err, Result},
+    messages::rfq::WasmRfq,
+};
 use tbdex::{
-    http::exchanges::{GetExchangeResponseBody, GetExchangesResponseBody},
+    http::exchanges::{
+        CreateExchangeRequestBody, GetExchangeResponseBody, GetExchangesResponseBody,
+    },
     json::{FromJson, ToJson},
     messages::{Message, MessageKind},
 };
@@ -101,6 +106,44 @@ impl WasmGetExchangesResponseBody {
     pub fn from_json_string(json: &str) -> Result<WasmGetExchangesResponseBody> {
         Ok(Self {
             inner: GetExchangesResponseBody::from_json_string(json).map_err(map_err)?,
+        })
+    }
+
+    pub fn to_json_string(&self) -> Result<String> {
+        self.inner.to_json_string().map_err(map_err)
+    }
+}
+
+#[wasm_bindgen]
+pub struct WasmCreateExchangeRequestBody {
+    inner: CreateExchangeRequestBody,
+}
+
+#[wasm_bindgen]
+impl WasmCreateExchangeRequestBody {
+    #[wasm_bindgen(constructor)]
+    pub fn new(message: WasmRfq, reply_to: Option<String>) -> Self {
+        Self {
+            inner: CreateExchangeRequestBody {
+                message: message.into(),
+                reply_to,
+            },
+        }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn message(&self) -> WasmRfq {
+        self.inner.message.clone().into()
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn reply_to(&self) -> Option<String> {
+        self.inner.reply_to.clone()
+    }
+
+    pub fn from_json_string(json: &str) -> Result<WasmCreateExchangeRequestBody> {
+        Ok(Self {
+            inner: CreateExchangeRequestBody::from_json_string(json).map_err(map_err)?,
         })
     }
 

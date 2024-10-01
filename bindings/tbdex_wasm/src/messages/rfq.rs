@@ -20,6 +20,18 @@ pub struct WasmRfq {
     inner: Rfq,
 }
 
+impl From<WasmRfq> for Rfq {
+    fn from(value: WasmRfq) -> Self {
+        value.inner
+    }
+}
+
+impl From<Rfq> for WasmRfq {
+    fn from(value: Rfq) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmRfq {
     #[wasm_bindgen(constructor)]

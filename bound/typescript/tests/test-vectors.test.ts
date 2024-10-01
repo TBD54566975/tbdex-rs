@@ -10,6 +10,7 @@ import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vecto
 import CloseVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-close.json" assert { type: "json" };
 import GetExchangeResponseBodyVector from "./parse-get-exchange-response-body.json" assert { type: "json" };
 import GetExchangeIdsResponseBodyVector from "./parse-get-exchange-ids-response-body.json" assert { type: "json" };
+import CreateExchangeRequestBodyVector from "./parse-create-exchange-request-body.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -25,6 +26,7 @@ import { Message } from "../src/messages";
 import { OrderInstructions } from "../src/messages/order-instructions";
 import { Resource } from "../src/resources";
 import {
+  CreateExchangeRequestBody,
   GetExchangeResponseBody,
   GetExchangesResponseBody,
 } from "../src/http/exchanges";
@@ -426,6 +428,29 @@ describe("test vectors", () => {
         expect(getExchangesResponseBody.data[1]).to.equal(
           GetExchangeIdsResponseBodyVector.output.data[1]
         );
+      });
+    });
+
+    describe("create exchange request body", () => {
+      it("should parse", async () => {
+        const createExchangeRequestBody =
+          CreateExchangeRequestBody.fromJSONString(
+            CreateExchangeRequestBodyVector.input
+          );
+        expect(createExchangeRequestBody.message.metadata).to.deep.equal(
+          CreateExchangeRequestBodyVector.output.message.metadata
+        );
+        expect(createExchangeRequestBody.message.data).to.deep.equal(
+          CreateExchangeRequestBodyVector.output.message.data
+        );
+        expect(createExchangeRequestBody.message.signature).to.deep.equal(
+          CreateExchangeRequestBodyVector.output.message.signature
+        );
+        expect(createExchangeRequestBody.replyTo).to.deep.equal(
+          CreateExchangeRequestBodyVector.output.replyTo
+        );
+
+        await createExchangeRequestBody.message.verify();
       });
     });
   });
