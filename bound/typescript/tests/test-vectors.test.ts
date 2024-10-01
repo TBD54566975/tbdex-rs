@@ -8,15 +8,15 @@ import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/par
 import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json" assert { type: "json" };
 import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
 import CloseVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-close.json" assert { type: "json" };
-import GetExchangeResponseBodyVector from "./parse-get-exchange-response-body.json" assert { type: "json" };
-import GetExchangeIdsResponseBodyVector from "./parse-get-exchange-ids-response-body.json" assert { type: "json" };
-import CreateExchangeRequestBodyVector from "./parse-create-exchange-request-body.json" assert { type: "json" };
-import UpdateExchangeRequestBodyOrderVector from "./parse-update-exchange-request-body-order.json" assert { type: "json" };
-import UpdateExchangeRequestBodyCancelVector from "./parse-update-exchange-request-body-cancel.json" assert { type: "json" };
-import ReplyToRequestBodyQuoteVector from "./parse-reply-to-request-body-quote.json" assert { type: "json" };
-import ReplyToRequestBodyOrderInstructionsVector from "./parse-reply-to-request-body-orderinstructions.json" assert { type: "json" };
-import ReplyToRequestBodyOrderStatusVector from "./parse-reply-to-request-body-orderstatus.json" assert { type: "json" };
-import ReplyToRequestBodyCloseVector from "./parse-reply-to-request-body-close.json" assert { type: "json" };
+import GetExchangeResponseBodyVector from "./vectors/http/get-exchange.json" assert { type: "json" };
+import GetExchangeIdsResponseBodyVector from "./vectors/http/get-exchange-ids.json" assert { type: "json" };
+import CreateExchangeRequestBodyVector from "./vectors/http/create-exchange.json" assert { type: "json" };
+import UpdateExchangeRequestBodyOrderVector from "./vectors/http/update-exchange-order.json" assert { type: "json" };
+import UpdateExchangeRequestBodyCancelVector from "./vectors/http/update-exchange-cancel.json" assert { type: "json" };
+import ReplyToRequestBodyQuoteVector from "./vectors/http/reply-to-quote.json" assert { type: "json" };
+import ReplyToRequestBodyOrderInstructionsVector from "./vectors/http/reply-to-orderinstructions.json" assert { type: "json" };
+import ReplyToRequestBodyOrderStatusVector from "./vectors/http/reply-to-orderstatus.json" assert { type: "json" };
+import ReplyToRequestBodyCloseVector from "./vectors/http/reply-to-close.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -30,6 +30,7 @@ import { OrderStatus } from "../src/messages/order-status";
 import { Close } from "../src/messages/close";
 import { Message } from "../src/messages";
 import { Resource } from "../src/resources";
+import { OrderInstructions } from "../src/messages/order-instructions";
 import {
   CreateExchangeRequestBody,
   GetExchangeResponseBody,
@@ -37,7 +38,6 @@ import {
   ReplyToRequestBody,
   UpdateExchangeRequestBody,
 } from "../src/http/exchanges";
-import { OrderInstructions } from "../src/messages/order-instructions";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
