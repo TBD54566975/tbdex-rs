@@ -18,6 +18,10 @@ const EXCLUDE = [
   "Cancel",
   "OrderStatus",
   "Close",
+
+  // http
+  "GetExchangeResponseBody",
+  // todo the others
 ];
 
 export const generateToWASM = (wasmClass: WasmClass): string => `

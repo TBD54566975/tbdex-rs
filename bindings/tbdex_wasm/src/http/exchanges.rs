@@ -15,24 +15,23 @@ pub struct WasmGetExchangeResponseBody {
 #[wasm_bindgen]
 impl WasmGetExchangeResponseBody {
     #[wasm_bindgen(constructor)]
-    pub fn new(data: Vec<JsValue>) -> Self {
+    pub fn new(data: Vec<JsValue>) -> Result<WasmGetExchangeResponseBody> {
         let messages: Vec<Message> = data
-            // .iter()
             .into_iter()
-            .map(|m| serde_wasm_bindgen::from_value::<Message>(m).unwrap())
-            .collect();
+            .map(|m| serde_wasm_bindgen::from_value::<Message>(m).map_err(|e| e.into()))
+            .collect::<Result<Vec<Message>>>()?;
 
-        Self {
+        Ok(Self {
             inner: GetExchangeResponseBody { data: messages },
-        }
+        })
     }
 
     #[wasm_bindgen(getter)]
-    pub fn data(&self) -> Vec<JsValue> {
+    pub fn data(&self) -> Result<Vec<JsValue>> {
         self.inner
             .data
             .iter()
-            .map(|m| serde_wasm_bindgen::to_value(m).unwrap())
+            .map(|m| serde_wasm_bindgen::to_value(m).map_err(|e| e.into()))
             .collect()
     }
 
