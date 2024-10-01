@@ -25,6 +25,7 @@ const EXCLUDE = [
   "CreateExchangeRequestBody",
   "UpdateExchangeRequestBody",
   "ReplyToRequestBody",
+  "GetOfferingsResponseBody",
   // todo the others
 ];
 

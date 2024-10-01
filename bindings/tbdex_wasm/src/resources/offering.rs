@@ -24,6 +24,12 @@ impl From<WasmOffering> for Offering {
     }
 }
 
+impl From<Offering> for WasmOffering {
+    fn from(value: Offering) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmOffering {
     #[wasm_bindgen(constructor)]

@@ -15,7 +15,6 @@ class Offerings(private val offeringsRepository: data.Offerings) {
         val offerings = offeringsRepository.getOfferings()
         val responseBody = GetOfferingsResponseBody(offerings)
 
-        res.type("application/json")
         return responseBody.toJsonString()
     }
 }

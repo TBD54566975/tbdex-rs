@@ -8,15 +8,16 @@ import OrderVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/par
 import CancelVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-cancel.json" assert { type: "json" };
 import OrderStatusVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderstatus.json" assert { type: "json" };
 import CloseVector from "../../../tbdex/hosted/test-vectors/protocol/vectors/parse-close.json" assert { type: "json" };
-import GetExchangeResponseBodyVector from "./vectors/http/get-exchange.json" assert { type: "json" };
-import GetExchangeIdsResponseBodyVector from "./vectors/http/get-exchange-ids.json" assert { type: "json" };
-import CreateExchangeRequestBodyVector from "./vectors/http/create-exchange.json" assert { type: "json" };
-import UpdateExchangeRequestBodyOrderVector from "./vectors/http/update-exchange-order.json" assert { type: "json" };
-import UpdateExchangeRequestBodyCancelVector from "./vectors/http/update-exchange-cancel.json" assert { type: "json" };
-import ReplyToRequestBodyQuoteVector from "./vectors/http/reply-to-quote.json" assert { type: "json" };
-import ReplyToRequestBodyOrderInstructionsVector from "./vectors/http/reply-to-orderinstructions.json" assert { type: "json" };
-import ReplyToRequestBodyOrderStatusVector from "./vectors/http/reply-to-orderstatus.json" assert { type: "json" };
-import ReplyToRequestBodyCloseVector from "./vectors/http/reply-to-close.json" assert { type: "json" };
+import GetExchangeResponseBodyVector from "./vectors/http/exchanges/get-exchange.json" assert { type: "json" };
+import GetExchangeIdsResponseBodyVector from "./vectors/http/exchanges/get-exchange-ids.json" assert { type: "json" };
+import CreateExchangeRequestBodyVector from "./vectors/http/exchanges/create-exchange.json" assert { type: "json" };
+import UpdateExchangeRequestBodyOrderVector from "./vectors/http/exchanges/update-exchange-order.json" assert { type: "json" };
+import UpdateExchangeRequestBodyCancelVector from "./vectors/http/exchanges/update-exchange-cancel.json" assert { type: "json" };
+import ReplyToRequestBodyQuoteVector from "./vectors/http/exchanges/reply-to-quote.json" assert { type: "json" };
+import ReplyToRequestBodyOrderInstructionsVector from "./vectors/http/exchanges/reply-to-orderinstructions.json" assert { type: "json" };
+import ReplyToRequestBodyOrderStatusVector from "./vectors/http/exchanges/reply-to-orderstatus.json" assert { type: "json" };
+import ReplyToRequestBodyCloseVector from "./vectors/http/exchanges/reply-to-close.json" assert { type: "json" };
+import GetOfferingsResponseBodyVector from "./vectors/http/get-offerings.json" assert { type: "json" };
 import { Offering } from "../src/resources/offering";
 import { PortableDid } from "../src/portable-did";
 import { BearerDid } from "../src/bearer-did";
@@ -38,6 +39,7 @@ import {
   ReplyToRequestBody,
   UpdateExchangeRequestBody,
 } from "../src/http/exchanges";
+import { GetOfferingsResponseBody } from "../src/http/offerings";
 
 describe("test vectors", () => {
   let bearerDID: BearerDid;
@@ -384,202 +386,227 @@ describe("test vectors", () => {
   });
 
   describe("http", () => {
-    describe("get exchange response body", () => {
+    describe("exchanges", () => {
+      describe("get exchange response body", () => {
+        it("should parse", async () => {
+          const getExchangeResponseBody =
+            GetExchangeResponseBody.fromJSONString(
+              GetExchangeResponseBodyVector.input
+            );
+          expect(getExchangeResponseBody.data.length).to.equal(
+            GetExchangeResponseBodyVector.output.data.length
+          );
+
+          const rfq = getExchangeResponseBody.data[0];
+          expect(rfq instanceof Rfq).to.be.true;
+          expect(rfq.metadata).to.deep.equal(
+            GetExchangeResponseBodyVector.output.data[0].metadata
+          );
+          expect(rfq.data).to.deep.equal(
+            GetExchangeResponseBodyVector.output.data[0].data
+          );
+          expect(rfq.signature).to.equal(
+            GetExchangeResponseBodyVector.output.data[0].signature
+          );
+          await (rfq as Rfq).verify();
+
+          const quote = getExchangeResponseBody.data[1];
+          expect(quote instanceof Quote).to.be.true;
+          expect(quote.metadata).to.deep.equal(
+            GetExchangeResponseBodyVector.output.data[1].metadata
+          );
+          expect(quote.data).to.deep.equal(
+            GetExchangeResponseBodyVector.output.data[1].data
+          );
+          expect(quote.signature).to.equal(
+            GetExchangeResponseBodyVector.output.data[1].signature
+          );
+          await (quote as Quote).verify();
+        });
+      });
+
+      describe("get exchange ids response body", () => {
+        it("should parse", async () => {
+          const getExchangesResponseBody =
+            GetExchangesResponseBody.fromJSONString(
+              GetExchangeIdsResponseBodyVector.input
+            );
+          expect(getExchangesResponseBody.data.length).to.equal(
+            GetExchangeIdsResponseBodyVector.output.data.length
+          );
+          expect(getExchangesResponseBody.data[0]).to.equal(
+            GetExchangeIdsResponseBodyVector.output.data[0]
+          );
+          expect(getExchangesResponseBody.data[1]).to.equal(
+            GetExchangeIdsResponseBodyVector.output.data[1]
+          );
+        });
+      });
+
+      describe("create exchange request body", () => {
+        it("should parse", async () => {
+          const createExchangeRequestBody =
+            CreateExchangeRequestBody.fromJSONString(
+              CreateExchangeRequestBodyVector.input
+            );
+          expect(createExchangeRequestBody.message.metadata).to.deep.equal(
+            CreateExchangeRequestBodyVector.output.message.metadata
+          );
+          expect(createExchangeRequestBody.message.data).to.deep.equal(
+            CreateExchangeRequestBodyVector.output.message.data
+          );
+          expect(createExchangeRequestBody.message.signature).to.deep.equal(
+            CreateExchangeRequestBodyVector.output.message.signature
+          );
+          expect(createExchangeRequestBody.replyTo).to.deep.equal(
+            CreateExchangeRequestBodyVector.output.replyTo
+          );
+
+          await createExchangeRequestBody.message.verify();
+        });
+      });
+
+      describe("update exchange request body", () => {
+        it("should parse order", async () => {
+          const updateExchangeRequestBody =
+            UpdateExchangeRequestBody.fromJSONString(
+              UpdateExchangeRequestBodyOrderVector.input
+            );
+
+          expect(updateExchangeRequestBody.message instanceof Order).to.be.true;
+          expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
+            UpdateExchangeRequestBodyOrderVector.output.message.metadata
+          );
+          expect(updateExchangeRequestBody.message.data).to.deep.equal(
+            UpdateExchangeRequestBodyOrderVector.output.message.data
+          );
+          expect(updateExchangeRequestBody.message.signature).to.deep.equal(
+            UpdateExchangeRequestBodyOrderVector.output.message.signature
+          );
+
+          await updateExchangeRequestBody.message.verify();
+        });
+
+        it("should parse cancel", async () => {
+          const updateExchangeRequestBody =
+            UpdateExchangeRequestBody.fromJSONString(
+              UpdateExchangeRequestBodyCancelVector.input
+            );
+
+          expect(updateExchangeRequestBody.message instanceof Cancel).to.be
+            .true;
+          expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
+            UpdateExchangeRequestBodyCancelVector.output.message.metadata
+          );
+          expect(updateExchangeRequestBody.message.data).to.deep.equal(
+            UpdateExchangeRequestBodyCancelVector.output.message.data
+          );
+          expect(updateExchangeRequestBody.message.signature).to.deep.equal(
+            UpdateExchangeRequestBodyCancelVector.output.message.signature
+          );
+
+          await updateExchangeRequestBody.message.verify();
+        });
+      });
+
+      describe("reply to request body", () => {
+        it("should parse quote", async () => {
+          const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+            ReplyToRequestBodyQuoteVector.input
+          );
+
+          expect(replyToRequestBody.message instanceof Quote).to.be.true;
+          expect(replyToRequestBody.message.metadata).to.deep.equal(
+            ReplyToRequestBodyQuoteVector.output.message.metadata
+          );
+          expect(replyToRequestBody.message.data).to.deep.equal(
+            ReplyToRequestBodyQuoteVector.output.message.data
+          );
+          expect(replyToRequestBody.message.signature).to.deep.equal(
+            ReplyToRequestBodyQuoteVector.output.message.signature
+          );
+
+          await replyToRequestBody.message.verify();
+        });
+
+        it("should parse order instructions", async () => {
+          const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+            ReplyToRequestBodyOrderInstructionsVector.input
+          );
+
+          expect(replyToRequestBody.message instanceof OrderInstructions).to.be
+            .true;
+          expect(replyToRequestBody.message.metadata).to.deep.equal(
+            ReplyToRequestBodyOrderInstructionsVector.output.message.metadata
+          );
+          expect(replyToRequestBody.message.data).to.deep.equal(
+            ReplyToRequestBodyOrderInstructionsVector.output.message.data
+          );
+          expect(replyToRequestBody.message.signature).to.deep.equal(
+            ReplyToRequestBodyOrderInstructionsVector.output.message.signature
+          );
+
+          await replyToRequestBody.message.verify();
+        });
+
+        it("should parse order status", async () => {
+          const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+            ReplyToRequestBodyOrderStatusVector.input
+          );
+
+          expect(replyToRequestBody.message instanceof OrderStatus).to.be.true;
+          expect(replyToRequestBody.message.metadata).to.deep.equal(
+            ReplyToRequestBodyOrderStatusVector.output.message.metadata
+          );
+          expect(replyToRequestBody.message.data).to.deep.equal(
+            ReplyToRequestBodyOrderStatusVector.output.message.data
+          );
+          expect(replyToRequestBody.message.signature).to.deep.equal(
+            ReplyToRequestBodyOrderStatusVector.output.message.signature
+          );
+
+          await replyToRequestBody.message.verify();
+        });
+
+        it("should parse close", async () => {
+          const replyToRequestBody = ReplyToRequestBody.fromJSONString(
+            ReplyToRequestBodyCloseVector.input
+          );
+
+          expect(replyToRequestBody.message instanceof Close).to.be.true;
+          expect(replyToRequestBody.message.metadata).to.deep.equal(
+            ReplyToRequestBodyCloseVector.output.message.metadata
+          );
+          expect(replyToRequestBody.message.data).to.deep.equal(
+            ReplyToRequestBodyCloseVector.output.message.data
+          );
+          expect(replyToRequestBody.message.signature).to.deep.equal(
+            ReplyToRequestBodyCloseVector.output.message.signature
+          );
+
+          await replyToRequestBody.message.verify();
+        });
+      });
+    });
+
+    describe("offerings", () => {
       it("should parse", async () => {
-        const getExchangeResponseBody = GetExchangeResponseBody.fromJSONString(
-          GetExchangeResponseBodyVector.input
-        );
-        expect(getExchangeResponseBody.data.length).to.equal(
-          GetExchangeResponseBodyVector.output.data.length
-        );
-
-        const rfq = getExchangeResponseBody.data[0];
-        expect(rfq instanceof Rfq).to.be.true;
-        expect(rfq.metadata).to.deep.equal(
-          GetExchangeResponseBodyVector.output.data[0].metadata
-        );
-        expect(rfq.data).to.deep.equal(
-          GetExchangeResponseBodyVector.output.data[0].data
-        );
-        expect(rfq.signature).to.equal(
-          GetExchangeResponseBodyVector.output.data[0].signature
-        );
-        await (rfq as Rfq).verify();
-
-        const quote = getExchangeResponseBody.data[1];
-        expect(quote instanceof Quote).to.be.true;
-        expect(quote.metadata).to.deep.equal(
-          GetExchangeResponseBodyVector.output.data[1].metadata
-        );
-        expect(quote.data).to.deep.equal(
-          GetExchangeResponseBodyVector.output.data[1].data
-        );
-        expect(quote.signature).to.equal(
-          GetExchangeResponseBodyVector.output.data[1].signature
-        );
-        await (quote as Quote).verify();
-      });
-    });
-
-    describe("get exchange ids response body", () => {
-      it("should parse", async () => {
-        const getExchangesResponseBody =
-          GetExchangesResponseBody.fromJSONString(
-            GetExchangeIdsResponseBodyVector.input
-          );
-        expect(getExchangesResponseBody.data.length).to.equal(
-          GetExchangeIdsResponseBodyVector.output.data.length
-        );
-        expect(getExchangesResponseBody.data[0]).to.equal(
-          GetExchangeIdsResponseBodyVector.output.data[0]
-        );
-        expect(getExchangesResponseBody.data[1]).to.equal(
-          GetExchangeIdsResponseBodyVector.output.data[1]
-        );
-      });
-    });
-
-    describe("create exchange request body", () => {
-      it("should parse", async () => {
-        const createExchangeRequestBody =
-          CreateExchangeRequestBody.fromJSONString(
-            CreateExchangeRequestBodyVector.input
-          );
-        expect(createExchangeRequestBody.message.metadata).to.deep.equal(
-          CreateExchangeRequestBodyVector.output.message.metadata
-        );
-        expect(createExchangeRequestBody.message.data).to.deep.equal(
-          CreateExchangeRequestBodyVector.output.message.data
-        );
-        expect(createExchangeRequestBody.message.signature).to.deep.equal(
-          CreateExchangeRequestBodyVector.output.message.signature
-        );
-        expect(createExchangeRequestBody.replyTo).to.deep.equal(
-          CreateExchangeRequestBodyVector.output.replyTo
-        );
-
-        await createExchangeRequestBody.message.verify();
-      });
-    });
-
-    describe("update exchange request body", () => {
-      it("should parse order", async () => {
-        const updateExchangeRequestBody =
-          UpdateExchangeRequestBody.fromJSONString(
-            UpdateExchangeRequestBodyOrderVector.input
+        const getOfferingsResponseBody =
+          GetOfferingsResponseBody.fromJSONString(
+            GetOfferingsResponseBodyVector.input
           );
 
-        expect(updateExchangeRequestBody.message instanceof Order).to.be.true;
-        expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
-          UpdateExchangeRequestBodyOrderVector.output.message.metadata
+        expect(getOfferingsResponseBody.data[0].metadata).to.deep.equal(
+          GetOfferingsResponseBodyVector.output.data[0].metadata
         );
-        expect(updateExchangeRequestBody.message.data).to.deep.equal(
-          UpdateExchangeRequestBodyOrderVector.output.message.data
+        expect(getOfferingsResponseBody.data[0].data).to.deep.equal(
+          GetOfferingsResponseBodyVector.output.data[0].data
         );
-        expect(updateExchangeRequestBody.message.signature).to.deep.equal(
-          UpdateExchangeRequestBodyOrderVector.output.message.signature
-        );
-
-        await updateExchangeRequestBody.message.verify();
-      });
-
-      it("should parse cancel", async () => {
-        const updateExchangeRequestBody =
-          UpdateExchangeRequestBody.fromJSONString(
-            UpdateExchangeRequestBodyCancelVector.input
-          );
-
-        expect(updateExchangeRequestBody.message instanceof Cancel).to.be.true;
-        expect(updateExchangeRequestBody.message.metadata).to.deep.equal(
-          UpdateExchangeRequestBodyCancelVector.output.message.metadata
-        );
-        expect(updateExchangeRequestBody.message.data).to.deep.equal(
-          UpdateExchangeRequestBodyCancelVector.output.message.data
-        );
-        expect(updateExchangeRequestBody.message.signature).to.deep.equal(
-          UpdateExchangeRequestBodyCancelVector.output.message.signature
+        expect(getOfferingsResponseBody.data[0].signature).to.deep.equal(
+          GetOfferingsResponseBodyVector.output.data[0].signature
         );
 
-        await updateExchangeRequestBody.message.verify();
-      });
-    });
-
-    describe("reply to request body", () => {
-      it("should parse quote", async () => {
-        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
-          ReplyToRequestBodyQuoteVector.input
-        );
-
-        expect(replyToRequestBody.message instanceof Quote).to.be.true;
-        expect(replyToRequestBody.message.metadata).to.deep.equal(
-          ReplyToRequestBodyQuoteVector.output.message.metadata
-        );
-        expect(replyToRequestBody.message.data).to.deep.equal(
-          ReplyToRequestBodyQuoteVector.output.message.data
-        );
-        expect(replyToRequestBody.message.signature).to.deep.equal(
-          ReplyToRequestBodyQuoteVector.output.message.signature
-        );
-
-        await replyToRequestBody.message.verify();
-      });
-
-      it("should parse order instructions", async () => {
-        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
-          ReplyToRequestBodyOrderInstructionsVector.input
-        );
-
-        expect(replyToRequestBody.message instanceof OrderInstructions).to.be
-          .true;
-        expect(replyToRequestBody.message.metadata).to.deep.equal(
-          ReplyToRequestBodyOrderInstructionsVector.output.message.metadata
-        );
-        expect(replyToRequestBody.message.data).to.deep.equal(
-          ReplyToRequestBodyOrderInstructionsVector.output.message.data
-        );
-        expect(replyToRequestBody.message.signature).to.deep.equal(
-          ReplyToRequestBodyOrderInstructionsVector.output.message.signature
-        );
-
-        await replyToRequestBody.message.verify();
-      });
-
-      it("should parse order status", async () => {
-        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
-          ReplyToRequestBodyOrderStatusVector.input
-        );
-
-        expect(replyToRequestBody.message instanceof OrderStatus).to.be.true;
-        expect(replyToRequestBody.message.metadata).to.deep.equal(
-          ReplyToRequestBodyOrderStatusVector.output.message.metadata
-        );
-        expect(replyToRequestBody.message.data).to.deep.equal(
-          ReplyToRequestBodyOrderStatusVector.output.message.data
-        );
-        expect(replyToRequestBody.message.signature).to.deep.equal(
-          ReplyToRequestBodyOrderStatusVector.output.message.signature
-        );
-
-        await replyToRequestBody.message.verify();
-      });
-
-      it("should parse close", async () => {
-        const replyToRequestBody = ReplyToRequestBody.fromJSONString(
-          ReplyToRequestBodyCloseVector.input
-        );
-
-        expect(replyToRequestBody.message instanceof Close).to.be.true;
-        expect(replyToRequestBody.message.metadata).to.deep.equal(
-          ReplyToRequestBodyCloseVector.output.message.metadata
-        );
-        expect(replyToRequestBody.message.data).to.deep.equal(
-          ReplyToRequestBodyCloseVector.output.message.data
-        );
-        expect(replyToRequestBody.message.signature).to.deep.equal(
-          ReplyToRequestBodyCloseVector.output.message.signature
-        );
-
-        await replyToRequestBody.message.verify();
+        await getOfferingsResponseBody.data[0].verify();
       });
     });
   });

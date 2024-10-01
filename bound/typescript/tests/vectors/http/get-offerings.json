@@ -1,0 +1,75 @@
+{
+  "input": "{\"data\":[{\"metadata\":{\"kind\":\"offering\",\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"id\":\"offering_01j94rv1tvep0rnk160nqhthx3\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T19:27:44.987362+00:00\",\"updatedAt\":\"2024-10-01T19:27:44.987362+00:00\"},\"data\":{\"description\":\"fake offering 1\",\"payoutUnitsPerPayinUnit\":\"0.0069\",\"payin\":{\"currencyCode\":\"USD\",\"methods\":[{\"kind\":\"USD_LEDGER\"}]},\"payout\":{\"currencyCode\":\"KES\",\"methods\":[{\"kind\":\"MOMO_MPESA\",\"requiredPaymentDetails\":{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"Mobile Money Required Payment Details\",\"type\":\"object\",\"required\":[\"phoneNumber\",\"reason\"],\"additionalProperties\":false,\"properties\":{\"phoneNumber\":{\"title\":\"Mobile money phone number\",\"description\":\"Phone number of the Mobile Money account\",\"type\":\"string\"},\"reason\":{\"title\":\"Reason for sending\",\"description\":\"To abide by the travel rules and financial reporting requirements, the reason for sending money\",\"type\":\"string\"}}},\"estimatedSettlementTime\":10}]},\"requiredClaims\":{\"id\":\"7ce4004c-3c38-4853-968b-e411bafcd945\",\"input_descriptors\":[{\"id\":\"bbdb9b7c-5754-4f46-b63b-590bada959e0\",\"constraints\":{\"fields\":[{\"path\":[\"$.issuer\"],\"filter\":{\"type\":\"string\",\"const\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\"},\"optional\":false}]}}]},\"cancellation\":{\"enabled\":false}},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..h4NrbuKP2KmR_eaMdO5iVjbBRRpzOJR075d9vHv17m4DyMCBZyaOwc6fd65cfy-BAH_7MQX38je9t1BTwFzbDg\"}]}",
+  "output": {
+    "data": [
+      {
+        "metadata": {
+          "kind": "offering",
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "id": "offering_01j94rv1tvep0rnk160nqhthx3",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T19:27:44.987362+00:00",
+          "updatedAt": "2024-10-01T19:27:44.987362+00:00"
+        },
+        "data": {
+          "description": "fake offering 1",
+          "payoutUnitsPerPayinUnit": "0.0069",
+          "payin": {
+            "currencyCode": "USD",
+            "methods": [{ "kind": "USD_LEDGER" }]
+          },
+          "payout": {
+            "currencyCode": "KES",
+            "methods": [
+              {
+                "kind": "MOMO_MPESA",
+                "requiredPaymentDetails": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "title": "Mobile Money Required Payment Details",
+                  "type": "object",
+                  "required": ["phoneNumber", "reason"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "phoneNumber": {
+                      "title": "Mobile money phone number",
+                      "description": "Phone number of the Mobile Money account",
+                      "type": "string"
+                    },
+                    "reason": {
+                      "title": "Reason for sending",
+                      "description": "To abide by the travel rules and financial reporting requirements, the reason for sending money",
+                      "type": "string"
+                    }
+                  }
+                },
+                "estimatedSettlementTime": 10
+              }
+            ]
+          },
+          "requiredClaims": {
+            "id": "7ce4004c-3c38-4853-968b-e411bafcd945",
+            "input_descriptors": [
+              {
+                "id": "bbdb9b7c-5754-4f46-b63b-590bada959e0",
+                "constraints": {
+                  "fields": [
+                    {
+                      "path": ["$.issuer"],
+                      "filter": {
+                        "type": "string",
+                        "const": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y"
+                      },
+                      "optional": false
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "cancellation": { "enabled": false }
+        },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..h4NrbuKP2KmR_eaMdO5iVjbBRRpzOJR075d9vHv17m4DyMCBZyaOwc6fd65cfy-BAH_7MQX38je9t1BTwFzbDg"
+      }
+    ]
+  }
+}
