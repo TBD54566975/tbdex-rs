@@ -12,7 +12,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[wasm_bindgen]
 pub async fn create_exchange(rfq_json: &str, reply_to: Option<String>) -> Result<()> {
     let rfq = Rfq::from_json_string(rfq_json).map_err(map_err)?;
-    tbdex::http_client::exchanges::create_exchange(&rfq.into(), reply_to)
+    tbdex::http_client::exchanges::create_exchange(&rfq, reply_to)
         .await
         .map_err(map_err)
 }
