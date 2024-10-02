@@ -690,44 +690,6 @@ export namespace QuoteDetails {
   };
 }
 
-export type ResourceMetadata = {
-  createdAt: string;
-  from: string;
-  id: string;
-  kind: string;
-  protocol: string;
-  updatedAt?: string;
-};
-
-export namespace ResourceMetadata {
-  export const toWASM = (obj: ResourceMetadata): wasm.WasmResourceMetadata => {
-    return new wasm.WasmResourceMetadata(
-      obj.kind,
-      obj.from,
-      obj.id,
-      obj.protocol,
-      obj.createdAt,
-      obj.updatedAt,
-    );
-  };
-
-  export const fromWASM = (
-    obj: wasm.WasmResourceMetadata,
-  ): ResourceMetadata => {
-    const result: ResourceMetadata = {
-      createdAt: obj.created_at,
-      from: obj.from,
-      id: obj.id,
-      kind: obj.kind,
-      protocol: obj.protocol,
-    };
-
-    if (obj.updated_at !== undefined) result.updatedAt = obj.updated_at;
-
-    return result;
-  };
-}
-
 export type Response = {
   body: Uint8Array;
   headers?: any;

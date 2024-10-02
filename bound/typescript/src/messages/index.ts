@@ -14,3 +14,23 @@ export type Message =
   | Cancel
   | OrderStatus
   | Close;
+
+export type MessageMetadata = {
+  createdAt: string;
+  exchangeId: string;
+  externalId?: string;
+  from: string;
+  id: string;
+  kind: MessageKind;
+  protocol: string;
+  to: string;
+};
+
+export type MessageKind =
+  | "rfq"
+  | "quote"
+  | "order"
+  | "orderinstructions"
+  | "orderstatus"
+  | "close"
+  | "cancel";
