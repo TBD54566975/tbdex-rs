@@ -77,8 +77,8 @@ impl WasmDid {
     #[wasm_bindgen(getter)]
     pub fn params(&self) -> JsValue {
         match &self.inner.params {
-            Some(map) => serde_wasm_bindgen::to_value(map).unwrap_or(JsValue::undefined()),
-            None => JsValue::undefined(),
+            Some(map) => serde_wasm_bindgen::to_value(map).unwrap_or(JsValue::UNDEFINED),
+            None => JsValue::UNDEFINED,
         }
     }
 

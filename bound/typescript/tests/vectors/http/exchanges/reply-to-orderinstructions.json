@@ -1,0 +1,27 @@
+{
+  "input": "{\"message\":{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"orderinstructions\",\"id\":\"orderinstructions_01j94kj8dkek38sg9yejp4ajeq\",\"exchangeId\":\"rfq_01j94khzj7eeqsrhjt3anr0qe6\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T17:55:33.939337+00:00\"},\"data\":{\"payin\":{\"link\":\"http://tbd.website/payin\",\"instruction\":\"payin instruction\"},\"payout\":{\"link\":\"http://tbd.website/payout\",\"instruction\":\"payout instruction\"}},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..pzolEW0eSOUpjPZZWfZxOmCqTHhgXNp8rFsMo5ZhK01vgTduO-_SPuAOyCmI0NIfPsQm628jiWtOncDDWkUeDw\"}}",
+  "output": {
+    "message": {
+      "metadata": {
+        "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+        "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+        "kind": "orderinstructions",
+        "id": "orderinstructions_01j94kj8dkek38sg9yejp4ajeq",
+        "exchangeId": "rfq_01j94khzj7eeqsrhjt3anr0qe6",
+        "protocol": "2.0",
+        "createdAt": "2024-10-01T17:55:33.939337+00:00"
+      },
+      "data": {
+        "payin": {
+          "link": "http://tbd.website/payin",
+          "instruction": "payin instruction"
+        },
+        "payout": {
+          "link": "http://tbd.website/payout",
+          "instruction": "payout instruction"
+        }
+      },
+      "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..pzolEW0eSOUpjPZZWfZxOmCqTHhgXNp8rFsMo5ZhK01vgTduO-_SPuAOyCmI0NIfPsQm628jiWtOncDDWkUeDw"
+    }
+  }
+}

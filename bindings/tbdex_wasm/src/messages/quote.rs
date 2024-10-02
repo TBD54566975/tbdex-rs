@@ -14,6 +14,18 @@ pub struct WasmQuote {
     inner: Quote,
 }
 
+impl From<WasmQuote> for Quote {
+    fn from(value: WasmQuote) -> Self {
+        value.inner
+    }
+}
+
+impl From<Quote> for WasmQuote {
+    fn from(value: Quote) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmQuote {
     #[wasm_bindgen(constructor)]

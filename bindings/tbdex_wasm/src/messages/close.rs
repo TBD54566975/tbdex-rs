@@ -14,6 +14,18 @@ pub struct WasmClose {
     inner: Close,
 }
 
+impl From<WasmClose> for Close {
+    fn from(value: WasmClose) -> Self {
+        value.inner
+    }
+}
+
+impl From<Close> for WasmClose {
+    fn from(value: Close) -> Self {
+        Self { inner: value }
+    }
+}
+
 #[wasm_bindgen]
 impl WasmClose {
     #[wasm_bindgen(constructor)]

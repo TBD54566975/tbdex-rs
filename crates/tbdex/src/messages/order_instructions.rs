@@ -159,8 +159,10 @@ mod tbdex_test_vectors_protocol {
         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-orderinstructions.json";
         let test_vector_json: String = fs::read_to_string(path).unwrap();
 
-        let test_vector: OrderInstructionsTestVector = serde_json::from_str(&test_vector_json).unwrap();
-        let parsed_order_instructions: OrderInstructions = OrderInstructions::from_json_string(&test_vector.input).unwrap();
+        let test_vector: OrderInstructionsTestVector =
+            serde_json::from_str(&test_vector_json).unwrap();
+        let parsed_order_instructions: OrderInstructions =
+            OrderInstructions::from_json_string(&test_vector.input).unwrap();
 
         assert_eq!(test_vector.output, parsed_order_instructions);
     }

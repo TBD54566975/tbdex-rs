@@ -1,0 +1,150 @@
+{
+  "input": "{\"data\":[{\"metadata\":{\"from\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"to\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"kind\":\"rfq\",\"id\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:15.034418+00:00\"},\"data\":{\"offeringId\":\"offering_01j947zn0vfbjtxt7rg8eve1xp\",\"payin\":{\"kind\":\"USD_LEDGER\",\"amount\":\"101\"},\"payout\":{\"kind\":\"MOMO_MPESA\",\"paymentDetailsHash\":\"G-bNgYjJnpIehAm8iUJtJClSWar6fc0IwZJwlEu90-U\"},\"claimsHash\":\"eoTxhavOKkp2h4OWE79ARw-zzkJkjwfojQTF1Z6lFDo\"},\"privateData\":{\"salt\":\"TgXBa79oNdiSSp2_OhPdCA\",\"payout\":{\"paymentDetails\":{\"phoneNumber\":\"867-5309\",\"reason\":\"cause\"}},\"claims\":[\"eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJpZCI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJTYW5jdGlvbkNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiZGlkOmRodDp5c3lva3duNm14bnppaGduaGtrZXNqaWc4Y2RiM3I5NGVxOGFicDNhN2U5MzV5NHMzYzR5IiwiaXNzdWFuY2VEYXRlIjoiMjAyNC0wNy0wMlQwNDoyNDoxNC4yNzYzMjUrMDA6MDAiLCJleHBpcmF0aW9uRGF0ZSI6bnVsbCwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZGh0OjFmczVobnhzZ3R4Z2RyNHd6cWkzOGNuajQ2YjF3aGhuOTRvandvNjZnOGhzYzVidDNmZ3kifX0sImlzcyI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSIsImp0aSI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInN1YiI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsIm5iZiI6MTcxOTg5NDI1NCwiaWF0IjoxNzE5ODk0MjU0fQ.c4ws9jR28jElo_uaW9l5OTL-IPMx4JxWl4De7l_BTk0qNhcFlRtR-U0b9087CUOdpNu25XGZzn-R_EVImRGgCw\"]},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSMwIn0..2yCgXYZ9HgR98pNalI4HH-kHntUwlLrvQF7lXQb_7PbDXiZ3lK1ygTNCgzQ55DYP_1INcfcwkZpIdoI0W7fpCQ\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"quote\",\"id\":\"quote_01j947zxmee77vx74nqhb55f4h\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:18.734200+00:00\"},\"data\":{\"expiresAt\":\"2024-08-02T04:26:08.239Z\",\"payoutUnitsPerPayinUnit\":\"1.0\",\"payin\":{\"currencyCode\":\"BTC\",\"subtotal\":\"1000.00\",\"total\":\"1001.00\"},\"payout\":{\"currencyCode\":\"KES\",\"subtotal\":\"1000.00\",\"total\":\"1001.00\"}},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..p4a27OjGd4_aFIfDD0xbtV57Y1sC_iiz_oYWyFHae23AWh6WcnnxSQ8F2Q_U1qShklnTikfXM8yQaV0qnOo7BQ\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"orderinstructions\",\"id\":\"orderinstructions_01j94801mxfzsrshmg6df9ckj1\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:22.845586+00:00\"},\"data\":{\"payin\":{\"link\":\"http://tbd.website/payin\",\"instruction\":\"payin instruction\"},\"payout\":{\"link\":\"http://tbd.website/payout\",\"instruction\":\"payout instruction\"}},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..x6kwAHJ198rmDeWWZk2GA2t3VpHvwOLMM2dNoNdQINo45nXQfy6Ie4JwAvKrCOd3qmxlmBqOKk_60N-HjvXDAA\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"close\",\"id\":\"close_01j94806qjf379ex1z63vy7vxx\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:28.050151+00:00\"},\"data\":{\"success\":true},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..1WHRcn6UQ3UogP8Bpwbz8VM2OWRgOzBw8hwFbct9WqwRc0xNPDOxMBVn8t9Y2B_-WKlGvyHRLw7IekHNT8TSAQ\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"orderstatus\",\"id\":\"orderstatus_01j94802mqf3bv6jvc89fn99z8\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:23.863742+00:00\"},\"data\":{\"status\":\"PAYIN_INITIATED\"},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..fCAEf7uXOT4YNeYArRPPWs8ZwNE3xxNujHzlS4BEDoESTSL0EwBIKQpkzhlNq-CIsit7bed9Xd8K58ce5F7nDw\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"orderstatus\",\"id\":\"orderstatus_01j94803kqfn4scq2r1jw2kb9p\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:24.855803+00:00\"},\"data\":{\"status\":\"PAYIN_SETTLED\"},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..hdm18pGtuR4n0jGLfmbHtQ7PpFqEp4gzyOKzH6XPL0k653lzhvTvQFDllJeu16XmyyOSxY_ekHqFjU2VCKNSDA\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"orderstatus\",\"id\":\"orderstatus_01j94804keevvs07dxwrn3ee6n\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:25.870041+00:00\"},\"data\":{\"status\":\"PAYOUT_INITIATED\"},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..iq0r-FeD0YMPnNsK6H80iRTpfHV5x_gAUCrRa9Alqfwsu7N38JZqdZy9LFOPyh8zipQHUuZmOeYHfSbE6vG5DA\"},{\"metadata\":{\"from\":\"did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y\",\"to\":\"did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy\",\"kind\":\"orderstatus\",\"id\":\"orderstatus_01j94805qaevqr73khatetd75f\",\"exchangeId\":\"rfq_01j947zt0tfb48aw2k9yjwp9ek\",\"protocol\":\"2.0\",\"createdAt\":\"2024-10-01T14:33:27.018097+00:00\"},\"data\":{\"status\":\"PAYOUT_SETTLED\"},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..TXuIb6SFnofLZjt1RvRC5qF4lmFPw_xUUPhIwf2E7EvU2Lvnl3UZK1kVVjogOjNCPUmHX5Yf_dPEBdBaqM4nCw\"}]}",
+  "output": {
+    "data": [
+      {
+        "metadata": {
+          "from": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "to": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "kind": "rfq",
+          "id": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:15.034418+00:00"
+        },
+        "data": {
+          "offeringId": "offering_01j947zn0vfbjtxt7rg8eve1xp",
+          "payin": { "kind": "USD_LEDGER", "amount": "101" },
+          "payout": {
+            "kind": "MOMO_MPESA",
+            "paymentDetailsHash": "G-bNgYjJnpIehAm8iUJtJClSWar6fc0IwZJwlEu90-U"
+          },
+          "claimsHash": "eoTxhavOKkp2h4OWE79ARw-zzkJkjwfojQTF1Z6lFDo"
+        },
+        "privateData": {
+          "salt": "TgXBa79oNdiSSp2_OhPdCA",
+          "payout": {
+            "paymentDetails": { "phoneNumber": "867-5309", "reason": "cause" }
+          },
+          "claims": [
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJpZCI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJTYW5jdGlvbkNyZWRlbnRpYWwiXSwiaXNzdWVyIjoiZGlkOmRodDp5c3lva3duNm14bnppaGduaGtrZXNqaWc4Y2RiM3I5NGVxOGFicDNhN2U5MzV5NHMzYzR5IiwiaXNzdWFuY2VEYXRlIjoiMjAyNC0wNy0wMlQwNDoyNDoxNC4yNzYzMjUrMDA6MDAiLCJleHBpcmF0aW9uRGF0ZSI6bnVsbCwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZGh0OjFmczVobnhzZ3R4Z2RyNHd6cWkzOGNuajQ2YjF3aGhuOTRvandvNjZnOGhzYzVidDNmZ3kifX0sImlzcyI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSIsImp0aSI6InVybjp2Yzp1dWlkOjRiOTUwOWE4LTQwMjgtNDRkOC05OGE0LWRiODg1MjhmNjY4YyIsInN1YiI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSIsIm5iZiI6MTcxOTg5NDI1NCwiaWF0IjoxNzE5ODk0MjU0fQ.c4ws9jR28jElo_uaW9l5OTL-IPMx4JxWl4De7l_BTk0qNhcFlRtR-U0b9087CUOdpNu25XGZzn-R_EVImRGgCw"
+          ]
+        },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6MWZzNWhueHNndHhnZHI0d3pxaTM4Y25qNDZiMXdoaG45NG9qd282Nmc4aHNjNWJ0M2ZneSMwIn0..2yCgXYZ9HgR98pNalI4HH-kHntUwlLrvQF7lXQb_7PbDXiZ3lK1ygTNCgzQ55DYP_1INcfcwkZpIdoI0W7fpCQ"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "quote",
+          "id": "quote_01j947zxmee77vx74nqhb55f4h",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:18.734200+00:00"
+        },
+        "data": {
+          "expiresAt": "2024-08-02T04:26:08.239Z",
+          "payoutUnitsPerPayinUnit": "1.0",
+          "payin": {
+            "currencyCode": "BTC",
+            "subtotal": "1000.00",
+            "total": "1001.00"
+          },
+          "payout": {
+            "currencyCode": "KES",
+            "subtotal": "1000.00",
+            "total": "1001.00"
+          }
+        },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..p4a27OjGd4_aFIfDD0xbtV57Y1sC_iiz_oYWyFHae23AWh6WcnnxSQ8F2Q_U1qShklnTikfXM8yQaV0qnOo7BQ"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "orderinstructions",
+          "id": "orderinstructions_01j94801mxfzsrshmg6df9ckj1",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:22.845586+00:00"
+        },
+        "data": {
+          "payin": {
+            "link": "http://tbd.website/payin",
+            "instruction": "payin instruction"
+          },
+          "payout": {
+            "link": "http://tbd.website/payout",
+            "instruction": "payout instruction"
+          }
+        },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..x6kwAHJ198rmDeWWZk2GA2t3VpHvwOLMM2dNoNdQINo45nXQfy6Ie4JwAvKrCOd3qmxlmBqOKk_60N-HjvXDAA"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "close",
+          "id": "close_01j94806qjf379ex1z63vy7vxx",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:28.050151+00:00"
+        },
+        "data": { "success": true },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..1WHRcn6UQ3UogP8Bpwbz8VM2OWRgOzBw8hwFbct9WqwRc0xNPDOxMBVn8t9Y2B_-WKlGvyHRLw7IekHNT8TSAQ"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "orderstatus",
+          "id": "orderstatus_01j94802mqf3bv6jvc89fn99z8",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:23.863742+00:00"
+        },
+        "data": { "status": "PAYIN_INITIATED" },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..fCAEf7uXOT4YNeYArRPPWs8ZwNE3xxNujHzlS4BEDoESTSL0EwBIKQpkzhlNq-CIsit7bed9Xd8K58ce5F7nDw"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "orderstatus",
+          "id": "orderstatus_01j94803kqfn4scq2r1jw2kb9p",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:24.855803+00:00"
+        },
+        "data": { "status": "PAYIN_SETTLED" },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..hdm18pGtuR4n0jGLfmbHtQ7PpFqEp4gzyOKzH6XPL0k653lzhvTvQFDllJeu16XmyyOSxY_ekHqFjU2VCKNSDA"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "orderstatus",
+          "id": "orderstatus_01j94804keevvs07dxwrn3ee6n",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:25.870041+00:00"
+        },
+        "data": { "status": "PAYOUT_INITIATED" },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..iq0r-FeD0YMPnNsK6H80iRTpfHV5x_gAUCrRa9Alqfwsu7N38JZqdZy9LFOPyh8zipQHUuZmOeYHfSbE6vG5DA"
+      },
+      {
+        "metadata": {
+          "from": "did:dht:ysyokwn6mxnzihgnhkkesjig8cdb3r94eq8abp3a7e935y4s3c4y",
+          "to": "did:dht:1fs5hnxsgtxgdr4wzqi38cnj46b1whhn94ojwo66g8hsc5bt3fgy",
+          "kind": "orderstatus",
+          "id": "orderstatus_01j94805qaevqr73khatetd75f",
+          "exchangeId": "rfq_01j947zt0tfb48aw2k9yjwp9ek",
+          "protocol": "2.0",
+          "createdAt": "2024-10-01T14:33:27.018097+00:00"
+        },
+        "data": { "status": "PAYOUT_SETTLED" },
+        "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6eXN5b2t3bjZteG56aWhnbmhra2VzamlnOGNkYjNyOTRlcThhYnAzYTdlOTM1eTRzM2M0eSMwIn0..TXuIb6SFnofLZjt1RvRC5qF4lmFPw_xUUPhIwf2E7EvU2Lvnl3UZK1kVVjogOjNCPUmHX5Yf_dPEBdBaqM4nCw"
+      }
+    ]
+  }
+}

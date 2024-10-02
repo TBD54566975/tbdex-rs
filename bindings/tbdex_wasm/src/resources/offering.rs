@@ -1,6 +1,7 @@
 use super::WasmResourceMetadata;
 use crate::{
     errors::{map_err, Result},
+    js::convert_to_object,
     web5::{bearer_did::WasmBearerDid, presentation_definition::WasmPresentationDefinition},
 };
 use tbdex::{
@@ -20,6 +21,12 @@ pub struct WasmOffering {
 impl From<WasmOffering> for Offering {
     fn from(value: WasmOffering) -> Self {
         value.inner
+    }
+}
+
+impl From<Offering> for WasmOffering {
+    fn from(value: Offering) -> Self {
+        Self { inner: value }
     }
 }
 
@@ -289,11 +296,11 @@ impl WasmPayinMethod {
     #[wasm_bindgen(getter)]
     pub fn required_payment_details(&self) -> Result<JsValue> {
         match &self.inner.required_payment_details {
-            None => Ok(JsValue::undefined()),
-            Some(required_payment_details) => {
-                serde_wasm_bindgen::to_value(required_payment_details)
-                    .map_err(|err| JsValue::from(err.to_string()))
+            Some(pd) => {
+                let value = serde_wasm_bindgen::to_value(pd)?;
+                Ok(convert_to_object(value)?)
             }
+            None => Ok(JsValue::UNDEFINED),
         }
     }
 
@@ -453,11 +460,11 @@ impl WasmPayoutMethod {
     #[wasm_bindgen(getter)]
     pub fn required_payment_details(&self) -> Result<JsValue> {
         match &self.inner.required_payment_details {
-            None => Ok(JsValue::undefined()),
-            Some(required_payment_details) => {
-                serde_wasm_bindgen::to_value(required_payment_details)
-                    .map_err(|err| JsValue::from(err.to_string()))
+            Some(pd) => {
+                let value = serde_wasm_bindgen::to_value(pd)?;
+                Ok(convert_to_object(value)?)
             }
+            None => Ok(JsValue::UNDEFINED),
         }
     }
 

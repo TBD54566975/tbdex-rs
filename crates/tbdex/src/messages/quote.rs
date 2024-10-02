@@ -166,7 +166,6 @@ mod tbdex_test_vectors_protocol {
         pub output: Quote,
     }
 
-
     #[test]
     fn parse_quote() {
         let path = "../../tbdex/hosted/test-vectors/protocol/vectors/parse-quote.json";

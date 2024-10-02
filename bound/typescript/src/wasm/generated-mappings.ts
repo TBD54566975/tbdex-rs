@@ -1,15 +1,5 @@
 import wasm from "./";
 
-const mapToObject = (map: Map<any, any>): any => {
-  if (!map) return undefined;
-
-  const obj: any = {};
-  for (const [key, value] of map) {
-    obj[key] = value instanceof Map ? mapToObject(value) : value;
-  }
-  return obj;
-};
-
 export type BalanceData = {
   available: string;
   currencyCode: string;
@@ -172,7 +162,7 @@ export namespace CreateSelectedPayinMethod {
     };
 
     if (obj.payment_details !== undefined)
-      result.paymentDetails = mapToObject(obj.payment_details);
+      result.paymentDetails = obj.payment_details;
 
     return result;
   };
@@ -201,7 +191,7 @@ export namespace CreateSelectedPayoutMethod {
     };
 
     if (obj.payment_details !== undefined)
-      result.paymentDetails = mapToObject(obj.payment_details);
+      result.paymentDetails = obj.payment_details;
 
     return result;
   };
@@ -241,7 +231,7 @@ export namespace Did {
     };
 
     if (obj.fragment !== undefined) result.fragment = obj.fragment;
-    if (obj.params !== undefined) result.params = mapToObject(obj.params);
+    if (obj.params !== undefined) result.params = obj.params;
     if (obj.path !== undefined) result.path = obj.path;
     if (obj.query !== undefined) result.query = obj.query;
 
@@ -323,7 +313,7 @@ export namespace FetchOptions {
     const result: FetchOptions = {};
 
     if (obj.body !== undefined) result.body = obj.body;
-    if (obj.headers !== undefined) result.headers = mapToObject(obj.headers);
+    if (obj.headers !== undefined) result.headers = obj.headers;
     if (obj.method !== undefined) result.method = obj.method;
 
     return result;
@@ -425,6 +415,30 @@ export namespace InputDescriptor {
 
     if (obj.name !== undefined) result.name = obj.name;
     if (obj.purpose !== undefined) result.purpose = obj.purpose;
+
+    return result;
+  };
+}
+
+export type JsonSerializedMessage = {
+  json: string;
+  kind: string;
+};
+
+export namespace JsonSerializedMessage {
+  export const toWASM = (
+    obj: JsonSerializedMessage,
+  ): wasm.WasmJsonSerializedMessage => {
+    return new wasm.WasmJsonSerializedMessage();
+  };
+
+  export const fromWASM = (
+    obj: wasm.WasmJsonSerializedMessage,
+  ): JsonSerializedMessage => {
+    const result: JsonSerializedMessage = {
+      json: obj.json,
+      kind: obj.kind,
+    };
 
     return result;
   };
@@ -689,7 +703,7 @@ export namespace PayinMethod {
     if (obj.min !== undefined) result.min = obj.min;
     if (obj.name !== undefined) result.name = obj.name;
     if (obj.required_payment_details !== undefined)
-      result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
+      result.requiredPaymentDetails = obj.required_payment_details;
 
     return result;
   };
@@ -789,7 +803,7 @@ export namespace PayoutMethod {
     if (obj.min !== undefined) result.min = obj.min;
     if (obj.name !== undefined) result.name = obj.name;
     if (obj.required_payment_details !== undefined)
-      result.requiredPaymentDetails = mapToObject(obj.required_payment_details);
+      result.requiredPaymentDetails = obj.required_payment_details;
 
     return result;
   };
@@ -852,7 +866,7 @@ export namespace PrivatePaymentDetails {
     const result: PrivatePaymentDetails = {};
 
     if (obj.payment_details !== undefined)
-      result.paymentDetails = mapToObject(obj.payment_details);
+      result.paymentDetails = obj.payment_details;
 
     return result;
   };
@@ -972,7 +986,7 @@ export namespace Response {
       statusCode: obj.status_code,
     };
 
-    if (obj.headers !== undefined) result.headers = mapToObject(obj.headers);
+    if (obj.headers !== undefined) result.headers = obj.headers;
 
     return result;
   };

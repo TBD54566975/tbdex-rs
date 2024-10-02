@@ -134,8 +134,8 @@ impl WasmFetchOptions {
     #[wasm_bindgen(getter)]
     pub fn headers(&self) -> JsValue {
         match &self.inner.headers {
-            Some(map) => serde_wasm_bindgen::to_value(map).unwrap_or(JsValue::undefined()),
-            None => JsValue::undefined(),
+            Some(map) => serde_wasm_bindgen::to_value(map).unwrap_or(JsValue::UNDEFINED),
+            None => JsValue::UNDEFINED,
         }
     }
 
@@ -177,7 +177,7 @@ impl WasmResponse {
 
     #[wasm_bindgen(getter)]
     pub fn headers(&self) -> JsValue {
-        serde_wasm_bindgen::to_value(&self.inner.headers).unwrap_or(JsValue::undefined())
+        serde_wasm_bindgen::to_value(&self.inner.headers).unwrap_or(JsValue::UNDEFINED)
     }
 
     // TODO body should be optional in web5-rs

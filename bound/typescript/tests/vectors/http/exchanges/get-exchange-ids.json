@@ -1,0 +1,6 @@
+{
+  "input": "{\"data\":[\"rfq_01j94k16gcf7fbq1kqn13wchrp\",\"rfq_01j94k1n3keh4vfc00fkrg2548\"]}",
+  "output": {
+    "data": ["rfq_01j94k16gcf7fbq1kqn13wchrp", "rfq_01j94k1n3keh4vfc00fkrg2548"]
+  }
+}
