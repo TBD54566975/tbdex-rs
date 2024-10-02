@@ -19,6 +19,23 @@ export class Offering {
     this.signature = signature;
   }
 
+  static fromJSONString = (json: string): Offering => {
+    try {
+      const object = JSON.parse(json);
+      return new Offering(object.metadata, object.data, object.signature);
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
+
+  toJSONString = (): string => {
+    try {
+      return JSON.stringify(this);
+    } catch (error) {
+      throw tbdexError(error);
+    }
+  };
+
   static create = (
     from: string,
     data: OfferingData,
