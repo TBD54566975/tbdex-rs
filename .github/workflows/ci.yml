@@ -269,6 +269,7 @@ jobs:
           path: bound/kt/src/main/resources/
 
       - name: Deploy Snapshot / Verify
+        id: kotlin_test_snapshot
         run: |
 
           # cd into the Kotlin project
@@ -294,6 +295,22 @@ jobs:
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
           SIGN_KEY_PASS: ${{ secrets.GPG_SECRET_PASSPHRASE }}
           SIGN_KEY: ${{ secrets.GPG_SECRET_KEY }}
+
+      - name: Execute Kotlin Spec Test Vector Report
+        id: spec_report_tbdex_core_kt
+        if: always() && steps.kotlin_test_snapshot.conclusion != 'skipped'
+        uses: TBD54566975/sdk-report-runner/.github/actions/specs-report@main
+        with:
+          junit-report-paths: bound/kt/target/surefire-reports/*.xml
+          spec-path: tbdex
+          suite-name-regex: TbdexTestVector
+          feature-regex: tbdex\.sdk\.\w+\.TbdexTestVectors(\w+)Test
+          vector-regex: (\w+)
+          fail-on-missing-vectors: false
+          fail-on-failed-test-cases: true
+          comment-on-pr: true
+          package-name: tbdex-core-kt
+          git-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Kotlin Test Results
         uses: actions/upload-artifact@v4.0.0
@@ -367,14 +384,34 @@ jobs:
           echo 'store-success-output = true' >> nextest.toml
           echo 'store-failure-output = true' >> nextest.toml
       - name: Run Rust Tests
+        id: rust_test
         run: |
           mkdir -p test-results
           cargo nextest run --profile ci --config-file ./nextest.toml
       - name: Modify testsuite name in XML for test runner consumption
+        if: always() && steps.rust_test.conclusion != 'skipped'
         run: |
           sed -i '' 's/<testsuite name="tbdex"/<testsuite name="TbdexTestVectorsProtocolTest"/' target/nextest/ci/junit.xml
       - name: Move Test Results
+        if: always() && steps.rust_test.conclusion != 'skipped'
         run: mv target/nextest/ci/junit.xml test-results/rust-test-results.xml
+      - name: Execute Rust Spec Test Vector Report
+        id: spec_report_tbdex_rs
+        if: always() && steps.rust_test.conclusion != 'skipped'
+        uses: TBD54566975/sdk-report-runner/.github/actions/specs-report@main
+        with:
+          junit-report-paths: test-results/rust-test-results.xml
+          spec-path: tbdex
+          suite-name-regex: TbdexTestVector
+          feature-regex:
+          vector-regex: (.+)::tbdex_test_vectors_(.+)::(.+)
+          extract-feature-on-test-case-name: true
+          prettify-feature: true
+          fail-on-missing-vectors: false
+          fail-on-failed-test-cases: true
+          comment-on-pr: true
+          package-name: tbdex-rs
+          git-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Rust Test Vector Results
         uses: actions/upload-artifact@v4.0.0
         with:
