@@ -1,6 +1,4 @@
-import { tbdexError } from "../errors";
 import { Offering } from "../resources/offering";
-import wasm from "../wasm";
 
 export class GetOfferingsResponseBody {
   readonly data: Offering[];
@@ -10,29 +8,15 @@ export class GetOfferingsResponseBody {
   }
 
   static fromJSONString = (json: string): GetOfferingsResponseBody => {
-    try {
-      const getOfferingsResponseBody = JSON.parse(json);
-      const offerings: Offering[] = [];
-      for (const offeringObject of getOfferingsResponseBody.data) {
-        offerings.push(
-          new Offering(
-            offeringObject.metadata,
-            offeringObject.data,
-            offeringObject.signature
-          )
-        );
-      }
-      return new GetOfferingsResponseBody(offerings);
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new GetOfferingsResponseBody(
+      obj.data.map(
+        (x: Offering) => new Offering(x.metadata, x.data, x.signature)
+      )
+    );
   };
 
   toJSONString = (): string => {
-    try {
-      return JSON.stringify(this);
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify(this);
   };
 }

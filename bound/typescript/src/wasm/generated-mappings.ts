@@ -1,25 +1,5 @@
 import wasm from "./";
 
-export type BalanceData = {
-  available: string;
-  currencyCode: string;
-};
-
-export namespace BalanceData {
-  export const toWASM = (obj: BalanceData): wasm.WasmBalanceData => {
-    return new wasm.WasmBalanceData(obj.currencyCode, obj.available);
-  };
-
-  export const fromWASM = (obj: wasm.WasmBalanceData): BalanceData => {
-    const result: BalanceData = {
-      available: obj.available,
-      currencyCode: obj.currency_code,
-    };
-
-    return result;
-  };
-}
-
 export type CancelData = {
   reason?: string;
 };

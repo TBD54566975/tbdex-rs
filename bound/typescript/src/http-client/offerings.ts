@@ -2,17 +2,9 @@ import { Offering } from "../resources/offering";
 import wasm from "../wasm";
 
 export const getOfferings = async (pfiDidUri: string): Promise<Offering[]> => {
-  const offeringsJsonString = await wasm.get_offerings(pfiDidUri);
-  const offeringsJsonArray = JSON.parse(offeringsJsonString);
-  const offerings: Offering[] = [];
-  for (const offeringObject of offeringsJsonArray) {
-    offerings.push(
-      new Offering(
-        offeringObject.metadata,
-        offeringObject.data,
-        offeringObject.signature
-      )
-    );
-  }
-  return offerings;
+  const json = await wasm.get_offerings(pfiDidUri);
+  const offerings = JSON.parse(json);
+  return offerings.map(
+    (x: Offering) => new Offering(x.metadata, x.data, x.signature)
+  );
 };

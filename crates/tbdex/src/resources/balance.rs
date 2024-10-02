@@ -118,6 +118,8 @@ pub struct BalanceData {
     pub available: String,
 }
 
+impl FromJson for BalanceData {}
+
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {
     use super::*;

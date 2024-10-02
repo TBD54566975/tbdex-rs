@@ -1,7 +1,7 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { BalanceData, ResourceMetadata } from "../wasm/generated-mappings";
+import { ResourceMetadata } from "../wasm/generated-mappings";
 
 export class Balance {
   readonly metadata: ResourceMetadata;
@@ -18,44 +18,13 @@ export class Balance {
     this.signature = signature;
   }
 
-  static fromWASM = (wasmBalance: wasm.WasmBalance): Balance => {
-    try {
-      return new Balance(
-        ResourceMetadata.fromWASM(wasmBalance.metadata),
-        BalanceData.fromWASM(wasmBalance.data),
-        wasmBalance.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmBalance => {
-    try {
-      return new wasm.WasmBalance(
-        ResourceMetadata.toWASM(this.metadata),
-        BalanceData.toWASM(this.data),
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): Balance => {
-    try {
-      return Balance.fromWASM(wasm.WasmBalance.from_json_string(json));
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const object = JSON.parse(json);
+    return new Balance(object.metadata, object.data, object.signature);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify(this);
   };
 
   static create = (
@@ -64,9 +33,9 @@ export class Balance {
     protocol?: string
   ): Balance => {
     try {
-      return Balance.fromWASM(
-        wasm.WasmBalance.create(from, BalanceData.toWASM(data), protocol)
-      );
+      const json = wasm.balance_create(from, JSON.stringify(data), protocol);
+      const balance = JSON.parse(json);
+      return new Balance(balance.metadata, balance.data, balance.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -74,9 +43,11 @@ export class Balance {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmBalance = this.toWASM();
-      wasmBalance.sign(bearerDid.toWASM());
-      this.signature = wasmBalance.signature;
+      const signature = wasm.balance_sign(
+        JSON.stringify(this),
+        bearerDid.toWASM()
+      );
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -84,9 +55,14 @@ export class Balance {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      await wasm.balance_verify(JSON.stringify(this));
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type BalanceData = {
+  available: string;
+  currencyCode: string;
+};
