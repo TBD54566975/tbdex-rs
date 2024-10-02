@@ -17,6 +17,6 @@ export class GetOfferingsResponseBody {
   };
 
   toJSONString = (): string => {
-    return JSON.stringify(this);
+    return JSON.stringify({ data: this.data });
   };
 }

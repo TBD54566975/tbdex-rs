@@ -451,6 +451,8 @@ pub struct CreateRfqData {
     pub claims: Vec<String>,
 }
 
+impl FromJson for CreateRfqData {}
+
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateSelectedPayinMethod {

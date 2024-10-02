@@ -128,6 +128,9 @@ pub struct OrderInstructionsData {
     pub payout: PaymentInstruction,
 }
 
+impl FromJson for OrderInstructionsData {}
+impl ToJson for OrderInstructionsData {}
+
 /// Represents the payment instruction for either payin or payout in an Order Instructions message.
 ///
 /// This includes optional fields such as a link or additional instructions.

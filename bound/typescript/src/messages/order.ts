@@ -1,7 +1,7 @@
+import { MessageMetadata } from ".";
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { MessageMetadata, OrderData } from "../wasm/generated-mappings";
 
 export class Order {
   readonly metadata: MessageMetadata;
@@ -14,44 +14,17 @@ export class Order {
     this.signature = signature;
   }
 
-  static fromWASM = (wasmOrder: wasm.WasmOrder): Order => {
-    try {
-      return new Order(
-        MessageMetadata.fromWASM(wasmOrder.metadata),
-        OrderData.fromWASM(wasmOrder.data),
-        wasmOrder.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmOrder => {
-    try {
-      return new wasm.WasmOrder(
-        MessageMetadata.toWASM(this.metadata),
-        OrderData.toWASM(this.data),
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): Order => {
-    try {
-      return Order.fromWASM(wasm.WasmOrder.from_json_string(json));
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new Order(obj.metadata, obj.data, obj.signature);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -62,9 +35,9 @@ export class Order {
     externalId?: string
   ): Order => {
     try {
-      return Order.fromWASM(
-        wasm.WasmOrder.create(to, from, exchangeId, protocol, externalId)
-      );
+      let json = wasm.order_create(to, from, exchangeId, protocol, externalId);
+      let obj = JSON.parse(json);
+      return new Order(obj.metadata, obj.data, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -72,9 +45,11 @@ export class Order {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmOrder = this.toWASM();
-      wasmOrder.sign(bearerDid.toWASM());
-      this.signature = wasmOrder.signature;
+      const signature = wasm.order_sign(
+        this.toJSONString(),
+        bearerDid.toWASM()
+      );
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -82,9 +57,11 @@ export class Order {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      await wasm.order_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type OrderData = {};

@@ -1,122 +1,34 @@
-use super::WasmMessageMetadata;
 use crate::{
     errors::{map_err, Result},
     web5::bearer_did::WasmBearerDid,
 };
 use tbdex::{
     json::{FromJson, ToJson},
-    messages::order::{Order, OrderData},
+    messages::order::Order,
 };
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub struct WasmOrder {
-    inner: Order,
-}
-
-impl From<WasmOrder> for Order {
-    fn from(value: WasmOrder) -> Self {
-        value.inner
-    }
-}
-
-impl From<Order> for WasmOrder {
-    fn from(value: Order) -> Self {
-        Self { inner: value }
-    }
+pub fn order_create(
+    to: &str,
+    from: &str,
+    exchange_id: &str,
+    protocol: Option<String>,
+    external_id: Option<String>,
+) -> Result<String> {
+    let order = Order::create(to, from, exchange_id, protocol, external_id).map_err(map_err)?;
+    order.to_json_string().map_err(map_err)
 }
 
 #[wasm_bindgen]
-impl WasmOrder {
-    #[wasm_bindgen(constructor)]
-    pub fn new(metadata: WasmMessageMetadata, data: WasmOrderData, signature: String) -> Self {
-        Self {
-            inner: Order {
-                metadata: metadata.into(),
-                data: data.into(),
-                signature,
-            },
-        }
-    }
-
-    pub fn from_json_string(json: &str) -> Result<WasmOrder> {
-        Ok(Self {
-            inner: Order::from_json_string(json).map_err(map_err)?,
-        })
-    }
-
-    pub fn to_json_string(&self) -> Result<String> {
-        self.inner.to_json_string().map_err(map_err)
-    }
-
-    #[wasm_bindgen]
-    pub fn create(
-        to: &str,
-        from: &str,
-        exchange_id: &str,
-        protocol: Option<String>,
-        external_id: Option<String>,
-    ) -> Result<WasmOrder> {
-        Ok(WasmOrder {
-            inner: Order::create(to, from, exchange_id, protocol, external_id).map_err(map_err)?,
-        })
-    }
-
-    #[wasm_bindgen]
-    pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
-        self.inner.sign(&bearer_did.into()).map_err(map_err)
-    }
-
-    #[wasm_bindgen]
-    pub async fn verify(&self) -> Result<()> {
-        self.inner.verify().await.map_err(map_err)
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn metadata(&self) -> WasmMessageMetadata {
-        self.inner.metadata.clone().into()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn data(&self) -> WasmOrderData {
-        self.inner.data.clone().into()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn signature(&self) -> String {
-        self.inner.signature.clone()
-    }
+pub fn order_sign(order_json: &str, bearer_did: WasmBearerDid) -> Result<String> {
+    let mut order = Order::from_json_string(order_json).map_err(map_err)?;
+    order.sign(&bearer_did.into()).map_err(map_err)?;
+    Ok(order.signature)
 }
 
 #[wasm_bindgen]
-pub struct WasmOrderData {
-    inner: OrderData,
-}
-
-impl From<OrderData> for WasmOrderData {
-    fn from(value: OrderData) -> Self {
-        Self { inner: value }
-    }
-}
-
-impl From<WasmOrderData> for OrderData {
-    fn from(value: WasmOrderData) -> Self {
-        value.inner
-    }
-}
-
-#[wasm_bindgen]
-impl WasmOrderData {
-    #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
-        Self {
-            inner: OrderData {},
-        }
-    }
-}
-
-impl Default for WasmOrderData {
-    fn default() -> Self {
-        Self::new()
-    }
+pub async fn order_verify(order_json: &str) -> Result<()> {
+    let order = Order::from_json_string(order_json).map_err(map_err)?;
+    order.verify().await.map_err(map_err)
 }

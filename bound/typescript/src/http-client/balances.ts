@@ -7,8 +7,6 @@ export const getBalances = async (
   bearerDid: BearerDid
 ): Promise<Balance[]> => {
   const json = await wasm.get_balances(pfiDidUri, bearerDid.toWASM());
-  const balances = JSON.parse(json);
-  return balances.map(
-    (x: Balance) => new Balance(x.metadata, x.data, x.signature)
-  );
+  const arr = JSON.parse(json);
+  return arr.map((x: Balance) => new Balance(x.metadata, x.data, x.signature));
 };

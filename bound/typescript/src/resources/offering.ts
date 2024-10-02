@@ -20,12 +20,16 @@ export class Offering {
   }
 
   static fromJSONString = (json: string): Offering => {
-    const object = JSON.parse(json);
-    return new Offering(object.metadata, object.data, object.signature);
+    const obj = JSON.parse(json);
+    return new Offering(obj.metadata, obj.data, obj.signature);
   };
 
   toJSONString = (): string => {
-    return JSON.stringify(this);
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -35,8 +39,8 @@ export class Offering {
   ): Offering => {
     try {
       const json = wasm.offering_create(from, JSON.stringify(data), protocol);
-      const offering = JSON.parse(json);
-      return new Offering(offering.metadata, offering.data, offering.signature);
+      const obj = JSON.parse(json);
+      return new Offering(obj.metadata, obj.data, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -45,7 +49,7 @@ export class Offering {
   sign = (bearerDid: BearerDid) => {
     try {
       const signature = wasm.offering_sign(
-        JSON.stringify(this),
+        this.toJSONString(),
         bearerDid.toWASM()
       );
       this.signature = signature;
@@ -56,7 +60,7 @@ export class Offering {
 
   verify = async () => {
     try {
-      await wasm.offering_verify(JSON.stringify(this));
+      await wasm.offering_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }

@@ -1,13 +1,20 @@
-import { tbdexError } from "../../errors";
-import { Message } from "../../messages";
+import {
+  CANCEL_KIND,
+  CLOSE_KIND,
+  Message,
+  ORDER_INSTRUCTIONS_KIND,
+  ORDER_KIND,
+  ORDER_STATUS_KIND,
+  QUOTE_KIND,
+  RFQ_KIND,
+} from "../../messages";
 import { Cancel } from "../../messages/cancel";
 import { Close } from "../../messages/close";
 import { Order } from "../../messages/order";
 import { OrderInstructions } from "../../messages/order-instructions";
 import { OrderStatus } from "../../messages/order-status";
 import { Quote } from "../../messages/quote";
-import { Rfq } from "../../messages/rfq";
-import wasm from "../../wasm";
+import { Rfq, RfqPrivateData } from "../../messages/rfq";
 
 export class GetExchangeResponseBody {
   readonly data: Message[];
@@ -16,53 +23,46 @@ export class GetExchangeResponseBody {
     this.data = data;
   }
 
-  static fromWASM = (
-    wasmGetExchangeResponseBody: wasm.WasmGetExchangeResponseBody
-  ): GetExchangeResponseBody => {
-    try {
-      return new GetExchangeResponseBody(
-        wasmGetExchangeResponseBody.data.map(({ kind, json }) => {
-          if (kind === "rfq") return Rfq.fromJSONString(json);
-          else if (kind === "quote") return Quote.fromJSONString(json);
-          else if (kind === "order") return Order.fromJSONString(json);
-          else if (kind === "orderinstructions")
-            return OrderInstructions.fromJSONString(json);
-          else if (kind === "cancel") return Cancel.fromJSONString(json);
-          else if (kind === "orderstatus")
-            return OrderStatus.fromJSONString(json);
-          else if (kind === "close") return Close.fromJSONString(json);
-
-          throw Error(`unknown kind ${kind}`);
-        })
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmGetExchangeResponseBody => {
-    try {
-      return new wasm.WasmGetExchangeResponseBody(this.data);
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): GetExchangeResponseBody => {
-    try {
-      return GetExchangeResponseBody.fromWASM(
-        wasm.WasmGetExchangeResponseBody.from_json_string(json)
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new GetExchangeResponseBody(
+      obj.data.map((x: Message) => {
+        switch (x.metadata.kind) {
+          case RFQ_KIND:
+            return new Rfq(
+              x.metadata,
+              (x as Rfq).data,
+              (x as Rfq).privateData as RfqPrivateData,
+              x.signature
+            );
+          case QUOTE_KIND:
+            return new Quote(x.metadata, (x as Quote).data, x.signature);
+          case ORDER_KIND:
+            return new Order(x.metadata, (x as Order).data, x.signature);
+          case ORDER_INSTRUCTIONS_KIND:
+            return new OrderInstructions(
+              x.metadata,
+              (x as OrderInstructions).data,
+              x.signature
+            );
+          case ORDER_STATUS_KIND:
+            return new OrderStatus(
+              x.metadata,
+              (x as OrderStatus).data,
+              x.signature
+            );
+          case CLOSE_KIND:
+            return new Close(x.metadata, (x as Close).data, x.signature);
+          case CANCEL_KIND:
+            return new Cancel(x.metadata, (x as Cancel).data, x.signature);
+          default:
+            throw new Error(`unknown message kind ${x.metadata.kind}`);
+        }
+      })
+    );
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({ data: this.data });
   };
 }

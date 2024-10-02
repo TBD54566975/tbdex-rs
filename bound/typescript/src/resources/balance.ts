@@ -24,7 +24,11 @@ export class Balance {
   };
 
   toJSONString = (): string => {
-    return JSON.stringify(this);
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -34,8 +38,8 @@ export class Balance {
   ): Balance => {
     try {
       const json = wasm.balance_create(from, JSON.stringify(data), protocol);
-      const balance = JSON.parse(json);
-      return new Balance(balance.metadata, balance.data, balance.signature);
+      const obj = JSON.parse(json);
+      return new Balance(obj.metadata, obj.data, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -44,7 +48,7 @@ export class Balance {
   sign = (bearerDid: BearerDid) => {
     try {
       const signature = wasm.balance_sign(
-        JSON.stringify(this),
+        this.toJSONString(),
         bearerDid.toWASM()
       );
       this.signature = signature;
@@ -55,7 +59,7 @@ export class Balance {
 
   verify = async () => {
     try {
-      await wasm.balance_verify(JSON.stringify(this));
+      await wasm.balance_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }

@@ -12,7 +12,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 pub fn offering_create(from: &str, data_json: &str, protocol: Option<String>) -> Result<String> {
     let data = OfferingData::from_json_string(data_json).map_err(map_err)?;
     let offering = Offering::create(from, &data, protocol).map_err(map_err)?;
-    Ok(offering.to_json_string().map_err(map_err)?)
+    offering.to_json_string().map_err(map_err)
 }
 
 #[wasm_bindgen]

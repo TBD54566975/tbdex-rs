@@ -126,6 +126,9 @@ pub struct CloseData {
     pub success: Option<bool>,
 }
 
+impl FromJson for CloseData {}
+impl ToJson for CloseData {}
+
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {
     use super::*;

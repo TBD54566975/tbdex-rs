@@ -12,7 +12,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 pub fn balance_create(from: &str, data_json: &str, protocol: Option<String>) -> Result<String> {
     let data = BalanceData::from_json_string(data_json).map_err(map_err)?;
     let balance = Balance::create(from, &data, protocol).map_err(map_err)?;
-    Ok(balance.to_json_string().map_err(map_err)?)
+    balance.to_json_string().map_err(map_err)
 }
 
 #[wasm_bindgen]

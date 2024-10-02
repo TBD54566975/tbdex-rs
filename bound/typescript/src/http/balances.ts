@@ -15,6 +15,6 @@ export class GetBalancesResponseBody {
   };
 
   toJSONString = (): string => {
-    return JSON.stringify(this);
+    return JSON.stringify({ data: this.data });
   };
 }

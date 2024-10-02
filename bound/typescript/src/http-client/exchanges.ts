@@ -13,15 +13,15 @@ export const createExchange = async (
   rfq: Rfq,
   replyTo?: string
 ): Promise<void> => {
-  await wasm.create_exchange(rfq.toWASM(), replyTo);
+  await wasm.create_exchange(rfq.toJSONString(), replyTo);
 };
 
 export const submitOrder = async (order: Order): Promise<void> => {
-  await wasm.submit_order(order.toWASM());
+  await wasm.submit_order(order.toJSONString());
 };
 
 export const submitCancel = async (cancel: Cancel): Promise<void> => {
-  await wasm.submit_order(cancel.toWASM());
+  await wasm.submit_cancel(cancel.toJSONString());
 };
 
 export const getExchange = async (
@@ -29,12 +29,12 @@ export const getExchange = async (
   bearerDid: BearerDid,
   exchangeId: string
 ): Promise<Exchange> => {
-  const wasmExchange = await wasm.get_exchange(
+  const json = await wasm.get_exchange(
     pfiDidUri,
     bearerDid.toWASM(),
     exchangeId
   );
-  return Exchange.fromWASM(wasmExchange);
+  return Exchange.fromJSONString(json);
 };
 
 export type GetExchangeIdsQueryParams = {
@@ -82,39 +82,48 @@ export class Exchange {
     this.close = close;
   }
 
-  static fromWASM = (wasmExchange: wasm.WasmExchange): Exchange => {
-    try {
-      return new Exchange(
-        Rfq.fromWASM(wasmExchange.rfq),
-        wasmExchange.quote ? Quote.fromWASM(wasmExchange.quote) : undefined,
-        wasmExchange.order ? Order.fromWASM(wasmExchange.order) : undefined,
-        wasmExchange.order_instructions
-          ? OrderInstructions.fromWASM(wasmExchange.order_instructions)
-          : undefined,
-        wasmExchange.cancel ? Cancel.fromWASM(wasmExchange.cancel) : undefined,
-        wasmExchange.order_statuses
-          ? wasmExchange.order_statuses.map(OrderStatus.fromWASM)
-          : undefined,
-        wasmExchange.close ? Close.fromWASM(wasmExchange.close) : undefined
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
+  static fromJSONString = (json: string): Exchange => {
+    const obj = JSON.parse(json);
 
-  toWASM = (): wasm.WasmExchange => {
-    try {
-      return new wasm.WasmExchange(
-        this.rfq.toWASM(),
-        this.quote?.toWASM(),
-        this.order?.toWASM(),
-        this.orderInstructions?.toWASM(),
-        this.cancel?.toWASM(),
-        this.orderStatuses?.map((os) => os.toWASM()),
-        this.close?.toWASM()
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const rfq = new Rfq(
+      obj.rfq.metadata,
+      obj.rfq.data,
+      obj.rfq.privateData,
+      obj.rfq.signature
+    );
+    const quote = obj.quote
+      ? new Quote(obj.quote.metadata, obj.quote.data, obj.quote.signature)
+      : undefined;
+    const order = obj.order
+      ? new Order(obj.order.metadata, obj.order.data, obj.order.signature)
+      : undefined;
+    const orderInstructions = obj.orderInstructions
+      ? new OrderInstructions(
+          obj.orderInstructions.metadata,
+          obj.orderInstructions.data,
+          obj.orderInstructions.signature
+        )
+      : undefined;
+    const cancel = obj.cancel
+      ? new Cancel(obj.cancel.metadata, obj.cancel.data, obj.cancel.signature)
+      : undefined;
+    const orderStatuses = obj.orderStatuses
+      ? obj.orderStatuses.map(
+          (x: OrderStatus) => new OrderStatus(x.metadata, x.data, x.signature)
+        )
+      : undefined;
+    const close = obj.close
+      ? new Close(obj.close.metadata, obj.close.data, obj.close.signature)
+      : undefined;
+
+    return new Exchange(
+      rfq,
+      quote,
+      order,
+      orderInstructions,
+      cancel,
+      orderStatuses,
+      close
+    );
   };
 }

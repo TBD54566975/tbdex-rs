@@ -124,6 +124,9 @@ pub struct CancelData {
     pub reason: Option<String>,
 }
 
+impl FromJson for CancelData {}
+impl ToJson for CancelData {}
+
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {
     use super::*;

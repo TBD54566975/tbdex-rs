@@ -26,11 +26,19 @@ export type MessageMetadata = {
   to: string;
 };
 
+export const RFQ_KIND = "rfq" as const;
+export const QUOTE_KIND = "quote" as const;
+export const ORDER_KIND = "order" as const;
+export const ORDER_INSTRUCTIONS_KIND = "orderinstructions" as const;
+export const ORDER_STATUS_KIND = "orderstatus" as const;
+export const CLOSE_KIND = "close" as const;
+export const CANCEL_KIND = "cancel" as const;
+
 export type MessageKind =
-  | "rfq"
-  | "quote"
-  | "order"
-  | "orderinstructions"
-  | "orderstatus"
-  | "close"
-  | "cancel";
+  | typeof RFQ_KIND
+  | typeof QUOTE_KIND
+  | typeof ORDER_KIND
+  | typeof ORDER_INSTRUCTIONS_KIND
+  | typeof ORDER_STATUS_KIND
+  | typeof CLOSE_KIND
+  | typeof CANCEL_KIND;

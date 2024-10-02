@@ -133,6 +133,9 @@ pub struct OrderStatusData {
     pub details: Option<String>,
 }
 
+impl FromJson for OrderStatusData {}
+impl ToJson for OrderStatusData {}
+
 /// Represents the possible statuses for an order in the tbDEX protocol.
 ///
 /// Each status indicates a specific stage in the lifecycle of an order.

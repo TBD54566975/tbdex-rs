@@ -1,13 +1,8 @@
+import { MessageMetadata } from ".";
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import { Offering } from "../resources/offering";
 import wasm from "../wasm";
-import {
-  MessageMetadata,
-  RfqData,
-  RfqPrivateData,
-  CreateRfqData,
-} from "../wasm/generated-mappings";
 
 export class Rfq {
   readonly metadata: MessageMetadata;
@@ -27,54 +22,18 @@ export class Rfq {
     this.signature = signature;
   }
 
-  static fromWASM = (wasmRfq: wasm.WasmRfq): Rfq => {
-    try {
-      const privateData = wasmRfq.private_data
-        ? RfqPrivateData.fromWASM(wasmRfq.private_data)
-        : undefined;
-
-      return new Rfq(
-        MessageMetadata.fromWASM(wasmRfq.metadata),
-        RfqData.fromWASM(wasmRfq.data),
-        privateData,
-        wasmRfq.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmRfq => {
-    try {
-      const wasmPrivateData = this.privateData
-        ? RfqPrivateData.toWASM(this.privateData)
-        : undefined;
-
-      return new wasm.WasmRfq(
-        MessageMetadata.toWASM(this.metadata),
-        RfqData.toWASM(this.data),
-        wasmPrivateData,
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): Rfq => {
-    try {
-      return Rfq.fromWASM(wasm.WasmRfq.from_json_string(json));
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new Rfq(obj.metadata, obj.data, obj.privateData, obj.signature);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      privateData: this.privateData,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -85,15 +44,15 @@ export class Rfq {
     externalId?: string
   ): Rfq => {
     try {
-      return Rfq.fromWASM(
-        wasm.WasmRfq.create(
-          to,
-          from,
-          CreateRfqData.toWASM(createRfqData),
-          protocol,
-          externalId
-        )
+      let json = wasm.rfq_create(
+        to,
+        from,
+        JSON.stringify(createRfqData),
+        protocol,
+        externalId
       );
+      let obj = JSON.parse(json);
+      return new Rfq(obj.metadata, obj.data, obj.privateData, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -101,9 +60,8 @@ export class Rfq {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmRfq = this.toWASM();
-      wasmRfq.sign(bearerDid.toWASM());
-      this.signature = wasmRfq.signature;
+      const signature = wasm.rfq_sign(this.toJSONString(), bearerDid.toWASM());
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -111,7 +69,7 @@ export class Rfq {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      await wasm.rfq_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
@@ -119,8 +77,10 @@ export class Rfq {
 
   verifyOfferingRequirements = async (offering: Offering) => {
     try {
-      const offering_json = JSON.stringify(offering);
-      await this.toWASM().verify_offering_requirements(offering_json);
+      await wasm.rfq_verify_offering_requirements(
+        this.toJSONString(),
+        offering.toJSONString()
+      );
     } catch (error) {
       throw tbdexError(error);
     }
@@ -128,7 +88,7 @@ export class Rfq {
 
   verifyAllPrivateData = () => {
     try {
-      this.toWASM().verify_all_private_data();
+      wasm.rfq_verify_all_private_data(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
@@ -136,9 +96,56 @@ export class Rfq {
 
   verifyPresentPrivateData = () => {
     try {
-      this.toWASM().verify_present_private_data();
+      wasm.rfq_verify_present_private_data(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type RfqData = {
+  claimsHash?: string;
+  offeringId: string;
+  payin: SelectedPayinMethod;
+  payout: SelectedPayoutMethod;
+};
+
+export type SelectedPayinMethod = {
+  amount: string;
+  kind: string;
+  paymentDetailsHash?: string;
+};
+
+export type SelectedPayoutMethod = {
+  kind: string;
+  paymentDetailsHash?: string;
+};
+
+export type RfqPrivateData = {
+  claims?: Array<any>;
+  payin?: PrivatePaymentDetails;
+  payout?: PrivatePaymentDetails;
+  salt: string;
+};
+
+export type PrivatePaymentDetails = {
+  paymentDetails?: any;
+};
+
+export type CreateRfqData = {
+  claims: Array<any>;
+  offeringId: string;
+  payin: CreateSelectedPayinMethod;
+  payout: CreateSelectedPayoutMethod;
+};
+
+export type CreateSelectedPayinMethod = {
+  amount: string;
+  kind: string;
+  paymentDetails?: any;
+};
+
+export type CreateSelectedPayoutMethod = {
+  kind: string;
+  paymentDetails?: any;
+};
