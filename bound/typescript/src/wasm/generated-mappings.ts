@@ -38,37 +38,6 @@ export namespace CancelData {
   };
 }
 
-export type CancellationDetails = {
-  enabled: boolean;
-  terms?: string;
-  termsUrl?: string;
-};
-
-export namespace CancellationDetails {
-  export const toWASM = (
-    obj: CancellationDetails,
-  ): wasm.WasmCancellationDetails => {
-    return new wasm.WasmCancellationDetails(
-      obj.enabled,
-      obj.termsUrl,
-      obj.terms,
-    );
-  };
-
-  export const fromWASM = (
-    obj: wasm.WasmCancellationDetails,
-  ): CancellationDetails => {
-    const result: CancellationDetails = {
-      enabled: obj.enabled,
-    };
-
-    if (obj.terms !== undefined) result.terms = obj.terms;
-    if (obj.terms_url !== undefined) result.termsUrl = obj.terms_url;
-
-    return result;
-  };
-}
-
 export type CloseData = {
   reason?: string;
   success?: boolean;
@@ -515,47 +484,6 @@ export namespace MessageMetadata {
   };
 }
 
-export type OfferingData = {
-  cancellation: CancellationDetails;
-  description: string;
-  payin: PayinDetails;
-  payout: PayoutDetails;
-  payoutUnitsPerPayinUnit: string;
-  requiredClaims?: PresentationDefinition;
-};
-
-export namespace OfferingData {
-  export const toWASM = (obj: OfferingData): wasm.WasmOfferingData => {
-    return new wasm.WasmOfferingData(
-      obj.description,
-      obj.payoutUnitsPerPayinUnit,
-      PayinDetails.toWASM(obj.payin),
-      PayoutDetails.toWASM(obj.payout),
-      obj.requiredClaims
-        ? PresentationDefinition.toWASM(obj.requiredClaims)
-        : undefined,
-      CancellationDetails.toWASM(obj.cancellation),
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmOfferingData): OfferingData => {
-    const result: OfferingData = {
-      cancellation: CancellationDetails.fromWASM(obj.cancellation),
-      description: obj.description,
-      payin: PayinDetails.fromWASM(obj.payin),
-      payout: PayoutDetails.fromWASM(obj.payout),
-      payoutUnitsPerPayinUnit: obj.payout_units_per_payin_unit,
-    };
-
-    if (obj.required_claims !== undefined)
-      result.requiredClaims = PresentationDefinition.fromWASM(
-        obj.required_claims,
-      );
-
-    return result;
-  };
-}
-
 export type Optionality = {
   optionality: string;
 };
@@ -636,79 +564,6 @@ export namespace OrderStatusData {
   };
 }
 
-export type PayinDetails = {
-  currencyCode: string;
-  max?: string;
-  methods: PayinMethod[];
-  min?: string;
-};
-
-export namespace PayinDetails {
-  export const toWASM = (obj: PayinDetails): wasm.WasmPayinDetails => {
-    return new wasm.WasmPayinDetails(
-      obj.currencyCode,
-      obj.methods?.map(PayinMethod.toWASM),
-      obj.min,
-      obj.max,
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmPayinDetails): PayinDetails => {
-    const result: PayinDetails = {
-      currencyCode: obj.currency_code,
-      methods: obj.methods?.map(PayinMethod.fromWASM),
-    };
-
-    if (obj.max !== undefined) result.max = obj.max;
-    if (obj.min !== undefined) result.min = obj.min;
-
-    return result;
-  };
-}
-
-export type PayinMethod = {
-  description?: string;
-  fee?: string;
-  group?: string;
-  kind: string;
-  max?: string;
-  min?: string;
-  name?: string;
-  requiredPaymentDetails?: any;
-};
-
-export namespace PayinMethod {
-  export const toWASM = (obj: PayinMethod): wasm.WasmPayinMethod => {
-    return new wasm.WasmPayinMethod(
-      obj.kind,
-      obj.name,
-      obj.description,
-      obj.group,
-      obj.requiredPaymentDetails,
-      obj.fee,
-      obj.min,
-      obj.max,
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmPayinMethod): PayinMethod => {
-    const result: PayinMethod = {
-      kind: obj.kind,
-    };
-
-    if (obj.description !== undefined) result.description = obj.description;
-    if (obj.fee !== undefined) result.fee = obj.fee;
-    if (obj.group !== undefined) result.group = obj.group;
-    if (obj.max !== undefined) result.max = obj.max;
-    if (obj.min !== undefined) result.min = obj.min;
-    if (obj.name !== undefined) result.name = obj.name;
-    if (obj.required_payment_details !== undefined)
-      result.requiredPaymentDetails = obj.required_payment_details;
-
-    return result;
-  };
-}
-
 export type PaymentInstruction = {
   instruction?: string;
   link?: string;
@@ -728,82 +583,6 @@ export namespace PaymentInstruction {
 
     if (obj.instruction !== undefined) result.instruction = obj.instruction;
     if (obj.link !== undefined) result.link = obj.link;
-
-    return result;
-  };
-}
-
-export type PayoutDetails = {
-  currencyCode: string;
-  max?: string;
-  methods: PayoutMethod[];
-  min?: string;
-};
-
-export namespace PayoutDetails {
-  export const toWASM = (obj: PayoutDetails): wasm.WasmPayoutDetails => {
-    return new wasm.WasmPayoutDetails(
-      obj.currencyCode,
-      obj.methods?.map(PayoutMethod.toWASM),
-      obj.min,
-      obj.max,
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmPayoutDetails): PayoutDetails => {
-    const result: PayoutDetails = {
-      currencyCode: obj.currency_code,
-      methods: obj.methods?.map(PayoutMethod.fromWASM),
-    };
-
-    if (obj.max !== undefined) result.max = obj.max;
-    if (obj.min !== undefined) result.min = obj.min;
-
-    return result;
-  };
-}
-
-export type PayoutMethod = {
-  description?: string;
-  estimatedSettlementTime: number;
-  fee?: string;
-  group?: string;
-  kind: string;
-  max?: string;
-  min?: string;
-  name?: string;
-  requiredPaymentDetails?: any;
-};
-
-export namespace PayoutMethod {
-  export const toWASM = (obj: PayoutMethod): wasm.WasmPayoutMethod => {
-    return new wasm.WasmPayoutMethod(
-      obj.kind,
-      BigInt(obj.estimatedSettlementTime),
-      obj.name,
-      obj.description,
-      obj.group,
-      obj.requiredPaymentDetails,
-      obj.fee,
-      obj.min,
-      obj.max,
-    );
-  };
-
-  export const fromWASM = (obj: wasm.WasmPayoutMethod): PayoutMethod => {
-    const result: PayoutMethod = {
-      estimatedSettlementTime: Number(obj.estimated_settlement_time),
-      kind: obj.kind,
-    };
-
-    if (obj.description !== undefined) result.description = obj.description;
-    if (obj.fee !== undefined) result.fee = obj.fee;
-    if (obj.group !== undefined) result.group = obj.group;
-    if (obj.max !== undefined) result.max = obj.max;
-    if (obj.min !== undefined) result.min = obj.min;
-    if (obj.name !== undefined) result.name = obj.name;
-    if (obj.required_payment_details !== undefined)
-      result.requiredPaymentDetails = obj.required_payment_details;
 
     return result;
   };

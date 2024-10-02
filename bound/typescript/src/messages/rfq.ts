@@ -119,7 +119,8 @@ export class Rfq {
 
   verifyOfferingRequirements = async (offering: Offering) => {
     try {
-      await this.toWASM().verify_offering_requirements(offering.toWASM());
+      const offering_json = JSON.stringify(offering);
+      await this.toWASM().verify_offering_requirements(offering_json);
     } catch (error) {
       throw tbdexError(error);
     }

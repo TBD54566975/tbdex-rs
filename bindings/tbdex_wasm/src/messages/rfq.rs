@@ -2,7 +2,6 @@ use super::WasmMessageMetadata;
 use crate::{
     errors::{map_err, Result},
     js::convert_to_object,
-    resources::offering::WasmOffering,
     web5::bearer_did::WasmBearerDid,
 };
 use tbdex::{
@@ -12,6 +11,7 @@ use tbdex::{
         PrivatePaymentDetails, Rfq, RfqData, RfqPrivateData, SelectedPayinMethod,
         SelectedPayoutMethod,
     },
+    resources::offering::Offering,
 };
 use wasm_bindgen::prelude::*;
 
@@ -92,9 +92,10 @@ impl WasmRfq {
     }
 
     #[wasm_bindgen]
-    pub async fn verify_offering_requirements(&self, offering: WasmOffering) -> Result<()> {
+    pub async fn verify_offering_requirements(&self, offering_json: &str) -> Result<()> {
+        let offering = Offering::from_json_string(offering_json).map_err(map_err)?;
         self.inner
-            .verify_offering_requirements(&offering.into())
+            .verify_offering_requirements(&offering)
             .await
             .map_err(map_err)
     }

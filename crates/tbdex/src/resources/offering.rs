@@ -133,6 +133,8 @@ pub struct OfferingData {
     pub cancellation: CancellationDetails,
 }
 
+impl FromJson for OfferingData {}
+
 /// Represents the details of the payin for an Offering.
 ///
 /// This includes the currency code, optional limits, and available methods for making the payin.

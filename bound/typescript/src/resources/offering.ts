@@ -1,9 +1,9 @@
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
+import { PresentationDefinition } from "../presentation-definition";
 import wasm from "../wasm";
-import { OfferingData, ResourceMetadata } from "../wasm/generated-mappings";
+import { ResourceMetadata } from "../wasm/generated-mappings";
 
-// TODO consider extending "Resource" class type
 export class Offering {
   readonly metadata: ResourceMetadata;
   readonly data: OfferingData;
@@ -19,55 +19,20 @@ export class Offering {
     this.signature = signature;
   }
 
-  static fromWASM = (wasmOffering: wasm.WasmOffering): Offering => {
-    try {
-      return new Offering(
-        ResourceMetadata.fromWASM(wasmOffering.metadata),
-        OfferingData.fromWASM(wasmOffering.data),
-        wasmOffering.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmOffering => {
-    try {
-      return new wasm.WasmOffering(
-        ResourceMetadata.toWASM(this.metadata),
-        OfferingData.toWASM(this.data),
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  static fromJSONString = (json: string): Offering => {
-    try {
-      return Offering.fromWASM(wasm.WasmOffering.from_json_string(json));
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static create = (
     from: string,
     data: OfferingData,
     protocol?: string
   ): Offering => {
     try {
-      return Offering.fromWASM(
-        wasm.WasmOffering.create(from, OfferingData.toWASM(data), protocol)
+      const offering_data_json = JSON.stringify(data);
+      const offering_json = wasm.offering_create(
+        from,
+        offering_data_json,
+        protocol
       );
+      const offering = JSON.parse(offering_json);
+      return new Offering(offering.metadata, offering.data, offering.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -75,9 +40,9 @@ export class Offering {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmOffering = this.toWASM();
-      wasmOffering.sign(bearerDid.toWASM());
-      this.signature = wasmOffering.signature;
+      const offering_json = JSON.stringify(this);
+      const signature = wasm.offering_sign(offering_json, bearerDid.toWASM());
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -85,9 +50,62 @@ export class Offering {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      const offering_json = JSON.stringify(this);
+      await wasm.offering_verify(offering_json);
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type OfferingData = {
+  cancellation: CancellationDetails;
+  description: string;
+  payin: PayinDetails;
+  payout: PayoutDetails;
+  payoutUnitsPerPayinUnit: string;
+  requiredClaims?: PresentationDefinition;
+};
+
+export type CancellationDetails = {
+  enabled: boolean;
+  terms?: string;
+  termsUrl?: string;
+};
+
+export type PayinDetails = {
+  currencyCode: string;
+  max?: string;
+  methods: PayinMethod[];
+  min?: string;
+};
+
+export type PayinMethod = {
+  description?: string;
+  fee?: string;
+  group?: string;
+  kind: string;
+  max?: string;
+  min?: string;
+  name?: string;
+  requiredPaymentDetails?: any;
+};
+
+export type PayoutDetails = {
+  currencyCode: string;
+  max?: string;
+  methods: PayoutMethod[];
+  min?: string;
+};
+
+export type PayoutMethod = {
+  description?: string;
+  estimatedSettlementTime: number;
+  fee?: string;
+  group?: string;
+  kind: string;
+  max?: string;
+  min?: string;
+  name?: string;
+  requiredPaymentDetails?: any;
+};
