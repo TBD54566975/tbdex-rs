@@ -19,5 +19,5 @@ esbuild.buildSync({
 });
 
 // Optional: Copy additional assets like WASM files to the dist folder
-fs.copyFileSync(path.resolve(__dirname, '../src/wasm/generated.js'), path.resolve(__dirname, '../dist/wasm/generated.js'));
-fs.copyFileSync(path.resolve(__dirname, '../src/wasm/generated.d.ts'), path.resolve(__dirname, '../dist/wasm/generated.d.ts'));
+// fs.copyFileSync(path.resolve(__dirname, '../src/wasm/generated.js'), path.resolve(__dirname, '../dist/wasm/generated.js'));
+// fs.copyFileSync(path.resolve(__dirname, '../src/wasm/generated.d.ts'), path.resolve(__dirname, '../dist/wasm/generated.d.ts'));
