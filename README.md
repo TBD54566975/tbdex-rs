@@ -2,6 +2,7 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B588%2Fgithub.com%2FTBD54566975%2Ftbdex-rs.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B588%2Fgithub.com%2FTBD54566975%2Ftbdex-rs?ref=badge_shield&issueType=security)
 
 # tbDEX SDK Mono Repo
+ 
 
 This monorepo houses the core components of the tbDEX platform containing the core Rust code with Kotlin bindings. tbDEX is a protocol for discovering liquidity and exchanging assets such as fiat money, real world goods, stablecoins or bitcoin. The tbDEX protocol utilizes Decentralized Identitifers (DIDs) and Verifiable Credentials (VCs) to establish the provenance of identity in the real world. The protocol has no opinion on anonymity as a feature or consequence of transactions. Instead, it allows willing counterparties to negotiate and establish the minimum information acceptable for an exchange.
 
