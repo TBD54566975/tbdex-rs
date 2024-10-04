@@ -33,7 +33,7 @@
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
     "build:wasm": "./scripts/build.sh && node ./scripts/bundle_wasm.js  && (cd ./generate-mappings && npm run generate)",
-    "build": "tsc && cp -r src/wasm dist/bound/typescript/src && node ./scripts/bundle_tbdex.js",
+    "build": "tsc",
     
     "test:node": "npm run build && node tests/bundle-node.js && mocha",
     "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner",
