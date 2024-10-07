@@ -12,8 +12,8 @@ esbuild.buildSync({
   bundle: true,
   minify: true,
   entryPoints: [`${__dirname}/../pkg/tbdex_wasm.js`],
-  outfile: `${__dirname}/../dist/bundle.js`,
+  outfile: `${__dirname}/../src/wasm/generated.js`,
   allowOverwrite: true,
 })
 
-fs.copyFileSync(`${__dirname}/../pkg/tbdex_wasm.d.ts`, `${__dirname}/../dist/tbdex_wasm.d.ts`)
+fs.copyFileSync(`${__dirname}/../pkg/tbdex_wasm.d.ts`, `${__dirname}/../src/wasm/generated.d.ts`)
