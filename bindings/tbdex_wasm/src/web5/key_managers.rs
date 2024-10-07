@@ -83,7 +83,7 @@ impl WasmKeyManager {
             serde_json::from_str::<Jwk>(private_jwk_json).map_err(|e| map_err(e.into()))?;
         let public_jwk = self
             .inner
-            .import_private_jwk(private_jwk.into())
+            .import_private_jwk(private_jwk)
             .map_err(map_web5_err)?;
         let public_jwk_json = serde_json::to_string(&public_jwk).map_err(|e| map_err(e.into()))?;
 
@@ -96,7 +96,7 @@ impl WasmKeyManager {
             serde_json::from_str::<Jwk>(public_jwk_json).map_err(|e| map_err(e.into()))?;
         Ok(self
             .inner
-            .get_signer(public_jwk.into())
+            .get_signer(public_jwk)
             .map_err(map_web5_err)?
             .into())
     }
