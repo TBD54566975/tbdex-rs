@@ -1,0 +1,49 @@
+{
+  "description": "RFQ parses from string",
+  "input": "{\"metadata\":{\"from\":\"did:dht:qyac4pru9ykcxbrutpaaxkmususxh4wtc4ctt19813zrie8uyy5y\",\"to\":\"did:dht:3whftgpbdjihx9ze9tdn575zqzm4qwccetnf1ybiibuzad7rrmyy\",\"protocol\":\"1.0\",\"kind\":\"rfq\",\"id\":\"rfq_01hw25hn32f2rrbxxrscfce76a\",\"exchangeId\":\"rfq_01hw25hn32f2rrbxxrscfce76a\",\"createdAt\":\"2024-04-22T05:48:01.506Z\"},\"data\":{\"offeringId\":\"offering_01hw25hn32f2rrbxxrs91eh3dz\",\"payin\":{\"kind\":\"DEBIT_CARD\",\"amount\":\"20000.00\",\"paymentDetailsHash\":\"-qyAULSCWs_NvbKpN7-uPvKzRl5aWWlUgqSuitKKQQw\"},\"payout\":{\"kind\":\"BTC_ADDRESS\",\"paymentDetailsHash\":\"tDJ0QRBRkfOM_i0Yq96Ble4aFRn6SgJa07lhPusQxRw\"},\"claimsHash\":\"3e2RPtam5xuFmmq_MbO3QLFj86ylFSe-nxA-mhlFSH8\"},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6cXlhYzRwcnU5eWtjeGJydXRwYWF4a211c3VzeGg0d3RjNGN0dDE5ODEzenJpZTh1eXk1eSMwIn0..1ujzgRCxChND0mdKlwwSw9w23LubZ1H8yBvspDUz-RCdKa3XaOHdlwWvSeZCwW4DJxJoN5rY0UlwqIBKB4R6AA\",\"privateData\":{\"salt\":\"w9LebtsDQhEMMOBXzfs2JA\",\"payin\":{\"paymentDetails\":{\"cardNumber\":\"1234567890123456\",\"expiryDate\":\"12/22\",\"cardHolderName\":\"Ephraim Bartholomew Winthrop\",\"cvv\":\"123\"}},\"payout\":{\"paymentDetails\":{\"btcAddress\":\"1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa\"}},\"claims\":[\"eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6cXlhYzRwcnU5eWtjeGJydXRwYWF4a211c3VzeGg0d3RjNGN0dDE5ODEzenJpZTh1eXk1eSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUHV1cHV1Q3JlZGVudGlhbCJdLCJpZCI6InVybjp1dWlkOjU4ZDZlYjFjLTE3M2ItNDc4OS1iZmVhLTZmYzAwMTRjNzI5NyIsImlzc3VlciI6ImRpZDpkaHQ6cXlhYzRwcnU5eWtjeGJydXRwYWF4a211c3VzeGg0d3RjNGN0dDE5ODEzenJpZTh1eXk1eSIsImlzc3VhbmNlRGF0ZSI6IjIwMjQtMDQtMjJUMDU6NDg6MDFaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZGh0OnF5YWM0cHJ1OXlrY3hicnV0cGFheGttdXN1c3hoNHd0YzRjdHQxOTgxM3pyaWU4dXl5NXkiLCJiZWVwIjoiYm9vcCJ9fSwibmJmIjoxNzEzNzY0ODgxLCJqdGkiOiJ1cm46dXVpZDo1OGQ2ZWIxYy0xNzNiLTQ3ODktYmZlYS02ZmMwMDE0YzcyOTciLCJpc3MiOiJkaWQ6ZGh0OnF5YWM0cHJ1OXlrY3hicnV0cGFheGttdXN1c3hoNHd0YzRjdHQxOTgxM3pyaWU4dXl5NXkiLCJzdWIiOiJkaWQ6ZGh0OnF5YWM0cHJ1OXlrY3hicnV0cGFheGttdXN1c3hoNHd0YzRjdHQxOTgxM3pyaWU4dXl5NXkiLCJpYXQiOjE3MTM3NjQ4ODF9.j90ud9-fl_UrhA5fMfApBOxu3IwLnn_Wq7cugLEaoENdzv14W-jWOuL7mCFy1bCF95PWK6RliZQEqdJZnOw6Dg\"]}}",
+  "output": {
+    "metadata": {
+      "from": "did:dht:qyac4pru9ykcxbrutpaaxkmususxh4wtc4ctt19813zrie8uyy5y",
+      "to": "did:dht:3whftgpbdjihx9ze9tdn575zqzm4qwccetnf1ybiibuzad7rrmyy",
+      "protocol": "1.0",
+      "kind": "rfq",
+      "id": "rfq_01hw25hn32f2rrbxxrscfce76a",
+      "exchangeId": "rfq_01hw25hn32f2rrbxxrscfce76a",
+      "createdAt": "2024-04-22T05:48:01.506Z"
+    },
+    "data": {
+      "offeringId": "offering_01hw25hn32f2rrbxxrs91eh3dz",
+      "payin": {
+        "kind": "DEBIT_CARD",
+        "amount": "20000.00",
+        "paymentDetailsHash": "-qyAULSCWs_NvbKpN7-uPvKzRl5aWWlUgqSuitKKQQw"
+      },
+      "payout": {
+        "kind": "BTC_ADDRESS",
+        "paymentDetailsHash": "tDJ0QRBRkfOM_i0Yq96Ble4aFRn6SgJa07lhPusQxRw"
+      },
+      "claimsHash": "3e2RPtam5xuFmmq_MbO3QLFj86ylFSe-nxA-mhlFSH8"
+    },
+    "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6cXlhYzRwcnU5eWtjeGJydXRwYWF4a211c3VzeGg0d3RjNGN0dDE5ODEzenJpZTh1eXk1eSMwIn0..1ujzgRCxChND0mdKlwwSw9w23LubZ1H8yBvspDUz-RCdKa3XaOHdlwWvSeZCwW4DJxJoN5rY0UlwqIBKB4R6AA",
+    "privateData": {
+      "salt": "w9LebtsDQhEMMOBXzfs2JA",
+      "payin": {
+        "paymentDetails": {
+          "cardNumber": "1234567890123456",
+          "expiryDate": "12/22",
+          "cardHolderName": "Ephraim Bartholomew Winthrop",
+          "cvv": "123"
+        }
+      },
+      "payout": {
+        "paymentDetails": {
+          "btcAddress": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+        }
+      },
+      "claims": [
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6cXlhYzRwcnU5eWtjeGJydXRwYWF4a211c3VzeGg0d3RjNGN0dDE5ODEzenJpZTh1eXk1eSMwIn0.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUHV1cHV1Q3JlZGVudGlhbCJdLCJpZCI6InVybjp1dWlkOjU4ZDZlYjFjLTE3M2ItNDc4OS1iZmVhLTZmYzAwMTRjNzI5NyIsImlzc3VlciI6ImRpZDpkaHQ6cXlhYzRwcnU5eWtjeGJydXRwYWF4a211c3VzeGg0d3RjNGN0dDE5ODEzenJpZTh1eXk1eSIsImlzc3VhbmNlRGF0ZSI6IjIwMjQtMDQtMjJUMDU6NDg6MDFaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6ZGh0OnF5YWM0cHJ1OXlrY3hicnV0cGFheGttdXN1c3hoNHd0YzRjdHQxOTgxM3pyaWU4dXl5NXkiLCJiZWVwIjoiYm9vcCJ9fSwibmJmIjoxNzEzNzY0ODgxLCJqdGkiOiJ1cm46dXVpZDo1OGQ2ZWIxYy0xNzNiLTQ3ODktYmZlYS02ZmMwMDE0YzcyOTciLCJpc3MiOiJkaWQ6ZGh0OnF5YWM0cHJ1OXlrY3hicnV0cGFheGttdXN1c3hoNHd0YzRjdHQxOTgxM3pyaWU4dXl5NXkiLCJzdWIiOiJkaWQ6ZGh0OnF5YWM0cHJ1OXlrY3hicnV0cGFheGttdXN1c3hoNHd0YzRjdHQxOTgxM3pyaWU4dXl5NXkiLCJpYXQiOjE3MTM3NjQ4ODF9.j90ud9-fl_UrhA5fMfApBOxu3IwLnn_Wq7cugLEaoENdzv14W-jWOuL7mCFy1bCF95PWK6RliZQEqdJZnOw6Dg"
+      ]
+    }
+  },
+  "error": false
+}
