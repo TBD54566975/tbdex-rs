@@ -1,9 +1,11 @@
-import { tbdexError } from "./errors";
-import { KeyManager } from "./key-managers";
 import { PortableDid } from "./portable-did";
-import { Signer } from "./signers";
-import wasm from "./wasm";
-import { Did, Document } from "./wasm/generated-mappings";
+import wasm from "../wasm";
+import { Document } from "./document";
+import { KeyManager } from "../crypto/key-manager";
+import { tbdexError } from "../errors";
+import { InMemoryKeyManager } from "../crypto/in-memory-key-manager";
+import { Signer } from "../crypto/signer";
+import { Did } from "./did";
 
 export class BearerDid {
   readonly did: Did;
@@ -16,23 +18,11 @@ export class BearerDid {
     this.keyManager = keyManager;
   }
 
-  static fromWASM = (wasmBearerDid: wasm.WasmBearerDid): BearerDid => {
-    try {
-      return new BearerDid(
-        Did.fromWASM(wasmBearerDid.did),
-        Document.fromWASM(wasmBearerDid.document),
-        KeyManager.fromWASM(wasmBearerDid.key_manager)
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   toWASM = (): wasm.WasmBearerDid => {
     try {
       return new wasm.WasmBearerDid(
-        Did.toWASM(this.did),
-        Document.toWASM(this.document),
+        this.did.uri,
+        JSON.stringify(this.document),
         KeyManager.toWASM(this.keyManager)
       );
     } catch (error) {
@@ -42,9 +32,14 @@ export class BearerDid {
 
   static fromPortableDID = (portableDID: PortableDid): BearerDid => {
     try {
-      return BearerDid.fromWASM(
-        wasm.WasmBearerDid.from_portable_did(portableDID.toWASM())
+      const did = Did.parse(portableDID.uri);
+
+      const keyManager = new InMemoryKeyManager();
+      portableDID.privateKeys.forEach((privateJwk) =>
+        keyManager.importPrivateJwk(privateJwk)
       );
+
+      return new BearerDid(did, portableDID.document, keyManager);
     } catch (error) {
       throw tbdexError(error);
     }

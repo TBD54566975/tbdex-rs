@@ -1,8 +1,7 @@
+use crate::errors::{map_web5_err, Result};
 use std::sync::Arc;
 use wasm_bindgen::prelude::wasm_bindgen;
 use web5::crypto::dsa::Signer;
-
-use crate::errors::{map_web5_err, Result};
 
 #[wasm_bindgen]
 extern "C" {

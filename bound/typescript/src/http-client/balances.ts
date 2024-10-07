@@ -1,4 +1,4 @@
-import { BearerDid } from "../bearer-did";
+import { BearerDid } from "../dids/bearer-did";
 import { Balance } from "../resources/balance";
 import wasm from "../wasm";
 

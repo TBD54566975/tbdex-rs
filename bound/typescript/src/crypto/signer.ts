@@ -1,4 +1,4 @@
-import wasm from "./wasm";
+import wasm from "../wasm";
 
 export type Signer = {
   sign: (payload: Uint8Array) => Uint8Array;
