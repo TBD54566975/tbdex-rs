@@ -43,3 +43,4 @@ bound/typescript/lib/
 bound/typescript/node_modules/
 examples/hosted-wallet-ts/lib/
 examples/hosted-wallet-ts/node_modules/
+bound/typescript/libtests/
