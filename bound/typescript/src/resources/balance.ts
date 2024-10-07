@@ -1,5 +1,5 @@
 import { ResourceMetadata } from ".";
-import { BearerDid } from "../bearer-did";
+import { BearerDid } from "../dids/bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
 

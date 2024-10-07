@@ -1,8 +1,8 @@
 import { ResourceMetadata } from ".";
-import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
-import { PresentationDefinition } from "../presentation-definition";
+import { PresentationDefinition } from "../credentials/presentation-definition";
 import wasm from "../wasm";
+import { BearerDid } from "../dids/bearer-did";
 
 export class Offering {
   readonly metadata: ResourceMetadata;

@@ -1,24 +1,26 @@
-use super::jwk::WasmJwk;
 use crate::{
-    errors::{map_web5_err, Result},
+    errors::{map_err, map_web5_err, Result},
     web5::signers::WasmSigner,
 };
 use std::sync::Arc;
 use wasm_bindgen::prelude::wasm_bindgen;
-use web5::crypto::key_managers::KeyManager;
+use web5::crypto::{
+    jwk::Jwk,
+    key_managers::{in_memory_key_manager::InMemoryKeyManager, KeyManager},
+};
 
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(
-        typescript_type = "{ import_private_jwk: (private_jwk: WasmJwk) => WasmJwk, get_signer: (public_jwk: WasmJwk) => WasmSigner }"
+        typescript_type = "{ import_private_jwk: (private_jwk_json: string) => string, get_signer: (public_jwk_json: string) => WasmSigner }"
     )]
     pub type ForeignKeyManager;
 
     #[wasm_bindgen(method)]
-    fn import_private_jwk(this: &ForeignKeyManager, private_jwk: WasmJwk) -> WasmJwk;
+    fn import_private_jwk(this: &ForeignKeyManager, private_jwk_json: &str) -> String;
 
     #[wasm_bindgen(method)]
-    fn get_signer(this: &ForeignKeyManager, public_jwk: WasmJwk) -> WasmSigner;
+    fn get_signer(this: &ForeignKeyManager, public_jwk_json: &str) -> WasmSigner;
 }
 
 pub struct ConcreteForeignKeyManager(ForeignKeyManager);
@@ -33,18 +35,19 @@ unsafe impl Send for ConcreteForeignKeyManager {}
 unsafe impl Sync for ConcreteForeignKeyManager {}
 
 impl KeyManager for ConcreteForeignKeyManager {
-    fn import_private_jwk(
-        &self,
-        private_jwk: web5::crypto::jwk::Jwk,
-    ) -> web5::errors::Result<web5::crypto::jwk::Jwk> {
-        Ok(self.0.import_private_jwk(private_jwk.into()).into())
+    fn import_private_jwk(&self, private_jwk: Jwk) -> web5::errors::Result<Jwk> {
+        let private_jwk_json = serde_json::to_string(&private_jwk)?;
+        let public_jwk_json = self.0.import_private_jwk(&private_jwk_json);
+        let public_jwk = serde_json::from_str::<Jwk>(&public_jwk_json)?;
+        Ok(public_jwk)
     }
 
     fn get_signer(
         &self,
-        public_jwk: web5::crypto::jwk::Jwk,
+        public_jwk: Jwk,
     ) -> web5::errors::Result<Arc<dyn web5::crypto::dsa::Signer>> {
-        Ok(self.0.get_signer(public_jwk.into()).into())
+        let public_jwk_json = serde_json::to_string(&public_jwk)?;
+        Ok(self.0.get_signer(&public_jwk_json).into())
     }
 }
 
@@ -75,20 +78,34 @@ impl WasmKeyManager {
     }
 
     #[wasm_bindgen]
-    pub fn import_private_jwk(&self, private_jwk: WasmJwk) -> Result<WasmJwk> {
-        Ok(self
+    pub fn import_private_jwk(&self, private_jwk_json: &str) -> Result<String> {
+        let private_jwk =
+            serde_json::from_str::<Jwk>(private_jwk_json).map_err(|e| map_err(e.into()))?;
+        let public_jwk = self
             .inner
             .import_private_jwk(private_jwk.into())
-            .map_err(map_web5_err)?
-            .into())
+            .map_err(map_web5_err)?;
+        let public_jwk_json = serde_json::to_string(&public_jwk).map_err(|e| map_err(e.into()))?;
+
+        Ok(public_jwk_json)
     }
 
     #[wasm_bindgen]
-    pub fn get_signer(&self, public_jwk: WasmJwk) -> Result<WasmSigner> {
+    pub fn get_signer(&self, public_jwk_json: &str) -> Result<WasmSigner> {
+        let public_jwk =
+            serde_json::from_str::<Jwk>(public_jwk_json).map_err(|e| map_err(e.into()))?;
         Ok(self
             .inner
             .get_signer(public_jwk.into())
             .map_err(map_web5_err)?
             .into())
+    }
+}
+
+#[wasm_bindgen]
+pub fn new_in_memory_key_manager() -> WasmKeyManager {
+    let in_memory_key_manager = InMemoryKeyManager::new();
+    WasmKeyManager {
+        inner: Arc::new(in_memory_key_manager),
     }
 }

@@ -1,5 +1,4 @@
-import { BearerDid } from "../bearer-did";
-import { tbdexError } from "../errors";
+import { BearerDid } from "../dids/bearer-did";
 import { Cancel } from "../messages/cancel";
 import { Close } from "../messages/close";
 import { Order } from "../messages/order";

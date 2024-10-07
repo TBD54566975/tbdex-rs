@@ -1,15 +1,10 @@
 import wasm from ".";
-import { FetchOptions, Response } from "./generated-mappings";
 
 export const ForeignFetch = {
   fetch: async (
     url: string,
-    wasmFetchOptions?: wasm.WasmFetchOptions
+    options?: wasm.WasmFetchOptions
   ): Promise<wasm.WasmResponse> => {
-    const options = wasmFetchOptions
-      ? FetchOptions.fromWASM(wasmFetchOptions)
-      : undefined;
-
     const fetchResponse = await fetch(url, {
       method: options?.method || "GET",
       headers: options?.headers,
@@ -22,12 +17,6 @@ export const ForeignFetch = {
       headers[key] = value;
     });
 
-    const response: Response = {
-      statusCode: fetchResponse.status,
-      body: body,
-      headers: headers,
-    };
-
-    return Response.toWASM(response);
+    return new wasm.WasmResponse(fetchResponse.status, headers, body);
   },
 };
