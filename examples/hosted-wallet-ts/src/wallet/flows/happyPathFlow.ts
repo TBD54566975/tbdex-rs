@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Message, Balance, Rfq } from "tbdex";
+import { Message, Balance, Rfq, CreateExchangeRequestBody } from "tbdex";
 import { BalanceData, CreateSelectedPayinMethod, PayinMethod } from "tbdex/dist/wasm/generated-mappings";
 
 export const runHappyPathFlow = async (
