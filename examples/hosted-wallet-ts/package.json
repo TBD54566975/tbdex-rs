@@ -1,0 +1,19 @@
+{
+  "name": "hosted-wallet-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "tbdex": "file:../../bound/typescript"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  }
+}

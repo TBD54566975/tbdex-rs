@@ -4,18 +4,9 @@
   "private": false,
   "type": "module",
   "description": "",
-  "types": "./dist/tbdex.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/tbdex.d.ts"
-    }
-  },
-  "files": [
-    "./dist/index.js",
-    "./dist/bundle.js",
-    "./dist/tbdex.d.ts"
-  ],
+  "main": "dist/node/index.js",
+  "module": "dist/browser/index.js",
+  "types": "lib/index.d.ts",
   "devDependencies": {
     "@types/chai": "4.3.0",
     "@types/mocha": "9.1.0",
@@ -23,21 +14,24 @@
     "@web/test-runner-playwright": "0.11.0",
     "base64url": "^3.0.1",
     "chai": "4.3.10",
-    "esbuild": "0.19.9",
+    "esbuild": "^0.19.9",
     "mocha": "10.2.0",
-    "rimraf": "5.0.5",
+    "rimraf": "^5.0.10",
     "typescript": "^5.6.2"
   },
   "engines": {
     "node": ">= 18"
   },
   "scripts": {
-    "clean": "rimraf pkg tests/compiled dist",
+    "clean": "rimraf pkg tests/compiled dist lib",
     "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js && cp dist/bundle.js src/wasm/generated.js && cp dist/tbdex_wasm.d.ts src/wasm/generated.d.ts",
-    "build": "tsc && cp -r src/wasm dist/bound/typescript/src",
+    "build": "npm run clean && npm run build:types && npm run build:node && npm run build:browser && npm run build:copy-wasm",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:node": "esbuild src/index.ts --bundle --platform=node --outdir=dist/node --format=cjs",
+    "build:browser": "esbuild src/index.ts --bundle --platform=browser --outdir=dist/browser --format=esm",
+    "build:copy-wasm": "cp src/wasm/generated.d.ts lib/wasm && cp src/wasm/generated.js lib/wasm",
     "test:node": "npm run build && node tests/bundle-node.js && mocha",
     "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner",
     "test": "npm run test:node && npm run test:browser"
-  },
-  "dependencies": {}
+  }
 }
