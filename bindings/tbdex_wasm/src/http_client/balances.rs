@@ -10,5 +10,5 @@ pub async fn get_balances(pfi_did_uri: &str, bearer_did: WasmBearerDid) -> Resul
     let balances = tbdex::http_client::balances::get_balances(pfi_did_uri, &bearer_did.into())
         .await
         .map_err(map_err)?;
-    Ok(balances.to_json_string().map_err(map_err)?)
+    balances.to_json_string().map_err(map_err)
 }
