@@ -1,7 +1,6 @@
-import { tbdexError } from "../../errors";
+import { CANCEL_KIND, ORDER_KIND } from "../../messages";
 import { Cancel } from "../../messages/cancel";
 import { Order } from "../../messages/order";
-import wasm from "../../wasm";
 
 export type WalletUpdateMessage = Order | Cancel;
 
@@ -12,48 +11,35 @@ export class UpdateExchangeRequestBody {
     this.message = message;
   }
 
-  static fromWASM = (
-    wasmUpdateExchangeRequestBody: wasm.WasmUpdateExchangeRequestBody
-  ): UpdateExchangeRequestBody => {
-    try {
-      const kind = wasmUpdateExchangeRequestBody.data.kind;
-      const json = wasmUpdateExchangeRequestBody.data.json;
-
-      let message: WalletUpdateMessage;
-
-      if (kind === "order") message = Order.fromJSONString(json);
-      else if (kind === "cancel") message = Cancel.fromJSONString(json);
-      else throw Error(`unknown kind ${kind}`);
-
-      return new UpdateExchangeRequestBody(message);
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmUpdateExchangeRequestBody => {
-    try {
-      return new wasm.WasmUpdateExchangeRequestBody(this.message);
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): UpdateExchangeRequestBody => {
-    try {
-      return UpdateExchangeRequestBody.fromWASM(
-        wasm.WasmUpdateExchangeRequestBody.from_json_string(json)
-      );
-    } catch (error) {
-      throw tbdexError(error);
+    const obj = JSON.parse(json);
+
+    let message: WalletUpdateMessage;
+    switch (obj.message.metadata.kind) {
+      case ORDER_KIND:
+        obj.message = obj.message as Order;
+        message = new Order(
+          obj.message.metadata,
+          obj.message.data,
+          obj.message.signature
+        );
+        break;
+      case CANCEL_KIND:
+        obj.message = obj.message as Cancel;
+        message = new Cancel(
+          obj.message.metadata,
+          obj.message.data,
+          obj.message.signature
+        );
+        break;
+      default:
+        throw new Error(`unknown message kind ${obj.message.metadata.kind}`);
     }
+
+    return new UpdateExchangeRequestBody(message);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({ message: this.message });
   };
 }

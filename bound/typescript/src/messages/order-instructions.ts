@@ -1,10 +1,7 @@
+import { MessageMetadata } from ".";
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import {
-  MessageMetadata,
-  OrderInstructionsData,
-} from "../wasm/generated-mappings";
 
 export class OrderInstructions {
   readonly metadata: MessageMetadata;
@@ -21,48 +18,17 @@ export class OrderInstructions {
     this.signature = signature;
   }
 
-  static fromWASM = (
-    wasmOrderInstructions: wasm.WasmOrderInstructions
-  ): OrderInstructions => {
-    try {
-      return new OrderInstructions(
-        MessageMetadata.fromWASM(wasmOrderInstructions.metadata),
-        OrderInstructionsData.fromWASM(wasmOrderInstructions.data),
-        wasmOrderInstructions.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmOrderInstructions => {
-    try {
-      return new wasm.WasmOrderInstructions(
-        MessageMetadata.toWASM(this.metadata),
-        OrderInstructionsData.toWASM(this.data),
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): OrderInstructions => {
-    try {
-      return OrderInstructions.fromWASM(
-        wasm.WasmOrderInstructions.from_json_string(json)
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new OrderInstructions(obj.metadata, obj.data, obj.signature);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -74,16 +40,16 @@ export class OrderInstructions {
     externalId?: string
   ): OrderInstructions => {
     try {
-      return OrderInstructions.fromWASM(
-        wasm.WasmOrderInstructions.create(
-          to,
-          from,
-          exchangeId,
-          OrderInstructionsData.toWASM(data),
-          protocol,
-          externalId
-        )
+      let json = wasm.order_instructions_create(
+        to,
+        from,
+        exchangeId,
+        JSON.stringify(data),
+        protocol,
+        externalId
       );
+      let obj = JSON.parse(json);
+      return new OrderInstructions(obj.metadata, obj.data, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -91,9 +57,11 @@ export class OrderInstructions {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmOrderInstructions = this.toWASM();
-      wasmOrderInstructions.sign(bearerDid.toWASM());
-      this.signature = wasmOrderInstructions.signature;
+      const signature = wasm.order_instructions_sign(
+        this.toJSONString(),
+        bearerDid.toWASM()
+      );
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -101,9 +69,19 @@ export class OrderInstructions {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      await wasm.order_instructions_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type OrderInstructionsData = {
+  payin: PaymentInstruction;
+  payout: PaymentInstruction;
+};
+
+export type PaymentInstruction = {
+  instruction?: string;
+  link?: string;
+};

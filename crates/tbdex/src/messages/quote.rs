@@ -135,6 +135,9 @@ pub struct QuoteData {
     pub payout: QuoteDetails,
 }
 
+impl FromJson for QuoteData {}
+impl ToJson for QuoteData {}
+
 /// Represents the details of payin or payout in a Quote message.
 ///
 /// This includes the currency, subtotal, total, and any optional fees.

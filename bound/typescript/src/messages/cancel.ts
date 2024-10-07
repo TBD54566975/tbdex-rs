@@ -1,7 +1,7 @@
+import { MessageMetadata } from ".";
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { MessageMetadata, CancelData } from "../wasm/generated-mappings";
 
 export class Cancel {
   readonly metadata: MessageMetadata;
@@ -14,44 +14,17 @@ export class Cancel {
     this.signature = signature;
   }
 
-  static fromWASM = (wasmCancel: wasm.WasmCancel): Cancel => {
-    try {
-      return new Cancel(
-        MessageMetadata.fromWASM(wasmCancel.metadata),
-        CancelData.fromWASM(wasmCancel.data),
-        wasmCancel.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmCancel => {
-    try {
-      return new wasm.WasmCancel(
-        MessageMetadata.toWASM(this.metadata),
-        CancelData.toWASM(this.data),
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): Cancel => {
-    try {
-      return Cancel.fromWASM(wasm.WasmCancel.from_json_string(json));
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new Cancel(obj.metadata, obj.data, obj.signature);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -63,16 +36,16 @@ export class Cancel {
     externalId?: string
   ): Cancel => {
     try {
-      return Cancel.fromWASM(
-        wasm.WasmCancel.create(
-          to,
-          from,
-          exchangeId,
-          CancelData.toWASM(data),
-          protocol,
-          externalId
-        )
+      let json = wasm.cancel_create(
+        to,
+        from,
+        exchangeId,
+        JSON.stringify(data),
+        protocol,
+        externalId
       );
+      let obj = JSON.parse(json);
+      return new Cancel(obj.metadata, obj.data, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -80,9 +53,11 @@ export class Cancel {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmCancel = this.toWASM();
-      wasmCancel.sign(bearerDid.toWASM());
-      this.signature = wasmCancel.signature;
+      const signature = wasm.cancel_sign(
+        this.toJSONString(),
+        bearerDid.toWASM()
+      );
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -90,9 +65,13 @@ export class Cancel {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      await wasm.cancel_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type CancelData = {
+  reason?: string;
+};

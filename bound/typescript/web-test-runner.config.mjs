@@ -23,5 +23,5 @@ export default {
     config: {
       timeout: '30000',
     },
-  },
+  }
 };

@@ -1,8 +1,7 @@
-import { Message } from ".";
+import { MessageMetadata } from ".";
 import { BearerDid } from "../bearer-did";
 import { tbdexError } from "../errors";
 import wasm from "../wasm";
-import { MessageMetadata, CloseData } from "../wasm/generated-mappings";
 
 export class Close {
   readonly metadata: MessageMetadata;
@@ -15,44 +14,17 @@ export class Close {
     this.signature = signature;
   }
 
-  static fromWASM = (wasmClose: wasm.WasmClose): Close => {
-    try {
-      return new Close(
-        MessageMetadata.fromWASM(wasmClose.metadata),
-        CloseData.fromWASM(wasmClose.data),
-        wasmClose.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
-  toWASM = (): wasm.WasmClose => {
-    try {
-      return new wasm.WasmClose(
-        MessageMetadata.toWASM(this.metadata),
-        CloseData.toWASM(this.data),
-        this.signature
-      );
-    } catch (error) {
-      throw tbdexError(error);
-    }
-  };
-
   static fromJSONString = (json: string): Close => {
-    try {
-      return Close.fromWASM(wasm.WasmClose.from_json_string(json));
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    const obj = JSON.parse(json);
+    return new Close(obj.metadata, obj.data, obj.signature);
   };
 
   toJSONString = (): string => {
-    try {
-      return this.toWASM().to_json_string();
-    } catch (error) {
-      throw tbdexError(error);
-    }
+    return JSON.stringify({
+      metadata: this.metadata,
+      data: this.data,
+      signature: this.signature,
+    });
   };
 
   static create = (
@@ -64,16 +36,16 @@ export class Close {
     externalId?: string
   ): Close => {
     try {
-      return Close.fromWASM(
-        wasm.WasmClose.create(
-          to,
-          from,
-          exchangeId,
-          CloseData.toWASM(data),
-          protocol,
-          externalId
-        )
+      let json = wasm.close_create(
+        to,
+        from,
+        exchangeId,
+        JSON.stringify(data),
+        protocol,
+        externalId
       );
+      let obj = JSON.parse(json);
+      return new Close(obj.metadata, obj.data, obj.signature);
     } catch (error) {
       throw tbdexError(error);
     }
@@ -81,9 +53,11 @@ export class Close {
 
   sign = (bearerDid: BearerDid) => {
     try {
-      const wasmClose = this.toWASM();
-      wasmClose.sign(bearerDid.toWASM());
-      this.signature = wasmClose.signature;
+      const signature = wasm.close_sign(
+        this.toJSONString(),
+        bearerDid.toWASM()
+      );
+      this.signature = signature;
     } catch (error) {
       throw tbdexError(error);
     }
@@ -91,9 +65,14 @@ export class Close {
 
   verify = async () => {
     try {
-      await this.toWASM().verify();
+      await wasm.close_verify(this.toJSONString());
     } catch (error) {
       throw tbdexError(error);
     }
   };
 }
+
+export type CloseData = {
+  reason?: string;
+  success?: boolean;
+};

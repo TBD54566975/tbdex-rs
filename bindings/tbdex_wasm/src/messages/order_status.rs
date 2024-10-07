@@ -1,138 +1,37 @@
-use super::WasmMessageMetadata;
 use crate::{
     errors::{map_err, Result},
     web5::bearer_did::WasmBearerDid,
 };
-use std::str::FromStr;
 use tbdex::{
     json::{FromJson, ToJson},
-    messages::order_status::{OrderStatus, OrderStatusData, Status},
+    messages::order_status::{OrderStatus, OrderStatusData},
 };
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub struct WasmOrderStatus {
-    inner: OrderStatus,
-}
-
-impl From<WasmOrderStatus> for OrderStatus {
-    fn from(value: WasmOrderStatus) -> Self {
-        value.inner
-    }
-}
-
-impl From<OrderStatus> for WasmOrderStatus {
-    fn from(value: OrderStatus) -> Self {
-        Self { inner: value }
-    }
-}
-
-#[wasm_bindgen]
-impl WasmOrderStatus {
-    #[wasm_bindgen(constructor)]
-    pub fn new(
-        metadata: WasmMessageMetadata,
-        data: WasmOrderStatusData,
-        signature: String,
-    ) -> Result<WasmOrderStatus> {
-        Ok(Self {
-            inner: OrderStatus {
-                metadata: metadata.into(),
-                data: data.into(),
-                signature,
-            },
-        })
-    }
-
-    pub fn from_json_string(json: &str) -> Result<WasmOrderStatus> {
-        Ok(Self {
-            inner: OrderStatus::from_json_string(json).map_err(map_err)?,
-        })
-    }
-
-    pub fn to_json_string(&self) -> Result<String> {
-        self.inner.to_json_string().map_err(map_err)
-    }
-
-    #[wasm_bindgen]
-    pub fn create(
-        to: &str,
-        from: &str,
-        exchange_id: &str,
-        data: WasmOrderStatusData,
-        protocol: Option<String>,
-        external_id: Option<String>,
-    ) -> Result<WasmOrderStatus> {
-        let data: OrderStatusData = data.into();
-        Ok(WasmOrderStatus {
-            inner: OrderStatus::create(to, from, exchange_id, &data, protocol, external_id)
-                .map_err(map_err)?,
-        })
-    }
-
-    #[wasm_bindgen]
-    pub fn sign(&mut self, bearer_did: WasmBearerDid) -> Result<()> {
-        self.inner.sign(&bearer_did.into()).map_err(map_err)
-    }
-
-    #[wasm_bindgen]
-    pub async fn verify(&self) -> Result<()> {
-        self.inner.verify().await.map_err(map_err)
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn metadata(&self) -> WasmMessageMetadata {
-        self.inner.metadata.clone().into()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn data(&self) -> WasmOrderStatusData {
-        self.inner.data.clone().into()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn signature(&self) -> String {
-        self.inner.signature.clone()
-    }
+pub fn order_status_create(
+    to: &str,
+    from: &str,
+    exchange_id: &str,
+    data_json: &str,
+    protocol: Option<String>,
+    external_id: Option<String>,
+) -> Result<String> {
+    let data = OrderStatusData::from_json_string(data_json).map_err(map_err)?;
+    let order_status = OrderStatus::create(to, from, exchange_id, &data, protocol, external_id)
+        .map_err(map_err)?;
+    order_status.to_json_string().map_err(map_err)
 }
 
 #[wasm_bindgen]
-pub struct WasmOrderStatusData {
-    inner: OrderStatusData,
-}
-
-impl From<OrderStatusData> for WasmOrderStatusData {
-    fn from(value: OrderStatusData) -> Self {
-        Self { inner: value }
-    }
-}
-
-impl From<WasmOrderStatusData> for OrderStatusData {
-    fn from(value: WasmOrderStatusData) -> Self {
-        value.inner
-    }
+pub fn order_status_sign(order_status_json: &str, bearer_did: WasmBearerDid) -> Result<String> {
+    let mut order_status = OrderStatus::from_json_string(order_status_json).map_err(map_err)?;
+    order_status.sign(&bearer_did.into()).map_err(map_err)?;
+    Ok(order_status.signature)
 }
 
 #[wasm_bindgen]
-impl WasmOrderStatusData {
-    #[wasm_bindgen(constructor)]
-    pub fn new(status: String, details: Option<String>) -> Result<WasmOrderStatusData> {
-        let status_enum = Status::from_str(&status).map_err(map_err)?;
-        Ok(Self {
-            inner: OrderStatusData {
-                status: status_enum,
-                details,
-            },
-        })
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn status(&self) -> String {
-        self.inner.status.to_string()
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn details(&self) -> Option<String> {
-        self.inner.details.clone()
-    }
+pub async fn order_status_verify(order_status_json: &str) -> Result<()> {
+    let order_status = OrderStatus::from_json_string(order_status_json).map_err(map_err)?;
+    order_status.verify().await.map_err(map_err)
 }

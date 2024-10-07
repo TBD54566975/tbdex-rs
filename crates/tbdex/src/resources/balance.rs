@@ -27,6 +27,8 @@ pub struct Balance {
 impl ToJson for Balance {}
 impl FromJson for Balance {}
 
+impl ToJson for Vec<Balance> {}
+
 impl Balance {
     /// Creates a new Balance resource.
     ///
@@ -117,6 +119,8 @@ pub struct BalanceData {
     /// The available amount of the currency.
     pub available: String,
 }
+
+impl FromJson for BalanceData {}
 
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {

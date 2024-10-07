@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use super::{add_pagination, get_json, get_service_endpoint, post_json, put_json, Result};
 use crate::http::exchanges::GetExchangesResponseBody;
+use crate::json::{FromJson, ToJson};
 use crate::{
     http::exchanges::{
         CreateExchangeRequestBody, GetExchangeResponseBody, UpdateExchangeRequestBody,
@@ -33,6 +34,9 @@ pub struct Exchange {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub close: Option<Arc<Close>>,
 }
+
+impl FromJson for Exchange {}
+impl ToJson for Exchange {}
 
 pub async fn create_exchange(rfq: &Rfq, reply_to: Option<String>) -> Result<()> {
     let service_endpoint = get_service_endpoint(&rfq.metadata.to).await?;

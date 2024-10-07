@@ -29,6 +29,8 @@ pub struct Offering {
 impl ToJson for Offering {}
 impl FromJson for Offering {}
 
+impl ToJson for Vec<Offering> {}
+
 impl Offering {
     /// Creates a new Offering resource.
     ///
@@ -132,6 +134,8 @@ pub struct OfferingData {
     /// Details about the offering's cancellation policy.
     pub cancellation: CancellationDetails,
 }
+
+impl FromJson for OfferingData {}
 
 /// Represents the details of the payin for an Offering.
 ///

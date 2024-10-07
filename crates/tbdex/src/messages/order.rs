@@ -121,6 +121,9 @@ impl Order {
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
 pub struct OrderData {}
 
+impl FromJson for OrderData {}
+impl ToJson for OrderData {}
+
 #[cfg(test)]
 mod tbdex_test_vectors_protocol {
     use super::*;
