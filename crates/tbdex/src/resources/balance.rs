@@ -27,6 +27,8 @@ pub struct Balance {
 impl ToJson for Balance {}
 impl FromJson for Balance {}
 
+impl ToJson for Vec<Balance> {}
+
 impl Balance {
     /// Creates a new Balance resource.
     ///

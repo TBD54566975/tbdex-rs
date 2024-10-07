@@ -29,6 +29,8 @@ pub struct Offering {
 impl ToJson for Offering {}
 impl FromJson for Offering {}
 
+impl ToJson for Vec<Offering> {}
+
 impl Offering {
     /// Creates a new Offering resource.
     ///
