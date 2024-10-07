@@ -34,10 +34,7 @@ export type Filter = {
   type?: string;
 };
 
-// todo make enum
-export type Optionality = {
-  optionality: string;
-};
+export type Optionality = "required" | "preferred";
 
 export type SubmissionRequirement = {
   count?: number;
@@ -50,7 +47,4 @@ export type SubmissionRequirement = {
   rule: SubmissionRequirementRule;
 };
 
-// todo make enum
-export type SubmissionRequirementRule = {
-  rule: string;
-};
+export type SubmissionRequirementRule = "all" | "pick";
