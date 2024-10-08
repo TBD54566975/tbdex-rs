@@ -6,6 +6,14 @@ import { OrderStatus } from "./order-status";
 import { Quote } from "./quote";
 import { Rfq } from "./rfq";
 
+export * from "./cancel";
+export * from "./close";
+export * from "./order-instructions";
+export * from "./order-status";
+export * from "./order";
+export * from "./quote";
+export * from "./rfq";
+
 export type Message =
   | Rfq
   | Quote
