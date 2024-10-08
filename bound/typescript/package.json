@@ -37,7 +37,7 @@
     "build:browser": "node bundle-browser.js",
     "build:cjs": "node bundle-cjs.js",
     "build:esm": "node bundle-esm.js",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outFile dist/index.d.ts",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outFile dist/index.d.ts && ./declaration-hack.sh",
     "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
     "build": "npm run build:wasm && npm run build:types && npm run build:browser && npm run build:esm && npm run build:cjs",
     "test:node": "tsc -p tests/tsconfig.json && node tests/bundle-node.js && mocha",
