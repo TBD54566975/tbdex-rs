@@ -1,21 +1,25 @@
 {
   "name": "tbdex",
   "version": "0.1.0",
-  "private": false,
   "type": "module",
   "description": "",
-  "types": "./dist/tbdex.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/tbdex.d.ts"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./browser": {
+      "import": "./dist/browser.mjs",
+      "require": "./dist/browser.js"
     }
   },
-  "files": [
-    "./dist/index.js",
-    "./dist/bundle.js",
-    "./dist/tbdex.d.ts"
-  ],
   "devDependencies": {
     "@types/chai": "4.3.0",
     "@types/mocha": "9.1.0",
@@ -28,15 +32,16 @@
     "rimraf": "5.0.5",
     "typescript": "^5.6.2"
   },
-  "engines": {
-    "node": ">= 18"
-  },
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
-    "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js && cp dist/bundle.js src/wasm/generated.js && cp dist/tbdex_wasm.d.ts src/wasm/generated.d.ts",
-    "build": "tsc && cp -r src/wasm dist/bound/typescript/src",
-    "test:node": "npm run build && node tests/bundle-node.js && mocha",
-    "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner",
+    "build:browser": "node bundle-browser.js",
+    "build:cjs": "node bundle-cjs.js",
+    "build:esm": "node bundle-esm.js",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outFile dist/index.d.ts && ./declaration-hack.sh",
+    "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
+    "build": "npm run build:wasm && npm run build:types && npm run build:browser && npm run build:esm && npm run build:cjs",
+    "test:node": "tsc -p tests/tsconfig.json && node tests/bundle-node.js && mocha",
+    "test:browser": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner",
     "test": "npm run test:node && npm run test:browser"
   },
   "dependencies": {}

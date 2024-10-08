@@ -1,6 +1,9 @@
 import { Balance } from "./balance";
 import { Offering } from "./offering";
 
+export * from "./balance"
+export * from "./offering"
+
 export type Resource = Balance | Offering;
 
 export type ResourceMetadata = {
