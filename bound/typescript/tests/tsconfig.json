@@ -4,6 +4,8 @@
     "strict": true,
     "useUnknownInCatchVariables": false,
     "outDir": "compiled",
+    "declaration": true,
+    "declarationMap": true,
     "declarationDir": "compiled/types",
     "sourceMap": true,
   },

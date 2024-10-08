@@ -7,19 +7,17 @@
     "dist",
     "src"
   ],
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./browser": {
       "import": "./dist/browser.mjs",
-      "require": "./dist/browser.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/browser.js"
     }
   },
   "devDependencies": {
@@ -37,10 +35,11 @@
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
     "build:browser": "node bundle-browser.js",
-    "build:cjs": "tsc -p tsconfig.cjs.json && cp src/wasm/generated.* dist/cjs/wasm && echo '{\"type\": \"commonjs\"}' > ./dist/cjs/package.json",
-    "build:esm": "tsc && cp src/wasm/generated.* dist/esm/wasm",
+    "build:cjs": "node bundle-cjs.js",
+    "build:esm": "node bundle-esm.js",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outFile dist/index.d.ts",
     "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
-    "build": "npm run build:wasm && npm run build:browser && npm run build:esm && npm run build:cjs",
+    "build": "npm run build:wasm && npm run build:types && npm run build:browser && npm run build:esm && npm run build:cjs",
     "test:node": "tsc -p tests/tsconfig.json && node tests/bundle-node.js && mocha",
     "test:browser": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner",
     "test": "npm run test:node && npm run test:browser"
