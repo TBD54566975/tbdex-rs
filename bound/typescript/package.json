@@ -41,8 +41,8 @@
     "build:esm": "tsc && cp src/wasm/generated.* dist/esm/wasm",
     "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
     "build": "npm run build:wasm && npm run build:browser && npm run build:esm && npm run build:cjs",
-    "test:node": "npm run build && node tests/bundle-node.js && mocha",
-    "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner",
+    "test:node": "tsc -p tests/tsconfig.json && node tests/bundle-node.js && mocha",
+    "test:browser": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner",
     "test": "npm run test:node && npm run test:browser"
   },
   "dependencies": {}

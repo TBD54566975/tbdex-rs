@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "useUnknownInCatchVariables": false,
+    "outDir": "compiled",
+    "declarationDir": "compiled/types",
+    "sourceMap": true,
+  },
+  "include": [
+    "../src",
+    ".",
+  ],
+  "exclude": [
+    "./compiled"
+  ]
+}
