@@ -1,21 +1,27 @@
 {
   "name": "tbdex",
   "version": "0.1.0",
-  "private": false,
   "type": "module",
   "description": "",
-  "types": "./dist/tbdex.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/tbdex.d.ts"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.mjs",
+      "require": "./dist/browser.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
-  "files": [
-    "./dist/index.js",
-    "./dist/bundle.js",
-    "./dist/tbdex.d.ts"
-  ],
   "devDependencies": {
     "@types/chai": "4.3.0",
     "@types/mocha": "9.1.0",
@@ -28,13 +34,10 @@
     "rimraf": "5.0.5",
     "typescript": "^5.6.2"
   },
-  "engines": {
-    "node": ">= 18"
-  },
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
     "build:browser": "node bundle-browser.js",
-    "build:cjs": "tsc -p tsconfig.cjs.json && cp src/wasm/generated.* dist/cjs/wasm",
+    "build:cjs": "tsc -p tsconfig.cjs.json && cp src/wasm/generated.* dist/cjs/wasm && echo '{\"type\": \"commonjs\"}' > ./dist/cjs/package.json",
     "build:esm": "tsc && cp src/wasm/generated.* dist/esm/wasm",
     "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js",
     "build": "npm run build:wasm && npm run build:browser && npm run build:esm && npm run build:cjs",
