@@ -26,9 +26,9 @@ echo "module.exports = \`$(base64 -i pkg/tbdex_wasm_bg.wasm)\`;" > pkg/tbdex_was
 {
   sed -e '/Text..coder.*= require(.util.)/d' \
       -e '/^const path = /,$d' pkg/tbdex_wasm.js
-  cat scripts/epilogue.js
+  cat bundle-wasm/epilogue.js
 } > pkg/tbdex_wasm.js.new
 mv pkg/tbdex_wasm.js.new pkg/tbdex_wasm.js
 
 # also extend the typescript
-cat scripts/epilogue.d.ts >> pkg/tbdex_wasm.d.ts
+cat bundle-wasm/epilogue.d.ts >> pkg/tbdex_wasm.d.ts

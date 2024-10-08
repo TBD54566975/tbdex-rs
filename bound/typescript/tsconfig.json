@@ -19,7 +19,7 @@
     "dist",
     "node_modules",
     "pkg",
-    "scripts",
+    "bundle-wasm",
     "tests"
   ]
 }

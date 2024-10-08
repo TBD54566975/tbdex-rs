@@ -39,7 +39,7 @@
     "build:browser": "node bundle-browser.js",
     "build:cjs": "tsc -p tsconfig.cjs.json && cp src/wasm/generated.* dist/cjs/wasm && echo '{\"type\": \"commonjs\"}' > ./dist/cjs/package.json",
     "build:esm": "tsc && cp src/wasm/generated.* dist/esm/wasm",
-    "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js",
+    "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
     "build": "npm run build:wasm && npm run build:browser && npm run build:esm && npm run build:cjs",
     "test:node": "npm run build && node tests/bundle-node.js && mocha",
     "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner",
