@@ -33,8 +33,11 @@
   },
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
-    "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js",
+    "build:browser": "node bundle-browser.js",
+    "build:cjs": "tsc -p tsconfig.cjs.json && cp src/wasm/generated.* dist/cjs/wasm",
     "build:esm": "tsc && cp src/wasm/generated.* dist/esm/wasm",
+    "build:wasm": "./scripts/build.sh && node ./scripts/bundle.js",
+    "build": "npm run build:wasm && npm run build:browser && npm run build:esm && npm run build:cjs",
     "test:node": "npm run build && node tests/bundle-node.js && mocha",
     "test:browser": "npm run build && node tests/bundle-browser.js && web-test-runner",
     "test": "npm run test:node && npm run test:browser"
