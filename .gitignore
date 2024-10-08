@@ -39,3 +39,6 @@ pkg/
 bound/typescript/src/wasm/generated.js
 bound/typescript/src/wasm/generated.d.ts
 bound/typescript/tests/compiled
+bound/typescript/generate-mappings/node_modules/
+bound/typescript/node_modules/
+examples/hosted-wallet-ts/node_modules/
