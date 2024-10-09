@@ -1,9 +1,8 @@
 import esbuild from "esbuild";
 
-const browserConfig = {
+esbuild.build({
   entryPoints : ["./src/index.ts"],
   bundle      : true,
-  format      : "esm",
   sourcemap   : true,
   minify      : true,
   platform    : "browser",
@@ -11,17 +10,6 @@ const browserConfig = {
   define      : {
     "global": "globalThis",
   },
-};
-
-// esm polyfilled bundle for browser
-esbuild.build({
-  ...browserConfig,
-  outfile: "dist/browser.mjs",
-});
-
-// iife polyfilled bundle for browser
-esbuild.build({
-  ...browserConfig,
   format     : "iife",
   globalName : "tbDEX",
   outfile    : "dist/browser.js",

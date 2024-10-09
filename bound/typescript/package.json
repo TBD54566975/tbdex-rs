@@ -34,17 +34,18 @@
   },
   "scripts": {
     "clean": "rimraf pkg tests/compiled dist",
-    "build:browser": "node bundle-browser.js",
-    "build:cjs": "node bundle-cjs.js",
-    "build:esm": "node bundle-esm.js",
+    "build:browser:cjs": "node bundle-browser-cjs.js",
+    "build:browser:esm": "node bundle-browser-esm.js",
+    "build:node:cjs": "node bundle-nodejs-cjs.js",
+    "build:node:esm": "node bundle-nodejs-esm.js",
     "build:types": "tsc --declaration --emitDeclarationOnly --outFile dist/index.d.ts && ./declaration-hack.sh",
     "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
-    "build": "npm run build:wasm && npm run build:types && npm run build:browser && npm run build:esm && npm run build:cjs",
-    "test:cjs": "tsc -p tests/tsconfig.json && node tests/bundle-cjs.js && mocha --config .mocharc.cjs.json",
-    "test:esm": "tsc -p tests/tsconfig.json && node tests/bundle-esm.js && mocha --config .mocharc.esm.json",
-    "test:browser:cjs": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner --config web-test-runner.cjs.config.mjs",
-    "test:browser:esm": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner --config web-test-runner.esm.config.mjs",
-    "test": "npm run test:node && npm run test:browser"
+    "build": "npm run build:wasm && npm run build:types && npm run build:browser:cjs && npm run build:browser:esm && npm run build:node:esm && npm run build:node:cjs",
+    "test:node:cjs": "tsc -p tests/tsconfig.json && node tests/bundle-nodejs-cjs.js && mocha --config .mocharc.cjs.json",
+    "test:node:esm": "tsc -p tests/tsconfig.json && node tests/bundle-nodejs-esm.js && mocha --config .mocharc.esm.json",
+    "test:browser:cjs": "tsc -p tests/tsconfig.json && node tests/bundle-browser-cjs.js && web-test-runner --config web-test-runner.cjs.config.mjs",
+    "test:browser:esm": "tsc -p tests/tsconfig.json && node tests/bundle-browser-esm.js && web-test-runner --config web-test-runner.esm.config.mjs",
+    "test": "npm run test:node:cjs && npm run test:node:esm && npm run test:browser:cjs && npm run test:browser:esm"
   },
   "dependencies": {}
 }

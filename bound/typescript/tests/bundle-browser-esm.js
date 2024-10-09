@@ -22,16 +22,3 @@ esbuild.buildSync({
     'global': 'globalThis',
   },
 });
-
-esbuild.buildSync({
-  entryPoints: [`${__dirname}/compiled/bound/typescript/tests/**/*.test.js`],
-  format      : 'cjs',
-  bundle      : true,
-  sourcemap   : true,
-  platform    : 'browser',
-  target      : ['chrome101', 'firefox108', 'safari16'],
-  outdir      : `${__dirname}/compiled/browser/cjs`,
-  define      : {
-    'global': 'globalThis',
-  },
-});
