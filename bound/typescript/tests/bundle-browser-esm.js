@@ -17,7 +17,7 @@ esbuild.buildSync({
   sourcemap   : true,
   platform    : 'browser',
   target      : ['chrome101', 'firefox108', 'safari16'],
-  outdir      : `${__dirname}/compiled/browser`,
+  outdir      : `${__dirname}/compiled/browser/esm`,
   define      : {
     'global': 'globalThis',
   },

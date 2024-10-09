@@ -59,5 +59,5 @@ test-typescript: setup
   cd bound/typescript
   npm install
   npm run clean
-  npm run build:wasm
+  npm run build
   npm run test

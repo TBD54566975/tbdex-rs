@@ -4,7 +4,7 @@ import { playwrightLauncher } from '@web/test-runner-playwright'
  * @type {import('@web/test-runner').TestRunnerConfig}
  */
 export default {
-  files       : ['./tests/compiled/browser/**/*.test.js'],
+  files       : ['./tests/compiled/browser/esm/**/*.test.js'],
   playwright  : true,
   browsers    : [
     playwrightLauncher({
