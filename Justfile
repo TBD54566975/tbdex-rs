@@ -52,7 +52,7 @@ test-kotlin: setup
   cd bound/kt && mvn clean verify
 
 wasm: setup
-  (cd bindings/tbdex_wasm; wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg)
+  (cd bindings/tbdex_wasm; wasm-pack build --target bundler --out-dir ../../bound/typescript/pkg)
 
 test-typescript: setup
   #!/bin/bash
