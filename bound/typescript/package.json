@@ -40,8 +40,10 @@
     "build:types": "tsc --declaration --emitDeclarationOnly --outFile dist/index.d.ts && ./declaration-hack.sh",
     "build:wasm": "./bundle-wasm/build.sh && node ./bundle-wasm/bundle.js",
     "build": "npm run build:wasm && npm run build:types && npm run build:browser && npm run build:esm && npm run build:cjs",
-    "test:node": "tsc -p tests/tsconfig.json && node tests/bundle-node.js && mocha",
-    "test:browser": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner",
+    "test:cjs": "tsc -p tests/tsconfig.json && node tests/bundle-cjs.js && mocha --config .mocharc.cjs.json",
+    "test:esm": "tsc -p tests/tsconfig.json && node tests/bundle-esm.js && mocha --config .mocharc.esm.json",
+    "test:browser:cjs": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner --config web-test-runner.cjs.config.mjs",
+    "test:browser:esm": "tsc -p tests/tsconfig.json && node tests/bundle-browser.js && web-test-runner --config web-test-runner.esm.config.mjs",
     "test": "npm run test:node && npm run test:browser"
   },
   "dependencies": {}
