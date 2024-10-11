@@ -633,6 +633,21 @@ mod tests {
 
         assert_eq!(rfq, parsed_rfq);
     }
+
+    #[test]
+    fn test_typesafe_id_sorting() {
+        let resource_kind = MessageKind::Rfq;
+
+        let ids: Vec<String> = (0..1000).map(|_| resource_kind.typesafe_id().unwrap()).collect();
+
+        let mut sorted_ids = ids.clone();
+        sorted_ids.sort();
+
+        assert_eq!(ids, sorted_ids, "IDs should be generated in sortable order");
+
+        let unique_ids: std::collections::HashSet<_> = ids.into_iter().collect();
+        assert_eq!(unique_ids.len(), 1000, "All generated IDs should be unique");
+    }
 }
 
 #[cfg(test)]

@@ -69,7 +69,7 @@ impl fmt::Display for MessageKind {
 impl MessageKind {
     pub fn typesafe_id(&self) -> Result<String> {
         let dynamic_type = DynamicType::new(&self.to_string())?;
-        Ok(TypeSafeId::from_type_and_uuid(dynamic_type, Uuid::new_v4()).to_string())
+        Ok(TypeSafeId::from_type_and_uuid(dynamic_type, Uuid::now_v7()).to_string())
     }
 }
 
