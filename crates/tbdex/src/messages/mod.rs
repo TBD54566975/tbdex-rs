@@ -80,22 +80,24 @@ impl MessageKind {
         let class_name = type_name::<Self>();
         let timestamp = Utc::now().timestamp_nanos_opt().unwrap();
 
-        let mut last_timestamp = crate::messages::LAST_TIMESTAMP.lock().unwrap();
+        let mut last_timestamp = LAST_TIMESTAMP.lock().unwrap();
 
-        let counter_value = if *last_timestamp == timestamp {
-            crate::messages::COUNTER.fetch_add(1, Ordering::SeqCst)
-        } else {
-            crate::messages::COUNTER.store(0, Ordering::SeqCst);
+        let counter_value = if timestamp > *last_timestamp {
+            // New timestamp, reset counter
             *last_timestamp = timestamp;
+            COUNTER.store(0, Ordering::SeqCst);
             0
+        } else {
+            // Same or earlier timestamp, increment counter
+            COUNTER.fetch_add(1, Ordering::SeqCst)
         };
 
         let uuid_v4 = Uuid::new_v4();
 
-        // Create a k-sortable ID in the format: classname_timestamp_counter_uuid
-        let k_sortable_id = format!("{}_{}_{}_{}", class_name, timestamp, counter_value, uuid_v4);
+        // Create an ID in the format: classname_timestamp_counter_uuid
+        let id = format!("{}_{}_{}_{}", class_name, timestamp, counter_value, uuid_v4);
 
-        Ok(k_sortable_id)
+        Ok(id)
     }
 }
 
