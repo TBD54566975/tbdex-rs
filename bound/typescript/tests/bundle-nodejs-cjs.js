@@ -1,5 +1,4 @@
 import { fileURLToPath } from 'node:url'
-
 import esbuild from 'esbuild'
 import path from 'node:path'
 import fs from 'node:fs'
@@ -12,10 +11,10 @@ fs.copyFileSync(`${__dirname}/../src/wasm/generated.js`, `${__dirname}/compiled/
 
 esbuild.buildSync({
   entryPoints: [`${__dirname}/compiled/bound/typescript/tests/**/*.test.js`],
-  format: 'esm',
+  format: 'cjs',
   bundle: true,
   sourcemap: true,
   platform: 'node',
   target: ['node18'],
-  outdir: `${__dirname}/compiled/node`,
+  outdir: `${__dirname}/compiled/cjs`,
 });

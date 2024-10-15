@@ -418,8 +418,8 @@ jobs:
           name: rust-test-results
           path: test-results/rust-test-results.xml
 
-  test-typescript:
-    runs-on: ubuntu-latest
+  typescript:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Init Hermit
@@ -432,5 +432,6 @@ jobs:
           cd bound/typescript
           npm install
           npm run clean
-          npm run build:wasm
-          npm run test:node
+          npm run build
+          npm run test:node:cjs
+          npm run test:node:esm
