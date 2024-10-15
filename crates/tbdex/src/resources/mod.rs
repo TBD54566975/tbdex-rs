@@ -2,11 +2,12 @@ pub mod balance;
 pub mod offering;
 
 use std::{fmt, str::FromStr};
-
+use std::sync::atomic::{AtomicU64, Ordering};
+use chrono::Utc;
 use crate::errors::{Result, TbdexError};
 use serde::{Deserialize, Serialize};
 use type_safe_id::{DynamicType, TypeSafeId};
-use uuid::Uuid;
+use uuid::{NoContext, Timestamp, Uuid};
 
 #[derive(Debug, Deserialize, PartialEq, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -36,10 +37,23 @@ impl fmt::Display for ResourceKind {
     }
 }
 
+static COUNTER: AtomicU64 = AtomicU64::new(0);
+
 impl ResourceKind {
     pub fn typesafe_id(&self) -> Result<String> {
         let dynamic_type = DynamicType::new(&self.to_string())?;
-        Ok(TypeSafeId::from_type_and_uuid(dynamic_type, Uuid::new_v4()).to_string())
+        let timestamp_nanos = Utc::now()
+            .timestamp_nanos_opt()
+            .ok_or_else(|| TbdexError::Generic("Failed to get timestamp nanos".to_string()))?;
+
+        let seconds = (timestamp_nanos / 1_000_000_000) as u64;
+        let subsec_nanos = (timestamp_nanos % 1_000_000_000) as u32;
+
+        let count = COUNTER.fetch_add(1, Ordering::SeqCst);
+        let unique_seconds = seconds.wrapping_add(count);
+
+        let timestamp = Timestamp::from_unix(NoContext, unique_seconds, subsec_nanos);
+        Ok(TypeSafeId::from_type_and_uuid(dynamic_type, Uuid::new_v7(timestamp)).to_string())
     }
 }
 
