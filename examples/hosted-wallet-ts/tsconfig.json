@@ -4,6 +4,7 @@
     "target": "ESNext", // Optional, but targets newer ECMAScript versions
     "esModuleInterop": true, // Allows default imports from CommonJS modules
     "moduleResolution": "node",
-    "outDir": "./dist" // Optional, ensures .ts files are compiled to a specific directory
+    "outDir": "./dist", // Optional, ensures .ts files are compiled to a specific directory
+    "resolveJsonModule": true
   }
 }
