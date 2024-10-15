@@ -73,7 +73,9 @@ static COUNTER: AtomicU64 = AtomicU64::new(0);
 impl MessageKind {
     pub fn typesafe_id(&self) -> Result<String> {
         let dynamic_type = DynamicType::new(&self.to_string())?;
-        let timestamp_nanos = Utc::now().timestamp_nanos_opt().unwrap();
+        let timestamp_nanos = Utc::now()
+            .timestamp_nanos_opt()
+            .ok_or_else(|| TbdexError::Generic("Failed to get timestamp nanos".to_string()))?;
 
         let seconds = (timestamp_nanos / 1_000_000_000) as u64;
         let subsec_nanos = (timestamp_nanos % 1_000_000_000) as u32;

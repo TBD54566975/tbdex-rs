@@ -33,6 +33,9 @@ pub enum TbdexError {
     Web5Error(#[from] Web5Error),
     #[error(transparent)]
     ErrorResponseBody(#[from] ErrorResponseBody),
+
+    #[error("{0}")]
+    Generic(String),
 }
 
 impl From<SerdeJsonError> for TbdexError {
