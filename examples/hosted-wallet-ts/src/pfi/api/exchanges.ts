@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
 import {
-  PortableDid,
   BearerDid,
   Offering,
   GetExchangeResponseBody,
@@ -17,12 +16,11 @@ import {
   Cancel,
   Message,
   GetExchangesResponseBody,
-  PaymentInstruction,
   QuoteData,
   OrderInstructionsData,
   OrderStatusData,
   CloseData,
-  ORDER_STATUS_KIND
+  ORDER_STATUS_KIND,
 } from 'tbdex';
 import { OfferingRepository } from '../data/offering-repository';
 
@@ -36,340 +34,330 @@ interface Exchange {
   orderStatuses?: Message[];
 }
 
-// const portableDID: PortableDid = JSON.parse(
-//   '{"uri":"did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0","document":{"id":"did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0","@context":["https://www.w3.org/ns/did/v1"],"verificationMethod":[{"id":"did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0#0","type":"JsonWebKey","controller":"did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0","publicKeyJwk":{"alg":"Ed25519","kty":"OKP","crv":"Ed25519","x":"iAuxCoarRaizG1ZH0zajTkrb_Pk-7zM-zFW4DA8AK5M"}}],"authentication":["did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0#0"],"assertionMethod":["did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0#0"],"capabilityInvocation":["did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0#0"],"capabilityDelegation":["did:jwk:eyJhbGciOiJFZDI1NTE5Iiwia3R5IjoiT0tQIiwiY3J2IjoiRWQyNTUxOSIsIngiOiJpQXV4Q29hclJhaXpHMVpIMHphalRrcmJfUGstN3pNLXpGVzREQThBSzVNIn0#0"]},"privateKeys":[{"alg":"Ed25519","kty":"OKP","crv":"Ed25519","d":"GSd8aUVcNX9O8ipqOV2gXJToHyzUZ_8mJrQ7G5UsmHs","x":"iAuxCoarRaizG1ZH0zajTkrb_Pk-7zM-zFW4DA8AK5M"}]}'
-// );
+export default function exchangesRouter(
+  bearerDid: BearerDid,
+  offeringsRepository: OfferingRepository
+) {
+  const router = Router();
 
-// const bearerDid = BearerDid.fromPortableDID(portableDID);
+  // In-memory storage for exchanges and reply URLs
+  const exchangesToReplyTo = new Map<string, string>();
+  const exchangeIdToExchange = new Map<string, Exchange>();
 
-export default function exchangesRouter(bearerDid: BearerDid, offeringsRepository: OfferingRepository) {
+  // Helper function to introduce delays in async functions
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const router = Router();
+  /**
+   * GET /exchanges
+   * Retrieves a list of exchange IDs with pagination support
+   */
+  router.get('/', (req, res) => {
+    console.log('GET /exchanges');
 
-const exchangesToReplyTo: Map<string, string> = new Map();
-const exchangeIdToExchange: Map<string, Exchange> = new Map();
+    try {
+      const offset = parseInt(req.query['page[offset]'] as string) || 0;
+      const limit = parseInt(req.query['page[limit]'] as string) || 10;
 
-router.get('/', (req, res) => {
-  console.log('GET /exchanges');
+      const exchangeIds = Array.from(exchangeIdToExchange.keys());
+      const paginatedExchanges = exchangeIds.slice(offset, offset + limit);
 
-  const offset = parseInt(req.query['page[offset]'] as string) || 0;
-  const limit = parseInt(req.query['page[limit]'] as string) || 10;
-  const exchangeIds = Array.from(exchangeIdToExchange.keys());
-  const paginatedExchanges = exchangeIds.slice(offset, offset + limit);
+      const responseBody = new GetExchangesResponseBody(paginatedExchanges);
 
-  const responseBody = new GetExchangesResponseBody(paginatedExchanges);
+      res.type('application/json');
+      res.send(responseBody.toJSONString());
+    } catch (error) {
+      console.error('Error in GET /exchanges:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 
-  res.type('application/json');
-  res.send(responseBody.toJSONString());
-});
+  /**
+   * GET /exchanges/:id
+   * Retrieves messages associated with a specific exchange ID
+   */
+  router.get('/:id', (req, res) => {
+    const exchangeId = req.params.id;
+    console.log(`GET /exchanges/${exchangeId}`);
 
-router.get('/:id', (req, res) => {
-  console.log("get exchange id")
-  const exchangeId = req.params.id;
-  console.log(`GET /exchanges/${exchangeId}`);
-
-  const exchange = exchangeIdToExchange.get(exchangeId);
-  if (!exchange) {
-    res.status(404).json({ error: 'Exchange not found' });
-    return;
-  }
-
-  const messages = [
-    exchange.rfq,
-    exchange.quote,
-    exchange.order,
-    exchange.orderInstructions,
-    exchange.cancel,
-    exchange.close,
-    ...(exchange.orderStatuses || []),
-  ].filter(Boolean);
-
-  const responseBody = new GetExchangeResponseBody(messages as Message[]);
-
-  res.type('application/json');
-  res.send(responseBody.toJSONString());
-});
-
-router.post('/', async (req, res) => {
-  console.log('POST /exchanges');
-
-  try {
-    const createExchangeRequestBody = CreateExchangeRequestBody.fromJSONString(JSON.stringify(req.body));
-
-    const rfq: Rfq = createExchangeRequestBody.message;
-    await rfq.verify();
-
-    console.log("before offer req")
-
-    const offering = offeringsRepository.getOffering(rfq.data.offeringId)
-    console.log("got the offering:")
-    console.log(offering)
-
-    // TODO: Add this back in
-    // await rfq.verifyOfferingRequirements(offering);
-
-    console.log("after offer req")
-
-
-    console.log("1.1")
-    // TODO:
-    if (createExchangeRequestBody.replyTo) {
-      exchangesToReplyTo.set(rfq.metadata.exchangeId, createExchangeRequestBody.replyTo);
+    const exchange = exchangeIdToExchange.get(exchangeId);
+    if (!exchange) {
+      res.status(404).json({ error: 'Exchange not found' });
+      return;
     }
 
-    console.log("1.2")
+    const messages = [
+      exchange.rfq,
+      exchange.quote,
+      exchange.order,
+      exchange.orderInstructions,
+      exchange.cancel,
+      exchange.close,
+      ...(exchange.orderStatuses || []),
+    ].filter(Boolean);
 
-    exchangeIdToExchange.set(rfq.metadata.exchangeId, { rfq });
+    const responseBody = new GetExchangeResponseBody(messages as Message[]);
 
-    console.log("1.3")
-    
-    setTimeout(() => {
-      console.log("2.0")
-      replyWithQuote(rfq.metadata.from, rfq.metadata.exchangeId);
-      console.log("2.1")
-    }, 500);
-
-    res.status(202).send();
-  } catch (e) {
-    console.log(e)
-    res.status(400).json({
-      error: 'RFQ does not satisfy an available offering',
-    });
-  }
-});
-
-router.put('/:id', (req, res) => {
-  const exchangeId = req.params.id;
-  console.log(`PUT /exchanges/${exchangeId}`);
-
-  const updateExchangeRequestBody = UpdateExchangeRequestBody.fromJSONString(
-    req.body
-  );
-  const message = updateExchangeRequestBody.message;
-
-  if (message instanceof Order) {
-    const orderMessage = message as Order;
-    // Simulate order execution
-    orderMessage.verify();
-
-    setTimeout(() => {
-      replyWithOrderInstructions(
-        orderMessage.metadata.from,
-        orderMessage.metadata.exchangeId
-      );
-      setTimeout(() => {
-        replyWithOrderStatus(
-          orderMessage.metadata.from,
-          orderMessage.metadata.exchangeId,
-          "PAYIN_INITIATED"
-        );
-        setTimeout(() => {
-          replyWithOrderStatus(
-            orderMessage.metadata.from,
-            orderMessage.metadata.exchangeId,
-            "PAYIN_SETTLED"
-          );
-          setTimeout(() => {
-            replyWithOrderStatus(
-              orderMessage.metadata.from,
-              orderMessage.metadata.exchangeId,
-              "PAYOUT_INITIATED"
-            );
-            setTimeout(() => {
-              replyWithOrderStatus(
-                orderMessage.metadata.from,
-                orderMessage.metadata.exchangeId,
-                "PAYOUT_SETTLED"
-              );
-              setTimeout(() => {
-                replyWithClose(
-                  orderMessage.metadata.from,
-                  orderMessage.metadata.exchangeId
-                );
-              }, 500);
-            }, 500);
-          }, 500);
-        }, 500);
-      }, 500);
-    }, 500);
-  } else if (message instanceof Cancel) {
-    const cancelMessage = message as Cancel;
-    // Simulate cancel
-    cancelMessage.verify();
-
-    setTimeout(() => {
-      replyWithClose(
-        cancelMessage.metadata.from,
-        cancelMessage.metadata.exchangeId,
-        false
-      );
-    }, 500);
-  }
-
-  res.status(202).send();
-});
-
-function replyWithQuote(to: string, exchangeId: string) {
-  console.log("reply with quote start")
-  const quoteData: QuoteData = {
-    expiresAt: '2024-08-02T04:26:08.239Z',
-    payin: {
-      currencyCode: 'BTC',
-      subtotal: '1000.00',
-      total: '1001.00',
-      fee: null,
-    },
-    payout: {
-      currencyCode: 'KES',
-      subtotal: '1000.00',
-      total: '1001.00',
-      fee: null,
-    },
-    payoutUnitsPerPayinUnit: '1.0',
-  };
-
-  const quote = Quote.create(
-    to,
-    bearerDid.did.uri,
-    exchangeId,
-    quoteData
-  );
-
-  console.log("befoer with quote sign")
-  quote.sign(bearerDid);
-  console.log("befoer with quote verify")
-  quote.verify();
-
-  console.log('Replying with quote');
-
-  const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
-  exchangeIdToExchange.set(exchangeId, { ...existingExchange, quote });
-
-  const replyTo = exchangesToReplyTo.get(exchangeId);
-  if (replyTo) {
-    replyRequest(replyTo, new ReplyToRequestBody(quote));
-  }
-}
-
-function replyWithOrderInstructions(to: string, exchangeId: string) {
-  console.log('Replying with orderInstructions');
-
-  const orderInstructionsData: OrderInstructionsData = {
-    payin: {
-      link: 'http://tbd.website/payin',
-      instruction: 'payin instruction',
-    },
-    payout: {
-      link: 'http://tbd.website/payout',
-      instruction: 'payout instruction',
-    },
-  };
-
-  const orderInstructions = OrderInstructions.create(
-    to,
-    bearerDid.did.uri,
-    exchangeId,
-    orderInstructionsData
-  );
-
-  orderInstructions.sign(bearerDid);
-  orderInstructions.verify();
-
-  const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
-  exchangeIdToExchange.set(exchangeId, {
-    ...existingExchange,
-    orderInstructions,
+    res.type('application/json');
+    res.send(responseBody.toJSONString());
   });
 
-  const replyTo = exchangesToReplyTo.get(exchangeId);
-  if (replyTo) {
-    replyRequest(replyTo, new ReplyToRequestBody(orderInstructions));
-  }
-}
+  /**
+   * POST /exchanges
+   * Handles creation of a new exchange (RFQ)
+   */
+  router.post('/', async (req, res) => {
+    console.log('POST /exchanges');
 
-function replyWithOrderStatus(
-  to: string,
-  exchangeId: string,
-  status: string
-) {
-  const orderStatusData: OrderStatusData = {
-    status: status,
-  };
+    try {
+      const createExchangeRequestBody = CreateExchangeRequestBody.fromJSONString(
+        JSON.stringify(req.body)
+      );
 
-  const orderStatus = OrderStatus.create(
-    to,
-    bearerDid.did.uri,
-    exchangeId,
-    orderStatusData
-  );
+      const rfq: Rfq = createExchangeRequestBody.message;
+      await rfq.verify();
 
-  orderStatus.sign(bearerDid);
-  orderStatus.verify();
+      const offering = offeringsRepository.getOffering(rfq.data.offeringId);
+      if (!offering) {
+        throw new Error('Offering not found');
+      }
 
-  console.log(`Replying with order status ${status}`);
+      // TODO: Uncomment when we have valid pex input
+      // await rfq.verifyOfferingRequirements(offering);
 
-  const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
-  const updatedOrderStatuses = existingExchange.orderStatuses || [];
-  updatedOrderStatuses.push(orderStatus);
-  exchangeIdToExchange.set(exchangeId, {
-    ...existingExchange,
-    orderStatuses: updatedOrderStatuses,
+      if (createExchangeRequestBody.replyTo) {
+        exchangesToReplyTo.set(rfq.metadata.exchangeId, createExchangeRequestBody.replyTo);
+      }
+
+      exchangeIdToExchange.set(rfq.metadata.exchangeId, { rfq });
+
+      // Asynchronously send a quote in response to the RFQ
+      setImmediate(async () => {
+        try {
+          await replyWithQuote(rfq.metadata.from, rfq.metadata.exchangeId);
+        } catch (error) {
+          console.error('Error in replyWithQuote:', error);
+        }
+      });
+
+      res.status(202).send();
+    } catch (error) {
+      console.error('Error in POST /exchanges:', error);
+      res.status(400).json({
+        error: error.message || 'RFQ does not satisfy an available offering',
+      });
+    }
   });
 
-  const replyTo = exchangesToReplyTo.get(exchangeId);
-  if (replyTo) {
-    replyRequest(replyTo, new ReplyToRequestBody(orderStatus));
+  /**
+   * PUT /exchanges/:id
+   * Updates an existing exchange with a new message (Order or Cancel)
+   */
+  router.put('/:id', async (req, res) => {
+    const exchangeId = req.params.id;
+    console.log(`PUT /exchanges/${exchangeId}`);
+
+    try {
+      const updateExchangeRequestBody = UpdateExchangeRequestBody.fromJSONString(
+        JSON.stringify(req.body)
+      );
+
+      const message = updateExchangeRequestBody.message;
+
+      if (message instanceof Order) {
+        const orderMessage = message as Order;
+        await orderMessage.verify();
+
+        // Process the order asynchronously
+        await processOrder(orderMessage);
+      } else if (message instanceof Cancel) {
+        const cancelMessage = message as Cancel;
+        await cancelMessage.verify();
+
+        // Process the cancellation
+        await replyWithClose(cancelMessage.metadata.from, cancelMessage.metadata.exchangeId, false);
+      }
+
+      res.status(202).send();
+    } catch (error) {
+      console.error('Error in PUT /exchanges/:id', error);
+      res.status(400).json({ error: error.message || 'Invalid request' });
+    }
+  });
+
+  /**
+   * Processes an Order message by sending a series of status updates
+   * @param orderMessage - The Order message to process
+   */
+  async function processOrder(orderMessage: Order) {
+    try {
+      await replyWithOrderInstructions(orderMessage.metadata.from, orderMessage.metadata.exchangeId);
+
+      const statuses = [
+        "PAYIN_INITIATED",
+        "PAYIN_SETTLED",
+        "PAYOUT_INITIATED",
+        "PAYOUT_SETTLED",
+      ];
+
+      for (const status of statuses) {
+        await delay(500);
+        await replyWithOrderStatus(orderMessage.metadata.from, orderMessage.metadata.exchangeId, status);
+      }
+
+      await delay(500);
+      await replyWithClose(orderMessage.metadata.from, orderMessage.metadata.exchangeId);
+    } catch (error) {
+      console.error('Error processing order:', error);
+    }
   }
-}
 
-function replyWithClose(
-  to: string,
-  exchangeId: string,
-  success: boolean = true
-) {
+  /**
+   * Sends a Quote message in response to an RFQ
+   * @param to - The recipient DID
+   * @param exchangeId - The exchange ID
+   */
+  async function replyWithQuote(to: string, exchangeId: string) {
+    console.log('Replying with quote');
 
-  console.log('Replying with close');
-
-  const closeData: CloseData = {
-    reason: null,
-    success: success,
-  };
-
-  const close = Close.create(
-    to,
-    bearerDid.did.uri,
-    exchangeId,
-    closeData
-  );
-
-  close.sign(bearerDid);
-  close.verify();
-
-
-  const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
-  exchangeIdToExchange.set(exchangeId, { ...existingExchange, close });
-
-  const replyTo = exchangesToReplyTo.get(exchangeId);
-  if (replyTo) {
-    replyRequest(replyTo, new ReplyToRequestBody(close));
-  }
-}
-
-function replyRequest(replyTo: string, body: ReplyToRequestBody) {
-  axios
-    .post(replyTo, body.toJSONString(), {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+    const quoteData: QuoteData = {
+      expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(), // Expires in 1 hour
+      payin: {
+        currencyCode: 'BTC',
+        subtotal: '1000.00',
+        total: '1001.00',
+        fee: null,
       },
-    })
-    .catch((error) => {
-      console.error('Error in replyRequest:', error);
+      payout: {
+        currencyCode: 'KES',
+        subtotal: '1000.00',
+        total: '1001.00',
+        fee: null,
+      },
+      payoutUnitsPerPayinUnit: '1.0',
+    };
+
+    const quote = Quote.create(to, bearerDid.did.uri, exchangeId, quoteData);
+
+    await quote.sign(bearerDid);
+    await quote.verify();
+
+    const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
+    exchangeIdToExchange.set(exchangeId, { ...existingExchange, quote });
+
+    await sendReply(exchangeId, new ReplyToRequestBody(quote));
+  }
+
+  /**
+   * Sends OrderInstructions in response to an Order
+   * @param to - The recipient DID
+   * @param exchangeId - The exchange ID
+   */
+  async function replyWithOrderInstructions(to: string, exchangeId: string) {
+    console.log('Replying with order instructions');
+
+    const orderInstructionsData: OrderInstructionsData = {
+      payin: {
+        link: 'http://tbd.website/payin',
+        instruction: 'Payin instruction',
+      },
+      payout: {
+        link: 'http://tbd.website/payout',
+        instruction: 'Payout instruction',
+      },
+    };
+
+    const orderInstructions = OrderInstructions.create(
+      to,
+      bearerDid.did.uri,
+      exchangeId,
+      orderInstructionsData
+    );
+
+    await orderInstructions.sign(bearerDid);
+    await orderInstructions.verify();
+
+    const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
+    exchangeIdToExchange.set(exchangeId, {
+      ...existingExchange,
+      orderInstructions,
     });
-}
+
+    await sendReply(exchangeId, new ReplyToRequestBody(orderInstructions));
+  }
+
+  /**
+   * Sends an OrderStatus update
+   * @param to - The recipient DID
+   * @param exchangeId - The exchange ID
+   * @param status - The status to update
+   */
+  async function replyWithOrderStatus(to: string, exchangeId: string, status: string) {
+    console.log(`Replying with order status: ${status}`);
+
+    const orderStatusData: OrderStatusData = {
+      status,
+    };
+
+    const orderStatus = OrderStatus.create(to, bearerDid.did.uri, exchangeId, orderStatusData);
+
+    await orderStatus.sign(bearerDid);
+    await orderStatus.verify();
+
+    const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
+    const updatedOrderStatuses = existingExchange.orderStatuses || [];
+    updatedOrderStatuses.push(orderStatus);
+    exchangeIdToExchange.set(exchangeId, {
+      ...existingExchange,
+      orderStatuses: updatedOrderStatuses,
+    });
+
+    await sendReply(exchangeId, new ReplyToRequestBody(orderStatus));
+  }
+
+  /**
+   * Sends a Close message to indicate the exchange is closed
+   * @param to - The recipient DID
+   * @param exchangeId - The exchange ID
+   * @param success - Whether the exchange was successful
+   */
+  async function replyWithClose(to: string, exchangeId: string, success = true) {
+    console.log('Replying with close');
+
+    const closeData: CloseData = {
+      reason: null,
+      success,
+    };
+
+    const close = Close.create(to, bearerDid.did.uri, exchangeId, closeData);
+
+    await close.sign(bearerDid);
+    await close.verify();
+
+    const existingExchange = exchangeIdToExchange.get(exchangeId) || {};
+    exchangeIdToExchange.set(exchangeId, { ...existingExchange, close });
+
+    await sendReply(exchangeId, new ReplyToRequestBody(close));
+  }
+
+  /**
+   * Sends a reply message to the client
+   * @param exchangeId - The exchange ID
+   * @param message - The message to send
+   */
+  async function sendReply(exchangeId: string, replyToRequestBody: ReplyToRequestBody) {
+    const replyTo = exchangesToReplyTo.get(exchangeId);
+    if (replyTo) {
+      try {
+        await axios.post(replyTo, replyToRequestBody.toJSONString(), {
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+        });
+      } catch (error) {
+        console.error('Error sending reply:', error);
+      }
+    }
+  }
 
   return router;
 }
-
-
-// export default createExchangesRouter;
-// export default router;
