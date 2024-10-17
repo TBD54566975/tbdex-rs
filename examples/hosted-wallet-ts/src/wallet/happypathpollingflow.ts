@@ -12,6 +12,7 @@ import {
   submitOrder,
   GetExchangeResponseBody,
   Message,
+  getExchange,
 } from 'tbdex';
 import axios from 'axios';
 
@@ -156,6 +157,7 @@ async function fetchExchangeData(
   try {
     // TODO: This is not working and returning an unknwon WASM exception, to get around this I'm using axios instead of our library for getExchange
     // const exchange = await getExchange(pfiDidUri, bearerDid, exchangeId);
+    // console.log(JSON.stringify(exchange));
 
     const response = await axios.get('http://localhost:8082/exchanges/' + exchangeId);
 
