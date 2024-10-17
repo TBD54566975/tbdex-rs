@@ -41,9 +41,14 @@ async function runHappyPathFlow(
       payin: {
         amount: '101',
         kind: 'USD_LEDGER',
+        paymentDetails: null,
       },
       payout: {
         kind: 'MOMO_MPESA',
+        paymentDetails: {
+          phoneNumber: '867-5309',
+          reason: 'cause',
+        },
       },
     };
 

@@ -121,7 +121,7 @@ export default function exchangesRouter(
         throw new Error('Offering not found');
       }
 
-      // TODO: Uncomment when we have valid pex input
+      // TODO: This causes a WASM black hole exception, so we're commenting it out for now
       // await rfq.verifyOfferingRequirements(offering);
 
       if (createExchangeRequestBody.replyTo) {

@@ -15,7 +15,7 @@ const PORT = 8082;
 
 app.use(express.json());
 
-const offeringsRepository = new OfferingRepository();
+const offeringsRepository = new OfferingRepository(pfiBearerDid);
 await offeringsRepository.signAndVerifyOfferings(pfiBearerDid);
 
 app.use('/offerings', offeringsRouter(offeringsRepository));

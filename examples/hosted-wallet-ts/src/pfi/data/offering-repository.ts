@@ -3,8 +3,7 @@ import { Offering, BearerDid } from 'tbdex';
 export class OfferingRepository {
   private offerings: Offering[] = [];
 
-  constructor() {
-    // Seed the fake data for offerings, similar to the Kotlin example
+  constructor(pfiBearerDid: BearerDid) {
     const payinDetails = {
       currencyCode: "USD",
       methods: [
@@ -54,7 +53,7 @@ export class OfferingRepository {
                 path: ["$.issuer"],
                 filter: {
                   type: "string",
-                  const: "did:example:123"
+                  const: pfiBearerDid.did.uri
                 },
                 optional: false
               }
@@ -69,7 +68,7 @@ export class OfferingRepository {
     };
 
     const offering = Offering.create(
-      "did:example:123",
+      pfiBearerDid.did.uri,
       {
         description: "fake offering 1",
         payoutUnitsPerPayinUnit: "0.0069",
