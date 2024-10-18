@@ -121,8 +121,7 @@ export default function exchangesRouter(
         throw new Error('Offering not found');
       }
 
-      // TODO: This causes a WASM black hole exception, so we're commenting it out for now
-      // await rfq.verifyOfferingRequirements(offering);
+      await rfq.verifyOfferingRequirements(offering);
 
       if (createExchangeRequestBody.replyTo) {
         exchangesToReplyTo.set(rfq.metadata.exchangeId, createExchangeRequestBody.replyTo);
