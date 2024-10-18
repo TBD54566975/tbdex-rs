@@ -13,7 +13,7 @@ lazy_static = "1.5.0"
 serde = { version = "1.0.193", features = ["derive", "rc"] }
 serde_json = "1.0.108"
 thiserror = "1.0.50"
-http-std = { git = "https://github.com/TBD54566975/web5-rs", rev = "52bf9ca268a0fd17c68a8fc0c75d8c68d1cdb41f" }
-web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "52bf9ca268a0fd17c68a8fc0c75d8c68d1cdb41f" }
-web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "52bf9ca268a0fd17c68a8fc0c75d8c68d1cdb41f" }
+http-std = { git = "https://github.com/TBD54566975/web5-rs", rev = "6f6c336744ce0a35c5dc73e517be14f91c49b3b2" }
+web5 = { git = "https://github.com/TBD54566975/web5-rs", rev = "6f6c336744ce0a35c5dc73e517be14f91c49b3b2" }
+web5_uniffi_wrapper = { git = "https://github.com/TBD54566975/web5-rs", rev = "6f6c336744ce0a35c5dc73e517be14f91c49b3b2" }
 
