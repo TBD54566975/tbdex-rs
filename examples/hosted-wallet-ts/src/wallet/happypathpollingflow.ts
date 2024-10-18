@@ -4,17 +4,14 @@ import {
   Quote,
   Order,
   OrderInstructions,
-  OrderStatus,
   Close,
   BearerDid,
   getOfferings,
   createExchange,
   submitOrder,
-  GetExchangeResponseBody,
-  Message,
   getExchange,
+  Exchange,
 } from 'tbdex';
-import axios from 'axios';
 
 async function runHappyPathFlow(
   pfiDidUri: string,
@@ -65,14 +62,8 @@ async function runHappyPathFlow(
     let quote: Quote | undefined;
     while (!quote) {
       await delay(500);
-      const exchangeData = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
-      for (const element of exchangeData) {
-        if (element.metadata.kind === 'quote') {
-          console.log('Found quote!');
-          quote = Quote.fromJSONString(JSON.stringify(element));
-          break;
-        }
-      }
+      const exchange = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
+      quote = exchange.quote;
     }
     console.log(`Received quote with ID: ${quote.metadata.id}\n`);
 
@@ -89,35 +80,24 @@ async function runHappyPathFlow(
     let orderInstructions: OrderInstructions | undefined;
     while (!orderInstructions) {
       await delay(500);
-      const exchangeData = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
-      for (const element of exchangeData) {
-        if (element.metadata.kind === 'orderinstructions') {
-          console.log('Found order instructions!');
-          orderInstructions = OrderInstructions.fromJSONString(
-            JSON.stringify(element)
-          );
-          break;
-        }
-      }
+      const exchange = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
+      orderInstructions = exchange.orderInstructions;
     }
-    console.log(
-      `Received order instructions with ID: ${orderInstructions.metadata.id}\n`
-    );
+    console.log(`Received order instructions with ID: ${orderInstructions.metadata.id}\n`);
 
     // Step 6: Wait for Order Status: PAYOUT_SETTLED
     console.log('6. Waiting for Order Status: PAYOUT_SETTLED...');
     let payoutSettled = false;
     while (!payoutSettled) {
       await delay(500);
-      const exchangeData = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
-      for (const element of exchangeData) {
-        if (element.metadata.kind === 'orderstatus') {
-          const orderStatus = OrderStatus.fromJSONString(JSON.stringify(element));
-          if (orderStatus.data.status === 'PAYOUT_SETTLED') {
-            console.log('Order status PAYOUT_SETTLED received.');
-            payoutSettled = true;
-            break;
-          }
+      const exchange = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
+      const orderStatuses = exchange.orderStatuses;
+
+      for(const orderStatus of orderStatuses) {
+        if (orderStatus.data.status === 'PAYOUT_SETTLED') {
+          console.log('Order status PAYOUT_SETTLED received.');
+          payoutSettled = true;
+          break;
         }
       }
     }
@@ -128,14 +108,8 @@ async function runHappyPathFlow(
     let close: Close | undefined;
     while (!close) {
       await delay(500);
-      const exchangeData = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
-      for (const element of exchangeData) {
-        if (element.metadata.kind === 'close') {
-          console.log('Found close message!');
-          close = Close.fromJSONString(JSON.stringify(element));
-          break;
-        }
-      }
+      const exchange = await fetchExchangeData(pfiDidUri, bearerDid, exchangeId);
+      close = exchange.close;
     }
 
     console.log(
@@ -158,21 +132,13 @@ async function fetchExchangeData(
   pfiDidUri: string,
   bearerDid: BearerDid,
   exchangeId: string
-): Promise<Message[]> {
+): Promise<Exchange> {
   try {
-    // TODO: This is not working and returning an unknwon WASM exception, to get around this I'm using axios instead of our library for getExchange
-    // const exchange = await getExchange(pfiDidUri, bearerDid, exchangeId);
-    // console.log(JSON.stringify(exchange));
-
-    const response = await axios.get('http://localhost:8082/exchanges/' + exchangeId);
-
-    const getExchangeResponseBody = GetExchangeResponseBody.fromJSONString(
-      JSON.stringify(response.data)
-    );
-    return getExchangeResponseBody.data;
+    const exchange = await getExchange(pfiDidUri, bearerDid, exchangeId);
+    return exchange;
   } catch (error) {
     console.error('Error fetching exchange data:', error);
-    return [];
+    return;
   }
 }
 

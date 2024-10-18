@@ -5,7 +5,8 @@ pub mod offerings;
 use crate::errors::{Result, TbdexError};
 use http_std::FetchOptions;
 use serde::{de::DeserializeOwned, Serialize};
-use std::time::{Duration, SystemTime};
+use chrono::{Duration, Utc};
+use std::time::SystemTime;
 use uuid::Uuid;
 use web5::{
     dids::{
@@ -19,14 +20,17 @@ use web5::{
 };
 
 fn generate_access_token(pfi_did_uri: &str, bearer_did: &BearerDid) -> Result<String> {
-    let now = SystemTime::now();
-    let exp = now + Duration::from_secs(60);
+    let now = Utc::now();
+    let exp = now + Duration::seconds(60);
+
+    let now_system_time: SystemTime = now.into();
+    let exp_system_time: SystemTime = exp.into();
 
     let claims = &JwtClaims {
         aud: Some(vec![pfi_did_uri.to_string()]),
         iss: Some(bearer_did.did.uri.clone()),
-        iat: Some(now),
-        exp: Some(exp),
+        iat: Some(now_system_time),
+        exp: Some(exp_system_time),
         jti: Some(Uuid::new_v4().to_string()),
         ..Default::default()
     };
