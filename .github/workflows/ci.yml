@@ -419,22 +419,16 @@ jobs:
           path: test-results/rust-test-results.xml
 
   typescript:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
           cache: true
-      - name: Setup
-        run: just setup
-      - name: Bind Wasm
-        run: just bind-typescript
-      - name: Build WASM
-        run: |
-          cd bindings/tbdex_wasm
-          wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg
-      - name: Lint and Test
+      - name: Lint
+        # NOTE: only currently testing nodejs in the CI, not the browser
+        # The WASM binary is build with a script in npm run build
         run: |
           cd bound/typescript
           npm install
