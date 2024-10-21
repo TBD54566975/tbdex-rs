@@ -18,7 +18,7 @@ set -e
 cd $(dirname "$0")/..
 
 # Convert the Wasm into a JS file that exports the base64'ed Wasm.
-echo "module.exports = \`$(base64 -i pkg/tbdex_wasm_bg.wasm)\`;" > pkg/tbdex_wasm_bg.wasm.js
+echo "module.exports = \`$(base64 < pkg/tbdex_wasm_bg.wasm)\`;" > pkg/tbdex_wasm_bg.wasm.js
 
 # In the JavaScript:
 #  1. Strip out the lines that load the WASM, add our new epilogue.
