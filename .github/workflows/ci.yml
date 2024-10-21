@@ -426,6 +426,9 @@ jobs:
         uses: cashapp/activate-hermit@v1
         with:
           cache: true
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM
         run: |
           cd bindings/tbdex_wasm
@@ -438,3 +441,4 @@ jobs:
           npm run build
           npm run test:node:cjs
           npm run test:node:esm
+
