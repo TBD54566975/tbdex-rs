@@ -31,6 +31,11 @@ lint: setup
 
 bind: setup
   just bind-kotlin
+  just bind-typescript
+
+test-bound: setup
+  just test-kotlin
+  just test-typescript
 
 bind-kotlin: setup
   cargo build --release --package tbdex_uniffi --target aarch64-apple-darwin
@@ -45,13 +50,10 @@ bind-kotlin: setup
   sed -i '' 's/findLibraryName(componentName)/detectSystemTarget()/' target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt
   cp target/bindgen-kotlin/tbdex/sdk/rust/tbdex.kt bound/kt/src/main/kotlin/tbdex/sdk/rust/UniFFI.kt
 
-test-bound: setup
-  just test-kotlin
-
 test-kotlin: setup
   cd bound/kt && mvn clean verify
 
-wasm: setup
+bind-typescript: setup
   (cd bindings/tbdex_wasm; wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg)
 
 test-typescript: setup
