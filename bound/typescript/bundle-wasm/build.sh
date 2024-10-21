@@ -24,8 +24,15 @@ echo "module.exports = \`$(base64 -i pkg/tbdex_wasm_bg.wasm)\`;" > pkg/tbdex_was
 #  1. Strip out the lines that load the WASM, add our new epilogue.
 #  2. Remove the imports of `TextDecoder` and `TextEncoder`. We rely on the global defaults.
 {
-  sed -e '/Text..coder.*= require(.util.)/d' \
-      -e '/^const path = /,$d' pkg/tbdex_wasm.js
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS version
+    sed -e '/Text..coder.*= require(.util.)/d' \
+        -e '/^const path = /,$d' pkg/tbdex_wasm.js
+  else
+    # Linux (Ubuntu) version
+    sed -e '/Text..coder.*= require(.util.)/d' \
+        -e '/^const path = /,$ d' pkg/tbdex_wasm.js
+  fi
   cat bundle-wasm/epilogue.js
 } > pkg/tbdex_wasm.js.new
 mv pkg/tbdex_wasm.js.new pkg/tbdex_wasm.js
