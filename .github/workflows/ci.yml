@@ -426,8 +426,11 @@ jobs:
         uses: cashapp/activate-hermit@v1
         with:
           cache: true
-      - name: Lint
-        # NOTE: only currently testing nodejs in the CI, not the browser
+      - name: Build WASM
+        run: |
+          cd bindings/tbdex_wasm
+          wasm-pack build --target nodejs --out-dir ../../bound/typescript/pkg
+      - name: Lint and Test
         run: |
           cd bound/typescript
           npm install
