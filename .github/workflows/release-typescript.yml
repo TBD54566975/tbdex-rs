@@ -50,7 +50,7 @@ jobs:
   build-and-publish:
     name: Build and Publish TypeScript Package
     needs: set-version-and-tag
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       # Check out the code at the release tag
       - uses: actions/checkout@v4
