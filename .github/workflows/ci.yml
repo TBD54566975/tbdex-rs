@@ -419,16 +419,17 @@ jobs:
           path: test-results/rust-test-results.xml
 
   typescript:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
           cache: true
-      - name: Install wasm-pack
-        run: |
-          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Setup
+        run: just setup
+      - name: Bind Wasm
+        run: just bind-typescript
       - name: Build WASM
         run: |
           cd bindings/tbdex_wasm
@@ -441,4 +442,3 @@ jobs:
           npm run build
           npm run test:node:cjs
           npm run test:node:esm
-
