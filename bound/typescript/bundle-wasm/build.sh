@@ -18,21 +18,14 @@ set -e
 cd $(dirname "$0")/..
 
 # Convert the Wasm into a JS file that exports the base64'ed Wasm.
-echo "module.exports = \`$(base64 < pkg/tbdex_wasm_bg.wasm)\`;" > pkg/tbdex_wasm_bg.wasm.js
+echo "module.exports = \`$(base64 -i pkg/tbdex_wasm_bg.wasm)\`;" > pkg/tbdex_wasm_bg.wasm.js
 
 # In the JavaScript:
 #  1. Strip out the lines that load the WASM, add our new epilogue.
 #  2. Remove the imports of `TextDecoder` and `TextEncoder`. We rely on the global defaults.
 {
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS version
-    sed -e '/Text..coder.*= require(.util.)/d' \
-        -e '/^const path = /,$d' pkg/tbdex_wasm.js
-  else
-    # Linux (Ubuntu) version
-    sed -e '/Text..coder.*= require(.util.)/d' \
-        -e '/^const path = /,$ d' pkg/tbdex_wasm.js
-  fi
+  sed -e '/Text..coder.*= require(.util.)/d' \
+      -e '/^const path = /,$d' pkg/tbdex_wasm.js
   cat bundle-wasm/epilogue.js
 } > pkg/tbdex_wasm.js.new
 mv pkg/tbdex_wasm.js.new pkg/tbdex_wasm.js
