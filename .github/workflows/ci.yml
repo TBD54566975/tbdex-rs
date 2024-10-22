@@ -428,6 +428,7 @@ jobs:
           cache: true
       - name: Lint
         # NOTE: only currently testing nodejs in the CI, not the browser
+        # The WASM binary is build with a script in npm run build
         run: |
           cd bound/typescript
           npm install

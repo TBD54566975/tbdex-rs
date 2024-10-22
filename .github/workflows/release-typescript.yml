@@ -1,0 +1,103 @@
+name: Release TypeScript Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of the TypeScript package to release and publish to npm. For example "1.0.0" or "1.3.7-beta-2". Required. Must not end in "-SNAPSHOT".'
+        required: true
+
+jobs:
+  # Job to set the version and create a git tag
+  set-version-and-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      RELEASE_TAG: ${{ steps.set-version-and-tag.outputs.RELEASE_TAG }}
+      RELEASE_VERSION: ${{ steps.set-version-and-tag.outputs.RELEASE_VERSION }}
+    steps:
+      # Check out the repository with permissions to push
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TBD_RELEASE_GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+      # Set Git configuration for committing
+      - name: Set Git Config
+        run: |
+          git config user.name "tbd-releases"
+          git config user.email "releases@tbd.email"
+
+      # Update version, commit, and tag
+      - name: Set Version and Tag
+        id: set-version-and-tag
+        run: |
+          version="${{ github.event.inputs.version }}"
+          if [[ "$version" == *"-SNAPSHOT" ]]; then
+            echo "Error: The version for release must not end with \"-SNAPSHOT\": $version"
+            exit 1
+          fi
+          cd bound/typescript
+          npm version "$version" --no-git-tag-version
+          git add package.json package-lock.json
+          git commit -m "[TBD Release Manager 🚀] Setting version to: $version"
+          tagName="ts-v$version"
+          git tag -a "$tagName" -m "Tag version: $tagName"
+          echo "RELEASE_TAG=$tagName" >> $GITHUB_OUTPUT
+          echo "RELEASE_VERSION=$version" >> $GITHUB_OUTPUT
+          git push origin "${GITHUB_REF#refs/heads/}"
+          git push origin "$tagName"
+
+  # Job to build, test, and publish the package
+  build-and-publish:
+    name: Build and Publish TypeScript Package
+    needs: set-version-and-tag
+    runs-on: macos-latest
+    steps:
+      # Check out the code at the release tag
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.set-version-and-tag.outputs.RELEASE_TAG }}
+          token: ${{ secrets.TBD_RELEASE_GITHUB_PERSONAL_ACCESS_TOKEN }}
+
+      # Initialize Hermit environment
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+
+      # Install dependencies
+      - name: Install Dependencies
+        run: |
+          cd bound/typescript
+          npm install
+
+      # Build the package
+      - name: Build TypeScript Package
+        run: |
+          cd bound/typescript
+          npm run clean
+          npm run build
+
+      # Run tests
+      - name: Run Tests
+        run: |
+          cd bound/typescript
+          npm run test:node:cjs
+          npm run test:node:esm
+
+      # Publish to npm
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd bound/typescript
+          npm publish --access public
+
+      # Create a GitHub release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1.1.4
+        with:
+          tag_name: ${{ needs.set-version-and-tag.outputs.RELEASE_TAG }}
+          release_name: ${{ needs.set-version-and-tag.outputs.RELEASE_TAG }}
+          body: "Release of TypeScript package version ${{ needs.set-version-and-tag.outputs.RELEASE_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

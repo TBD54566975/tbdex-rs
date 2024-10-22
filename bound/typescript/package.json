@@ -1,5 +1,5 @@
 {
-  "name": "tbdex",
+  "name": "@tbdex/sdk",
   "version": "0.1.0",
   "type": "module",
   "description": "",
@@ -19,6 +19,13 @@
       "import": "./dist/browser.mjs",
       "require": "./dist/browser.js"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TBD54566975/tbdex-rs.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "devDependencies": {
     "@types/chai": "4.3.0",
