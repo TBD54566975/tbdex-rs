@@ -19,58 +19,98 @@ npm install @tbdex/sdk
 
 ## Basic Usage
 
-### Creating and Managing Exchanges
+### Message Creation
 
 ```typescript
 import { 
-  BearerDid,
   Rfq,
   CreateRfqData,
-  getOfferings,
-  createExchange,
-  getExchange
-} from 'tbdex';
+} from '@tbdex/sdk';
 
-// Create a new Bearer DID
-const bearerDid = await BearerDid.create();
-
-// Fetch available offerings
-const offerings = await getOfferings('did:example:pfi123');
-const offeringId = offerings[0].metadata.id;
-
-// Create an RFQ (Request for Quote)
-const rfqData: CreateRfqData = {
-  offeringId,
-  claims: ['credentialJwt'],
-  payin: {
-    amount: '100',
+const createRfqData: CreateRfqData = {
+    claims: [verifiableCredential],
+    offeringId,
+    payin: {
+    amount: '101',
     kind: 'USD_LEDGER',
-    paymentDetails: null
-  },
-  payout: {
-    kind: 'PAYOUT_KIND',
+    paymentDetails: null,
+    },
+    payout: {
+    kind: 'MOMO_MPESA',
     paymentDetails: {
-      phoneNumber: '555-0123',
-      reason: 'payment'
-    }
-  }
+        phoneNumber: '867-5309',
+        reason: 'cause',
+    },
+    },
 };
 
-// Create and sign the RFQ
-const rfq = Rfq.create('did:example:pfi123', bearerDid.did.uri, rfqData);
+const rfq = Rfq.create(pfiDidUri, bearerDid.did.uri, createRfqData);
+
 await rfq.sign(bearerDid);
 await rfq.verify();
+```
 
-// Submit the RFQ to create an exchange
+### Message Parsing
+```typescript
+
+import { 
+  Rfq,
+} from '@tbdex/sdk';
+
+const jsonMessage = "<SERIALIZED_MESSAGE>"
+const rfq = Rfq.fromJSONString(jsonMessage);
+```
+
+### Http Client Create Exchange Flow
+```typescript
+import {
+  Rfq,
+  CreateRfqData,
+  BearerDid,
+  getOfferings,
+  createExchange,
+  getExchange,
+  Exchange,
+} from '@tbdex/sdk';
+
+// Step 1: Fetch offerings
+console.log('1. Fetching offerings...');
+const offerings = await getOfferings(pfiDidUri);
+if (!offerings || offerings.length === 0) {
+    throw new Error('No offerings available.');
+}
+
+const offeringId = offerings[0].metadata.id;
+console.log(`Successfully fetched offering ID: ${offeringId}\n`);
+
+// Step 2: Create exchange (RFQ)
+console.log('2. Creating exchange...');
+const createRfqData: CreateRfqData = {
+    claims: [verifiableCredential],
+    offeringId,
+    payin: {
+    amount: '101',
+    kind: 'USD_LEDGER',
+    paymentDetails: null,
+    },
+    payout: {
+    kind: 'PAYOUT_KIND',
+    paymentDetails: {
+        phoneNumber: '867-5309',
+        reason: 'cause',
+    },
+    },
+};
+
+const rfq = Rfq.create(pfiDidUri, bearerDid.did.uri, createRfqData);
+await rfq.sign(bearerDid);
+await rfq.verify();
 await createExchange(rfq);
 
-// Get exchange details
-const exchange = await getExchange(
-  'did:example:pfi123',
-  bearerDid,
-  rfq.metadata.exchangeId
-);
+const exchangeId = rfq.metadata.exchangeId;
+console.log(`Created exchange with ID: ${exchangeId}\n`);
 ```
+
 
 ## Message Types
 
