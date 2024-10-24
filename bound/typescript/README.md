@@ -1,6 +1,6 @@
 # tbDEX SDK
 
-[![npm version](https://badge.fury.io/js/tbdex.svg)](https://badge.fury.io/js/tbdex)
+[![npm version](https://badge.fury.io/js/%40tbdex%2Fsdk.svg)](https://badge.fury.io/js/%40tbdex%2Fsdk)
 
 A TypeScript SDK for interacting with the tbDEX protocol. This SDK is built on a Rust core with WebAssembly bindings, offering high performance, type safety, and interoperability. This library that can be used to create, parse, verify, and validate the tbDEX Messages and Resources defined in the [protocol specification](https://github.com/TBD54566975/tbdex/blob/main/README.md). This library also includes an HTTP client that can be used to send tbdex messages to PFIs.
 
