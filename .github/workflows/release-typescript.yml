@@ -1,4 +1,4 @@
-name: Release TypeScript Package
+name: Release TypeScript
 
 on:
   workflow_dispatch:
@@ -51,6 +51,9 @@ jobs:
     name: Build and Publish TypeScript Package
     needs: set-version-and-tag
     runs-on: macos-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       # Check out the code at the release tag
       - uses: actions/checkout@v4
@@ -83,6 +86,15 @@ jobs:
           cd bound/typescript
           npm run test:node:cjs
           npm run test:node:esm
+
+      - name: Setup npm auth
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+
+      - name: Verify npm authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm whoami
 
       # Publish to npm
       - name: Publish to npm
